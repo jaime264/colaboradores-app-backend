@@ -6,25 +6,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import pe.confianza.colaboradores.gcontenidos.server.dao.Nivel1Dao;
+import pe.confianza.colaboradores.gcontenidos.server.dao.Nivel2Dao;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Nivel1;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.Nivel2;
 
 @Service
-public class Nivel1ServiceImpl implements Nivel1Service{
+public class Nivel2ServiceImpl implements Nivel2Service{
 	
-	@Autowired 
-	private Nivel1Dao _nivel1Dao;
+	@Autowired
+	private Nivel2Dao _nivel2Dao;
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Nivel1> findAll() {
-		return _nivel1Dao.findAll();
+	public List<Nivel2> findByNivel1(Nivel1 nivel1) {
+		return _nivel2Dao.findByNivel1(nivel1);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public Nivel1 findById(Long id) {
-		return _nivel1Dao.findById(id).get();
+	public Nivel2 findById(Long id) {		
+		return _nivel2Dao.findById(id).get();
 	}
 
 }

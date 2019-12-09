@@ -8,4 +8,6 @@ public interface Nivel1Service {
 
 	public List<Nivel1> findAll();
 	
+	public Nivel1 findById(Long id);
+	
 }

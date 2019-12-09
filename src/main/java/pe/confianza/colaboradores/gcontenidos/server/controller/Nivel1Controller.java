@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,12 +20,13 @@ import pe.confianza.colaboradores.gcontenidos.server.service.Nivel1Service;
 
 @RestController
 @RequestMapping("/api")
-public class Menu1Controller {
+@CrossOrigin(origins = {"https://200.107.154.52:6020","http://localhost","http://localhost:8100","http://localhost:4200"})
+public class Nivel1Controller {
 	
 	@Autowired
 	private Nivel1Service nivel1Service;
 	
-	@GetMapping("/nivel1")
+	@PostMapping("/nivel1")
 	public ResponseEntity<?> show() {
 		List<Nivel1> lstNivel1 = null;
 		Map<String, Object> response = new HashMap<>();
