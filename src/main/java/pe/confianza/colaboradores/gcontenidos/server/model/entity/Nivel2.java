@@ -55,9 +55,8 @@ public class Nivel2 implements Serializable{
 		this.nivel1 = nivel1;
 	}
 
-
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -7303392946858334313L;
 }

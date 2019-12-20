@@ -52,7 +52,7 @@ public class Nivel3Controller {
 				logger.info("Nivel2: " + niv2.toString());
 				lstNivel3 = _nivel3Service.findByNivel2(niv2);
 				logger.info("size lstNivel3: " + lstNivel3.size());
-				logger.info("Nivel3[0] desc nivel1: " + lstNivel3.get(0).getNivel2().getNivel1().getDescripcion());
+				//logger.info("Nivel3[0] desc nivel1: " + lstNivel3.get(0).getNivel2().getNivel1().getDescripcion());
 			}
 			
 		} catch(DataAccessException e) {

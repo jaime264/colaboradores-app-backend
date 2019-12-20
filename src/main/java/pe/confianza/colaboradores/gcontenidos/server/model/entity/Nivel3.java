@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "nivel3")
 public class Nivel3 implements Serializable{	
@@ -60,9 +62,9 @@ public class Nivel3 implements Serializable{
 		this.nivel2 = nivel2;
 	}
 
-
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 4196668524429045216L;
+
 }

@@ -12,11 +12,6 @@ import javax.persistence.Table;
 @Table(name="nivel1")
 public class Nivel1 implements Serializable{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2052037685190638957L;
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -45,6 +40,8 @@ public class Nivel1 implements Serializable{
 		this.descripcion = descripcion;
 	}
 
-
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2052037685190638957L;
 }
