@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,8 @@ public class Nivel1ServiceImpl implements Nivel1Service{
 
 	@Override
 	@Transactional(readOnly = true)
-	public Nivel1 findById(Long id) {
-		return _nivel1Dao.findById(id).get();
+	public Optional<Nivel1> findById(Long _id) {
+		return _nivel1Dao.findById(_id);
 	}
 
 }

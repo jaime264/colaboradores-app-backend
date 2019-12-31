@@ -3,6 +3,7 @@ package pe.confianza.colaboradores.gcontenidos.server.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,18 +38,19 @@ public class Nivel2Controller {
 	@PostMapping("/nivel2")
 	public ResponseEntity<?> showNivel2ByNivel1(@RequestBody Nivel1 nivel1){
 		List<Nivel2> lstNivel2 = null;
-		Nivel1 niv1 = null;
+		Optional<Nivel1> niv1 = null;
 		Map<String, Object> response = new HashMap<>();
 		
 		try {
 			logger.info("Nivel2Controller");
-			niv1 = _nivel1Service.findById(nivel1.getId());
+			niv1 = _nivel1Service.findById(nivel1.get_id());
 			
 			if(niv1 == null) {
 				response.put("mensaje", "nivel 1 no existe en la base de datos!");
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 			}else {
-				lstNivel2 = _nivel2Service.findByNivel1(niv1);
+				logger.info(niv1.toString());
+				lstNivel2 = _nivel2Service.findByNivel1(nivel1.get_id());
 			}
 			
 		} catch(DataAccessException e) {

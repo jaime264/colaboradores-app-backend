@@ -42,7 +42,7 @@ public class Nivel3Controller {
 		
 		try {
 			logger.info("Nivel3Controller");
-			niv2 = _nivel2Service.findById(nivel2.getId());
+			niv2 = _nivel2Service.findById(nivel2.get_id());
 			
 			if(niv2 == null) {
 				logger.info("devuelve null");
@@ -50,9 +50,8 @@ public class Nivel3Controller {
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 			}else {
 				logger.info("Nivel2: " + niv2.toString());
-				lstNivel3 = _nivel3Service.findByNivel2(niv2);
+				lstNivel3 = _nivel3Service.findByNivel2(niv2.get_id());
 				logger.info("size lstNivel3: " + lstNivel3.size());
-				//logger.info("Nivel3[0] desc nivel1: " + lstNivel3.get(0).getNivel2().getNivel1().getDescripcion());
 			}
 			
 		} catch(DataAccessException e) {

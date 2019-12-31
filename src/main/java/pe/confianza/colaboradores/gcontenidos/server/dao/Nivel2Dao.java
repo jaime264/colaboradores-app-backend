@@ -2,12 +2,15 @@ package pe.confianza.colaboradores.gcontenidos.server.dao;
 
 import java.util.List;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Nivel1;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Nivel2;
 
-public interface Nivel2Dao extends CrudRepository<Nivel2, Long>{
+@Repository
+public interface Nivel2Dao extends MongoRepository<Nivel2, Long> {
 	
-	public List<Nivel2> findByNivel1(Nivel1 nivel1);
+	@Query("{'nivel2.id_nivel1': ?0}")
+	public List<Nivel2> findByNivel1(Long idNivel1);
 }

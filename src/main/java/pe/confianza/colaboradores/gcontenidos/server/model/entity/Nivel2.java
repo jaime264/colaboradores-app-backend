@@ -2,54 +2,37 @@ package pe.confianza.colaboradores.gcontenidos.server.model.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "nivel2")
+@Document(collection= "nivel2")
 public class Nivel2 implements Serializable{
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
+	private Long _id;
 	private String descripcion;
-	
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name = "id_nivel1")
 	private Nivel1 nivel1;
 	
 	
-	public Long getId() {
-		return id;
+	public Long get_id() {
+		return _id;
 	}
 
-
-	public void setId(Long id) {
-		this.id = id;
+	public void set_id(Long _id) {
+		this._id = _id;
 	}
-
 
 	public String getDescripcion() {
 		return descripcion;
 	}
 
-
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
 
-
 	public Nivel1 getNivel1() {
 		return nivel1;
 	}
-
 
 	public void setNivel1(Nivel1 nivel1) {
 		this.nivel1 = nivel1;

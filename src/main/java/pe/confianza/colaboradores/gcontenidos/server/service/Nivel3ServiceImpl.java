@@ -22,11 +22,11 @@ public class Nivel3ServiceImpl implements Nivel3Service{
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Nivel3> findByNivel2(Nivel2 nivel2) {
+	public List<Nivel3> findByNivel2(Long idNivel2) {
 		logger.info("Nivel3ServiceImpl");
 		List<Nivel3> lstNivel3 = null;
 		try {
-			lstNivel3 = _nivel3Dao.findByNivel2(nivel2);
+			lstNivel3 = _nivel3Dao.findByNivel2(idNivel2);
 		logger.info("size lstNivel3: " + lstNivel3.size());
 		}catch(Exception e) {
 			logger.error("Error al obtener nivel3: " + e.getMessage());
