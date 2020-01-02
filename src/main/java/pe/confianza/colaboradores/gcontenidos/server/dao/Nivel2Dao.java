@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -11,6 +12,9 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.Nivel2;
 @Repository
 public interface Nivel2Dao extends MongoRepository<Nivel2, Long> {
 	
-	@Query("{'nivel2.id_nivel1': ?0}")
+	@Query("{'id_nivel1': ?0}")
 	public List<Nivel2> findByNivel1(Long idNivel1);
+	
+	@Query("{'id': ?0}")
+	public Optional<Nivel2> findByIdNivel2(Long id);
 }

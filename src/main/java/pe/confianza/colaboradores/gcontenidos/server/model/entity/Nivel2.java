@@ -2,24 +2,37 @@ package pe.confianza.colaboradores.gcontenidos.server.model.entity;
 
 import java.io.Serializable;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection= "nivel2")
 public class Nivel2 implements Serializable{
 
-	@Id
-	private Long _id;
+	@Id private ObjectId _id;
+	private Long id;
 	private String descripcion;
+	@DBRef
 	private Nivel1 nivel1;
 	
+	public Nivel2() {
+	}
 	
-	public Long get_id() {
+	public ObjectId get_id() {
 		return _id;
 	}
 
-	public void set_id(Long _id) {
+	public void set_id(ObjectId _id) {
 		this._id = _id;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getDescripcion() {

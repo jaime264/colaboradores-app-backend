@@ -11,6 +11,6 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.Nivel3;
 @Repository
 public interface Nivel3Dao extends MongoRepository<Nivel3, Long>{
 	
-	@Query()
+	@Query("{'id_nivel2': ?0}")
 	public List<Nivel3> findByNivel2(Long idNivel2);
 }

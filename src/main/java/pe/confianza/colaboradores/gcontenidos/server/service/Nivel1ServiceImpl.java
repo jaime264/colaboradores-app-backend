@@ -24,8 +24,8 @@ public class Nivel1ServiceImpl implements Nivel1Service{
 
 	@Override
 	@Transactional(readOnly = true)
-	public Optional<Nivel1> findById(Long _id) {
-		return _nivel1Dao.findById(_id);
+	public Optional<Nivel1> findById(Long id) {
+		return _nivel1Dao.findByIdNivel1(id);
 	}
 
 }

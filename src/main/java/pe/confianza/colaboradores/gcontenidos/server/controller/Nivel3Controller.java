@@ -3,6 +3,7 @@ package pe.confianza.colaboradores.gcontenidos.server.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,12 +38,12 @@ public class Nivel3Controller {
 	@PostMapping("/nivel3")
 	public ResponseEntity<?> showNivel3ByNivel2(@RequestBody Nivel2 nivel2) {
 		List<Nivel3> lstNivel3 = null;
-		Nivel2 niv2 = null;
+		Optional<Nivel2> niv2 = null;
 		Map<String, Object> response = new HashMap<>();
 		
 		try {
 			logger.info("Nivel3Controller");
-			niv2 = _nivel2Service.findById(nivel2.get_id());
+			niv2 = _nivel2Service.findById(nivel2.getId());
 			
 			if(niv2 == null) {
 				logger.info("devuelve null");
@@ -50,7 +51,7 @@ public class Nivel3Controller {
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 			}else {
 				logger.info("Nivel2: " + niv2.toString());
-				lstNivel3 = _nivel3Service.findByNivel2(niv2.get_id());
+				lstNivel3 = _nivel3Service.findByNivel2(nivel2.getId());
 				logger.info("size lstNivel3: " + lstNivel3.size());
 			}
 			

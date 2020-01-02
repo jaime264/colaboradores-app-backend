@@ -43,14 +43,14 @@ public class Nivel2Controller {
 		
 		try {
 			logger.info("Nivel2Controller");
-			niv1 = _nivel1Service.findById(nivel1.get_id());
+			niv1 = _nivel1Service.findById(nivel1.getId());
 			
 			if(niv1 == null) {
 				response.put("mensaje", "nivel 1 no existe en la base de datos!");
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 			}else {
 				logger.info(niv1.toString());
-				lstNivel2 = _nivel2Service.findByNivel1(nivel1.get_id());
+				lstNivel2 = _nivel2Service.findByNivel1(nivel1.getId());
 			}
 			
 		} catch(DataAccessException e) {

@@ -9,6 +9,6 @@ public interface Nivel1Service {
 
 	public List<Nivel1> findAll();
 	
-	public Optional<Nivel1> findById(Long _id);
+	public Optional<Nivel1> findById(Long id);
 	
 }
