@@ -13,7 +13,7 @@ public class Nivel2 implements Serializable{
 	@Id private ObjectId _id;
 	private Long id;
 	private String descripcion;
-	@DBRef
+	@DBRef(db = "nivel1", lazy = true) 
 	private Nivel1 nivel1;
 	
 	public Nivel2() {
