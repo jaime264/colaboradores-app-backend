@@ -26,6 +26,7 @@ import com.google.gson.reflect.TypeToken;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsBoleta;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.BoletaModel;
 import pe.confianza.colaboradores.gcontenidos.server.service.BoletaService;
 
@@ -53,14 +54,20 @@ public class BoletaController {
 		StringBuilder url = new StringBuilder(urlBoleta);
 		
 		URL urlForGetRequest = new URL(url.toString());
-		String body = "{'empleado'=" + idEmpleado + ", 'periodo' =" + periodo + ", 'compania'=" + idCompania + "}";
+		
+		ParamsBoleta params = new ParamsBoleta();
+		params.setIdCompania(idCompania);
+		params.setIdEmpleado(idEmpleado);
+		params.setPeriodo(periodo);
+		String paramsOut = new Gson().toJson(params);
 		
 		HttpURLConnection conection = (HttpURLConnection) urlForGetRequest.openConnection();
 		conection.setDoOutput(true);
 		conection.setRequestMethod("POST");
 		conection.setRequestProperty("Content-Type", "application/json");
 		OutputStream os = conection.getOutputStream();
-		os.write(body.getBytes());
+		
+		os.write(paramsOut.getBytes());
 		os.flush();
 		os.close();
 
