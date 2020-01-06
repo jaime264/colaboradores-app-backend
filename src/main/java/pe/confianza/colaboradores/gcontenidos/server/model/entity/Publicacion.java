@@ -8,6 +8,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.ReaccionPost;
+
 @Document(collection= "publicacion")
 public class Publicacion implements Serializable{
 		

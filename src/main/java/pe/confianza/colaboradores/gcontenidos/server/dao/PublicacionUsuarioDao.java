@@ -13,5 +13,9 @@ public interface PublicacionUsuarioDao extends MongoRepository<PublicacionUsuari
 	
 	@Query(value="{'idPublicacion': ?0, 'idUsuario': ?1, 'idReaccion': {$gt: 0}}", fields="{ '_id' : 0}")
 	public List<PublicacionUsuario> findAllReaction(Long idpost, String user);
+	
+	@Query(value="{'idPublicacion': ?0, 'idUsuario': ?1}")
+	public PublicacionUsuario findByRelation(Long idpost, String user);
+
 
 }

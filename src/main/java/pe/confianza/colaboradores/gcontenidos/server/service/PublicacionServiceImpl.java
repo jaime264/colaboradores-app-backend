@@ -2,15 +2,19 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ReaccionPost;
 import pe.confianza.colaboradores.gcontenidos.server.dao.PublicacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.dao.PublicacionUsuarioDao;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.Nivel2;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.PublicacionUsuario;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.ReaccionPost;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Usuario;
 
@@ -67,6 +71,63 @@ public class PublicacionServiceImpl implements PublicacionService {
 		}
 		return status;
 	}
+	
+	@Override
+	public ResponseStatus addReaccion(ParamsReaccion paramsReaccion) {
+		List<PublicacionUsuario> relationSave = new ArrayList<PublicacionUsuario>();
+		ResponseStatus status = new ResponseStatus();
+		try {
+			PublicacionUsuario pu = relationDao.findByRelation(paramsReaccion.getIdPublicacion(), paramsReaccion.getUsuario());
+			if (pu != null) {
+				PublicacionUsuario savePU = new PublicacionUsuario();
+				savePU.set_id(pu.get_id());
+				savePU.setIdPublicacion(pu.getIdPublicacion());
+				savePU.setIdReaccion(pu.getIdReaccion());
+				savePU.setIdUsuario(pu.getIdUsuario());
+				relationSave.add(savePU);
+				List<PublicacionUsuario> relationOut = relationDao.saveAll(relationSave);
+				if (relationOut.size() > 0) {
+					Optional<Publicacion> resultPU = postDao.findById(pu.getIdPublicacion());
+					if (resultPU != null) {
+						Publicacion publicacion = resultPU.get();
+						List<ReaccionPost> lstReacciones = new ArrayList<ReaccionPost>();
+						int reaccion = paramsReaccion.getIdReaccion();
+						int activo = paramsReaccion.getActivo();
+						for (ReaccionPost r: publicacion.getReacciones()) {
+							if (r.getId() == reaccion) {
+								ReaccionPost nr = new ReaccionPost();
+								nr.setId(r.getId());
+								nr.setNombre(r.getNombre());
+								nr.setContador((activo == 1 ? r.getContador() + 1 : r.getContador() - 1));
+								nr.setActivo(r.getActivo());
+								lstReacciones.add(nr);
+							} else {
+								lstReacciones.add(r);
+							}
+						}
+						publicacion.setReacciones(lstReacciones);
+					}
+					status.setCodeStatus(0);
+					status.setMsgStatus("Registro creado correctamente");
+				} else {
+					status.setCodeStatus(99);
+					status.setMsgStatus("No se pudo actualizar la relaciòn publicación y usuario");
+				}
+			} else {
+				status.setCodeStatus(99);
+				status.setMsgStatus("No existe relación con la publicaciòn y el usuario");
+			}
+		} catch(Exception ex) {
+			status.setCodeStatus(99);
+			status.setMsgStatus(ex.getMessage());
+		}
+		return status;
+	}
+	
+	@Override
+	public Optional<Publicacion> findById(Long id) {		
+		return postDao.findById(id);
+	}
 
 	@Override
 	public List<Publicacion> listPost() {
@@ -76,33 +137,35 @@ public class PublicacionServiceImpl implements PublicacionService {
 	@Override
 	public List<Publicacion> listPostUser(String user, Long lastPost) {
 		List<Publicacion> lstFinal = new ArrayList<Publicacion>();
-		List<Usuario> lstUsuarios = new ArrayList<Usuario>();
 		
 		List<Publicacion> lstFind = postDao.findAllUser(user, lastPost);
 		
-		for(Publicacion post : lstFind) {
+		if (lstFind.size() > 0) {
 			// Seteamos solo el usuario de busqueda
+			List<Usuario> lstUsuarios = new ArrayList<Usuario>();
 			Usuario usuario = new Usuario();
 			usuario.setUsuarioBT(user);
+			usuario.setUltimaPublicacion(lastPost);
 			lstUsuarios.add(usuario);
-			post.setUsuarios(lstUsuarios);
-			
-			// Validamos el estado de la reacción
-			List<PublicacionUsuario> relaciones = relationDao.findAllReaction(post.getId(), user);
-			if (relaciones.size() > 0) {
-				List<ReaccionPost> lstReacciones = new ArrayList<ReaccionPost>();
-				int reaccion = relaciones.get(0).getIdReaccion();
-				for (ReaccionPost r: post.getReacciones()) {
-					ReaccionPost nr = new ReaccionPost();
-					nr.setCodigo(r.getCodigo());
-					nr.setNombre(r.getNombre());
-					nr.setContador(r.getContador());
-					nr.setActivo((r.getCodigo() == reaccion) ? 1 : 0);
-					lstReacciones.add(nr);
+			for(Publicacion post : lstFind) {
+				post.setUsuarios(lstUsuarios);
+				// Validamos el estado de la reacción
+				List<PublicacionUsuario> relaciones = relationDao.findAllReaction(post.getId(), user);
+				if (relaciones.size() > 0) {
+					List<ReaccionPost> lstReacciones = new ArrayList<ReaccionPost>();
+					int reaccion = relaciones.get(0).getIdReaccion();
+					for (ReaccionPost r: post.getReacciones()) {
+						ReaccionPost nr = new ReaccionPost();
+						nr.setId(r.getId());
+						nr.setNombre(r.getNombre());
+						nr.setContador(r.getContador());
+						nr.setActivo((r.getId() == reaccion) ? 1 : 0);
+						lstReacciones.add(nr);
+					}
+					post.setReacciones(lstReacciones);
 				}
-				post.setReacciones(lstReacciones);
+				lstFinal.add(post);
 			}
-			lstFinal.add(post);
 		}
 		return lstFinal;
 	}				

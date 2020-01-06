@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Usuario;
@@ -81,6 +82,22 @@ public class PublicacionController {
 			responseStatus = postService.createPost(posts); 
 		} catch(DataAccessException e) {
 			response.put("mensaje", "Error al registrar en la base de datos");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<ResponseStatus>(responseStatus, HttpStatus.OK);
+	}
+	
+	@PostMapping("/publicacion/reaccion")
+	public ResponseEntity<?> addReaccion(@RequestBody ParamsReaccion paramsReaccion) {
+		ResponseStatus responseStatus = null;
+		Map<String, Object> response = new HashMap<>();
+		
+		try {
+			responseStatus = postService.addReaccion(paramsReaccion); 
+		} catch(DataAccessException e) {
+			response.put("mensaje", "Error al actualizar en la base de datos");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

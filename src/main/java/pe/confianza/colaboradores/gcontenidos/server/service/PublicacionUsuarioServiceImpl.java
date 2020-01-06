@@ -20,9 +20,13 @@ public class PublicacionUsuarioServiceImpl implements PublicacionUsuarioService 
 	}
 
 	@Override
-	public List<PublicacionUsuario> findAllReaction(Long idPublicacion,
-			String idUsuario) {
+	public List<PublicacionUsuario> findAllReaction(Long idPublicacion, String idUsuario) { 
 		return relacionDao.findAllReaction(idPublicacion, idUsuario);
+	}
+	
+	@Override
+	public PublicacionUsuario findByRelation(Long idPublicacion, String idUsuario) {
+		return relacionDao.findByRelation(idPublicacion, idUsuario);
 	}
 
 

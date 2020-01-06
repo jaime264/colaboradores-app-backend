@@ -4,12 +4,14 @@ import java.io.Serializable;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection= "nivel1")
 public class Nivel1 implements Serializable{
 
 	@Id	private ObjectId _id;
+	@Indexed(unique = true, sparse = true, name = "nivel1_id_idx")
 	private Long id;
 	private String descripcion;
 	

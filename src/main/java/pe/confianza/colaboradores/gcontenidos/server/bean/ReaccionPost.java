@@ -1,23 +1,13 @@
-package pe.confianza.colaboradores.gcontenidos.server.model.entity;
+package pe.confianza.colaboradores.gcontenidos.server.bean;
 
 import java.io.Serializable;
 
 public class ReaccionPost implements Serializable {
 	
-	private Integer codigo;
+	private Integer id;
 	private String nombre;
 	private Integer contador;
 	private Integer activo;
-
-	public Integer getCodigo() {
-		return codigo;
-	}
-
-
-	public void setCodigo(Integer codigo) {
-		this.codigo = codigo;
-	}
-
 
 	public String getNombre() {
 		return nombre;
@@ -46,6 +36,16 @@ public class ReaccionPost implements Serializable {
 
 	public void setActivo(Integer activo) {
 		this.activo = activo;
+	}
+
+
+	public Integer getId() {
+		return id;
+	}
+
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 

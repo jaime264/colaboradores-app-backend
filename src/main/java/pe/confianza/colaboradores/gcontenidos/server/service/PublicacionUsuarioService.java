@@ -9,5 +9,7 @@ public interface PublicacionUsuarioService {
 	public void createRelation(List<PublicacionUsuario> relacion);
 	
 	public List<PublicacionUsuario> findAllReaction(Long idPublicacion, String idUsuario);
+	
+	public PublicacionUsuario findByRelation(Long idPublicacion, String idUsuario);
 
 }
