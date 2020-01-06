@@ -6,13 +6,10 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ReaccionPost;
 import pe.confianza.colaboradores.gcontenidos.server.dao.PublicacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.dao.PublicacionUsuarioDao;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Nivel2;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.PublicacionUsuario;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.ResponseStatus;
