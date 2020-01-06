@@ -3,6 +3,7 @@ package pe.confianza.colaboradores.gcontenidos.server.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -50,12 +51,18 @@ public class BoletaController {
 		String readLine = StringUtils.EMPTY;
 
 		StringBuilder url = new StringBuilder(urlBoleta);
-		url.append("/").append(idEmpleado).append("/").append(idCompania).append("/").append(periodo);
 		
 		URL urlForGetRequest = new URL(url.toString());
-
+		String body = "{'empleado'=" + idEmpleado + ", 'periodo' =" + periodo + ", 'compania'=" + idCompania + "}";
+		
 		HttpURLConnection conection = (HttpURLConnection) urlForGetRequest.openConnection();
-		conection.setRequestMethod("GET");
+		conection.setDoOutput(true);
+		conection.setRequestMethod("POST");
+		conection.setRequestProperty("Content-Type", "application/json");
+		OutputStream os = conection.getOutputStream();
+		os.write(body.getBytes());
+		os.flush();
+		os.close();
 
 		int responseCode = conection.getResponseCode();
 
