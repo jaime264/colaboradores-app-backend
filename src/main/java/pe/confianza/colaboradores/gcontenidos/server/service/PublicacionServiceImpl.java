@@ -84,7 +84,7 @@ public class PublicacionServiceImpl implements PublicacionService {
 				relationSave.add(savePU);
 				List<PublicacionUsuario> relationOut = relationDao.saveAll(relationSave);
 				if (relationOut.size() > 0) {
-					Optional<Publicacion> resultPU = postDao.findById(pu.getIdPublicacion());
+					Optional<Publicacion> resultPU = postDao.findByIdPost(pu.getIdPublicacion());
 					if (resultPU != null) {
 						Publicacion publicacion = resultPU.get();
 						List<ReaccionPost> lstReacciones = new ArrayList<ReaccionPost>();
@@ -122,8 +122,39 @@ public class PublicacionServiceImpl implements PublicacionService {
 	}
 	
 	@Override
-	public Optional<Publicacion> findById(Long id) {		
-		return postDao.findById(id);
+	public Optional<Publicacion> findByIdPost(Long id) {		
+		return postDao.findByIdPost(id);
+	}
+	
+	@Override
+	public Optional<Publicacion> findByIdPostUser(Long id, String user) {		
+		Optional<Publicacion> optional = postDao.findByIdPost(id);
+		Publicacion post = optional.get();
+		if (post != null) {
+			// Seteamos solo el usuario de busqueda
+			List<Usuario> lstUsuarios = new ArrayList<Usuario>();
+			Usuario usuario = new Usuario();
+			usuario.setUsuarioBT(user);
+			usuario.setUltimaPublicacion(0L);
+			lstUsuarios.add(usuario);
+			post.setUsuarios(lstUsuarios);
+			// Validamos el estado de la reacción
+			List<PublicacionUsuario> relaciones = relationDao.findAllReaction(post.getId(), user);
+			if (relaciones.size() > 0) {
+				List<ReaccionPost> lstReacciones = new ArrayList<ReaccionPost>();
+				int reaccion = relaciones.get(0).getIdReaccion();
+				for (ReaccionPost r: post.getReacciones()) {
+					ReaccionPost nr = new ReaccionPost();
+					nr.setId(r.getId());
+					nr.setNombre(r.getNombre());
+					nr.setContador(r.getContador());
+					nr.setActivo((r.getId() == reaccion) ? 1 : 0);
+					lstReacciones.add(nr);
+				}
+				post.setReacciones(lstReacciones);
+			}
+		}
+		return optional;
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsPublicacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.ResponseStatus;
@@ -69,6 +71,27 @@ public class PublicacionController {
 		}
 		
 		return new ResponseEntity<List<Publicacion>>(lstPosts, HttpStatus.OK);
+	}
+	
+	@PostMapping("/publicacion/id")
+	public ResponseEntity<?> postId(@RequestBody ParamsPublicacion paramsPublicacion) {
+		Optional<Publicacion> publicacion = null;
+		Map<String, Object> response = new HashMap<>();
+		
+		try {
+			publicacion = postService.findByIdPostUser(paramsPublicacion.getIdPost(), paramsPublicacion.getUser()); 
+		} catch(DataAccessException e) {
+			response.put("mensaje", "Error al realizar la consulta en la base de datos");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		if(publicacion == null) {
+			response.put("mensaje", "Publicacion no existe en la base de datos!");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<Optional<Publicacion>>(publicacion, HttpStatus.OK);
 	}
 	
 	@PostMapping("/publicacion/add")

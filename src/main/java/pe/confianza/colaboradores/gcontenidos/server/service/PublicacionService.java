@@ -13,7 +13,9 @@ public interface PublicacionService {
 	
 	public List<Publicacion> listPostUser(String user, Long lastPost);
 	
-	public Optional<Publicacion> findById(Long id);
+	public Optional<Publicacion> findByIdPost(Long id);
+	
+	public Optional<Publicacion> findByIdPostUser(Long id, String user);
 	
 	public ResponseStatus createPost(List<Publicacion> post);
 	

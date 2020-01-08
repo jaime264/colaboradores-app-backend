@@ -17,7 +17,7 @@ public interface PublicacionDao extends MongoRepository<Publicacion, Long> {
 	@Query(value="{'usuarios.usuarioBT': ?0, 'fecha': {$gt: ?1}}", fields="{ '_id' : 0}")
 	public List<Publicacion> findAllUser(String user, Long lastPost);
 	
-	@Query("{'id': ?0}")
-	public Optional<Publicacion> findById(Long id);
+	@Query(value="{'id': ?0}", fields="{ '_id' : 0}")
+	public Optional<Publicacion> findByIdPost(Long id);
 
 }
