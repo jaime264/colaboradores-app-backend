@@ -7,7 +7,8 @@ public class ParamsReaccion implements Serializable {
 	private Long idPublicacion;
 	private String usuario;
 	private Integer idReaccion;
-	private Integer activo;
+	private Integer activo;;
+	private LogAuditoria logAuditoria;
 
 	public Long getIdPublicacion() {
 		return idPublicacion;
@@ -39,6 +40,14 @@ public class ParamsReaccion implements Serializable {
 
 	public void setActivo(Integer activo) {
 		this.activo = activo;
+	}
+
+	public LogAuditoria getLogAuditoria() {
+		return logAuditoria;
+	}
+
+	public void setLogAuditoria(LogAuditoria logAuditoria) {
+		this.logAuditoria = logAuditoria;
 	}
 
 	/**

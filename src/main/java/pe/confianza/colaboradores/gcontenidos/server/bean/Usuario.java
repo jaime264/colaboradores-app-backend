@@ -1,4 +1,4 @@
-package pe.confianza.colaboradores.gcontenidos.server.model.entity;
+package pe.confianza.colaboradores.gcontenidos.server.bean;
 
 import java.io.Serializable;
 
@@ -6,6 +6,7 @@ public class Usuario implements Serializable{
 
 	private String usuarioBT;
 	private Long ultimaPublicacion;
+	private LogAuditoria logAuditoria;
 	
 	private static final long serialVersionUID = 1L;
 
@@ -23,6 +24,14 @@ public class Usuario implements Serializable{
 
 	public void setUltimaPublicacion(Long ultimaPublicacion) {
 		this.ultimaPublicacion = ultimaPublicacion;
+	}
+
+	public LogAuditoria getLogAuditoria() {
+		return logAuditoria;
+	}
+
+	public void setLogAuditoria(LogAuditoria logAuditoria) {
+		this.logAuditoria = logAuditoria;
 	}
 
 }

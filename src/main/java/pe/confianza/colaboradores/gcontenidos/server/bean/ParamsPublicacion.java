@@ -11,6 +11,7 @@ public class ParamsPublicacion implements Serializable {
 	
 	private Long idPost;
 	private String user;
+	private LogAuditoria logAuditoria;
 
 	public Long getIdPost() {
 		return idPost;
@@ -26,6 +27,14 @@ public class ParamsPublicacion implements Serializable {
 
 	public void setUser(String user) {
 		this.user = user;
+	}
+
+	public LogAuditoria getLogAuditoria() {
+		return logAuditoria;
+	}
+
+	public void setLogAuditoria(LogAuditoria logAuditoria) {
+		this.logAuditoria = logAuditoria;
 	}
 
 }

@@ -8,7 +8,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.Imagen;
+import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ReaccionPost;
+import pe.confianza.colaboradores.gcontenidos.server.bean.Usuario;
+import pe.confianza.colaboradores.gcontenidos.server.bean.Video;
 
 @Document(collection= "publicacion")
 public class Publicacion implements Serializable{
@@ -34,6 +38,7 @@ public class Publicacion implements Serializable{
 	private Integer flgreaccion;
 	private List<ReaccionPost> reacciones;
 	private List<Usuario> usuarios;
+	private LogAuditoria logAuditoria;
 	
 	public ObjectId get_id() {
 		return _id;
@@ -193,6 +198,14 @@ public class Publicacion implements Serializable{
 
 	public void setUsuarios(List<Usuario> usuarios) {
 		this.usuarios = usuarios;
+	}
+
+	public LogAuditoria getLogAuditoria() {
+		return logAuditoria;
+	}
+
+	public void setLogAuditoria(LogAuditoria logAuditoria) {
+		this.logAuditoria = logAuditoria;
 	}
 
 	/**

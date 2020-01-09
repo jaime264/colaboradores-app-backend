@@ -8,12 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ReaccionPost;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
+import pe.confianza.colaboradores.gcontenidos.server.bean.Usuario;
 import pe.confianza.colaboradores.gcontenidos.server.dao.PublicacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.dao.PublicacionUsuarioDao;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.PublicacionUsuario;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Usuario;
 
 @Service
 public class PublicacionServiceImpl implements PublicacionService {

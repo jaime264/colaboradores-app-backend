@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Dispositivo;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.service.DispositivoService;
 
 @RestController
