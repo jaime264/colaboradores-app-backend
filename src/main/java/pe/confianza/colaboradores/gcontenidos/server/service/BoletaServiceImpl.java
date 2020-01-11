@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import net.sf.jasperreports.engine.JRException;
@@ -20,12 +21,16 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.BoletaModel;
 @Service("boletaService")
 public class BoletaServiceImpl implements BoletaService {
 
-	@SuppressWarnings("deprecation")
+	@Value("${nombre.jasper}")
+	private String nombreJasper;
+	
+	@Value("${ruta.jasper}")
+	private String urlJasper;
+	
 	@Override
 	public JasperPrint generarPDF(HttpServletRequest httpServletRequest, List<BoletaModel> lstDetBoleta) {
 
 		try {
-			System.out.println("Antes de jasper");
 			List<BoletaModel> lstDetaBoletaPrin = new ArrayList<>();
 			lstDetaBoletaPrin.add(lstDetBoleta.get(0));
 
@@ -34,8 +39,7 @@ public class BoletaServiceImpl implements BoletaService {
 			parameters.put("SRBoletaModel", lstDetBoleta);
 
 			JasperReport report;
-				report = JasperCompileManager
-						.compileReport(httpServletRequest.getRealPath("/") + "static\\report\\BoletaDesign.jrxml");
+				report = JasperCompileManager.compileReport(urlJasper + nombreJasper);
 			
 			return JasperFillManager.fillReport(report, parameters, dataSource);
 			} catch (JRException e) {

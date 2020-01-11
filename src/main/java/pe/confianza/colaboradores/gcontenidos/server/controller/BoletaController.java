@@ -13,10 +13,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.bson.BsonDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,26 +28,31 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsBoleta;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestBoleta;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.BoletaModel;
+import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.BoletaService;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = { "https://200.107.154.52:6020", "http://localhost", "http://localhost:8100", "http://localhost:4200" })
+@CrossOrigin(origins = { "https://200.107.154.52:6020", "http://localhost", "http://localhost:8100", "http://localhost:4200", "http://172.20.9.12:7445" })
 public class BoletaController {
 
 	@Autowired
 	private BoletaService _boletaService;
+	
+	@Autowired
+	private AuditoriaService auditoriaService;
 	
 	@Value("${url.spring.rest.boleta}")
 	private String urlBoleta;
 
 	@Value("${compania.id}")
 	private String idCompania;
-	
-	@RequestMapping("/boleta/{empleado}/{periodo}")
-	public void obtenerBoleta(HttpServletRequest httpServletRequest, HttpServletResponse response,
-			@PathVariable("empleado") int idEmpleado, @PathVariable("periodo") String periodo) throws IOException, JRException {
+	 
+	@RequestMapping("/boleta")
+	public void obtenerBoleta(HttpServletRequest httpServletRequest, HttpServletResponse response,@RequestBody RequestBoleta requestBoleta
+			) throws IOException, JRException {
 
 		String bodyResponse = StringUtils.EMPTY;
 		String readLine = StringUtils.EMPTY;
@@ -57,8 +63,8 @@ public class BoletaController {
 		
 		ParamsBoleta params = new ParamsBoleta();
 		params.setIdCompania(idCompania);
-		params.setIdEmpleado(idEmpleado);
-		params.setPeriodo(periodo);
+		params.setIdEmpleado(requestBoleta.getEmpleado());
+		params.setPeriodo(requestBoleta.getPeriodo());
 		String paramsOut = new Gson().toJson(params);
 		
 		HttpURLConnection conection = (HttpURLConnection) urlForGetRequest.openConnection();
@@ -93,9 +99,15 @@ public class BoletaController {
 			
 			JasperPrint materiReport = _boletaService.generarPDF(httpServletRequest, lstDetBoleta);
 			response.setContentType("application/x-pdf");
-			response.setHeader("Content-disposition", "attachment; filename=boleta_.pdf");
+			response.setHeader("Content-disposition", "attachment; filename=BOLETA_" +requestBoleta.getEmpleado() + "_" + requestBoleta.getPeriodo() + ".pdf");
 			JasperExportManager.exportReportToPdfStream(materiReport, response.getOutputStream());
 			
+			/**
+			 * GUARDANDO AUDITORIA
+			 */
+			Gson gson = new Gson();
+			String jsonData = gson.toJson(requestBoleta);
+			auditoriaService.createAuditoria("002", "005", 0, BsonDocument.parse(jsonData));
 		}
 	}
 }

@@ -24,7 +24,7 @@ import pe.confianza.colaboradores.gcontenidos.server.service.Nivel2Service;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = {"https://200.107.154.52:6020","http://localhost","http://localhost:8100","http://localhost:4200"})
+@CrossOrigin(origins = {"https://200.107.154.52:6020","http://localhost","http://localhost:8100","http://localhost:4200" , "http://172.20.9.12:7445"})
 public class Nivel2Controller {
 
 	@Autowired
