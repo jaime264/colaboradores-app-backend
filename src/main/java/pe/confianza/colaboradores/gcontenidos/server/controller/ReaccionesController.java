@@ -41,8 +41,6 @@ public class ReaccionesController {
 		
 		try {
 			lstReacciones = reaccionService.listReacciones();
-			String jsonData = gson.toJson(logAuditoria);
-			auditoriaService.createAuditoria("002", "012", 0, "OK", BsonDocument.parse(jsonData));
 		} catch(DataAccessException e) {
 			String mensaje = "Error al realizar la consulta en la base de datos";
 			String jsonData = gson.toJson(logAuditoria);
@@ -53,8 +51,14 @@ public class ReaccionesController {
 		}
 		
 		if(lstReacciones == null) {
-			response.put("mensaje", "Reacciones no existen en la base de datos!");
+			String mensaje =  "Reacciones no existen en la base de datos!";
+			String jsonData = gson.toJson(logAuditoria);
+			auditoriaService.createAuditoria("002", "012", 0, mensaje, BsonDocument.parse(jsonData));
+			response.put("mensaje", mensaje);
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		} else {
+			String jsonData = gson.toJson(logAuditoria);
+			auditoriaService.createAuditoria("002", "012", 0, "OK", BsonDocument.parse(jsonData));
 		}
 		
 		return new ResponseEntity<List<Reaccion>>(lstReacciones, HttpStatus.OK);

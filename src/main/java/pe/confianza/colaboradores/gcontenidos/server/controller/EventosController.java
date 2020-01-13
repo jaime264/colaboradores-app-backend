@@ -41,8 +41,6 @@ public class EventosController {
 		
 		try {
 			lstEventos = eventoService.listEventos();
-			String jsonData = gson.toJson(logAuditoria);
-			auditoriaService.createAuditoria("002", "009", 0, "OK" ,BsonDocument.parse(jsonData));
 		} catch(DataAccessException e) {
 			String mensaje = "Error al realizar la consulta en la base de datos";
 			String jsonData = gson.toJson(logAuditoria);
@@ -53,8 +51,14 @@ public class EventosController {
 		}
 		
 		if(lstEventos == null) {
-			response.put("mensaje", "Eventos no existen en la base de datos!");
+			String mensaje = "Eventos no existen en la base de datos!";
+			String jsonData = gson.toJson(logAuditoria);
+			auditoriaService.createAuditoria("002", "009", 0, mensaje ,BsonDocument.parse(jsonData));
+			response.put("mensaje", mensaje);
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		} else {
+			String jsonData = gson.toJson(logAuditoria);
+			auditoriaService.createAuditoria("002", "009", 0, "OK" ,BsonDocument.parse(jsonData));
 		}
 		
 		return new ResponseEntity<List<Evento>>(lstEventos, HttpStatus.OK);

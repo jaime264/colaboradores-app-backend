@@ -53,61 +53,66 @@ public class BoletaController {
 	@RequestMapping("/boleta")
 	public void obtenerBoleta(HttpServletRequest httpServletRequest, HttpServletResponse response,@RequestBody RequestBoleta requestBoleta
 			) throws IOException, JRException {
+		Gson gson = new Gson();
+		try {
+			String bodyResponse = StringUtils.EMPTY;
+			String readLine = StringUtils.EMPTY;
 
-		String bodyResponse = StringUtils.EMPTY;
-		String readLine = StringUtils.EMPTY;
+			StringBuilder url = new StringBuilder(urlBoleta);
+			
+			URL urlForGetRequest = new URL(url.toString());
+			
+			ParamsBoleta params = new ParamsBoleta();
+			params.setIdCompania(idCompania);
+			params.setIdEmpleado(requestBoleta.getEmpleado());
+			params.setPeriodo(requestBoleta.getPeriodo());
+			String paramsOut = new Gson().toJson(params);
+			
+			HttpURLConnection conection = (HttpURLConnection) urlForGetRequest.openConnection();
+			conection.setDoOutput(true);
+			conection.setRequestMethod("POST");
+			conection.setRequestProperty("Content-Type", "application/json");
+			OutputStream os = conection.getOutputStream();
+			
+			os.write(paramsOut.getBytes());
+			os.flush();
+			os.close();
 
-		StringBuilder url = new StringBuilder(urlBoleta);
-		
-		URL urlForGetRequest = new URL(url.toString());
-		
-		ParamsBoleta params = new ParamsBoleta();
-		params.setIdCompania(idCompania);
-		params.setIdEmpleado(requestBoleta.getEmpleado());
-		params.setPeriodo(requestBoleta.getPeriodo());
-		String paramsOut = new Gson().toJson(params);
-		
-		HttpURLConnection conection = (HttpURLConnection) urlForGetRequest.openConnection();
-		conection.setDoOutput(true);
-		conection.setRequestMethod("POST");
-		conection.setRequestProperty("Content-Type", "application/json");
-		OutputStream os = conection.getOutputStream();
-		
-		os.write(paramsOut.getBytes());
-		os.flush();
-		os.close();
+			int responseCode = conection.getResponseCode();
 
-		int responseCode = conection.getResponseCode();
+			if (responseCode == HttpURLConnection.HTTP_OK) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(conection.getInputStream()));
+				StringBuffer responsePrint = new StringBuffer();
+				while ((readLine = in.readLine()) != null) {
+					responsePrint.append(readLine);
+				}
+				in.close();
 
-		if (responseCode == HttpURLConnection.HTTP_OK) {
-			BufferedReader in = new BufferedReader(new InputStreamReader(conection.getInputStream()));
-			StringBuffer responsePrint = new StringBuffer();
-			while ((readLine = in.readLine()) != null) {
-				responsePrint.append(readLine);
+				bodyResponse = responsePrint.toString();
+
+				Type founderListType = new TypeToken<List<BoletaModel>>() { }.getType();
+
+				List<BoletaModel> lstDetBoleta = new Gson().fromJson(bodyResponse, founderListType);
+
+				/**
+				 * GENERANDO BOLETA EN PDF 
+				 */
+				
+				JasperPrint materiReport = _boletaService.generarPDF(httpServletRequest, lstDetBoleta);
+				response.setContentType("application/x-pdf");
+				response.setHeader("Content-disposition", "attachment; filename=BOLETA_" +requestBoleta.getEmpleado() + "_" + requestBoleta.getPeriodo() + ".pdf");
+				JasperExportManager.exportReportToPdfStream(materiReport, response.getOutputStream());
+				
+				/**
+				 * GUARDANDO AUDITORIA
+				 */
+				
+				String jsonData = gson.toJson(requestBoleta);
+				auditoriaService.createAuditoria("002", "005", 0, "OK", BsonDocument.parse(jsonData));
 			}
-			in.close();
-
-			bodyResponse = responsePrint.toString();
-
-			Type founderListType = new TypeToken<List<BoletaModel>>() { }.getType();
-
-			List<BoletaModel> lstDetBoleta = new Gson().fromJson(bodyResponse, founderListType);
-
-			/**
-			 * GENERANDO BOLETA EN PDF 
-			 */
-			
-			JasperPrint materiReport = _boletaService.generarPDF(httpServletRequest, lstDetBoleta);
-			response.setContentType("application/x-pdf");
-			response.setHeader("Content-disposition", "attachment; filename=BOLETA_" +requestBoleta.getEmpleado() + "_" + requestBoleta.getPeriodo() + ".pdf");
-			JasperExportManager.exportReportToPdfStream(materiReport, response.getOutputStream());
-			
-			/**
-			 * GUARDANDO AUDITORIA
-			 */
-			Gson gson = new Gson();
+		} catch (Exception e) {
 			String jsonData = gson.toJson(requestBoleta);
-			auditoriaService.createAuditoria("002", "005", 0, BsonDocument.parse(jsonData));
+			auditoriaService.createAuditoria("002", "005", 99, "Error al obtener boleta: " + e.getMessage(), BsonDocument.parse(jsonData));
 		}
 	}
 }

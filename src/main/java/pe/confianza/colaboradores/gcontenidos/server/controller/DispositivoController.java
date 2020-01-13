@@ -36,7 +36,6 @@ public class DispositivoController {
 		
 		try {
 			Optional<Dispositivo> dispositivo = deviceService.findByUser(device.getUsuario());
-			System.out.println("Dispositivo: " + dispositivo.toString());
 			if (dispositivo == null || !dispositivo.isPresent()) {
 				devices.add(device);
 				responseStatus = deviceService.createDevice(devices);
