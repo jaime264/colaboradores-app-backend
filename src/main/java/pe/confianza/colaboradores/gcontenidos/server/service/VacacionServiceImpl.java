@@ -24,7 +24,7 @@ public class VacacionServiceImpl implements VacacionService {
 	@Autowired
 	private VacacionesDao vacacionesDao;
 	@Override
-	public ResponseStatus importExcel(XSSFSheet hojaExcel) {
+	public ResponseStatus importExcel(XSSFSheet hojaExcel, String fechaCorte) {
 
 		vacacionesDao.deleteAll();
 		Iterator<Row> rowIterator = hojaExcel.rowIterator();
@@ -58,8 +58,10 @@ public class VacacionServiceImpl implements VacacionService {
 					} else if (posicionCell == Constantes.POSICION_EXCEL.POSICION_FECHA_TRUNCOS) {
 						vacacion.setFechaDiasTruncos(cellDateToString(cell));
 					}
+					
 					posicionCell++;
 				}
+				vacacion.setFechaCorte(fechaCorte);
 				lstVacaciones.add(vacacion);
 			}
 			posicionCabecera++;

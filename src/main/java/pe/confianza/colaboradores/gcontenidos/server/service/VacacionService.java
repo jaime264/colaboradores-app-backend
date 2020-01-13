@@ -8,7 +8,7 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.Vacacion;
 
 public interface VacacionService {
 	
-	public ResponseStatus importExcel(XSSFSheet hojaExcel);
+	public ResponseStatus importExcel(XSSFSheet hojaExcel, String fechaCorte);
 
 	public Vacacion showVacationByUser(String codigoSpring);
 	

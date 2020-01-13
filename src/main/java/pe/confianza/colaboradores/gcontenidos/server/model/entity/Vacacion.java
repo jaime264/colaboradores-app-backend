@@ -19,8 +19,8 @@ public class Vacacion implements Serializable{
 	private String fechaDiasVencidos;
 	private double cantDiasTruncos;
 	private String fechaDiasTruncos;
-	
-	
+	private String fechaCorte;
+	private Auditoria logAuditoria;
 	
 
 	public ObjectId get_id() {
@@ -86,6 +86,25 @@ public class Vacacion implements Serializable{
 	public void setFechaDiasTruncos(String fechaDiasTruncos) {
 		this.fechaDiasTruncos = fechaDiasTruncos;
 	}
+
+	public String getFechaCorte() {
+		return fechaCorte;
+	}
+
+	public void setFechaCorte(String fechaCorte) {
+		this.fechaCorte = fechaCorte;
+	}
+	
+	public Auditoria getLogAuditoria() {
+		return logAuditoria;
+	}
+
+	public void setLogAuditoria(Auditoria logAuditoria) {
+		this.logAuditoria = logAuditoria;
+	}
+
+
+
 
 	private static final long serialVersionUID = 1L;	
 

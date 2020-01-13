@@ -6,12 +6,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,13 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
 
-import pe.confianza.colaboradores.gcontenidos.server.bean.Heading;
 import pe.confianza.colaboradores.gcontenidos.server.bean.Notification;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestNotification;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.service.NotificacionService;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = { "https://200.107.154.52:6020", "http://localhost", "http://localhost:8100", "http://localhost:4200", "http://172.20.9.12:7445" })
 public class NotificacionController {
 
 	@Value("${gcontenido.notificacion.url}")
@@ -40,10 +41,10 @@ public class NotificacionController {
 
 	@PostMapping("/notificacion/{id}")
 	public ResponseEntity<?> notificarPush(@PathVariable("id") Long idPublicacion,
-			@RequestBody List<Heading> headings) throws IOException {
+			@RequestBody RequestNotification requestNotification) throws IOException {
 
 		ResponseStatus responseStatus = null;
-		Notification notificacion = notificacionService.obtenerBodyNotificacion(idPublicacion, headings);
+		Notification notificacion = notificacionService.obtenerBodyNotificacion(idPublicacion, requestNotification);
 
 		System.out.println("Notificación Body: " + new Gson().toJson(notificacion));
 		StringBuilder url = new StringBuilder(urlNotificacion);

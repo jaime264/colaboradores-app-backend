@@ -1,13 +1,12 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.Data;
 import pe.confianza.colaboradores.gcontenidos.server.bean.Heading;
 import pe.confianza.colaboradores.gcontenidos.server.bean.Notification;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestNotification;
 
 @Service
 public class NotificacionServiceImpl implements NotificacionService {
@@ -16,13 +15,13 @@ public class NotificacionServiceImpl implements NotificacionService {
 	private String appId;
 
 	@Override
-	public Notification obtenerBodyNotificacion(Long idPublicacion, List<Heading> headings) {
-		String[] includedSegments = { "Active Users", "Inactive Users" };
+	public Notification obtenerBodyNotificacion(Long idPublicacion, RequestNotification requestNotification) {
+//		String[] includedSegments = { "Active Users", "Inactive Users" };
 
 		Heading heading = null;
 		Heading content = null;
 
-		for (Heading op : headings) {
+		for (Heading op : requestNotification.getHeadings()) {
 			if (heading == null) {
 				heading = new Heading();
 				heading.setEn(op.getEn());
@@ -36,7 +35,8 @@ public class NotificacionServiceImpl implements NotificacionService {
 
 		Notification notification = new Notification();
 		notification.setApp_id(appId);
-		notification.setIncluded_segments(includedSegments);
+//		notification.setIncluded_segments(includedSegments);
+		notification.setInclude_player_ids(requestNotification.getInclude_player_ids());
 		notification.setHeadings(heading);
 		notification.setContents(content);
 		
