@@ -37,17 +37,17 @@ public class EventosController {
 	public ResponseEntity<?> show(@RequestBody LogAuditoria logAuditoria) {
 		List<Evento> lstEventos = null;
 		Map<String, Object> response = new HashMap<>();
+		Gson gson = new Gson();
 		
 		try {
 			lstEventos = eventoService.listEventos();
-			Gson gson = new Gson();
 			String jsonData = gson.toJson(logAuditoria);
-			auditoriaService.createAuditoria("002", "009", 0, BsonDocument.parse(jsonData));
+			auditoriaService.createAuditoria("002", "009", 0, "OK" ,BsonDocument.parse(jsonData));
 		} catch(DataAccessException e) {
-			Gson gson = new Gson();
+			String mensaje = "Error al realizar la consulta en la base de datos";
 			String jsonData = gson.toJson(logAuditoria);
-			auditoriaService.createAuditoria("002", "009", 99, BsonDocument.parse(jsonData));
-			response.put("mensaje", "Error al realizar la consulta en la base de datos");
+			auditoriaService.createAuditoria("002", "009", 99, mensaje + ": " + e.getMessage(), BsonDocument.parse(jsonData));
+			response.put("mensaje", mensaje);
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

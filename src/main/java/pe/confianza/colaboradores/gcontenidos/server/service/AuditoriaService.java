@@ -4,6 +4,6 @@ import org.bson.BsonDocument;
 
 public interface AuditoriaService {
 	
-	void createAuditoria(String idAplicacion, String idProceso, Integer status, BsonDocument data);
+	void createAuditoria(String idAplicacion, String idProceso, Integer status, String msgSatus, BsonDocument data);
 
 }

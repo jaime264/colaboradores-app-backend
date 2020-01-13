@@ -24,7 +24,7 @@ import pe.confianza.colaboradores.gcontenidos.server.service.Nivel2Service;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = {"https://200.107.154.52:6020","http://localhost","http://localhost:8100","http://localhost:4200" , "http://172.20.9.12:7445"})
+@CrossOrigin(origins = {"https://200.107.154.52:6020","http://localhost","http://localhost:8100","http://localhost:4200", "http://172.20.9.12:7445"})
 public class Nivel2Controller {
 
 	@Autowired
@@ -45,7 +45,7 @@ public class Nivel2Controller {
 			logger.info("Nivel2Controller");
 			niv1 = _nivel1Service.findById(nivel1.getId());
 			
-			if(niv1 == null) {
+			if(niv1 == null || !niv1.isPresent()) {
 				response.put("mensaje", "nivel 1 no existe en la base de datos!");
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 			}else {

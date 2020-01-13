@@ -13,6 +13,7 @@ public class PublicacionUsuario implements Serializable {
 	private Long idPublicacion;
 	private String idUsuario;
 	private Integer idReaccion;
+	private Integer idReaccionAnterior;
 	
 	public ObjectId get_id() {
 		return _id;
@@ -44,6 +45,14 @@ public class PublicacionUsuario implements Serializable {
 
 	public void setIdReaccion(Integer idReaccion) {
 		this.idReaccion = idReaccion;
+	}
+
+	public Integer getIdReaccionAnterior() {
+		return idReaccionAnterior;
+	}
+
+	public void setIdReaccionAnterior(Integer idReaccionAnterior) {
+		this.idReaccionAnterior = idReaccionAnterior;
 	}
 
 	private static final long serialVersionUID = 1L;

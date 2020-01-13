@@ -45,7 +45,7 @@ public class Nivel3Controller {
 			logger.info("Nivel3Controller");
 			niv2 = _nivel2Service.findById(nivel2.getId());
 			
-			if(niv2 == null) {
+			if(niv2 == null || !niv2.isPresent()) {
 				logger.info("devuelve null");
 				response.put("mensaje", "nivel 2 no existe en la base de datos!");
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);

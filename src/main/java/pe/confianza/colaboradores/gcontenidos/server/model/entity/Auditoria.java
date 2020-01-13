@@ -20,6 +20,7 @@ public class Auditoria implements Serializable {
 	private String aplicacion;
 	private String proceso;
 	private Integer status;
+	private String msgStatus;
 	private BsonDocument datos;
 	private Date registro;
 	
@@ -58,6 +59,12 @@ public class Auditoria implements Serializable {
 	}
 	public void setRegistro(Date registro) {
 		this.registro = registro;
+	}
+	public String getMsgStatus() {
+		return msgStatus;
+	}
+	public void setMsgStatus(String msgStatus) {
+		this.msgStatus = msgStatus;
 	}
 	
 

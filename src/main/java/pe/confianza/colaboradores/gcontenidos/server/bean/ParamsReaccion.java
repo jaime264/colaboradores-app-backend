@@ -7,7 +7,7 @@ public class ParamsReaccion implements Serializable {
 	private Long idPublicacion;
 	private String usuario;
 	private Integer idReaccion;
-	private Integer activo;;
+	private Integer activo;
 	private LogAuditoria logAuditoria;
 
 	public Long getIdPublicacion() {

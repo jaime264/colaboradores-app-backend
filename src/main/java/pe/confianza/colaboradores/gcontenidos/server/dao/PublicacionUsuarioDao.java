@@ -11,7 +11,7 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.PublicacionUsu
 @Repository
 public interface PublicacionUsuarioDao extends MongoRepository<PublicacionUsuario, Long> {
 	
-	@Query(value="{'idPublicacion': ?0, 'idUsuario': ?1, 'idReaccion': {$gt: 0}}", fields="{ '_id' : 0}")
+	@Query(value="{'idPublicacion': ?0, 'idUsuario': ?1, 'idReaccion': {$gt: 0}}")
 	public List<PublicacionUsuario> findAllReaction(Long idpost, String user);
 	
 	@Query(value="{'idPublicacion': ?0, 'idUsuario': ?1}")

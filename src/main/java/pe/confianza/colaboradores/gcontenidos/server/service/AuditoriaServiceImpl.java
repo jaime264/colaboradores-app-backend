@@ -22,7 +22,7 @@ public class AuditoriaServiceImpl implements AuditoriaService {
 	private static Logger logger = LoggerFactory.getLogger(AuditoriaServiceImpl.class);
 
 	@Override
-	public void createAuditoria(String idAplicacion, String idProceso, Integer status, BsonDocument data) {
+	public void createAuditoria(String idAplicacion, String idProceso, Integer status, String msgStatus, BsonDocument data) {
 		List<Auditoria> auditoriaLog = new ArrayList<Auditoria>();
 		List<Auditoria> auditoriaOut = new ArrayList<Auditoria>();
 		try {
@@ -30,6 +30,7 @@ public class AuditoriaServiceImpl implements AuditoriaService {
 			log.setAplicacion(idAplicacion);
 			log.setProceso(idProceso);
 			log.setStatus(status);
+			log.setMsgStatus(msgStatus);
 			log.setDatos(data);
 			log.setRegistro(new Date());
 			auditoriaLog.add(log);

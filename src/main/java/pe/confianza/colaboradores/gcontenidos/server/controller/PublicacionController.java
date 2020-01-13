@@ -42,18 +42,27 @@ public class PublicacionController {
 	public ResponseEntity<?> show() {
 		List<Publicacion> lstPosts = null;
 		Map<String, Object> response = new HashMap<>();
+		Gson gson = new Gson();
 		
 		try {
 			lstPosts = postService.listPost();
 		} catch(DataAccessException e) {
+			String jsonData = gson.toJson("{}");
+			auditoriaService.createAuditoria("002", "008", 99,  e.getMessage(), BsonDocument.parse(jsonData));
 			response.put("mensaje", "Error al realizar la consulta en la base de datos");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		if(lstPosts == null) {
-			response.put("mensaje", "Publicaciones no existe en la base de datos!");
+			String mensaje = "Publicaciones no existen en la base de datos!";
+			String jsonData = gson.toJson("{}");
+			auditoriaService.createAuditoria("002", "008", 0, mensaje, BsonDocument.parse(jsonData));
+			response.put("mensaje", mensaje);
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		} else {
+			String jsonData = gson.toJson("{}");
+			auditoriaService.createAuditoria("002", "008", 0, "OK", BsonDocument.parse(jsonData));
 		}
 		
 		return new ResponseEntity<List<Publicacion>>(lstPosts, HttpStatus.OK);
@@ -63,24 +72,26 @@ public class PublicacionController {
 	public ResponseEntity<?> listPostsUser(@RequestBody Usuario user) {
 		List<Publicacion> lstPosts = null;
 		Map<String, Object> response = new HashMap<>();
-		
+		Gson gson = new Gson();
 		try {
 			lstPosts = postService.listPostUser(user.getUsuarioBT(), user.getUltimaPublicacion());
-			Gson gson = new Gson();
-			String jsonData = gson.toJson(user);
-			auditoriaService.createAuditoria("002", "008", 0, BsonDocument.parse(jsonData));
 		} catch(DataAccessException e) {
-			Gson gson = new Gson();
 			String jsonData = gson.toJson(user);
-			auditoriaService.createAuditoria("002", "008", 99, BsonDocument.parse(jsonData));
+			auditoriaService.createAuditoria("002", "008", 99,  e.getMessage(), BsonDocument.parse(jsonData));
 			response.put("mensaje", "Error al realizar la consulta en la base de datos");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		if(lstPosts == null) {
-			response.put("mensaje", "Publicaciones no existen en la base de datos!");
+			String mensaje = "Publicaciones no existen en la base de datos!";
+			String jsonData = gson.toJson(user);
+			auditoriaService.createAuditoria("002", "008", 0, mensaje, BsonDocument.parse(jsonData));
+			response.put("mensaje", mensaje);
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		} else {
+			String jsonData = gson.toJson(user);
+			auditoriaService.createAuditoria("002", "008", 0, "OK", BsonDocument.parse(jsonData));
 		}
 		
 		return new ResponseEntity<List<Publicacion>>(lstPosts, HttpStatus.OK);
@@ -90,24 +101,28 @@ public class PublicacionController {
 	public ResponseEntity<?> postId(@RequestBody ParamsPublicacion paramsPublicacion) {
 		Optional<Publicacion> publicacion = null;
 		Map<String, Object> response = new HashMap<>();
+		Gson gson = new Gson();
 		
 		try {
 			publicacion = postService.findByIdPostUser(paramsPublicacion.getIdPost(), paramsPublicacion.getUser());
-			Gson gson = new Gson();
-			String jsonData = gson.toJson(paramsPublicacion);
-			auditoriaService.createAuditoria("002", "008", 0, BsonDocument.parse(jsonData));
 		} catch(DataAccessException e) {
-			Gson gson = new Gson();
 			String jsonData = gson.toJson(paramsPublicacion);
-			auditoriaService.createAuditoria("002", "008", 99, BsonDocument.parse(jsonData));
+			auditoriaService.createAuditoria("002", "008", 99, e.getMessage(), BsonDocument.parse(jsonData));
 			response.put("mensaje", "Error al realizar la consulta en la base de datos");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		if(publicacion == null) {
-			response.put("mensaje", "Publicacion no existe en la base de datos!");
+		if(publicacion == null || !publicacion.isPresent()) {
+			String mensaje = "Publicacion no existe en la base de datos!";
+			String jsonData = gson.toJson(paramsPublicacion);
+			auditoriaService.createAuditoria("002", "008", 0, mensaje, BsonDocument.parse(jsonData));
+			response.put("mensaje", mensaje);
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		} else {
+			String jsonData = gson.toJson(paramsPublicacion);
+			auditoriaService.createAuditoria("002", "008", 0, "OK", BsonDocument.parse(jsonData));
+
 		}
 		
 		return new ResponseEntity<Optional<Publicacion>>(publicacion, HttpStatus.OK);
@@ -118,18 +133,23 @@ public class PublicacionController {
 		ResponseStatus responseStatus = null;
 		List<Publicacion> posts = new ArrayList<Publicacion>();
 		Map<String, Object> response = new HashMap<>();
+		Gson gson = new Gson();
 		
 		try {
 			posts.add(publicacion);
 			responseStatus = postService.createPost(posts);
-			Gson gson = new Gson();
-			String jsonData = gson.toJson(publicacion);
-			auditoriaService.createAuditoria("001", "003", 0, BsonDocument.parse(jsonData));
+			if (responseStatus.getCodeStatus() == 0) {
+				String jsonData = gson.toJson(publicacion);
+				auditoriaService.createAuditoria("001", "003", 0, "OK", BsonDocument.parse(jsonData));
+			} else {
+				String jsonData = gson.toJson(publicacion);
+				auditoriaService.createAuditoria("001", "003", 0, responseStatus.getMsgStatus(), BsonDocument.parse(jsonData));
+			}
 		} catch(DataAccessException e) {
-			Gson gson = new Gson();
+			String mensaje = "Error al registrar en la base de datos";
 			String jsonData = gson.toJson(publicacion);
-			auditoriaService.createAuditoria("001", "003", 99, BsonDocument.parse(jsonData));
-			response.put("mensaje", "Error al registrar en la base de datos");
+			auditoriaService.createAuditoria("001", "003", 99, mensaje + ": " + e.getMessage(), BsonDocument.parse(jsonData));
+			response.put("mensaje", mensaje);
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -141,17 +161,22 @@ public class PublicacionController {
 	public ResponseEntity<?> addReaccion(@RequestBody ParamsReaccion paramsReaccion) {
 		ResponseStatus responseStatus = null;
 		Map<String, Object> response = new HashMap<>();
+		Gson gson = new Gson();
 		
 		try {
 			responseStatus = postService.addReaccion(paramsReaccion);
-			Gson gson = new Gson();
-			String jsonData = gson.toJson(paramsReaccion);
-			auditoriaService.createAuditoria("002", "004", 0, BsonDocument.parse(jsonData));
+			if (responseStatus.getCodeStatus() == 0) {
+				String jsonData = gson.toJson(paramsReaccion);
+				auditoriaService.createAuditoria("002", "004", 0, "OK", BsonDocument.parse(jsonData));
+			} else {
+				String jsonData = gson.toJson(paramsReaccion);
+				auditoriaService.createAuditoria("002", "004", 0, responseStatus.getMsgStatus(), BsonDocument.parse(jsonData));
+			}
 		} catch(DataAccessException e) {
-			Gson gson = new Gson();
+			String mensaje = "Error al actualizar en la base de datos";
 			String jsonData = gson.toJson(paramsReaccion);
-			auditoriaService.createAuditoria("002", "004", 99, BsonDocument.parse(jsonData));
-			response.put("mensaje", "Error al actualizar en la base de datos");
+			auditoriaService.createAuditoria("002", "004", 99, mensaje + ": " + e.getMessage(), BsonDocument.parse(jsonData));
+			response.put("mensaje", mensaje);
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
