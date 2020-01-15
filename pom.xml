@@ -9,12 +9,12 @@
 		<version>2.2.1.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>pe.confianza.colaboradores.gcontenidos.server</groupId>
-	<artifactId>gestor-contenidos-server</artifactId>
+	<groupId>pe.confianza.colaboradores.app.backend</groupId>
+	<artifactId>colaboradores-app-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>gestor-contenidos-server</name>
-	<description>api rest para conectar con el gestor de contenidos
+	<name>colaboradores-app-backend</name>
+	<description>api rest para el app colaboradores
 	</description>
 
 	<properties>
