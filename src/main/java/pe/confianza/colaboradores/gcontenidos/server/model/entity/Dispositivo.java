@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection= "dispositivo")
@@ -16,9 +15,7 @@ public class Dispositivo implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id	private ObjectId _id;
-	@Indexed(unique = true, sparse = true, name = "user_id_idx")
 	private String usuario;
-	@Indexed(unique = true, sparse = true, name = "device_id_idx")
 	private String idDispositivo;
 	
 	public ObjectId get_id() {
