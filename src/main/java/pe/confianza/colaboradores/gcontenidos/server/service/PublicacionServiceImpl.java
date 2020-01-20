@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ReaccionPost;
@@ -198,10 +200,19 @@ public class PublicacionServiceImpl implements PublicacionService {
 	}
 	
 	@Override
-	public List<Publicacion> listPostUser(String user, Long lastPost) {
+	public List<Publicacion> listPostUser(String user, Long lastPost, Integer size, Boolean back) {
 		List<Publicacion> lstFinal = new ArrayList<Publicacion>();
+		List<Publicacion> lstFind = new ArrayList<Publicacion>();
+		if (!back) {
+			//List<Publicacion> lstFind = postDao.findAllUser(user, lastPost);
+			PageRequest request = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "fecha"));
+			lstFind = postDao.findAllUser(user, lastPost, request);
+		} else {
+			//List<Publicacion> lstFind = postDao.findAllUser(user, lastPost);
+			PageRequest request = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "fecha"));
+			lstFind = postDao.findAllUserBack(user, lastPost, request);
+		}
 		
-		List<Publicacion> lstFind = postDao.findAllUser(user, lastPost);
 		
 		if (lstFind.size() > 0) {
 			// Seteamos solo el usuario de busqueda

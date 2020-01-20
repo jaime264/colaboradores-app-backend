@@ -74,7 +74,7 @@ public class PublicacionController {
 		Map<String, Object> response = new HashMap<>();
 		Gson gson = new Gson();
 		try {
-			lstPosts = postService.listPostUser(user.getUsuarioBT(), user.getUltimaPublicacion());
+			lstPosts = postService.listPostUser(user.getUsuarioBT(), user.getUltimaPublicacion(), user.getPaginacion(), user.getHistoria());
 		} catch(DataAccessException e) {
 			String jsonData = gson.toJson(user);
 			auditoriaService.createAuditoria("002", "008", 99,  e.getMessage(), BsonDocument.parse(jsonData));

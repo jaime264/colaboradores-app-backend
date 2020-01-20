@@ -11,7 +11,7 @@ public interface PublicacionService {
 	
 	public List<Publicacion> listPost();
 	
-	public List<Publicacion> listPostUser(String user, Long lastPost);
+	public List<Publicacion> listPostUser(String user, Long lastPost, Integer size, Boolean back);
 	
 	public Optional<Publicacion> findByIdPost(Long id);
 	
