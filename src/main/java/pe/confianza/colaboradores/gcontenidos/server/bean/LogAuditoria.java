@@ -12,6 +12,7 @@ public class LogAuditoria implements Serializable {
 	private String usuario;
 	private String uid;
 	private String fecha;
+	private String ip;
 	private String hora;
 	private Double latitud;
 	private Double longitud;
@@ -51,6 +52,12 @@ public class LogAuditoria implements Serializable {
 	}
 	public void setUsuario(String usuario) {
 		this.usuario = usuario;
+	}
+	public String getIp() {
+		return ip;
+	}
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 
 }

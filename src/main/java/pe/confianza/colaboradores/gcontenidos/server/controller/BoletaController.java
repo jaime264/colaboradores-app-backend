@@ -1,14 +1,12 @@
 package pe.confianza.colaboradores.gcontenidos.server.controller;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Base64;
 
@@ -28,14 +26,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.lowagie.text.Document;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.pdf.PdfWriter;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import pe.confianza.colaboradores.gcontenidos.server.bean.CabeceraCTS;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsBoleta;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestBoleta;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
@@ -126,7 +119,7 @@ public class BoletaController {
 		}
 	}
 	
-	@RequestMapping("/boleta/text")
+	@RequestMapping("/boleta/base64")
 	public ResponseEntity<?> obtenerBoletaString(HttpServletRequest httpServletRequest, HttpServletResponse response,@RequestBody RequestBoleta requestBoleta
 			) throws IOException, JRException {
 		Gson gson = new Gson();

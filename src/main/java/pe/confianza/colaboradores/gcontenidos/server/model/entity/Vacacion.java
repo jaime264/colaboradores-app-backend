@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
+
 @Document(collection= "vacaciones")
 public class Vacacion implements Serializable{
 
@@ -20,7 +22,7 @@ public class Vacacion implements Serializable{
 	private double cantDiasTruncos;
 	private String fechaDiasTruncos;
 	private String fechaCorte;
-	private Auditoria logAuditoria;
+	private LogAuditoria logAuditoria;
 	
 
 	public ObjectId get_id() {
@@ -95,11 +97,11 @@ public class Vacacion implements Serializable{
 		this.fechaCorte = fechaCorte;
 	}
 	
-	public Auditoria getLogAuditoria() {
+	public LogAuditoria getLogAuditoria() {
 		return logAuditoria;
 	}
 
-	public void setLogAuditoria(Auditoria logAuditoria) {
+	public void setLogAuditoria(LogAuditoria logAuditoria) {
 		this.logAuditoria = logAuditoria;
 	}
 
