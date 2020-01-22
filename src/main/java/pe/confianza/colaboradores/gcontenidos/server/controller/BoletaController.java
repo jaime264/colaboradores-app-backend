@@ -170,8 +170,6 @@ public class BoletaController {
 				 */
 				
 				JasperPrint materiReport = _boletaService.generarPDF(httpServletRequest, lstDetBoleta);
-				response.setContentType("application/x-pdf");
-				response.setHeader("Content-disposition", "attachment; filename=BOLETA_" +requestBoleta.getEmpleado() + "_" + requestBoleta.getPeriodo() + ".pdf");
 				byte[] output =  JasperExportManager.exportReportToPdf(materiReport);
 				base64 = Base64.getEncoder().encodeToString(output);
 				responseStatus.setCodeStatus(0);
