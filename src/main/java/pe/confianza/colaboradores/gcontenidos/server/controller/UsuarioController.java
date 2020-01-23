@@ -65,6 +65,11 @@ public class UsuarioController {
 			if (entity != null) {
 				String result = EntityUtils.toString(entity);
 				responseVersion = gson.fromJson(result, ResponseJsonVersion.class);
+				String jsonData = gson.toJson(requestVersion);
+				auditoriaService.createAuditoria("002", "017", 0, "OK", BsonDocument.parse(jsonData));
+			} else {
+				String jsonData = gson.toJson(requestVersion);
+				auditoriaService.createAuditoria("002", "017", 99, "Error al obtener datos de versión", BsonDocument.parse(jsonData));
 			}
 		}
 		return new ResponseEntity<ResponseJsonVersion>(responseVersion, HttpStatus.OK);
@@ -74,7 +79,7 @@ public class UsuarioController {
 	public ResponseEntity<?> loginSucess(@RequestBody RequestStatus requestStatus) throws IOException {
 		Gson gson = new Gson();
 		String jsonData = gson.toJson(requestStatus);
-		auditoriaService.createAuditoria("001", "001", 0, "OK", BsonDocument.parse(jsonData));
+		auditoriaService.createAuditoria("002", "002", 0, "OK", BsonDocument.parse(jsonData));
 		return new ResponseEntity<RequestStatus>(requestStatus, HttpStatus.OK);
 	}
 	
@@ -82,7 +87,7 @@ public class UsuarioController {
 	public ResponseEntity<?> loginError(@RequestBody RequestStatus requestStatus) throws IOException {
 		Gson gson = new Gson();
 		String jsonData = gson.toJson(requestStatus);
-		auditoriaService.createAuditoria("001", "001", 99, "NOT OK", BsonDocument.parse(jsonData));
+		auditoriaService.createAuditoria("002", "002", 99, "NOT OK", BsonDocument.parse(jsonData));
 		return new ResponseEntity<RequestStatus>(requestStatus, HttpStatus.OK);
 
 	}
@@ -91,7 +96,7 @@ public class UsuarioController {
 	public ResponseEntity<?> logOut(@RequestBody RequestStatus requestStatus) throws IOException {
 		Gson gson = new Gson();
 		String jsonData = gson.toJson(requestStatus);
-		auditoriaService.createAuditoria("001", "012", 0, "OK", BsonDocument.parse(jsonData));
+		auditoriaService.createAuditoria("002", "014", 0, "OK", BsonDocument.parse(jsonData));
 		return new ResponseEntity<RequestStatus>(requestStatus, HttpStatus.OK);
 
 	}
