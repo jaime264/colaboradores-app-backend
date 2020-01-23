@@ -4,8 +4,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.bson.BsonDocument;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,6 +26,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestStatus;
+import pe.confianza.colaboradores.gcontenidos.server.bean.bt.RequestVersion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.bt.ResponseJsonVersion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.bt.ResponseVersion;
 import pe.confianza.colaboradores.gcontenidos.server.dao.UsuarioDao;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Usuario;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
@@ -24,14 +36,40 @@ import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = { "https://200.107.154.52:6020", "http://localhost", "http://localhost:8100", "http://localhost:4200", "http://172.20.9.12:7445" })
+@PropertySource(ignoreResourceNotFound = true, value = "classpath:gdc.properties")
 public class UsuarioController {
 
+
+	@Value("${rest.version.bt}")
+	private String versionBTUrl;
 	
 	@Autowired
 	private AuditoriaService auditoriaService;	
 	
 	@Autowired
 	private UsuarioDao usuarioDao;
+	
+	@PostMapping("/login/bt")
+	public ResponseEntity<?> loginBT(@RequestBody RequestVersion requestVersion) throws IOException {
+
+		HttpPost post = new HttpPost(versionBTUrl);
+		post.addHeader("content-type", "application/json");
+
+		Gson gson = new Gson();
+		StringEntity params = new StringEntity(gson.toJson(requestVersion));
+		post.setEntity(params);
+
+		ResponseJsonVersion responseVersion = null;
+		try (CloseableHttpClient httpClient = HttpClients.createDefault();
+				CloseableHttpResponse response = httpClient.execute(post)) {
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				String result = EntityUtils.toString(entity);
+				responseVersion = gson.fromJson(result, ResponseJsonVersion.class);
+			}
+		}
+		return new ResponseEntity<ResponseJsonVersion>(responseVersion, HttpStatus.OK);
+	}
 	
 	@PostMapping("/login/success")
 	public ResponseEntity<?> loginSucess(@RequestBody RequestStatus requestStatus) throws IOException {
