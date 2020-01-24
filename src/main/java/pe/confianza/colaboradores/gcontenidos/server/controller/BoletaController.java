@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.bson.BsonDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -40,6 +42,8 @@ import pe.confianza.colaboradores.gcontenidos.server.service.BoletaService;
 @RequestMapping("/api")
 @CrossOrigin(origins = { "https://200.107.154.52:6020", "http://localhost", "http://localhost:8100", "http://localhost:4200", "http://172.20.9.12:7445" })
 public class BoletaController {
+	
+	private static Logger logger = LoggerFactory.getLogger(BoletaController.class);
 
 	@Autowired
 	private BoletaService _boletaService;
@@ -126,6 +130,7 @@ public class BoletaController {
 		ResponseStatus responseStatus = new ResponseStatus();
 		String base64  ="";
 		try {
+			logger.info("Empleado: " + requestBoleta.getEmpleado());
 			String bodyResponse = StringUtils.EMPTY;
 			String readLine = StringUtils.EMPTY;
 
@@ -183,8 +188,12 @@ public class BoletaController {
 				auditoriaService.createAuditoria("002", "005", 0, "OK", BsonDocument.parse(jsonData));
 			}
 		} catch (Exception e) {
+			logger.error("Error al obtener boleta: " + e.getMessage());
 			String jsonData = gson.toJson(requestBoleta);
 			auditoriaService.createAuditoria("002", "005", 99, "Error al obtener boleta: " + e.getMessage(), BsonDocument.parse(jsonData));
+			responseStatus.setCodeStatus(99);
+			responseStatus.setMsgStatus("Error al obtener boleta: [" + e.getMessage() + "]");
+			responseStatus.setResultObj(null);
 		}
 		return new ResponseEntity<ResponseStatus>(responseStatus, HttpStatus.OK);
 	}
