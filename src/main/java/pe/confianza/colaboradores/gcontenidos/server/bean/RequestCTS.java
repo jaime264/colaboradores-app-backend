@@ -6,6 +6,7 @@ public class RequestCTS implements Serializable{
 	private int anio;
 	private Long idEmpleado;
 	private int secuencia;
+	private LogAuditoria logAuditoria;
 	
 	public int getAnio() {
 		return anio;
@@ -25,6 +26,13 @@ public class RequestCTS implements Serializable{
 	}
 	public void setSecuencia(int secuencia) {
 		this.secuencia = secuencia;
+	}
+
+	public LogAuditoria getLogAuditoria() {
+		return logAuditoria;
+	}
+	public void setLogAuditoria(LogAuditoria logAuditoria) {
+		this.logAuditoria = logAuditoria;
 	}
 
 	/**

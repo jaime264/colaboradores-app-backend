@@ -12,8 +12,9 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.bson.BsonDocument;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -27,14 +28,16 @@ import com.google.gson.reflect.TypeToken;
 import pe.confianza.colaboradores.gcontenidos.server.bean.CabeceraCTS;
 import pe.confianza.colaboradores.gcontenidos.server.bean.DetalleCTS;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCTS;
+import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = { "https://200.107.154.52:6020", "http://localhost", "http://localhost:8100",
 		"http://localhost:4200", "http://172.20.9.12:7445" })
-@PropertySource(ignoreResourceNotFound = true, value = "classpath:gdc.properties")
 public class CTSController {
-
+	
+	@Autowired
+	private AuditoriaService auditoriaService;
 
 	@Value("${rest.ctscab.url}")
 	private String ctscabUrl;
@@ -61,6 +64,11 @@ public class CTSController {
 				String result = EntityUtils.toString(entity);
 				Type listType = new TypeToken<ArrayList<CabeceraCTS>>() { }.getType();
 				listaCabecera = gson.fromJson(result, listType);
+				String jsonData = gson.toJson(request);
+				auditoriaService.createAuditoria("002", "007", 0, "OK", BsonDocument.parse(jsonData));
+			} else {
+				String jsonData = gson.toJson(request);
+				auditoriaService.createAuditoria("002", "007", 99, "Error al obtener datos de cabecera CTS", BsonDocument.parse(jsonData));
 			}
 		}
 		return new ResponseEntity<List<CabeceraCTS>>(listaCabecera, HttpStatus.OK);
@@ -85,6 +93,11 @@ public class CTSController {
 			if (entity != null) {
 				String result = EntityUtils.toString(entity);
 				detalleCTSOut = gson.fromJson(result, DetalleCTS.class);
+				String jsonData = gson.toJson(request);
+				auditoriaService.createAuditoria("002", "007", 0, "OK", BsonDocument.parse(jsonData));
+			} else {
+				String jsonData = gson.toJson(request);
+				auditoriaService.createAuditoria("002", "007", 99, "Error al obtener datos de detalle CTS", BsonDocument.parse(jsonData));
 			}
 		}
 		return new ResponseEntity<DetalleCTS>(detalleCTSOut, HttpStatus.OK);

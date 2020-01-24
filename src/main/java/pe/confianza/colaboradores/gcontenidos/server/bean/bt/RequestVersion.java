@@ -2,6 +2,8 @@ package pe.confianza.colaboradores.gcontenidos.server.bean.bt;
 
 import java.io.Serializable;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
+
 public class RequestVersion implements Serializable{	
 	private String aplicativo;
 	private String usuario;
@@ -9,8 +11,7 @@ public class RequestVersion implements Serializable{
 	private String imei;
 	private String nromovil;
 	private AuditoriaBT auditoria;
-	
-	
+	private LogAuditoria logAuditoria;
 	
 	public String getAplicativo() {
 		return aplicativo;
@@ -80,6 +81,18 @@ public class RequestVersion implements Serializable{
 
 	public void setAuditoria(AuditoriaBT auditoria) {
 		this.auditoria = auditoria;
+	}
+
+
+
+	public LogAuditoria getLogAuditoria() {
+		return logAuditoria;
+	}
+
+
+
+	public void setLogAuditoria(LogAuditoria logAuditoria) {
+		this.logAuditoria = logAuditoria;
 	}
 
 

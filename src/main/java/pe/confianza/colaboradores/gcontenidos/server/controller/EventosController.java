@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
 
-import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestEvento;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Evento;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.EventoService;
@@ -34,7 +34,7 @@ public class EventosController {
 	private AuditoriaService auditoriaService;
 	
 	@PostMapping("/eventos/list")
-	public ResponseEntity<?> show(@RequestBody LogAuditoria logAuditoria) {
+	public ResponseEntity<?> show(@RequestBody RequestEvento requestEvento) {
 		List<Evento> lstEventos = null;
 		Map<String, Object> response = new HashMap<>();
 		Gson gson = new Gson();
@@ -43,7 +43,7 @@ public class EventosController {
 			lstEventos = eventoService.listEventos();
 		} catch(DataAccessException e) {
 			String mensaje = "Error al realizar la consulta en la base de datos";
-			String jsonData = gson.toJson(logAuditoria);
+			String jsonData = gson.toJson(requestEvento);
 			auditoriaService.createAuditoria("002", "009", 99, mensaje + ": " + e.getMessage(), BsonDocument.parse(jsonData));
 			response.put("mensaje", mensaje);
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
@@ -52,12 +52,12 @@ public class EventosController {
 		
 		if(lstEventos == null) {
 			String mensaje = "Eventos no existen en la base de datos!";
-			String jsonData = gson.toJson(logAuditoria);
+			String jsonData = gson.toJson(requestEvento);
 			auditoriaService.createAuditoria("002", "009", 0, mensaje ,BsonDocument.parse(jsonData));
 			response.put("mensaje", mensaje);
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		} else {
-			String jsonData = gson.toJson(logAuditoria);
+			String jsonData = gson.toJson(requestEvento);
 			auditoriaService.createAuditoria("002", "009", 0, "OK" ,BsonDocument.parse(jsonData));
 		}
 		
