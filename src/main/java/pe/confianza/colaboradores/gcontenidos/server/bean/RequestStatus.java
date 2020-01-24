@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class RequestStatus implements Serializable {
 		
 	private static final long serialVersionUID = 1L;
+	private String usuario;
 	private Integer codeStatus;
 	private String msgStatus;
 	private LogAuditoria logAuditoria;
@@ -26,6 +27,12 @@ public class RequestStatus implements Serializable {
 	}
 	public void setLogAuditoria(LogAuditoria logAuditoria) {
 		this.logAuditoria = logAuditoria;
+	}
+	public String getUsuario() {
+		return usuario;
+	}
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
 	}
 		
 }

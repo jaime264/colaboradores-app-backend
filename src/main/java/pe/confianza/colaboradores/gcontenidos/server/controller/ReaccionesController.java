@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.BsonDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -27,6 +28,8 @@ import pe.confianza.colaboradores.gcontenidos.server.service.ReaccionService;
 @CrossOrigin(origins = {"https://200.107.154.52:6020","http://localhost","http://localhost:8100","http://localhost:4200", "http://172.20.9.12:7445"})
 public class ReaccionesController {
 	
+	private static Logger logger = LoggerFactory.getLogger(BoletaController.class);
+	
 	@Autowired
 	private ReaccionService reaccionService;
 	
@@ -41,19 +44,20 @@ public class ReaccionesController {
 		
 		try {
 			lstReacciones = reaccionService.listReacciones();
-		} catch(DataAccessException e) {
+		} catch(Exception e) {
 			String mensaje = "Error al realizar la consulta en la base de datos";
 			String jsonData = gson.toJson(requestReaccion);
+			logger.error(mensaje, e.getMessage());
 			auditoriaService.createAuditoria("002", "012", 99, mensaje + ": " + e.getMessage(),BsonDocument.parse(jsonData));
 			response.put("mensaje", mensaje);
-			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			response.put("error", e.getMessage());
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		if(lstReacciones == null) {
 			String mensaje =  "Reacciones no existen en la base de datos!";
 			String jsonData = gson.toJson(requestReaccion);
-			auditoriaService.createAuditoria("002", "012", 0, mensaje, BsonDocument.parse(jsonData));
+			auditoriaService.createAuditoria("002", "012", 99, mensaje, BsonDocument.parse(jsonData));
 			response.put("mensaje", mensaje);
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		} else {

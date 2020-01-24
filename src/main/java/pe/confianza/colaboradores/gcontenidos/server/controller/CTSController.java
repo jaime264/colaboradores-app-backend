@@ -13,6 +13,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.bson.BsonDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -36,6 +38,8 @@ import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 		"http://localhost:4200", "http://172.20.9.12:7445" })
 public class CTSController {
 	
+	private static Logger logger = LoggerFactory.getLogger(CTSController.class);
+	
 	@Autowired
 	private AuditoriaService auditoriaService;
 
@@ -54,7 +58,7 @@ public class CTSController {
 		Gson gson = new Gson();
 		StringEntity params = new StringEntity(gson.toJson(request));
 		post.setEntity(params);
-
+		logger.info("Empleado: " + request.getAnio());
 		List<CabeceraCTS> listaCabecera = new ArrayList<CabeceraCTS>();
 		try (CloseableHttpClient httpClient = HttpClients.createDefault();
 				CloseableHttpResponse response = httpClient.execute(post)) {
@@ -68,8 +72,12 @@ public class CTSController {
 				auditoriaService.createAuditoria("002", "007", 0, "OK", BsonDocument.parse(jsonData));
 			} else {
 				String jsonData = gson.toJson(request);
-				auditoriaService.createAuditoria("002", "007", 99, "Error al obtener datos de cabecera CTS", BsonDocument.parse(jsonData));
+				auditoriaService.createAuditoria("002", "007", 99, "Error al obtener datos de cabecera CTS: null", BsonDocument.parse(jsonData));
 			}
+		} catch (Exception e) {
+			logger.error("Error al obtener datos de cabecera CTS: " + e.getMessage());
+			String jsonData = gson.toJson(request);
+			auditoriaService.createAuditoria("002", "007", 99, "Error al obtener datos de cabecera CTS: " + e.getMessage(), BsonDocument.parse(jsonData));
 		}
 		return new ResponseEntity<List<CabeceraCTS>>(listaCabecera, HttpStatus.OK);
 	}
@@ -80,7 +88,7 @@ public class CTSController {
 		
 		HttpPost post = new HttpPost(ctsdetUrl);
 		post.addHeader("content-type", "application/json");
-
+		logger.info("Empleado: " + request.getIdEmpleado());
 		Gson gson = new Gson();
 		StringEntity params = new StringEntity(gson.toJson(request));
 		post.setEntity(params);
@@ -97,8 +105,12 @@ public class CTSController {
 				auditoriaService.createAuditoria("002", "007", 0, "OK", BsonDocument.parse(jsonData));
 			} else {
 				String jsonData = gson.toJson(request);
-				auditoriaService.createAuditoria("002", "007", 99, "Error al obtener datos de detalle CTS", BsonDocument.parse(jsonData));
+				auditoriaService.createAuditoria("002", "007", 99, "Error al obtener datos de detalle CTS: null", BsonDocument.parse(jsonData));
 			}
+		} catch (Exception e) {
+			logger.error("Error al obtener datos de detalle CTS: " + e.getMessage());
+			String jsonData = gson.toJson(request);
+			auditoriaService.createAuditoria("002", "007", 99, "Error al obtener datos de detalle CTS: " + e.getMessage(), BsonDocument.parse(jsonData));
 		}
 		return new ResponseEntity<DetalleCTS>(detalleCTSOut, HttpStatus.OK);
 	}

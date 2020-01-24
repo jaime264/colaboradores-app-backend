@@ -12,6 +12,10 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.bson.BsonDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +29,7 @@ import com.google.gson.reflect.TypeToken;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.bean.InstruccionAcademica;
+import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 
 @RestController
 @RequestMapping("/api")
@@ -32,7 +37,11 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.InstruccionAcademica;
 		"http://localhost:4200", "http://172.20.9.12:7445" })
 public class EmpleadoController {
 
-
+	private static Logger logger = LoggerFactory.getLogger(EmpleadoController.class);
+	
+	@Autowired
+	private AuditoriaService auditoriaService;
+	
 	@Value("${rest.perfilEmpleado.url}")
 	private String perfilEmpleadoUrl;
 	
@@ -48,7 +57,7 @@ public class EmpleadoController {
 		Gson gson = new Gson();
 		StringEntity params = new StringEntity(gson.toJson(empleado));
 		post.setEntity(params);
-		
+		logger.info("Empleado: " + empleado.getIdEmpleado());
 		Empleado empleadoOut = new Empleado();
 		try (CloseableHttpClient httpClient = HttpClients.createDefault();
 				CloseableHttpResponse response = httpClient.execute(post)) {
@@ -57,7 +66,15 @@ public class EmpleadoController {
 			if (entity != null) {
 				String result = EntityUtils.toString(entity);
 				empleadoOut = gson.fromJson(result, Empleado.class);
+			} else {
+				logger.error("Error al obtener datos de Perfil: null");
+				String jsonData = gson.toJson(empleado);
+				auditoriaService.createAuditoria("002", "010", 99, "Error al obtener datos de Perfil: null", BsonDocument.parse(jsonData));
 			}
+		} catch (Exception e) {
+			logger.error("Error al obtener datos de Perfil: " + e.getMessage());
+			String jsonData = gson.toJson(empleado);
+			auditoriaService.createAuditoria("002", "010", 99, "Error al obtener datos de Perfil: " + e.getMessage(), BsonDocument.parse(jsonData));
 		}
 		return new ResponseEntity<Empleado>(empleadoOut, HttpStatus.OK);
 	}
@@ -71,7 +88,7 @@ public class EmpleadoController {
 		Gson gson = new Gson();
 		StringEntity params = new StringEntity(gson.toJson(empleado));
 		post.setEntity(params);
-		
+		logger.info("Empleado: " + empleado.getIdEmpleado());
 		List<InstruccionAcademica> instruccionAcademicaOut = new ArrayList<InstruccionAcademica>();
 		try (CloseableHttpClient httpClient = HttpClients.createDefault();
 				CloseableHttpResponse response = httpClient.execute(post)) {
@@ -81,7 +98,15 @@ public class EmpleadoController {
 				String result = EntityUtils.toString(entity);
 				Type listType = new TypeToken<ArrayList<InstruccionAcademica>>() { }.getType();
 				instruccionAcademicaOut = gson.fromJson(result, listType);
+			} else {
+				logger.error("Error al obtener datos de Instrucción Académica: null");
+				String jsonData = gson.toJson(empleado);
+				auditoriaService.createAuditoria("002", "011", 99, "Error al obtener datos de Instrucción Académica: null", BsonDocument.parse(jsonData));
 			}
+		} catch (Exception e) {
+			logger.error("Error al obtener datos de Instruccion Academica: " + e.getMessage());
+			String jsonData = gson.toJson(empleado);
+			auditoriaService.createAuditoria("002", "011", 99, "Error al obtener datos de Instruccion Academica: " + e.getMessage(), BsonDocument.parse(jsonData));
 		}
 		return new ResponseEntity<List<InstruccionAcademica>>(instruccionAcademicaOut, HttpStatus.OK);
 	}

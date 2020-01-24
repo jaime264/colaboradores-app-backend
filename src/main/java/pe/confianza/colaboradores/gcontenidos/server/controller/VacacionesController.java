@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.bson.BsonDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +30,8 @@ import pe.confianza.colaboradores.gcontenidos.server.service.VacacionService;
 @CrossOrigin(origins = { "https://200.107.154.52:6020", "http://localhost", "http://localhost:8100",
 		"http://localhost:4200", "http://172.20.9.12:7445" })
 public class VacacionesController {
+	
+	private static Logger logger = LoggerFactory.getLogger(VacacionesController.class);
 
 	@Autowired
 	private VacacionService vacacionService;
@@ -48,20 +52,23 @@ public class VacacionesController {
 	
 	@PostMapping("/vacaciones")
 	public Vacacion showVacationByUser(@RequestBody Vacacion vacacion) throws IOException, JRException {
-		Vacacion vacacionOut =  vacacionService.showVacationByUser(vacacion.getCodigoSpring());
-
+		Vacacion vacacionOut = null;
+		logger.info("Empleado: " + vacacion.getCodigoSpring());
 		Gson gson = new Gson();
 		String jsonData = gson.toJson(vacacion);
-		if(vacacionOut != null) {
-			auditoriaService.createAuditoria("002", "006", 0, "OK", BsonDocument.parse(jsonData));
-		}else {
-			auditoriaService.createAuditoria("002", "006", 99, "Not Ok", BsonDocument.parse(jsonData));
+		try {
+			vacacionOut =  vacacionService.showVacationByUser(vacacion.getCodigoSpring());
+			if(vacacionOut != null) {
+				auditoriaService.createAuditoria("002", "006", 0, "OK", BsonDocument.parse(jsonData));
+			}else {
+				logger.error("Error al obtener datos de vacaciones: null");
+				auditoriaService.createAuditoria("002", "006", 99, "Error al obtener datos de vacaciones: null", BsonDocument.parse(jsonData));
+			}
+		} catch(Exception e) {
+			logger.error("Error al obtener datos de vacaciones: " + e.getMessage());
+			auditoriaService.createAuditoria("002", "006", 99, "Error al obtener datos de vacaciones: " + e.getMessage(), BsonDocument.parse(jsonData));
 		}
-		
 		return vacacionOut;
 	}
 	
-
-	
-
 }
