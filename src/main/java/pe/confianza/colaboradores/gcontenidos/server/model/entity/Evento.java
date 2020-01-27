@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection= "eventos")
@@ -16,7 +15,6 @@ public class Evento implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id	private ObjectId _id;
-	@Indexed(unique = true, sparse = true, name = "evento_id_idx")
 	private Long id;
 	private String titulo;
 	private String detalle;

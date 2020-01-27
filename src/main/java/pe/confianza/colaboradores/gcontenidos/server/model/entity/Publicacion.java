@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.Imagen;
@@ -18,7 +17,6 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.Video;
 public class Publicacion implements Serializable{
 		
 	@Id private ObjectId _id;
-	@Indexed(unique = true, sparse = true, name = "post_id_idx")
 	private Long id;
 	private String titulo;
 	private Long idnivel1;

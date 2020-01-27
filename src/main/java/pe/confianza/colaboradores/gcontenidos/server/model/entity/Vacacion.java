@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
@@ -13,7 +12,6 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
 public class Vacacion implements Serializable{
 
 	@Id	private ObjectId _id;
-	@Indexed(unique = true, sparse = true, name = "vacacion_id_idx")
 	private Integer id;
 	private String codigoSpring;
 	private String usuarioBT;

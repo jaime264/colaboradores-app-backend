@@ -34,8 +34,7 @@ import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = { "https://200.107.154.52:6020", "http://localhost", "http://localhost:8100",
-		"http://localhost:4200", "http://172.20.9.12:7445" })
+@CrossOrigin(origins = { "https://200.107.154.52:6020", "http://localhost", "http://localhost:8100", "http://localhost:4200", "http://172.20.9.12:7445", "http://172.20.10.13:7445" })
 public class CTSController {
 	
 	private static Logger logger = LoggerFactory.getLogger(CTSController.class);
@@ -58,7 +57,7 @@ public class CTSController {
 		Gson gson = new Gson();
 		StringEntity params = new StringEntity(gson.toJson(request));
 		post.setEntity(params);
-		logger.info("Empleado: " + request.getAnio());
+		logger.info("Año: " + request.getAnio());
 		List<CabeceraCTS> listaCabecera = new ArrayList<CabeceraCTS>();
 		try (CloseableHttpClient httpClient = HttpClients.createDefault();
 				CloseableHttpResponse response = httpClient.execute(post)) {

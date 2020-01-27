@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -12,7 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Nivel2 implements Serializable{
 
 	@Id private ObjectId _id;
-	@Indexed(unique = true, sparse = true, name = "nivel2_id_idx")
 	private Long id;
 	private String descripcion;
 	@DBRef(db = "nivel1", lazy = true) 

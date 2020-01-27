@@ -4,14 +4,12 @@ import java.io.Serializable;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection= "usuarios")
 public class Usuario implements Serializable{
 
 	@Id	private ObjectId _id;
-	@Indexed(unique = true, sparse = true, name = "usuarios_id_idx")
 	private Integer id;
 	private String usuarioBT;
 	private String aplicacion;
