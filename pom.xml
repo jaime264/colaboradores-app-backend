@@ -12,7 +12,7 @@
 	<groupId>pe.confianza.colaboradores.app.backend</groupId>
 	<artifactId>colaboradores-app-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>colaboradores-app-backend</name>
 	<description>api rest para el app colaboradores
 	</description>

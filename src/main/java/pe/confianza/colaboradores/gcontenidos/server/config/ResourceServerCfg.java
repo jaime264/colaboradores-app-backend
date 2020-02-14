@@ -15,11 +15,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
-import org.springframework.security.oauth2.provider.token.UserAuthenticationConverter;
 
 @Configuration
 @ConditionalOnProperty(prefix = "security.basic", name = "enabled", havingValue = "true", matchIfMissing = true)
@@ -86,22 +83,9 @@ public class ResourceServerCfg extends ResourceServerConfigurerAdapter {
 			http.headers().frameOptions().disable();
 		}
 	}
-	
-	@Bean
-	public UserAuthenticationConverter userAuthenticationConverter() {
-		return new CustomerAuthenticationConverter();
-	}
-
-	@Bean
-	public AccessTokenConverter accessTokenConverter() {
-		DefaultAccessTokenConverter datc = new DefaultAccessTokenConverter();
-		datc.setUserTokenConverter(userAuthenticationConverter());
-		return datc;
-	}
 
 	@Override
 	public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-		tokenServices.setAccessTokenConverter(accessTokenConverter());
 		resources.resourceId("portal");
 	}
 
