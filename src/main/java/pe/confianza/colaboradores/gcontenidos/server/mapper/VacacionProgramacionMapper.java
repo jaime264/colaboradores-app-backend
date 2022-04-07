@@ -1,22 +1,37 @@
 package pe.confianza.colaboradores.gcontenidos.server.mapper;
 
-import javax.annotation.PostConstruct;
+import java.util.concurrent.TimeUnit;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.VacacionProgramacion;
 
-@Component
 public class VacacionProgramacionMapper {
 	
-	@Autowired
-	private ModelMapper modelMapper;
+	public static VacacionProgramacion convert(final RequestProgramacionVacacion source) {
+		VacacionProgramacion destination = new VacacionProgramacion();
+		destination.setCodigoSpring(source.getCodigoSpring());
+		destination.setCodigoSpring(source.getCodigoSpring());
+		destination.setUsuarioBT(source.getUsuarioBT());
+		destination.setFechaInicio(source.getFechaInicio());
+		destination.setFechaFin(source.getFechaFin());
+		return destination;
+	}
 	
-	@PostConstruct
-    public void init(){
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-    }
+	public static ResponseProgramacionVacacion convert(final VacacionProgramacion source) {
+		ResponseProgramacionVacacion destination = new ResponseProgramacionVacacion();
+		destination.setId(source.getId());
+		destination.setCodigoSpring(source.getCodigoSpring());
+		destination.setUsuarioBT(source.getUsuarioBT());
+		destination.setFechaInicio(source.getFechaInicio());
+		destination.setFechaFin(source.getFechaFin());
+		destination.setIdEstado(source.getEstado().id);
+		destination.setDescripcionEstado(source.getEstado().descripcion);
+		destination.setDias((int)(TimeUnit.DAYS.convert(source.getFechaFin().getTime() - source.getFechaInicio().getTime(), TimeUnit.MILLISECONDS)));
+		return destination;
+	}
+	
+	
 
 	
 }

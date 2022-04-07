@@ -9,8 +9,8 @@ public class Constantes {
 	public static final String DATA_OK = "OK";
 	public static final String DATA_EMPTY = "No hay data para esta consulta";
 	
-	public final static String FORMATO_FECHA = "yyyy-MM-dd";
-	public final static String FORMATO_FECHA_HORA = "yyyy-MM-dd HH:mm:ss";
+	public final static String FORMATO_FECHA = "dd/MM/yyyy";
+	public final static String FORMATO_FECHA_HORA = "dd/MM/yyyy HH:mm:ss";
 	public final static String FORMATO_FECHA_ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
 	public class POSICION_EXCEL {

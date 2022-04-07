@@ -26,9 +26,6 @@ public class VacacionProgramacion implements Serializable{
 	private LogAuditoria logAuditoria;
 	
 	@Transient
-	private int dias;
-	
-	@Transient
 	private EstadoVacacion estado;
 
 	public ObjectId get_id() {
@@ -85,14 +82,6 @@ public class VacacionProgramacion implements Serializable{
 
 	public void setLogAuditoria(LogAuditoria logAuditoria) {
 		this.logAuditoria = logAuditoria;
-	}
-
-	public int getDias() {
-		return dias;
-	}
-
-	public void setDias(int dias) {
-		this.dias = dias;
 	}
 
 	public EstadoVacacion getEstado() {

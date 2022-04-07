@@ -2,12 +2,18 @@ package pe.confianza.colaboradores.gcontenidos.server.bean;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
+
 public class ResponseProgramacionVacacion {
 
 	private long id;
 	private String codigoSpring;
 	private String usuarioBT;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
 	private Date fechaInicio;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
 	private Date fechaFin;
 	private int dias;
 	private int idEstado;

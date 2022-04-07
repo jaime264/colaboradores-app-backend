@@ -25,9 +25,9 @@ import com.google.gson.Gson;
 
 import net.sf.jasperreports.engine.JRException;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Vacacion;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionService;
@@ -89,7 +89,7 @@ public class VacacionesController {
 		String jsonData = gson.toJson(programacionRequest);
 		ResponseStatus responseStatus = new ResponseStatus();;
 		try {
-			VacacionProgramacion programacion = vacacionProgramacionService.registroSolicitud(programacionRequest);
+			ResponseProgramacionVacacion programacion = vacacionProgramacionService.registroSolicitud(programacionRequest);
 			auditoriaService.createAuditoria("002", "006", Constantes.COD_OK, Constantes.OK, BsonDocument.parse(jsonData));
 			responseStatus.setCodeStatus(Constantes.COD_OK);
 			responseStatus.setMsgStatus(Constantes.OK);

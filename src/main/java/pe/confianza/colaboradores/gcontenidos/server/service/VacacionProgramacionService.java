@@ -1,11 +1,11 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 
 public interface VacacionProgramacionService {
 	
-	VacacionProgramacion registroSolicitud(RequestProgramacionVacacion programacion);
+	ResponseProgramacionVacacion registroSolicitud(RequestProgramacionVacacion programacion);
 	
 	
 }
