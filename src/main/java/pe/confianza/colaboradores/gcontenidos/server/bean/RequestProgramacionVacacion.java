@@ -20,11 +20,11 @@ public class RequestProgramacionVacacion {
 	private Date fechaFin;
 	
 	@NotNull
-	@Size(min = 1)
+	@Size(min = 1, message = "Debe ingresar un usuario correcto")
 	private String usuarioBT;
 	
-	@NotNull
-	@Size(min = 1)
+	@NotNull(message = "Debe ingresar el codigoSpring")
+	@Size(min = 1, message = "Debe ingresar un codigoPring correcto")
 	private String codigoSpring;
 	
 	private LogAuditoria logAuditoria;
