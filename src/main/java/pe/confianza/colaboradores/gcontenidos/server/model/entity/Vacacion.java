@@ -22,7 +22,6 @@ public class Vacacion implements Serializable{
 	private String fechaCorte;
 	private LogAuditoria logAuditoria;
 	
-
 	public ObjectId get_id() {
 		return _id;
 	}
