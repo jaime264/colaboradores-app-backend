@@ -1,12 +1,16 @@
 package pe.confianza.colaboradores.gcontenidos.server.model.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
+import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 
 @Document(collection= "vacaciones")
 public class Vacacion implements Serializable{
@@ -16,12 +20,50 @@ public class Vacacion implements Serializable{
 	private String codigoSpring;
 	private String usuarioBT;
 	private double cantDiasVencidos;
-	private String fechaDiasVencidos;
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
+	private Date fechaDiasVencidos;
 	private double cantDiasTruncos;
-	private String fechaDiasTruncos;
-	private String fechaCorte;
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
+	private Date fechaDiasTruncos;
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
+	private Date fechaCorte;
 	private LogAuditoria logAuditoria;
 	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
+	private Date fechaIngreso;
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
+	private Date fechaFinContrato;
+	private double metaAnualVacaciones;
+	
+	
+	public Date getFechaIngreso() {
+		return fechaIngreso;
+	}
+
+	public void setFechaIngreso(Date fechaIngreso) {
+		this.fechaIngreso = fechaIngreso;
+	}
+
+	public Date getFechaFinContrato() {
+		return fechaFinContrato;
+	}
+
+	public void setFechaFinContrato(Date fechaFinContrato) {
+		this.fechaFinContrato = fechaFinContrato;
+	}
+
+	public double getMetaAnualVacaciones() {
+		return metaAnualVacaciones;
+	}
+
+	public void setMetaAnualVacaciones(double metaAnualVacaciones) {
+		this.metaAnualVacaciones = metaAnualVacaciones;
+	}
+
 	public ObjectId get_id() {
 		return _id;
 	}
@@ -62,11 +104,11 @@ public class Vacacion implements Serializable{
 		this.cantDiasVencidos = cantDiasVencidos;
 	}
 
-	public String getFechaDiasVencidos() {
+	public Date getFechaDiasVencidos() {
 		return fechaDiasVencidos;
 	}
 
-	public void setFechaDiasVencidos(String fechaDiasVencidos) {
+	public void setFechaDiasVencidos(Date fechaDiasVencidos) {
 		this.fechaDiasVencidos = fechaDiasVencidos;
 	}
 
@@ -78,19 +120,19 @@ public class Vacacion implements Serializable{
 		this.cantDiasTruncos = cantDiasTruncos;
 	}
 
-	public String getFechaDiasTruncos() {
+	public Date getFechaDiasTruncos() {
 		return fechaDiasTruncos;
 	}
 
-	public void setFechaDiasTruncos(String fechaDiasTruncos) {
+	public void setFechaDiasTruncos(Date fechaDiasTruncos) {
 		this.fechaDiasTruncos = fechaDiasTruncos;
 	}
 
-	public String getFechaCorte() {
+	public Date getFechaCorte() {
 		return fechaCorte;
 	}
 
-	public void setFechaCorte(String fechaCorte) {
+	public void setFechaCorte(Date fechaCorte) {
 		this.fechaCorte = fechaCorte;
 	}
 	

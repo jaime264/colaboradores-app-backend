@@ -13,16 +13,23 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionRes;
+import pe.confianza.colaboradores.gcontenidos.server.api.spring.VacacionApi;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.dao.VacacionesDao;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Vacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
+import pe.confianza.colaboradores.gcontenidos.server.util.MetaVacacion;
 
 @Service
 public class VacacionServiceImpl implements VacacionService {
 
 	@Autowired
 	private VacacionesDao vacacionesDao;
+
+	@Autowired
+	private VacacionApi vacacionApi;
+
 	@Override
 	public ResponseStatus importExcel(XSSFSheet hojaExcel, String fechaCorte) {
 
@@ -52,16 +59,16 @@ public class VacacionServiceImpl implements VacacionService {
 					} else if (posicionCell == Constantes.POSICION_EXCEL.POSICION_DIAS_VENCIDOS) {
 						vacacion.setCantDiasVencidos(Double.parseDouble(cellValue.replace(",", ".")));
 					} else if (posicionCell == Constantes.POSICION_EXCEL.POSICION_FECHA_VENCIDOS) {
-						vacacion.setFechaDiasVencidos(cellDateToString(cell));
+						//vacacion./(cellDateToString(cell));
 					} else if (posicionCell == Constantes.POSICION_EXCEL.POSICION_DIAS_TRUNCOS) {
 						vacacion.setCantDiasTruncos(Double.parseDouble(cellValue.replace(",", ".")));
 					} else if (posicionCell == Constantes.POSICION_EXCEL.POSICION_FECHA_TRUNCOS) {
-						vacacion.setFechaDiasTruncos(cellDateToString(cell));
+						//vacacion.setFechaDiasTruncos(cellDateToString(cell));
 					}
-					
+
 					posicionCell++;
 				}
-				vacacion.setFechaCorte(fechaCorte);
+				//vacacion.setFechaCorte(fechaCorte);
 				lstVacaciones.add(vacacion);
 			}
 			posicionCabecera++;
@@ -85,7 +92,28 @@ public class VacacionServiceImpl implements VacacionService {
 
 	@Override
 	public Vacacion showVacationByUser(String codigoSpring) {
-		return vacacionesDao.findByCodigoSpring(codigoSpring);
+		Vacacion vacacion = vacacionesDao.findByCodigoSpring(codigoSpring);
+
+		VacacionRes vacRes = vacacionApi.getVacacion(codigoSpring);
+
+	
+		Date fechaIngreso = new Date(Long.parseLong(vacRes.getFechaIngreso()));
+		Date fechaFinContrato = new Date(Long.parseLong(vacRes.getFechaFinContrato()));
+
+		
+		vacacion.setFechaIngreso(fechaIngreso);
+		vacacion.setFechaFinContrato(fechaFinContrato);
+
+		Date fechaActual = new Date();
+
+		if (vacacion.getFechaIngreso().getYear() == fechaActual.getYear()) {
+
+			vacacion.setMetaAnualVacaciones(MetaVacacion.cantidadDias(
+					vacacion.getFechaIngreso().getMonth()));
+
+		}
+
+		return vacacion;
 	}
 
 }
