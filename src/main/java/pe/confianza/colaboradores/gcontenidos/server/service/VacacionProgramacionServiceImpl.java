@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import pe.confianza.colaboradores.gcontenidos.server.api.spring.EmpleadoApi;
+import pe.confianza.colaboradores.gcontenidos.server.bean.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.dao.VacacionProgramacionDao;
@@ -31,13 +33,18 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	
 	@Autowired
 	private VacacionProgramacionDao vacacionProgramacionDao;
+	
+	@Autowired
+	private EmpleadoApi empleadoApi;
 
 	@Override
 	public ResponseProgramacionVacacion registroProgramacion(RequestProgramacionVacacion programacion) {
 		if(programacion.getFechaInicio().after(programacion.getFechaFin())) 
 			throw new AppException("La fecha de inicio no puede ser mayor a la fecha fin");
-		long fechaIngreso = 1375333200000L;
-		String periodoVacacion = obtenerPeriodoIncompleto(new Date(fechaIngreso), programacion.getUsuarioBT());
+		Empleado empleado = new Empleado();
+		empleado.setUsuarioBT(programacion.getUsuarioBT());
+		empleado = empleadoApi.getPerfil(empleado);
+		String periodoVacacion = obtenerPeriodoIncompleto(new Date(empleado.getFechaIng()), programacion.getUsuarioBT());
 		VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(programacion);
 		vacacionProgramacion.setId(Instant.now().toEpochMilli());
 		vacacionProgramacion.setEstado(EstadoVacacion.REGISTRADO);
