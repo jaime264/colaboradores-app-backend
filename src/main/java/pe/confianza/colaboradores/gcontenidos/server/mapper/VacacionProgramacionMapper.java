@@ -1,10 +1,9 @@
 package pe.confianza.colaboradores.gcontenidos.server.mapper;
 
-import java.util.concurrent.TimeUnit;
-
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 public class VacacionProgramacionMapper {
 	
@@ -27,7 +26,8 @@ public class VacacionProgramacionMapper {
 		destination.setFechaFin(source.getFechaFin());
 		destination.setIdEstado(source.getEstado().id);
 		destination.setDescripcionEstado(source.getEstado().descripcion);
-		destination.setDias((int)(TimeUnit.DAYS.convert(source.getFechaFin().getTime() - source.getFechaInicio().getTime(), TimeUnit.MILLISECONDS)));
+		destination.setDias(Utilitario.obtenerDieferenciaDias(source.getFechaInicio(), source.getFechaFin()));
+		destination.setPeriodo(source.getPeriodo());
 		return destination;
 	}
 	

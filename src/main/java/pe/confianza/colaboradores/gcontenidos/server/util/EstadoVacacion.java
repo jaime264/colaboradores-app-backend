@@ -24,5 +24,14 @@ public enum EstadoVacacion {
 		}
 		return null;
 	}
+	
+	public static EstadoVacacion getEstado(String descripcion) {
+		for (EstadoVacacion estado : EstadoVacacion.values()) {
+			if(estado.descripcion.equalsIgnoreCase(descripcion)) {
+				return estado;
+			}
+		}
+		return null;
+	}
 
 }

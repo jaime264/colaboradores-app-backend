@@ -18,6 +18,8 @@ public class ResponseProgramacionVacacion {
 	private int dias;
 	private int idEstado;
 	private String descripcionEstado;
+	private String periodo;
+	
 	public long getId() {
 		return id;
 	}
@@ -65,6 +67,12 @@ public class ResponseProgramacionVacacion {
 	}
 	public void setDescripcionEstado(String descripcionEstado) {
 		this.descripcionEstado = descripcionEstado;
+	}
+	public String getPeriodo() {
+		return periodo;
+	}
+	public void setPeriodo(String periodo) {
+		this.periodo = periodo;
 	}
 	
 	

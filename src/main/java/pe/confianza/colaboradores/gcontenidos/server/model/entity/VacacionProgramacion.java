@@ -23,6 +23,7 @@ public class VacacionProgramacion implements Serializable{
 	private Date fechaInicio;
 	private Date fechaFin;
 	private int idEstado;
+	private String periodo;
 	private LogAuditoria logAuditoria;
 	
 	@Transient
@@ -92,6 +93,16 @@ public class VacacionProgramacion implements Serializable{
 		this.estado = estado;
 		this.idEstado = this.estado.id;
 	}
+
+	public String getPeriodo() {
+		return periodo;
+	}
+
+	public void setPeriodo(String periodo) {
+		this.periodo = periodo;
+	}
+	
+	
 	
 	
 	

@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.gson.Gson;
 
 import net.sf.jasperreports.engine.JRException;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarVacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
@@ -87,9 +89,9 @@ public class VacacionesController {
 		logger.info("Empleado: " + programacionRequest.getCodigoSpring());
 		Gson gson = new Gson();
 		String jsonData = gson.toJson(programacionRequest);
-		ResponseStatus responseStatus = new ResponseStatus();;
+		ResponseStatus responseStatus = new ResponseStatus();
 		try {
-			ResponseProgramacionVacacion programacion = vacacionProgramacionService.registroSolicitud(programacionRequest);
+			ResponseProgramacionVacacion programacion = vacacionProgramacionService.registroProgramacion(programacionRequest);
 			auditoriaService.createAuditoria("002", "006", Constantes.COD_OK, Constantes.OK, BsonDocument.parse(jsonData));
 			responseStatus.setCodeStatus(Constantes.COD_OK);
 			responseStatus.setMsgStatus(Constantes.OK);
@@ -97,6 +99,27 @@ public class VacacionesController {
 			return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 		} catch (Exception e) {
 			auditoriaService.createAuditoria("002", "006", Constantes.COD_ERR, "Error al registrar programación de vacaciones: " + e.getMessage(), BsonDocument.parse(jsonData));
+			responseStatus.setCodeStatus(Constantes.COD_ERR);
+			responseStatus.setMsgStatus(e.getMessage());
+			return new ResponseEntity<>(responseStatus, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PostMapping("/vacaciones/listar-programacion")
+	public ResponseEntity<ResponseStatus> listarVacionProgramacion(@Valid @RequestBody RequestListarVacacionProgramacion request) {
+		logger.info("Empleado: " + request.getUsuarioBT());
+		Gson gson = new Gson();
+		String jsonData = gson.toJson(request);
+		ResponseStatus responseStatus = new ResponseStatus();
+		try {
+			List<ResponseProgramacionVacacion> lstProgramacion = vacacionProgramacionService.obtenerProgramacion(request.getEstado(), request.getPeriodo(), request.getUsuarioBT());
+			auditoriaService.createAuditoria("002", "006", Constantes.COD_OK, Constantes.OK, BsonDocument.parse(jsonData));
+			responseStatus.setCodeStatus(Constantes.COD_OK);
+			responseStatus.setMsgStatus(Constantes.OK);
+			responseStatus.setResultObj(lstProgramacion);
+			return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+		} catch (Exception e) {
+			auditoriaService.createAuditoria("002", "006", Constantes.COD_ERR, "Error al listar programación de vacaciones: " + e.getMessage(), BsonDocument.parse(jsonData));
 			responseStatus.setCodeStatus(Constantes.COD_ERR);
 			responseStatus.setMsgStatus(e.getMessage());
 			return new ResponseEntity<>(responseStatus, HttpStatus.INTERNAL_SERVER_ERROR);
