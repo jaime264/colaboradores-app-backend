@@ -5,7 +5,7 @@ public class Notification {
 	private String app_id;
 	private String[] included_segments;
 	private String[] include_player_ids;
-	private Data data;
+	private Object data;
 	private Heading headings;
 	private Heading contents;
 	
@@ -18,8 +18,8 @@ public class Notification {
 	public String[] getInclude_player_ids() { return include_player_ids; }
 	public void setInclude_player_ids(String[] include_player_ids) { this.include_player_ids = include_player_ids; }
 	
-	public Data getData() { return data; }
-	public void setData(Data data) { this.data = data; }
+	public Object getData() { return data; }
+	public void setData(Object data) { this.data = data; }
 	
 	public Heading getHeadings() { return headings; }
 	public void setHeadings(Heading headings) { this.headings = headings; }
