@@ -16,6 +16,7 @@ public class Parametro implements Serializable {
 	
 	@Id	private ObjectId _id;
 	private Long id;
+	private String codigo;
 	private Object valor;
 	private String descripcion;
 	private String fechaRegistro;
@@ -57,5 +58,12 @@ public class Parametro implements Serializable {
 	public void setEstado(Integer estado) {
 		this.estado = estado;
 	}
+	public String getCodigo() {
+		return codigo;
+	}
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}
+	
 	
 }

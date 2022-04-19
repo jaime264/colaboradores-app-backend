@@ -11,5 +11,9 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.Parametro;
 public interface ParametrosDao extends MongoRepository<Parametro, Long> {
 	
 	public List<Parametro> findAll();
-
+	
+	Parametro findParametroByCodigo(String codigo);
+	
+	Parametro findParametroById(long id);
+	
 }

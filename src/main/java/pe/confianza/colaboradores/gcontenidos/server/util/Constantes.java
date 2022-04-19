@@ -23,4 +23,10 @@ public class Constantes {
 		public static final int POSICION_FECHA_TRUNCOS = 16;
 	}
 	
+	
+	public class ParametrosCodigos {
+		public static final String FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES = "FECHA_INICIO_REG_PROG_VACACIONES";
+		public static final String FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES = "FECHA_FIN_REG_PROG_VACACIONES";
+	}
+	
 }
