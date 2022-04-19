@@ -105,12 +105,22 @@ public class VacacionServiceImpl implements VacacionService {
 		vacacion.setFechaFinContrato(fechaFinContrato);
 
 		Date fechaActual = new Date();
+		Double cantidadMetaAnual = 0.0;
 
-		if (vacacion.getFechaIngreso().getYear() == fechaActual.getYear()) {
+		if (vacacion.getFechaIngreso().getMonth() == 11 || vacacion.getFechaIngreso().getMonth() == 12 ) {
 
-			vacacion.setMetaAnualVacaciones(MetaVacacion.cantidadDias(
-					vacacion.getFechaIngreso().getMonth()));
-
+			cantidadMetaAnual = vacacion.getCantDiasVencidos() + 30.0;
+			
+			
+			vacacion.setMetaAnualVacaciones(cantidadMetaAnual);
+		}
+		else {
+			Double diasPorMesIngreso = MetaVacacion.cantidadDias(
+					vacacion.getFechaIngreso().getMonth());
+			
+			cantidadMetaAnual = vacacion.getCantDiasVencidos() + diasPorMesIngreso;
+					
+			vacacion.setMetaAnualVacaciones(cantidadMetaAnual);
 		}
 
 		return vacacion;
