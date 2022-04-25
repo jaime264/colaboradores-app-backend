@@ -1,5 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -8,13 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
 import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ReaccionPost;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.bean.Usuario;
+import pe.confianza.colaboradores.gcontenidos.server.dao.ComentarioDao;
 import pe.confianza.colaboradores.gcontenidos.server.dao.DispositivoDao;
 import pe.confianza.colaboradores.gcontenidos.server.dao.PublicacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.dao.PublicacionUsuarioDao;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.Comentario;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Dispositivo;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.PublicacionUsuario;
@@ -30,6 +34,9 @@ public class PublicacionServiceImpl implements PublicacionService {
 	
 	@Autowired 
 	private DispositivoDao dispositivoDao;
+	
+	@Autowired
+	private ComentarioDao comentarioDao;
 
 	@Override
 	public ResponseStatus createPost(List<Publicacion> postsIn) {
@@ -196,7 +203,19 @@ public class PublicacionServiceImpl implements PublicacionService {
 
 	@Override
 	public List<Publicacion> listPost() {
-		return postDao.findAll();
+				
+		List<Publicacion> publicaciones =  postDao.findAll();
+		
+		publicaciones.forEach(p ->{
+			List<Comentario> comentarios = new ArrayList();
+
+			comentarios = comentarioDao.findByIdPublicacion(p.getId());
+			Long id = p.getId();
+			p.setComentarios(comentarios);
+		});
+		
+		return publicaciones;
+
 	}
 	
 	@Override

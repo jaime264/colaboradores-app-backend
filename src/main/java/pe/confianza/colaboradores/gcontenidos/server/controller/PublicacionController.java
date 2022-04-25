@@ -65,10 +65,10 @@ public class PublicacionController {
 			auditoriaService.createAuditoria("002", "008", 99, mensaje, BsonDocument.parse(jsonData));
 			response.put("mensaje", mensaje);
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
-		} else {
+		} /*else {
 			String jsonData = gson.toJson("{}");
 			auditoriaService.createAuditoria("002", "008", 0, "OK", BsonDocument.parse(jsonData));
-		}
+		}*/
 		
 		return new ResponseEntity<List<Publicacion>>(lstPosts, HttpStatus.OK);
 	}

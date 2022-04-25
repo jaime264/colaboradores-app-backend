@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.Imagen;
@@ -36,8 +37,28 @@ public class Publicacion implements Serializable{
 	private Integer flgreaccion;
 	private List<ReaccionPost> reacciones;
 	private List<Usuario> usuarios;
+	private Boolean flAprobacion;
 	private LogAuditoria logAuditoria;
 	
+	@Transient
+	private List<Comentario> comentarios;
+	
+	public Boolean getFlAprobacion() {
+		return flAprobacion;
+	}
+
+	public void setFlAprobacion(Boolean flAprobacion) {
+		this.flAprobacion = flAprobacion;
+	}
+
+	public List<Comentario> getComentarios() {
+		return comentarios;
+	}
+
+	public void setComentarios(List<Comentario> comentarios) {
+		this.comentarios = comentarios;
+	}
+
 	public ObjectId get_id() {
 		return _id;
 	}
