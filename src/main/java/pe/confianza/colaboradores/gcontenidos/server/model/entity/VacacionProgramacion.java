@@ -1,40 +1,57 @@
 package pe.confianza.colaboradores.gcontenidos.server.model.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.mapping.Document;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.Id;
 
-import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
+
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 
-@Document(collection= "vacacion_programaciones")
-public class VacacionProgramacion implements Serializable{
+@Entity
+@Table(name = "vacacion_programacion")
+public class VacacionProgramacion extends EntidadAuditoria implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 
-	@Id	private ObjectId _id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String codigoSpring;
-	private String usuarioBT;
-	private Date fechaInicio;
-	private Date fechaFin;
+
+	@ManyToOne
+	@JoinColumn(nullable = false, name = "idEmpleado")
+	private Empleado empleado;
+	
+	@Column(columnDefinition = "DATE" )
+	private LocalDate fechaInicio;
+	
+	@Column(columnDefinition = "DATE" )
+	private LocalDate fechaFin;
+	
+	private int orden;
+	
 	private int idEstado;
-	private String periodo;
-	private LogAuditoria logAuditoria;
+	
+	private String periodo;	
 	
 	@Transient
 	private EstadoVacacion estado;
-
-	public ObjectId get_id() {
-		return _id;
+	
+	public EstadoVacacion getEstado() {
+		return EstadoVacacion.getEstado(this.idEstado);
 	}
 
-	public void set_id(ObjectId _id) {
-		this._id = _id;
+	public void setEstado(EstadoVacacion estado) {
+		this.estado = estado;
+		this.idEstado = this.estado.id;
 	}
 
 	public Long getId() {
@@ -45,53 +62,44 @@ public class VacacionProgramacion implements Serializable{
 		this.id = id;
 	}
 
-	public String getCodigoSpring() {
-		return codigoSpring;
+	public Empleado getEmpleado() {
+		return empleado;
 	}
 
-	public void setCodigoSpring(String codigoSpring) {
-		this.codigoSpring = codigoSpring;
+	public void setEmpleado(Empleado empleado) {
+		this.empleado = empleado;
 	}
 
-	public String getUsuarioBT() {
-		return usuarioBT;
-	}
-
-	public void setUsuarioBT(String usuarioBT) {
-		this.usuarioBT = usuarioBT;
-	}
-
-	public Date getFechaInicio() {
+	public LocalDate getFechaInicio() {
 		return fechaInicio;
 	}
 
-	public void setFechaInicio(Date fechaInicio) {
+	public void setFechaInicio(LocalDate fechaInicio) {
 		this.fechaInicio = fechaInicio;
 	}
 
-	public Date getFechaFin() {
+	public LocalDate getFechaFin() {
 		return fechaFin;
 	}
 
-	public void setFechaFin(Date fechaFin) {
+	public void setFechaFin(LocalDate fechaFin) {
 		this.fechaFin = fechaFin;
 	}
-	
-	public LogAuditoria getLogAuditoria() {
-		return logAuditoria;
+
+	public int getOrden() {
+		return orden;
 	}
 
-	public void setLogAuditoria(LogAuditoria logAuditoria) {
-		this.logAuditoria = logAuditoria;
+	public void setOrden(int orden) {
+		this.orden = orden;
 	}
 
-	public EstadoVacacion getEstado() {
-		return EstadoVacacion.getEstado(this.idEstado);
+	public int getIdEstado() {
+		return idEstado;
 	}
 
-	public void setEstado(EstadoVacacion estado) {
-		this.estado = estado;
-		this.idEstado = this.estado.id;
+	public void setIdEstado(int idEstado) {
+		this.idEstado = idEstado;
 	}
 
 	public String getPeriodo() {
@@ -101,9 +109,6 @@ public class VacacionProgramacion implements Serializable{
 	public void setPeriodo(String periodo) {
 		this.periodo = periodo;
 	}
-	
-	
-	
 	
 	
 }

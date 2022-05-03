@@ -1,6 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.bean;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -9,55 +9,44 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 
-public class RequestProgramacionVacacion {
+public class RequestProgramacionVacacion extends RequestAuditoria {
 	
 	@NotNull(message = "Ingrese una fecha correcta")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
-	private Date fechaInicio;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = Constantes.TIME_ZONE)
+	private LocalDate fechaInicio;
 	
 	@NotNull(message = "Ingrese una fecha correcta")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
-	private Date fechaFin;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = Constantes.TIME_ZONE)
+	private LocalDate fechaFin;
 	
 	@NotNull
 	@Size(min = 1, message = "Debe ingresar un usuario correcto")
 	private String usuarioBT;
-	
-	@NotNull(message = "Debe ingresar el codigoSpring")
-	@Size(min = 1, message = "Debe ingresar un codigoPring correcto")
-	private String codigoSpring;
-	
-	private LogAuditoria logAuditoria;
-	
-	public Date getFechaInicio() {
+
+	public LocalDate getFechaInicio() {
 		return fechaInicio;
 	}
-	public void setFechaInicio(Date fechaInicio) {
+
+	public void setFechaInicio(LocalDate fechaInicio) {
 		this.fechaInicio = fechaInicio;
 	}
-	public Date getFechaFin() {
+
+	public LocalDate getFechaFin() {
 		return fechaFin;
 	}
-	public void setFechaFin(Date fechaFin) {
+
+	public void setFechaFin(LocalDate fechaFin) {
 		this.fechaFin = fechaFin;
 	}
+
 	public String getUsuarioBT() {
 		return usuarioBT;
 	}
+
 	public void setUsuarioBT(String usuarioBT) {
 		this.usuarioBT = usuarioBT;
 	}
-	public String getCodigoSpring() {
-		return codigoSpring;
-	}
-	public void setCodigoSpring(String codigoSpring) {
-		this.codigoSpring = codigoSpring;
-	}
-	public LogAuditoria getLogAuditoria() {
-		return logAuditoria;
-	}
-	public void setLogAuditoria(LogAuditoria logAuditoria) {
-		this.logAuditoria = logAuditoria;
-	}
+	
+	
 
 }

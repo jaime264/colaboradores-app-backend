@@ -12,6 +12,8 @@ public class Constantes {
 	public final static String FORMATO_FECHA = "dd/MM/yyyy";
 	public final static String FORMATO_FECHA_HORA = "dd/MM/yyyy HH:mm:ss";
 	public final static String FORMATO_FECHA_ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+	
+	public final static String TIME_ZONE = "America/Bogota";
 
 	public class POSICION_EXCEL {
 		public static final int POSICION_CABECERA = 0;
@@ -27,6 +29,11 @@ public class Constantes {
 	public class ParametrosCodigos {
 		public static final String FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES = "FECHA_INICIO_REG_PROG_VACACIONES";
 		public static final String FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES = "FECHA_FIN_REG_PROG_VACACIONES";
+	}
+	
+	public class EstadoSpring {
+		public static final String ACTIVO = "A";
+		public static final String INACTIVO = "I";
 	}
 	
 }

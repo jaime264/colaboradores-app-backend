@@ -1,5 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.bean;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -12,13 +13,14 @@ public class ResponseProgramacionVacacion {
 	private String codigoSpring;
 	private String usuarioBT;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
-	private Date fechaInicio;
+	private LocalDate fechaInicio;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
-	private Date fechaFin;
+	private LocalDate fechaFin;
 	private int dias;
 	private int idEstado;
 	private String descripcionEstado;
 	private String periodo;
+	private int orden;
 	
 	public long getId() {
 		return id;
@@ -38,16 +40,16 @@ public class ResponseProgramacionVacacion {
 	public void setUsuarioBT(String usuarioBT) {
 		this.usuarioBT = usuarioBT;
 	}
-	public Date getFechaInicio() {
+	public LocalDate getFechaInicio() {
 		return fechaInicio;
 	}
-	public void setFechaInicio(Date fechaInicio) {
+	public void setFechaInicio(LocalDate fechaInicio) {
 		this.fechaInicio = fechaInicio;
 	}
-	public Date getFechaFin() {
+	public LocalDate getFechaFin() {
 		return fechaFin;
 	}
-	public void setFechaFin(Date fechaFin) {
+	public void setFechaFin(LocalDate fechaFin) {
 		this.fechaFin = fechaFin;
 	}
 	public int getDias() {
@@ -74,6 +76,13 @@ public class ResponseProgramacionVacacion {
 	public void setPeriodo(String periodo) {
 		this.periodo = periodo;
 	}
+	public int getOrden() {
+		return orden;
+	}
+	public void setOrden(int orden) {
+		this.orden = orden;
+	}
+	
 	
 	
 }

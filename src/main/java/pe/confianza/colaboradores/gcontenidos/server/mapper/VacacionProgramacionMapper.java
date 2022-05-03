@@ -9,9 +9,6 @@ public class VacacionProgramacionMapper {
 	
 	public static VacacionProgramacion convert(final RequestProgramacionVacacion source) {
 		VacacionProgramacion destination = new VacacionProgramacion();
-		destination.setCodigoSpring(source.getCodigoSpring());
-		destination.setCodigoSpring(source.getCodigoSpring());
-		destination.setUsuarioBT(source.getUsuarioBT());
 		destination.setFechaInicio(source.getFechaInicio());
 		destination.setFechaFin(source.getFechaFin());
 		return destination;
@@ -20,14 +17,14 @@ public class VacacionProgramacionMapper {
 	public static ResponseProgramacionVacacion convert(final VacacionProgramacion source) {
 		ResponseProgramacionVacacion destination = new ResponseProgramacionVacacion();
 		destination.setId(source.getId());
-		destination.setCodigoSpring(source.getCodigoSpring());
-		destination.setUsuarioBT(source.getUsuarioBT());
+		destination.setUsuarioBT(source.getEmpleado().getUsuarioBT());
 		destination.setFechaInicio(source.getFechaInicio());
 		destination.setFechaFin(source.getFechaFin());
 		destination.setIdEstado(source.getEstado().id);
 		destination.setDescripcionEstado(source.getEstado().descripcion);
-		destination.setDias(Utilitario.obtenerDieferenciaDias(source.getFechaInicio(), source.getFechaFin()));
+		destination.setDias(Utilitario.obtenerDiferenciaDias(source.getFechaInicio(), source.getFechaFin()));
 		destination.setPeriodo(source.getPeriodo());
+		destination.setOrden(source.getOrden());
 		return destination;
 	}
 	

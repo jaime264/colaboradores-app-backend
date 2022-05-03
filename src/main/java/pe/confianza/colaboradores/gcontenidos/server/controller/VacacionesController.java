@@ -86,7 +86,7 @@ public class VacacionesController {
 	
 	@PostMapping("/vacaciones/registro-programacion")
 	public ResponseEntity<ResponseStatus> registroProgramacion(@Valid @RequestBody RequestProgramacionVacacion programacionRequest) {
-		logger.info("Empleado: " + programacionRequest.getCodigoSpring());
+		logger.info("Empleado: " + programacionRequest.getUsuarioBT());
 		Gson gson = new Gson();
 		String jsonData = gson.toJson(programacionRequest);
 		ResponseStatus responseStatus = new ResponseStatus();
