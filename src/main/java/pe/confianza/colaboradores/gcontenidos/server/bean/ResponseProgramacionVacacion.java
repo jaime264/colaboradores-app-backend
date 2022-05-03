@@ -10,7 +10,6 @@ import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 public class ResponseProgramacionVacacion {
 
 	private long id;
-	private String codigoSpring;
 	private String usuarioBT;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
 	private LocalDate fechaInicio;
@@ -28,12 +27,7 @@ public class ResponseProgramacionVacacion {
 	public void setId(long id) {
 		this.id = id;
 	}
-	public String getCodigoSpring() {
-		return codigoSpring;
-	}
-	public void setCodigoSpring(String codigoSpring) {
-		this.codigoSpring = codigoSpring;
-	}
+	
 	public String getUsuarioBT() {
 		return usuarioBT;
 	}

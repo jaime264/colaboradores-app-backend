@@ -1,36 +1,51 @@
 package pe.confianza.colaboradores.gcontenidos.server.service.negocio;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import pe.confianza.colaboradores.gcontenidos.server.dao.ParametrosDao;
 import pe.confianza.colaboradores.gcontenidos.server.dao.VacacionProgramacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.Parametro;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 @Component
 public class ProgramacionVacacionesValidacion {
 	
+	private static Logger logger = LoggerFactory.getLogger(ProgramacionVacacionesValidacion.class);
+	
 	@Autowired
 	private VacacionProgramacionDao vacacionProgramacionDao;
+	
+	@Autowired
+	private ParametrosDao parametrosDao;
 	
 	public List<VacacionProgramacion> ordernarTramos(List<VacacionProgramacion> programaciones) {
 		programaciones.sort(Comparator.comparing(VacacionProgramacion::getOrden));
 		return programaciones;
 	}
 	
-	public void validarFechas(VacacionProgramacion programacion) {
+	public void validarRangoFechas(VacacionProgramacion programacion) {
+		logger.info("[BEGIN] validarRangoFechas");
 		if(programacion.getFechaInicio().isAfter(programacion.getFechaFin()))
 			throw new AppException("La fecha de inicio no puede ser mayor a la fecha fin");
+		logger.info("[END] validarRangoFechas");
 	}
 
 	public void validarTramoVacaciones(VacacionProgramacion programacion) {
+		logger.info("[BEGIN] validarTramoVacaciones");
 		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionDao.findByUsuarioBTAndIdEstado(programacion.getEmpleado().getUsuarioBT(), EstadoVacacion.REGISTRADO.id);
 		programacionesRegistradas = ordernarTramos(programacionesRegistradas);
 		
@@ -67,15 +82,20 @@ public class ProgramacionVacacionesValidacion {
 		if(contadorDomingos > 4) {
 			throw new AppException("No debe haber más de 4 domingos");
 		}
+		logger.info("[END] validarTramoVacaciones");
 	}
 	
 	public void validarEmpleadoNuevo(VacacionProgramacion programacion, Empleado empleado) {
+		logger.info("[BEGIN] validarEmpleadoNuevo");
 		LocalDate fechaParaPedirVacacion = empleado.getFechaIngreso().plusMonths(6);
+		logger.info("Empleado -> fecha ingreso: {}", new Object[] {fechaParaPedirVacacion}  );
 		if(programacion.getFechaInicio().isBefore(fechaParaPedirVacacion))
 			throw new AppException("Debe tener una antiguedad de 6 meses");
+		logger.info("[END] validarEmpleadoNuevo");
 	}
 	
 	public VacacionProgramacion obtenerOrdenProgramacion(VacacionProgramacion programacion, String usuarioModifica) {
+		logger.info("[BEGIN] obtenerOrdenProgramacion");
 		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionDao.findByUsuarioBTAndIdEstado(programacion.getEmpleado().getUsuarioBT(), EstadoVacacion.REGISTRADO.id);
 		if(programacionesRegistradas.isEmpty()) {
 			programacion.setOrden(1);
@@ -99,7 +119,27 @@ public class ProgramacionVacacionesValidacion {
 				}
 			}
 		}
+		logger.info("[END] obtenerOrdenProgramacion");
 		return programacion;
+	}
+	
+	public void validarFechaRegistroProgramacion() {
+		logger.info("[BEGIN] validarFechaRegistroProgramacion");
+		LocalDate ahora = LocalDate.now();
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		Optional<Parametro> optParametroInicioRegistro = parametrosDao.findOneByCodigo(Constantes.ParametrosCodigos.FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES);
+		if(!optParametroInicioRegistro.isPresent())
+			throw new AppException("No existe el parámetro para inicio de registro de programación de vacaciones");
+		String strFechaInicioRegistroProgramacion = optParametroInicioRegistro.get().getValor().trim() + "/" + ahora.getYear();
+		if(ahora.isBefore(LocalDate.parse(strFechaInicioRegistroProgramacion, formatter)))
+			throw new AppException("No se puede registrar antes de " + strFechaInicioRegistroProgramacion);
+		Optional<Parametro> optParametroFinRegistro = parametrosDao.findOneByCodigo(Constantes.ParametrosCodigos.FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES);
+		if(!optParametroInicioRegistro.isPresent())
+			throw new AppException("No existe el parámetro para fin de registro de programación de vacaciones");
+		String strFechaFinRegistroProgramacion = optParametroFinRegistro.get().getValor().trim() + "/" + ahora.getYear();
+		if(ahora.isAfter(LocalDate.parse(strFechaFinRegistroProgramacion, formatter)))
+			throw new AppException("No se puede registrar después de " + strFechaFinRegistroProgramacion);
+		logger.info("[END] validarFechaRegistroProgramacion");
 	}
 	
 	

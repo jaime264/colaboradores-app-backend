@@ -1,19 +1,20 @@
 package pe.confianza.colaboradores.gcontenidos.server.dao;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Parametro;
 
 @Repository
-public interface ParametrosDao extends MongoRepository<Parametro, Long> {
+public interface ParametrosDao extends JpaRepository<Parametro, Long> {
 	
 	public List<Parametro> findAll();
 	
-	Parametro findParametroByCodigo(String codigo);
+	Optional<Parametro> findOneByCodigo(String codigo);
 	
-	Parametro findParametroById(long id);
+	//Parametro findParametroById(long id);
 	
 }

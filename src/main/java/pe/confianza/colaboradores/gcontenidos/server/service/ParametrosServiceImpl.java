@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,8 +31,8 @@ public class ParametrosServiceImpl implements ParametrosService {
 	
 	@Override
 	public ResponseParametro registrar(RequestParametro request) {
-		Parametro parametroExiste = parametrosDao.findParametroByCodigo(request.getCodigo());
-		if(parametroExiste != null) {
+		Optional<Parametro> optParametro = parametrosDao.findOneByCodigo(request.getCodigo());
+		if(!optParametro.isPresent()) {
 			Parametro parametro =  ParametroMapper.convert(request);
 			parametro.setId(Instant.now().toEpochMilli());
 			parametro.setFechaRegistro(new SimpleDateFormat("dd/mm/yyyy").format(new Date()));
@@ -45,16 +46,17 @@ public class ParametrosServiceImpl implements ParametrosService {
 
 	@Override
 	public Parametro buscarPorCodigo(String codigo) {
-		return parametrosDao.findParametroByCodigo(codigo);
+		Optional<Parametro> optParametro = parametrosDao.findOneByCodigo(codigo);
+		return optParametro.isPresent() ? optParametro.get() : null;
 	}
 
 
 	@Override
 	public ResponseParametro buscarPorId(long id) {
-		Parametro parametro = parametrosDao.findParametroById(id);
-		if(parametro == null)
-			throw new ModelNotFoundException("No existe parámetro con id " + id);
-		return ParametroMapper.convert(parametro);
+		Optional<Parametro> optParametro = parametrosDao.findById(id);
+		if(optParametro.isPresent())
+			return ParametroMapper.convert(optParametro.get());
+		throw new ModelNotFoundException("No existe parámetro con id " + id);
 	}
 	
 	

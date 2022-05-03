@@ -2,11 +2,14 @@ package pe.confianza.colaboradores.gcontenidos.server.model.entity;
 
 import java.io.Serializable;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-@Document(collection= "parametros")
+@Entity
+@Table(name = "parametro")
 public class Parametro implements Serializable {
 	
 	/**
@@ -14,30 +17,32 @@ public class Parametro implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Id	private ObjectId _id;
-	private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
+	
 	private String codigo;
-	private Object valor;
+	private String valor;
 	private String descripcion;
 	private String fechaRegistro;
 	private Integer estado;
 	
-	public ObjectId get_id() {
-		return _id;
-	}
-	public void set_id(ObjectId _id) {
-		this._id = _id;
-	}
-	public Long getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(Long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
-	public Object getValor() {
+	public String getCodigo() {
+		return codigo;
+	}
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}
+	public String getValor() {
 		return valor;
 	}
-	public void setValor(Object valor) {
+	public void setValor(String valor) {
 		this.valor = valor;
 	}
 	public String getDescripcion() {
@@ -58,12 +63,9 @@ public class Parametro implements Serializable {
 	public void setEstado(Integer estado) {
 		this.estado = estado;
 	}
-	public String getCodigo() {
-		return codigo;
-	}
-	public void setCodigo(String codigo) {
-		this.codigo = codigo;
-	}
+
+	
+	
 	
 	
 }
