@@ -1,6 +1,12 @@
 package pe.confianza.colaboradores.gcontenidos.server.util;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import pe.confianza.colaboradores.gcontenidos.server.service.ParametrosServiceImpl;
+
 public class Constantes {
+	
+
 	
 	public static final String OK = "OK";
 	public static final Integer COD_OK = 0;
@@ -27,7 +33,9 @@ public class Constantes {
 	
 	
 	public class ParametrosCodigos {
-		public static final String FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES = "FECHA_INICIO_REG_PROG_VACACIONES";
+
+		
+		public static final String FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES = "FECHA_INICIO_REG_PROG_VACACIONES";		
 		public static final String FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES = "FECHA_FIN_REG_PROG_VACACIONES";
 	}
 	

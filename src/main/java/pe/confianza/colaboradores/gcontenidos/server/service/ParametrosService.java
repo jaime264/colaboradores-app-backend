@@ -15,5 +15,7 @@ public interface ParametrosService {
 	Parametro buscarPorCodigo(String codigo);
 	
 	ResponseParametro buscarPorId(long id);
+	
+	String buscarValorPorCodigo(String codigo);
 
 }
