@@ -29,8 +29,6 @@ public class ParametrosConstants {
 	}
 
 	private String populateParametro(String cod) {
-		// populates the movie cache upon initialization...
-
 		for (Parametro parametro : listParams) {
 			if (parametro.getCodigo().equals(cod)) {
 				return parametro.getValor();

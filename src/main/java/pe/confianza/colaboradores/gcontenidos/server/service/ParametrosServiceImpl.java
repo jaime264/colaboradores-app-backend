@@ -50,10 +50,7 @@ public class ParametrosServiceImpl implements ParametrosService {
 	}
 
 	@Override
-	public ResponseParametro buscarPorId(long id) {
-
-		String value = parametros.FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES;
-		
+	public ResponseParametro buscarPorId(long id) {		
 		Parametro parametro = parametrosDao.findById(id).get();
 		if (parametro == null)
 			throw new ModelNotFoundException("No existe parámetro con id " + id);
