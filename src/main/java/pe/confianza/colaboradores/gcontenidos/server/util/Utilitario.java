@@ -15,6 +15,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.StringUtils;
+
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.Parametro;
+
 public class Utilitario {
 	
 	/**

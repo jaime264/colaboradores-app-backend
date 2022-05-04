@@ -10,11 +10,8 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.Parametro;
 
 @Repository
 public interface ParametrosDao extends JpaRepository<Parametro, Long> {
-	
-	public List<Parametro> findAll();
-	
+
+	List<Parametro> findAll();
+
 	Optional<Parametro> findOneByCodigo(String codigo);
-	
-	//Parametro findParametroById(long id);
-	
 }

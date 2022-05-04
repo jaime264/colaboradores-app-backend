@@ -1,64 +1,51 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.Date;
+
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
-import pe.confianza.colaboradores.gcontenidos.server.dao.ParametrosDao;
-import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.ParametroMapper;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Parametro;
+import pe.confianza.colaboradores.gcontenidos.server.util.ParametrosConstants;
 
 @Service
 public class ParametrosServiceImpl implements ParametrosService {
-	
-	@Autowired 
-	private ParametrosDao parametrosDao;
-	
+
+	@Autowired
+	private ParametrosConstants parametrosConstants;
+
 	@Override
 	public List<Parametro> listParams() {
-		return parametrosDao.findAll();
-	}
-	
-	
-	@Override
-	public ResponseParametro registrar(RequestParametro request) {
-		Optional<Parametro> optParametro = parametrosDao.findOneByCodigo(request.getCodigo());
-		if(!optParametro.isPresent()) {
-			Parametro parametro =  ParametroMapper.convert(request);
-			parametro.setId(Instant.now().toEpochMilli());
-			parametro.setFechaRegistro(new SimpleDateFormat("dd/mm/yyyy").format(new Date()));
-			parametro.setEstado(1);
-			parametro = parametrosDao.save(parametro);
-			return ParametroMapper.convert(parametro);
-		}
-		throw new AppException("Ya existe un parametro con el código " + request.getCodigo());
+		return parametrosConstants.findAll();
 	}
 
+	@Override
+	public ResponseParametro registrar(RequestParametro request) {
+		Parametro parametro = parametrosConstants.addParametro(request);
+		return ParametroMapper.convert(parametro);
+	}
 
 	@Override
 	public Parametro buscarPorCodigo(String codigo) {
-		Optional<Parametro> optParametro = parametrosDao.findOneByCodigo(codigo);
-		return optParametro.isPresent() ? optParametro.get() : null;
+		return parametrosConstants.search(codigo);
 	}
-
 
 	@Override
-	public ResponseParametro buscarPorId(long id) {
-		Optional<Parametro> optParametro = parametrosDao.findById(id);
-		if(optParametro.isPresent())
-			return ParametroMapper.convert(optParametro.get());
-		throw new ModelNotFoundException("No existe parámetro con id " + id);
+	public ResponseParametro buscarPorId(long id) {		
+		Parametro parametro = parametrosConstants.search(id);
+		if (parametro == null)
+			throw new ModelNotFoundException("No existe parámetro con id " + id);
+		return ParametroMapper.convert(parametro);
 	}
-	
-	
+
+	@Override
+	public String buscarValorPorCodigo(String codigo) {
+		return buscarPorCodigo(codigo).getValor();
+	}
 
 }

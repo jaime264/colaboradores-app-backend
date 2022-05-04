@@ -19,6 +19,7 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.Parametro;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.util.ParametrosConstants;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 @Component
@@ -30,7 +31,7 @@ public class ProgramacionVacacionesValidacion {
 	private VacacionProgramacionDao vacacionProgramacionDao;
 	
 	@Autowired
-	private ParametrosDao parametrosDao;
+	private ParametrosConstants parametrosConstants;
 	
 	public List<VacacionProgramacion> ordernarTramos(List<VacacionProgramacion> programaciones) {
 		programaciones.sort(Comparator.comparing(VacacionProgramacion::getOrden));
@@ -129,16 +130,16 @@ public class ProgramacionVacacionesValidacion {
 		if(fechaInicioVacacion.isBefore(ahora))
 			throw new AppException("Fecha de inicio no puede ser una fecha anterior a la de hoy");
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		Optional<Parametro> optParametroInicioRegistro = parametrosDao.findOneByCodigo(Constantes.ParametrosCodigos.FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES);
-		if(!optParametroInicioRegistro.isPresent())
+		String valorFechaInicio = parametrosConstants.FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES;
+		if(valorFechaInicio.isEmpty())
 			throw new AppException("No existe el parámetro para inicio de registro de programación de vacaciones");
-		String strFechaInicioRegistroProgramacion = optParametroInicioRegistro.get().getValor().trim() + "/" + ahora.getYear();
+		String strFechaInicioRegistroProgramacion = valorFechaInicio.trim() + "/" + ahora.getYear();
 		if(ahora.isBefore(LocalDate.parse(strFechaInicioRegistroProgramacion, formatter)))
 			throw new AppException("No se puede registrar antes de " + strFechaInicioRegistroProgramacion);
-		Optional<Parametro> optParametroFinRegistro = parametrosDao.findOneByCodigo(Constantes.ParametrosCodigos.FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES);
-		if(!optParametroInicioRegistro.isPresent())
+		String valorFechaFin = parametrosConstants.FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES;
+		if(valorFechaFin.isEmpty())
 			throw new AppException("No existe el parámetro para fin de registro de programación de vacaciones");
-		String strFechaFinRegistroProgramacion = optParametroFinRegistro.get().getValor().trim() + "/" + ahora.getYear();
+		String strFechaFinRegistroProgramacion = valorFechaFin.trim() + "/" + ahora.getYear();
 		if(ahora.isAfter(LocalDate.parse(strFechaFinRegistroProgramacion, formatter)))
 			throw new AppException("No se puede registrar después de " + strFechaFinRegistroProgramacion);
 		logger.info("[END] validarFechaRegistroProgramacion");
