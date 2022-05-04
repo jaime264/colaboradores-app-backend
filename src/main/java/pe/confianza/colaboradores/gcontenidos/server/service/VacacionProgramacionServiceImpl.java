@@ -41,7 +41,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	@Override
 	public ResponseProgramacionVacacion registroProgramacion(RequestProgramacionVacacion programacion) {
 		logger.info("[BEGIN] registroProgramacion: {} - {} - {}", new Object[] {programacion.getUsuarioBT(), programacion.getFechaInicio(), programacion.getFechaFin()});
-		programacionVacacionesValidacion.validarFechaRegistroProgramacion();
+		programacionVacacionesValidacion.validarFechaRegistroProgramacion(programacion.getFechaInicio());
 		Empleado empleado = empleadoService.actualizarInformacionEmpleado(programacion.getUsuarioBT().trim());
 		if(empleado == null)
 			throw new AppException("No existe el usuario " + programacion.getUsuarioBT());

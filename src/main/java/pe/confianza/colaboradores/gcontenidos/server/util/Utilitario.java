@@ -35,7 +35,7 @@ public class Utilitario {
 	 * @return
 	 */
 	public static int obtenerDiferenciaDias(LocalDate fechaInicio, LocalDate fechaFin) {
-		return (int)(fechaInicio.until(fechaFin, ChronoUnit.DAYS));
+		return (int)(ChronoUnit.DAYS.between(fechaInicio, fechaFin)) + 1;
 	}
 	
 	
@@ -178,8 +178,8 @@ public class Utilitario {
 	 */
 	public static boolean fechaEntrePeriodo(LocalDate fechaInicio, LocalDate fechaFin, LocalDate fecha) {
 		long fechaMilliseconds = fecha.atStartOfDay(ZoneId.of(Constantes.TIME_ZONE)).toInstant().toEpochMilli();
-		if(fechaInicio.atStartOfDay(ZoneId.of(Constantes.TIME_ZONE)).toInstant().toEpochMilli() >= fechaMilliseconds &&
-				fechaFin.atStartOfDay(ZoneId.of(Constantes.TIME_ZONE)).toInstant().toEpochMilli() <= fechaMilliseconds	)
+		if(fechaInicio.atStartOfDay(ZoneId.of(Constantes.TIME_ZONE)).toInstant().toEpochMilli() <= fechaMilliseconds &&
+				fechaFin.atStartOfDay(ZoneId.of(Constantes.TIME_ZONE)).toInstant().toEpochMilli() >= fechaMilliseconds	)
 			return true;
 		return false;
 	}

@@ -123,9 +123,11 @@ public class ProgramacionVacacionesValidacion {
 		return programacion;
 	}
 	
-	public void validarFechaRegistroProgramacion() {
+	public void validarFechaRegistroProgramacion(LocalDate fechaInicioVacacion) {
 		logger.info("[BEGIN] validarFechaRegistroProgramacion");
 		LocalDate ahora = LocalDate.now();
+		if(fechaInicioVacacion.isBefore(ahora))
+			throw new AppException("Fecha de inicio no puede ser una fecha anterior a la de hoy");
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		Optional<Parametro> optParametroInicioRegistro = parametrosDao.findOneByCodigo(Constantes.ParametrosCodigos.FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES);
 		if(!optParametroInicioRegistro.isPresent())
