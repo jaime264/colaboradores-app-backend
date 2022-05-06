@@ -9,13 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.api.spring.EmpleadoApi;
-import pe.confianza.colaboradores.gcontenidos.server.dao.AgenciaDao;
-import pe.confianza.colaboradores.gcontenidos.server.dao.EmpleadoDao;
-import pe.confianza.colaboradores.gcontenidos.server.dao.PuestoDao;
+import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.AgenciaDao;
+import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.EmpleadoDao;
+import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.PuestoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.EmpleadoMapper;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Agencia;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Empleado;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Puesto;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Agencia;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Puesto;
 
 @Service
 public class EmpleadoServiceImpl implements EmpleadoService {

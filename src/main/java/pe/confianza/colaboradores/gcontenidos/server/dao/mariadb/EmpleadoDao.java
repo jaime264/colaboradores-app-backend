@@ -1,9 +1,10 @@
-package pe.confianza.colaboradores.gcontenidos.server.dao;
+package pe.confianza.colaboradores.gcontenidos.server.dao.mariadb;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Empleado;
+
 import java.lang.String;
 import java.util.Optional;
 

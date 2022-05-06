@@ -1,4 +1,4 @@
-package pe.confianza.colaboradores.gcontenidos.server.model.entity;
+package pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb;
 
 import java.time.LocalDateTime;
 
@@ -27,6 +27,9 @@ public class Agencia {
 	
 	@Column(nullable = false)
 	private String estado;
+	
+	@Column(nullable = true)
+	private String codigoOficinaMatriz;
 	
 	@ManyToOne
 	@JoinColumn(nullable = true, name = "idCorredor")
@@ -92,6 +95,14 @@ public class Agencia {
 
 	public void setCodigoCorredor(String codigoCorredor) {
 		this.codigoCorredor = codigoCorredor;
+	}
+
+	public String getCodigoOficinaMatriz() {
+		return codigoOficinaMatriz;
+	}
+
+	public void setCodigoOficinaMatriz(String codigoOficinaMatriz) {
+		this.codigoOficinaMatriz = codigoOficinaMatriz;
 	}
 	
 	

@@ -13,11 +13,11 @@ import org.springframework.util.StringUtils;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
-import pe.confianza.colaboradores.gcontenidos.server.dao.VacacionProgramacionDao;
+import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.VacacionProgramacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.VacacionProgramacionMapper;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Empleado;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.service.negocio.ProgramacionVacacionesValidacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 

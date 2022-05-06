@@ -1,4 +1,4 @@
-package pe.confianza.colaboradores.gcontenidos.server.model.entity;
+package pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -12,7 +12,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.Id;
-
 
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 

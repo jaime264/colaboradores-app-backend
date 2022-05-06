@@ -4,7 +4,7 @@ import java.util.List;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Parametro;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Parametro;
 
 public interface ParametrosService {
 	
