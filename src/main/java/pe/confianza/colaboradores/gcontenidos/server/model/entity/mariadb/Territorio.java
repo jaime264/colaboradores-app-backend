@@ -1,4 +1,6 @@
-package pe.confianza.colaboradores.gcontenidos.server.model.entity;
+package pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb;
+
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,8 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "tipo_calificacion_cargo")
-public class TipoCalificacionCargo {
+@Table(name = "territorio")
+public class Territorio {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +22,12 @@ public class TipoCalificacionCargo {
 	
 	@Column(nullable = false)
 	private String descripcion;
+	
+	@Column(nullable = false)
+	private String estado;
+	
+	@Column(columnDefinition = "TIMESTAMP" )
+	private LocalDateTime fechaActualizacion;
 
 	public long getId() {
 		return id;
@@ -44,5 +52,23 @@ public class TipoCalificacionCargo {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+
+	public LocalDateTime getFechaActualizacion() {
+		return fechaActualizacion;
+	}
+
+	public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
+		this.fechaActualizacion = fechaActualizacion;
+	}
+	
+	
 
 }

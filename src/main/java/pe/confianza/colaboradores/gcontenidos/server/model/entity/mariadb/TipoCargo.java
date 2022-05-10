@@ -1,4 +1,4 @@
-package pe.confianza.colaboradores.gcontenidos.server.model.entity;
+package pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

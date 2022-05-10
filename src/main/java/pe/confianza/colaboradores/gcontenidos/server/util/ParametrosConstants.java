@@ -13,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
-import pe.confianza.colaboradores.gcontenidos.server.dao.ParametrosDao;
+import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.ParametrosDao;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.ParametroMapper;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Parametro;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Parametro;
 
 @Component
 public class ParametrosConstants {

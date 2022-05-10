@@ -1,4 +1,4 @@
-package pe.confianza.colaboradores.gcontenidos.server.dao;
+package pe.confianza.colaboradores.gcontenidos.server.dao.mariadb;
 
 import java.util.List;
 
@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.VacacionProgramacion;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.VacacionProgramacion;
 
 @Repository
 public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramacion, Long> {

@@ -1,6 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.mapper;
 
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 public class EmpleadoMapper {
