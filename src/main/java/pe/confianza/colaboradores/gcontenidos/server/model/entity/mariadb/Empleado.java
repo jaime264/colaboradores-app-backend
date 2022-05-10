@@ -66,6 +66,21 @@ public class Empleado {
 	
 	@Column(columnDefinition = "TIMESTAMP" )
 	private LocalDateTime fechaActualizacion;
+	
+	@Column(nullable = true)
+	private Long codigoUnidadNegocio;
+	
+	@Column(nullable = true)
+	private Long codigoJefeInmediato;
+	
+	@Column(nullable = true)
+	private Long codigoNIvel1;
+	
+	@Column(nullable = true)
+	private Long codigoNivel2;
+	
+	@Column(nullable = true)
+	private boolean bloqueoVacaciones;
 
 	public long getId() {
 		return id;
@@ -194,5 +209,47 @@ public class Empleado {
 	public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
 		this.fechaActualizacion = fechaActualizacion;
 	}
+
+	public Long getCodigoUnidadNegocio() {
+		return codigoUnidadNegocio;
+	}
+
+	public void setCodigoUnidadNegocio(Long codigoUnidadNegocio) {
+		this.codigoUnidadNegocio = codigoUnidadNegocio;
+	}
+
+	public Long getCodigoJefeInmediato() {
+		return codigoJefeInmediato;
+	}
+
+	public void setCodigoJefeInmediato(Long codigoJefeInmediato) {
+		this.codigoJefeInmediato = codigoJefeInmediato;
+	}
+
+	public Long getCodigoNIvel1() {
+		return codigoNIvel1;
+	}
+
+	public void setCodigoNIvel1(Long codigoNIvel1) {
+		this.codigoNIvel1 = codigoNIvel1;
+	}
+
+	public Long getCodigoNivel2() {
+		return codigoNivel2;
+	}
+
+	public void setCodigoNivel2(Long codigoNivel2) {
+		this.codigoNivel2 = codigoNivel2;
+	}
+
+	public boolean isBloqueoVacaciones() {
+		return bloqueoVacaciones;
+	}
+
+	public void setBloqueoVacaciones(boolean bloqueoVacaciones) {
+		this.bloqueoVacaciones = bloqueoVacaciones;
+	}
+	
+	
 
 }

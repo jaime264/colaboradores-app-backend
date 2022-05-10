@@ -47,7 +47,7 @@ public class ProgramacionVacacionesValidacion {
 
 	public void validarTramoVacaciones(VacacionProgramacion programacion) {
 		logger.info("[BEGIN] validarTramoVacaciones");
-		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionDao.findByUsuarioBTAndIdEstado(programacion.getEmpleado().getUsuarioBT(), EstadoVacacion.REGISTRADO.id);
+		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionDao.findByUsuarioBTAndIdEstado(programacion.getPeriodo().getEmpleado().getUsuarioBT(), EstadoVacacion.REGISTRADO.id);
 		programacionesRegistradas = ordernarTramos(programacionesRegistradas);
 		
 		int diasAcumuladosVacaciones = 0;
@@ -97,7 +97,7 @@ public class ProgramacionVacacionesValidacion {
 	
 	public VacacionProgramacion obtenerOrdenProgramacion(VacacionProgramacion programacion, String usuarioModifica) {
 		logger.info("[BEGIN] obtenerOrdenProgramacion");
-		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionDao.findByUsuarioBTAndIdEstado(programacion.getEmpleado().getUsuarioBT(), EstadoVacacion.REGISTRADO.id);
+		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionDao.findByUsuarioBTAndIdEstado(programacion.getPeriodo().getEmpleado().getUsuarioBT(), EstadoVacacion.REGISTRADO.id);
 		if(programacionesRegistradas.isEmpty()) {
 			programacion.setOrden(1);
 		} else {

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmpleadoRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.spring.EmpleadoApi;
 import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.AgenciaDao;
 import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.EmpleadoDao;
@@ -37,9 +38,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	@Override
 	public Empleado actualizarInformacionEmpleado(String usuarioBT) {
 		LOGGER.info("[BEGIN] actualizarInformacionEmpleado");
-		pe.confianza.colaboradores.gcontenidos.server.bean.Empleado empleadoSpring = new pe.confianza.colaboradores.gcontenidos.server.bean.Empleado();
-		empleadoSpring.setUsuarioBT(usuarioBT);
-		empleadoSpring = empleadoApi.getPerfil(empleadoSpring);
+		EmpleadoRes empleadoSpring = empleadoApi.getPerfil(usuarioBT);
 		Optional<Puesto> optPuesto = puestoDao.findOneByCodigo(empleadoSpring.getIdCargo());
 		Optional<Agencia> optAgencia = agenciaDao.findOneByCodigo(empleadoSpring.getIdSucursal().trim());
 		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(usuarioBT);

@@ -37,6 +37,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	
 	@Autowired
 	private ProgramacionVacacionesValidacion programacionVacacionesValidacion;
+	
+
 
 	@Override
 	public ResponseProgramacionVacacion registroProgramacion(RequestProgramacionVacacion programacion) {
@@ -48,8 +50,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		
 		VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(programacion);
 		vacacionProgramacion.setEstado(EstadoVacacion.REGISTRADO);
-		vacacionProgramacion.setPeriodo("");
-		vacacionProgramacion.setEmpleado(empleado);
+		//vacacionProgramacion.setPeriodo("");
+		//vacacionProgramacion.setEmpleado(empleado);
 		vacacionProgramacion.setFechaCrea(LocalDate.now());
 		vacacionProgramacion.setUsuarioCrea(programacion.getUsuarioOperacion().trim());
 		
