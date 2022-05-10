@@ -18,19 +18,16 @@ public class ComentarioServiceImpl implements ComentarioService {
 
 	@Override
 	public List<Comentario> list() {
-		// TODO Auto-generated method stub
 		return comentarioDao.findAll();
 	}
 
 	@Override
 	public List<Comentario> listByIdPublicacion(Long idPublicacion) {
-		// TODO Auto-generated method stub
 		return comentarioDao.findByIdPublicacion(idPublicacion);
 	}
 
 	@Override
 	public ResponseStatus add(Comentario comentario) {
-		// TODO Auto-generated method stub
 		ResponseStatus status = new ResponseStatus();
 		comentarioDao.save(comentario);
 
@@ -39,7 +36,6 @@ public class ComentarioServiceImpl implements ComentarioService {
 
 	@Override
 	public ResponseStatus update(Comentario comentario) {
-		// TODO Auto-generated method stub
 		ResponseStatus status = new ResponseStatus();
 
 		Optional<Comentario> com = comentarioDao.findById(comentario.getId());
@@ -52,7 +48,6 @@ public class ComentarioServiceImpl implements ComentarioService {
 
 	@Override
 	public ResponseStatus delete(Long idComentario) {
-		// TODO Auto-generated method stub
 		ResponseStatus status = new ResponseStatus();
 		comentarioDao.deleteById(idComentario);
 
