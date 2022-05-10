@@ -3,7 +3,7 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 import java.util.List;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Comentario;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Comentario;
 
 public interface ComentarioService {
 	

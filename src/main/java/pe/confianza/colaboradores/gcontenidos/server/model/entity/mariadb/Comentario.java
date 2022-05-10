@@ -1,6 +1,5 @@
-package pe.confianza.colaboradores.gcontenidos.server.model.entity;
+package pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -8,24 +7,27 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import org.springframework.data.annotation.Id;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
 
 
 @Entity
-@Table(name = "publicacion")
+@Table(name = "comentario")
 public class Comentario {	
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	private Long idPublicacion;
+	@ManyToOne
+	@JoinColumn(nullable = true, name = "idPublciacion")
+	private Publicacion publicacion;
+	
 	private String descripcion;
 	private Boolean flAprobacion;
 	private Date fecha;
@@ -35,12 +37,12 @@ public class Comentario {
 	private Integer reacciones;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "idComentario")
-	private List<ImagenEntity> imagenes;
+	@JoinColumn(name = "idImagen")
+	private List<Imagen> imagenes;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "idComentario")
-	private List<VideoEntity> videos;
+	@JoinColumn(name = "idVideo")
+	private List<Video> videos;
 
 	private String idUsuario;
 	
@@ -52,14 +54,6 @@ public class Comentario {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public Long getIdPublicacion() {
-		return idPublicacion;
-	}
-
-	public void setIdPublicacion(Long idPublicacion) {
-		this.idPublicacion = idPublicacion;
 	}
 
 	public String getDescripcion() {
@@ -118,19 +112,19 @@ public class Comentario {
 		this.reacciones = reacciones;
 	}
 
-	public List<ImagenEntity> getImagenes() {
+	public List<Imagen> getImagenes() {
 		return imagenes;
 	}
 
-	public void setImagenes(List<ImagenEntity> imagenes) {
+	public void setImagenes(List<Imagen> imagenes) {
 		this.imagenes = imagenes;
 	}
 
-	public List<VideoEntity> getVideos() {
+	public List<Video> getVideos() {
 		return videos;
 	}
 
-	public void setVideos(List<VideoEntity> videos) {
+	public void setVideos(List<Video> videos) {
 		this.videos = videos;
 	}
 
@@ -148,6 +142,14 @@ public class Comentario {
 
 	public void setLogAuditoria(LogAuditoria logAuditoria) {
 		this.logAuditoria = logAuditoria;
+	}
+
+	public Publicacion getPublicacion() {
+		return publicacion;
+	}
+
+	public void setPublicacion(Publicacion publicacion) {
+		this.publicacion = publicacion;
 	}
 	
 	

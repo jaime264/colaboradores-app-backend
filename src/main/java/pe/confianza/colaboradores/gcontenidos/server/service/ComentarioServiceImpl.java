@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.dao.ComentarioDao;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Comentario;
+import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.ComentarioDao;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Comentario;
 
 @Service
 public class ComentarioServiceImpl implements ComentarioService {
@@ -23,7 +23,7 @@ public class ComentarioServiceImpl implements ComentarioService {
 
 	@Override
 	public List<Comentario> listByIdPublicacion(Long idPublicacion) {
-		return comentarioDao.findByIdPublicacion(idPublicacion);
+		return comentarioDao.findByPublicacion(idPublicacion);
 	}
 
 	@Override

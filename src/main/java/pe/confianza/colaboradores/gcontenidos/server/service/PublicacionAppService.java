@@ -5,16 +5,16 @@ import java.util.Optional;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Comentario;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.PublicacionEntity;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Comentario;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Publicacion;
 
 public interface PublicacionAppService {
 
-	public List<PublicacionEntity> list();
+	public List<Publicacion> list();
 
-	public ResponseStatus add(PublicacionEntity publicacion);
+	public ResponseStatus add(Publicacion publicacion);
 
-	public ResponseStatus update(PublicacionEntity publicacion);
+	public ResponseStatus update(Publicacion publicacion);
 
 	public ResponseStatus delete(Long idPublicacion);
 

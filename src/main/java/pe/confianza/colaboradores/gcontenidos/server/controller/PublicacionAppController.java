@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Comentario;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.PublicacionEntity;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Comentario;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.PublicacionAppService;
 
@@ -35,23 +35,23 @@ private static Logger logger = LoggerFactory.getLogger(PublicacionController.cla
 	private AuditoriaService auditoriaService;
 	
 	@PostMapping("/publicacionApp/list")
-	public ResponseEntity<?> show() {
-		List<PublicacionEntity> lstPublicaciones = null;		
+	public ResponseEntity<List<Publicacion>> show() {
+		List<Publicacion> lstPublicaciones = null;		
 	
-		return new ResponseEntity<List<PublicacionEntity>>(lstPublicaciones, HttpStatus.OK);
+		return new ResponseEntity<List<Publicacion>>(lstPublicaciones, HttpStatus.OK);
 	}
 	
 	@PostMapping("/publicacionApp/list/idPublicacion")
-	public ResponseEntity<?> listByIdPublicacion(Integer idPublicacion) {
+	public ResponseEntity<List<Publicacion>> listByIdPublicacion(Integer idPublicacion) {
 		
-		List<PublicacionEntity> lstPublicaciones = new ArrayList<>();
+		List<Publicacion> lstPublicaciones = new ArrayList<>();
 		
-		return new ResponseEntity<List<PublicacionEntity>>(lstPublicaciones, HttpStatus.OK);
+		return new ResponseEntity<List<Publicacion>>(lstPublicaciones, HttpStatus.OK);
 	}
 
 	
 	@PostMapping("/publicacionApp/add")
-	public ResponseEntity<?> addPost(@RequestBody PublicacionEntity publicacion) {
+	public ResponseEntity<?> addPost(@RequestBody Publicacion publicacion) {
 				
 		ResponseStatus response = publicacionAppService.add(publicacion);
 		
@@ -59,7 +59,7 @@ private static Logger logger = LoggerFactory.getLogger(PublicacionController.cla
 	}
 	
 	@PostMapping("/publicacionApp/update")
-	public ResponseEntity<?> updatePost(@RequestBody PublicacionEntity publicacion) {
+	public ResponseEntity<?> updatePost(@RequestBody Publicacion publicacion) {
 		
 		ResponseStatus response = publicacionAppService.update(publicacion);
 

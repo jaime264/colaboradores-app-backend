@@ -1,4 +1,4 @@
-package pe.confianza.colaboradores.gcontenidos.server.model.entity;
+package pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,8 +16,8 @@ import javax.persistence.Table;
 import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
 
 @Entity
-@Table(name = "publicacion")
-public class PublicacionEntity {
+@Table(name = "publicacionApp")
+public class Publicacion {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,15 +43,18 @@ public class PublicacionEntity {
 	private Boolean flagReacion;
 
 	private Integer reacciones;
+	
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "idPublicacion")
 	private List<Comentario> comentarios;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "idPublicacion")
-	private List<VideoEntity> videos;
+	private List<Video> videos;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "idPublicacion")
-	private List<ImagenEntity> imagenes;
+	private List<Imagen> imagenes;
 
 	private String idUsuario;
 	private LogAuditoria logAuditoria;
@@ -152,19 +155,19 @@ public class PublicacionEntity {
 		this.comentarios = comentarios;
 	}
 
-	public List<VideoEntity> getVideos() {
+	public List<Video> getVideos() {
 		return videos;
 	}
 
-	public void setVideos(List<VideoEntity> videos) {
+	public void setVideos(List<Video> videos) {
 		this.videos = videos;
 	}
 
-	public List<ImagenEntity> getImagenes() {
+	public List<Imagen> getImagenes() {
 		return imagenes;
 	}
 
-	public void setImagenes(List<ImagenEntity> imagenes) {
+	public void setImagenes(List<Imagen> imagenes) {
 		this.imagenes = imagenes;
 	}
 
@@ -183,5 +186,6 @@ public class PublicacionEntity {
 	public void setLogAuditoria(LogAuditoria logAuditoria) {
 		this.logAuditoria = logAuditoria;
 	}
+	
 
 }
