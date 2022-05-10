@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.dao.ComentarioDao;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Comentario;
+import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.ComentarioDao;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Comentario;
 
 @Service
 public class ComentarioServiceImpl implements ComentarioService {
@@ -18,19 +18,16 @@ public class ComentarioServiceImpl implements ComentarioService {
 
 	@Override
 	public List<Comentario> list() {
-		// TODO Auto-generated method stub
 		return comentarioDao.findAll();
 	}
 
 	@Override
 	public List<Comentario> listByIdPublicacion(Long idPublicacion) {
-		// TODO Auto-generated method stub
-		return comentarioDao.findByIdPublicacion(idPublicacion);
+		return comentarioDao.findByPublicacion(idPublicacion);
 	}
 
 	@Override
 	public ResponseStatus add(Comentario comentario) {
-		// TODO Auto-generated method stub
 		ResponseStatus status = new ResponseStatus();
 		comentarioDao.save(comentario);
 
@@ -39,7 +36,6 @@ public class ComentarioServiceImpl implements ComentarioService {
 
 	@Override
 	public ResponseStatus update(Comentario comentario) {
-		// TODO Auto-generated method stub
 		ResponseStatus status = new ResponseStatus();
 
 		Optional<Comentario> com = comentarioDao.findById(comentario.getId());
@@ -52,7 +48,6 @@ public class ComentarioServiceImpl implements ComentarioService {
 
 	@Override
 	public ResponseStatus delete(Long idComentario) {
-		// TODO Auto-generated method stub
 		ResponseStatus status = new ResponseStatus();
 		comentarioDao.deleteById(idComentario);
 

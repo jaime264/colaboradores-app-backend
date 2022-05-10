@@ -40,9 +40,7 @@ public class Publicacion implements Serializable{
 	private Boolean flAprobacion;
 	private LogAuditoria logAuditoria;
 	
-	@Transient
-	private List<Comentario> comentarios;
-	
+
 	public Boolean getFlAprobacion() {
 		return flAprobacion;
 	}
@@ -51,13 +49,6 @@ public class Publicacion implements Serializable{
 		this.flAprobacion = flAprobacion;
 	}
 
-	public List<Comentario> getComentarios() {
-		return comentarios;
-	}
-
-	public void setComentarios(List<Comentario> comentarios) {
-		this.comentarios = comentarios;
-	}
 
 	public ObjectId get_id() {
 		return _id;

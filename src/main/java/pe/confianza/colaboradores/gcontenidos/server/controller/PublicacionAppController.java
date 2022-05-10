@@ -16,61 +16,63 @@ import org.springframework.web.bind.annotation.RestController;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Comentario;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
-import pe.confianza.colaboradores.gcontenidos.server.service.ComentarioService;
+import pe.confianza.colaboradores.gcontenidos.server.service.PublicacionAppService;
 
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = { "https://200.107.154.52:6020", "http://localhost", "http://localhost:8100", "http://localhost:4200", "http://172.20.9.12:7445", "http://172.20.10.13:7445" })
-public class ComentarioController {
 
-	private static Logger logger = LoggerFactory.getLogger(PublicacionController.class);
-
+public class PublicacionAppController {
+	
+private static Logger logger = LoggerFactory.getLogger(PublicacionController.class);
+	
 	@Autowired
-	private ComentarioService comentarioService;
+	private PublicacionAppService publicacionAppService;
 	
 	@Autowired
 	private AuditoriaService auditoriaService;
 	
+	@PostMapping("/publicacionApp/list")
+	public ResponseEntity<List<Publicacion>> show() {
+		List<Publicacion> lstPublicaciones = null;		
 	
-	@PostMapping("/comentario/list")
-	public ResponseEntity<?> show() {
-		List<Comentario> lstComentarios = null;		
-	
-		return new ResponseEntity<List<Comentario>>(lstComentarios, HttpStatus.OK);
+		return new ResponseEntity<List<Publicacion>>(lstPublicaciones, HttpStatus.OK);
 	}
 	
-	@PostMapping("/comentario/list/idPublicacion")
-	public ResponseEntity<?> listByIdPublicacion(Integer idPublicacion) {
+	@PostMapping("/publicacionApp/list/idPublicacion")
+	public ResponseEntity<List<Publicacion>> listByIdPublicacion(Integer idPublicacion) {
 		
-		List<Comentario> comentarios = new ArrayList<>();
+		List<Publicacion> lstPublicaciones = new ArrayList<>();
 		
-		return new ResponseEntity<List<Comentario>>(comentarios, HttpStatus.OK);
+		return new ResponseEntity<List<Publicacion>>(lstPublicaciones, HttpStatus.OK);
 	}
 
 	
-	@PostMapping("/comentario/add")
-	public ResponseEntity<?> addPost(@RequestBody Comentario comentario) {
+	@PostMapping("/publicacionApp/add")
+	public ResponseEntity<?> addPost(@RequestBody Publicacion publicacion) {
 				
-		ResponseStatus response = comentarioService.add(comentario);
+		ResponseStatus response = publicacionAppService.add(publicacion);
 		
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
 	
-	@PostMapping("/comentario/update")
-	public ResponseEntity<?> updatePost(@RequestBody Comentario comentario) {
+	@PostMapping("/publicacionApp/update")
+	public ResponseEntity<?> updatePost(@RequestBody Publicacion publicacion) {
 		
-		ResponseStatus response = comentarioService.update(comentario);
+		ResponseStatus response = publicacionAppService.update(publicacion);
 
 		
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
 	
-	@PostMapping("/comentario/delete")
-	public ResponseEntity<?> deletePost(Long idComentario) {
+	@PostMapping("/publicacionApp/delete")
+	public ResponseEntity<?> deletePost(Long idPublicacion) {
 		
-		ResponseStatus response = comentarioService.delete(idComentario);
+		ResponseStatus response = publicacionAppService.delete(idPublicacion);
 		
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
+
 }
