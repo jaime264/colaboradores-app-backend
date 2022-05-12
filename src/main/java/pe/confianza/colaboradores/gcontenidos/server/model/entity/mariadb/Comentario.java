@@ -15,13 +15,12 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
-
 
 @Entity
 @Table(name = "comentario")
+
 public class Comentario extends EntidadAuditoria  {	
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
@@ -144,8 +143,6 @@ public class Comentario extends EntidadAuditoria  {
 	public void setPublicacion(Publicacion publicacion) {
 		this.publicacion = publicacion;
 	}
-	
-	
 	
 	
 }

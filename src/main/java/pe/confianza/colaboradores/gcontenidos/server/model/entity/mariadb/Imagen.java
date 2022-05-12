@@ -54,8 +54,5 @@ public class Imagen extends EntidadAuditoria  {
 	public void setComentario(Comentario comentario) {
 		this.comentario = comentario;
 	}
-	
-	
-	
 
 }

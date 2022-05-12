@@ -1,5 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +18,22 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Imagen
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Video;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.http.protocol.HTTP;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
+import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.ComentarioDao;
+import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.PublicacionAppDao;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Comentario;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Publicacion;
+
+
 @Service
 public class PublicacionAppServiceImpl implements PublicacionAppService{
 
@@ -33,17 +50,16 @@ public class PublicacionAppServiceImpl implements PublicacionAppService{
 	@Autowired
 	ComentarioDao comentarioDao;
 	
-	
 	@Override
 	public List<Publicacion> list() {
 		// TODO Auto-generated method stub
-				
 		return publicacionAppDao.findAll();
 
 	}
 
 	@Override
 	public ResponseStatus add(Publicacion publicacion) {
+
 		ResponseStatus status = new ResponseStatus();
 		try {
 			
@@ -75,6 +91,8 @@ public class PublicacionAppServiceImpl implements PublicacionAppService{
 		} catch (Exception e) {
 			status.setCodeStatus(500);
 		}
+
+		// TODO Auto-generated method stub
 		return status;
 	}
 
@@ -83,6 +101,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService{
 		// TODO Auto-generated method stub
 		ResponseStatus status = new ResponseStatus();
 		
+
 		Optional<Publicacion> pub = publicacionAppDao.findById(publicacion.getId());
 		if (pub.isPresent()) {
 			
@@ -123,6 +142,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService{
 		}else {
 			status.setCodeStatus(200);
 		}
+		
 
 		return status;
 	}
@@ -131,6 +151,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService{
 	public ResponseStatus delete(Long idPublicacion) {
 		// TODO Auto-generated method stub
 		ResponseStatus status = new ResponseStatus();
+
 		Optional<Publicacion> pub = publicacionAppDao.findById(idPublicacion);
 		
 		if(pub.isPresent()) {
@@ -142,6 +163,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService{
 
 		return status;
 	}
+
 
 	@Override
 	public Publicacion publicacionById(Long id) {
@@ -155,7 +177,6 @@ public class PublicacionAppServiceImpl implements PublicacionAppService{
 		return null;
 	}
 
-	
 	
 
 }

@@ -9,13 +9,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-import org.springframework.data.annotation.Transient;
-
-import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
 
 @Entity
 @Table(name = "publicacionApp")
@@ -40,6 +36,10 @@ public class Publicacion extends EntidadAuditoria {
 	@Column(nullable = true)
 	private Integer flagAprobacion;
 
+	@Column(nullable = true)
+	private Integer flgaprobacion;
+
+
 	@Column(columnDefinition = "TIMESTAMP")
 	private LocalDateTime fecha;
 
@@ -53,6 +53,7 @@ public class Publicacion extends EntidadAuditoria {
 
 	private Integer reacciones;
 	
+
 	@ManyToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
 	private List<Comentario> comentarios;
 
@@ -66,6 +67,7 @@ public class Publicacion extends EntidadAuditoria {
 	
 	@Column(nullable = true)
 	private Boolean activo;
+
 
 	public long getId() {
 		return id;
@@ -107,12 +109,14 @@ public class Publicacion extends EntidadAuditoria {
 		this.categoria = categoria;
 	}
 
+
 	public Integer getFlagAprobacion() {
 		return flagAprobacion;
 	}
 
 	public void setFlagAprobacion(Integer flgaprobacion) {
 		this.flagAprobacion = flgaprobacion;
+
 	}
 
 	public LocalDateTime getFecha() {
@@ -186,7 +190,7 @@ public class Publicacion extends EntidadAuditoria {
 	public void setIdUsuario(String idUsuario) {
 		this.idUsuario = idUsuario;
 	}
-
+	
 	public Boolean getActivo() {
 		return activo;
 	}
@@ -194,7 +198,6 @@ public class Publicacion extends EntidadAuditoria {
 	public void setActivo(Boolean activo) {
 		this.activo = activo;
 	}	
-	
 	
 
 }

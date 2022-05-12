@@ -12,25 +12,15 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Vacaci
 @Repository
 public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramacion, Long> {
 	
-	List<VacacionProgramacion> findByEmpleado(Empleado empleado);
-	
-	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.empleado.usuarioBT = ?1")
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.empleado.usuarioBT = ?1")
 	List<VacacionProgramacion> findByUsuarioBT(String usuarioBT);
-	
-	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.empleado.usuarioBT = ?1 AND vp.idEstado = ?2 ")
-	List<VacacionProgramacion> findByUsuarioBTAndIdEstado(String usuarioBT, int idEstado);
-	
-	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.empleado.usuarioBT = ?1 AND vp.periodo = ?2 ")
-	List<VacacionProgramacion> findByUsuarioBTAndPeriodo(String usuarioBT, String periodo);
-	
-	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.empleado.usuarioBT = ?1 AND vp.periodo = ?2 AND vp.idEstado = ?3 ")
-	List<VacacionProgramacion> findByUsuarioBTAndPeriodoAndEstado(String usuarioBT, String periodo, int idEstado);
-	
-	/*List<VacacionProgramacion> findVacacionProgramacionByUsuarioBT(String usuarioBt);
 
-	List<VacacionProgramacion> findVacacionProgramacionByUsuarioBTAndPeriodo(String usuarioBt, String periodo);
-	
-	List<VacacionProgramacion> findVacacionProgramacionByUsuarioBTAndIdEstado(String usuarioBt, int idEstado);
-	
-	List<VacacionProgramacion> findVacacionProgramacionByUsuarioBTAndPeriodoAndIdEstado(String usuarioBt, String periodo, int idEstado);*/
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.empleado.usuarioBT = ?1 AND vp.idEstado = ?2 ")
+	List<VacacionProgramacion> findByUsuarioBTAndIdEstado(String usuarioBT, int idEstado);
+
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.empleado.usuarioBT = ?1 AND vp.periodo.descripcion = ?2 ")
+	List<VacacionProgramacion> findByUsuarioBTAndPeriodo(String usuarioBT, String periodo);
+
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.empleado.usuarioBT = ?1 AND vp.periodo.descripcion = ?2 AND vp.idEstado = ?3 ")
+	List<VacacionProgramacion> findByUsuarioBTAndPeriodoAndEstado(String usuarioBT, String periodo, int idEstado);
 }

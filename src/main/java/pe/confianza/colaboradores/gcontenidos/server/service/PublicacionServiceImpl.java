@@ -205,7 +205,6 @@ public class PublicacionServiceImpl implements PublicacionService {
 	public List<PublicacionOld> listPost() {
 				
 		List<PublicacionOld> publicaciones =  postDao.findAll();
-		
 		return publicaciones;
 
 	}

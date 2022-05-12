@@ -11,24 +11,22 @@ public class VacacionProgramacionMapper {
 		VacacionProgramacion destination = new VacacionProgramacion();
 		destination.setFechaInicio(source.getFechaInicio());
 		destination.setFechaFin(source.getFechaFin());
+		destination.setNumeroDias(Utilitario.obtenerDiferenciaDias(source.getFechaInicio(), source.getFechaFin()));
 		return destination;
-	}
-	
-	public static ResponseProgramacionVacacion convert(final VacacionProgramacion source) {
+		}
+
+		public static ResponseProgramacionVacacion convert(final VacacionProgramacion source) {
 		ResponseProgramacionVacacion destination = new ResponseProgramacionVacacion();
 		destination.setId(source.getId());
-		destination.setUsuarioBT(source.getEmpleado().getUsuarioBT());
+		destination.setUsuarioBT(source.getPeriodo().getEmpleado().getUsuarioBT());
 		destination.setFechaInicio(source.getFechaInicio());
 		destination.setFechaFin(source.getFechaFin());
 		destination.setIdEstado(source.getEstado().id);
 		destination.setDescripcionEstado(source.getEstado().descripcion);
-		destination.setDias(Utilitario.obtenerDiferenciaDias(source.getFechaInicio(), source.getFechaFin()));
-		destination.setPeriodo(source.getPeriodo());
+		destination.setDias(source.getNumeroDias());
+		destination.setPeriodo(source.getPeriodo().getDescripcion());
 		destination.setOrden(source.getOrden());
 		return destination;
-	}
-	
-	
+		}	
 
-	
 }

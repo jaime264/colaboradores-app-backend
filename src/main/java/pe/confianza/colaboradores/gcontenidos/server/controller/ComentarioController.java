@@ -34,7 +34,7 @@ public class ComentarioController {
 	
 	
 	@PostMapping("/comentario/list")
-	public ResponseEntity<?> show() {
+	public ResponseEntity<List<Comentario>> list() {
 		List<Comentario> lstComentarios = comentarioService.list();		
 	
 		return new ResponseEntity<List<Comentario>>(lstComentarios, HttpStatus.OK);

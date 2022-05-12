@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,8 +25,7 @@ import pe.confianza.colaboradores.gcontenidos.server.service.PublicacionAppServi
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = { "https://200.107.154.52:6020", "http://localhost", "http://localhost:8100", "http://localhost:4200", "http://172.20.9.12:7445", "http://172.20.10.13:7445" })
-@ApiOperation("Products API")
+//@CrossOrigin(origins = { "https://200.107.154.52:6020", "http://localhost", "http://localhost:8100", "http://localhost:4200", "http://172.20.9.12:7445", "http://172.20.10.13:7445" })
 public class PublicacionAppController {
 	
 private static Logger logger = LoggerFactory.getLogger(PublicacionController.class);
@@ -50,6 +51,14 @@ private static Logger logger = LoggerFactory.getLogger(PublicacionController.cla
 		return new ResponseEntity<Publicacion>(pub, HttpStatus.OK);
 	}
 
+	@PostMapping("/publicacionApp/list/idPublicacion")
+	public ResponseEntity<List<Publicacion>> listByIdPublicacion(Integer idPublicacion) {
+		
+		List<Publicacion> lstPublicaciones = new ArrayList<>();
+		
+		return new ResponseEntity<List<Publicacion>>(lstPublicaciones, HttpStatus.OK);
+	}
+
 	
 	@PostMapping("/publicacionApp/add")
 	public ResponseEntity<?> addPost(@RequestBody Publicacion publicacion) {
@@ -68,11 +77,12 @@ private static Logger logger = LoggerFactory.getLogger(PublicacionController.cla
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
 	
+
 	@PostMapping("/publicacionApp/delete/{id}")
 	public ResponseEntity<?> deletePost(@PathVariable long id) {
 		
 		ResponseStatus response = publicacionAppService.delete(id);
-		
+
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
 

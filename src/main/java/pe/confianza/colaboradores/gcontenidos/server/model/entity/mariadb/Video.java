@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "video")
 public class Video extends EntidadAuditoria  {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -55,10 +55,5 @@ public class Video extends EntidadAuditoria  {
 		this.comentario = comentario;
 	}
 
-	
-	
-	
-	
-	
 	
 }
