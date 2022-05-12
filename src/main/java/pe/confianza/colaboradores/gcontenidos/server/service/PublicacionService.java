@@ -5,19 +5,19 @@ import java.util.Optional;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Publicacion;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.PublicacionOld;
 
 public interface PublicacionService {
 	
-	public List<Publicacion> listPost();
+	public List<PublicacionOld> listPost();
 	
-	public List<Publicacion> listPostUser(String user, Long lastPost, Integer size, Boolean back);
+	public List<PublicacionOld> listPostUser(String user, Long lastPost, Integer size, Boolean back);
 	
-	public Optional<Publicacion> findByIdPost(Long id);
+	public Optional<PublicacionOld> findByIdPost(Long id);
 	
-	public Optional<Publicacion> findByIdPostUser(Long id, String user);
+	public Optional<PublicacionOld> findByIdPostUser(Long id, String user);
 	
-	public ResponseStatus createPost(List<Publicacion> post);
+	public ResponseStatus createPost(List<PublicacionOld> post);
 	
 	public ResponseStatus addReaccion(ParamsReaccion paramsReaccion);
 

@@ -13,18 +13,21 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
 
 
 @Entity
 @Table(name = "comentario")
-public class Comentario {	
+public class Comentario extends EntidadAuditoria  {	
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
 	@ManyToOne
+	@JsonIgnore
 	@JoinColumn(nullable = true, name = "idPublciacion")
 	private Publicacion publicacion;
 	
@@ -46,8 +49,6 @@ public class Comentario {
 
 	private String idUsuario;
 	
-	private LogAuditoria logAuditoria;
-
 	public long getId() {
 		return id;
 	}
@@ -134,14 +135,6 @@ public class Comentario {
 
 	public void setIdUsuario(String idUsuario) {
 		this.idUsuario = idUsuario;
-	}
-
-	public LogAuditoria getLogAuditoria() {
-		return logAuditoria;
-	}
-
-	public void setLogAuditoria(LogAuditoria logAuditoria) {
-		this.logAuditoria = logAuditoria;
 	}
 
 	public Publicacion getPublicacion() {

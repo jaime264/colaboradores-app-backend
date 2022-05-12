@@ -8,19 +8,23 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "imagen")
-public class Imagen {
+public class Imagen extends EntidadAuditoria  {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@ManyToOne
+	@JsonIgnore
 	@JoinColumn(nullable = true, name = "idPublciacion")
 	private Publicacion publicacion;
 	
 	@ManyToOne
+	@JsonIgnore
 	@JoinColumn(nullable = true, name = "idComentario")
 	private Comentario comentario;
 	
@@ -49,7 +53,9 @@ public class Imagen {
 	}
 	public void setComentario(Comentario comentario) {
 		this.comentario = comentario;
-	}	
+	}
+	
+	
 	
 
 }

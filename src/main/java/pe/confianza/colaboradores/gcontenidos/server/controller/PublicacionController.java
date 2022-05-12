@@ -25,7 +25,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsPublicacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.bean.Usuario;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Publicacion;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.PublicacionOld;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.PublicacionService;
 
@@ -44,7 +44,7 @@ public class PublicacionController {
 	
 	@PostMapping("/publicacion/list")
 	public ResponseEntity<?> show() {
-		List<Publicacion> lstPosts = null;
+		List<PublicacionOld> lstPosts = null;
 		Map<String, Object> response = new HashMap<>();
 		Gson gson = new Gson();
 		
@@ -70,12 +70,12 @@ public class PublicacionController {
 			auditoriaService.createAuditoria("002", "008", 0, "OK", BsonDocument.parse(jsonData));
 		}*/
 		
-		return new ResponseEntity<List<Publicacion>>(lstPosts, HttpStatus.OK);
+		return new ResponseEntity<List<PublicacionOld>>(lstPosts, HttpStatus.OK);
 	}
 	
 	@PostMapping("/publicacion/user")
 	public ResponseEntity<?> listPostsUser(@RequestBody Usuario user) {
-		List<Publicacion> lstPosts = null;
+		List<PublicacionOld> lstPosts = null;
 		Map<String, Object> response = new HashMap<>();
 		Gson gson = new Gson();
 		logger.info("Usuario consulta: " + user.getUsuarioBT());
@@ -102,12 +102,12 @@ public class PublicacionController {
 			auditoriaService.createAuditoria("002", "008", 0, "OK", BsonDocument.parse(jsonData));
 		}
 		
-		return new ResponseEntity<List<Publicacion>>(lstPosts, HttpStatus.OK);
+		return new ResponseEntity<List<PublicacionOld>>(lstPosts, HttpStatus.OK);
 	}
 	
 	@PostMapping("/publicacion/id")
 	public ResponseEntity<?> postId(@RequestBody ParamsPublicacion paramsPublicacion) {
-		Optional<Publicacion> publicacion = null;
+		Optional<PublicacionOld> publicacion = null;
 		Map<String, Object> response = new HashMap<>();
 		Gson gson = new Gson();
 		logger.info("IdPublicación consulta: " + paramsPublicacion.getIdPost());
@@ -135,13 +135,13 @@ public class PublicacionController {
 
 		}
 		
-		return new ResponseEntity<Optional<Publicacion>>(publicacion, HttpStatus.OK);
+		return new ResponseEntity<Optional<PublicacionOld>>(publicacion, HttpStatus.OK);
 	}
 	
 	@PostMapping("/publicacion/add")
-	public ResponseEntity<?> addPost(@RequestBody Publicacion publicacion) {
+	public ResponseEntity<?> addPost(@RequestBody PublicacionOld publicacion) {
 		ResponseStatus responseStatus = null;
-		List<Publicacion> posts = new ArrayList<Publicacion>();
+		List<PublicacionOld> posts = new ArrayList<PublicacionOld>();
 		Map<String, Object> response = new HashMap<>();
 		Gson gson = new Gson();
 		logger.info("IdPublicación registro: " + publicacion.getId());

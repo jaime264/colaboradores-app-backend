@@ -13,6 +13,8 @@ public interface PublicacionAppService {
 	public List<Publicacion> list();
 
 	public ResponseStatus add(Publicacion publicacion);
+	
+	public Publicacion publicacionById(Long id);
 
 	public ResponseStatus update(Publicacion publicacion);
 

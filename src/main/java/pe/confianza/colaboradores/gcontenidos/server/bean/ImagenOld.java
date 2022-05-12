@@ -2,7 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.bean;
 
 import java.io.Serializable;
 
-public class Imagen implements Serializable {
+public class ImagenOld implements Serializable {
 	
 	private Long id;
 	private String src;

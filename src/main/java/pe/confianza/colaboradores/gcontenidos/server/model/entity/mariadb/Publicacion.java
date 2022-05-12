@@ -13,23 +13,32 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import org.springframework.data.annotation.Transient;
+
 import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
 
 @Entity
 @Table(name = "publicacionApp")
-public class Publicacion {
+public class Publicacion extends EntidadAuditoria {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
+	@Column(nullable = true)
 	private String Descripcion;
+	
+	@Column(nullable = true)
 	private String menu;
+	
+	@Column(nullable = true)
 	private String submenu;
+	
+	@Column(nullable = true)
 	private String categoria;
 
 	@Column(nullable = true)
-	private Integer flgaprobacion;
+	private Integer flagAprobacion;
 
 	@Column(columnDefinition = "TIMESTAMP")
 	private LocalDateTime fecha;
@@ -44,20 +53,19 @@ public class Publicacion {
 
 	private Integer reacciones;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "idPublicacion")
+	@ManyToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
 	private List<Comentario> comentarios;
 
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "idPublicacion")
+	@ManyToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
 	private List<Video> videos;
 
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "idPublicacion")
+	@ManyToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
 	private List<Imagen> imagenes;
 
 	private String idUsuario;
-	private LogAuditoria logAuditoria;
+	
+	@Column(nullable = true)
+	private Boolean activo;
 
 	public long getId() {
 		return id;
@@ -99,12 +107,12 @@ public class Publicacion {
 		this.categoria = categoria;
 	}
 
-	public Integer getFlgaprobacion() {
-		return flgaprobacion;
+	public Integer getFlagAprobacion() {
+		return flagAprobacion;
 	}
 
-	public void setFlgaprobacion(Integer flgaprobacion) {
-		this.flgaprobacion = flgaprobacion;
+	public void setFlagAprobacion(Integer flgaprobacion) {
+		this.flagAprobacion = flgaprobacion;
 	}
 
 	public LocalDateTime getFecha() {
@@ -179,13 +187,14 @@ public class Publicacion {
 		this.idUsuario = idUsuario;
 	}
 
-	public LogAuditoria getLogAuditoria() {
-		return logAuditoria;
+	public Boolean getActivo() {
+		return activo;
 	}
 
-	public void setLogAuditoria(LogAuditoria logAuditoria) {
-		this.logAuditoria = logAuditoria;
-	}
+	public void setActivo(Boolean activo) {
+		this.activo = activo;
+	}	
+	
 	
 
 }

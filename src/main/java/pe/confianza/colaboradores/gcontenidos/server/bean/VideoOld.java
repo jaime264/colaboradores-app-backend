@@ -2,7 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.bean;
 
 import java.io.Serializable;
 
-public class Video implements Serializable {
+public class VideoOld implements Serializable {
 	
 	private Long id;
 	private String url;

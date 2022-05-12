@@ -19,7 +19,7 @@ import pe.confianza.colaboradores.gcontenidos.server.dao.PublicacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.dao.PublicacionUsuarioDao;
 import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.ComentarioDao;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.Dispositivo;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Publicacion;
+import pe.confianza.colaboradores.gcontenidos.server.model.entity.PublicacionOld;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.PublicacionUsuario;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Comentario;
 
@@ -39,8 +39,8 @@ public class PublicacionServiceImpl implements PublicacionService {
 	private ComentarioDao comentarioDao;
 
 	@Override
-	public ResponseStatus createPost(List<Publicacion> postsIn) {
-		List<Publicacion> postsOut = new ArrayList<Publicacion>();
+	public ResponseStatus createPost(List<PublicacionOld> postsIn) {
+		List<PublicacionOld> postsOut = new ArrayList<PublicacionOld>();
 		List<Dispositivo> devices = new ArrayList<Dispositivo>();
 		ResponseStatus status = new ResponseStatus();
 		try {
@@ -49,7 +49,7 @@ public class PublicacionServiceImpl implements PublicacionService {
 				if (msgValidar.equals("OK")) {
 					postsOut = postDao.saveAll(postsIn);
 					if (postsOut.size() > 0) {
-						for (Publicacion publicacion : postsOut) {
+						for (PublicacionOld publicacion : postsOut) {
 							List<PublicacionUsuario> relacion = new ArrayList<PublicacionUsuario>();
 							List<String> usuarios = new ArrayList<String>();
 							for (Usuario usuario: publicacion.getUsuarios()) {
@@ -106,11 +106,11 @@ public class PublicacionServiceImpl implements PublicacionService {
 				relationSave.add(savePU);
 				List<PublicacionUsuario> relationOut = relationDao.saveAll(relationSave);
 				if (relationOut.size() > 0) {
-					Optional<Publicacion> resultPU = postDao.findByIdPost(pu.getIdPublicacion());
-					List<Publicacion> inPublicacion = new ArrayList<Publicacion>();
-					List<Publicacion> outPublicacion = new ArrayList<Publicacion>();
+					Optional<PublicacionOld> resultPU = postDao.findByIdPost(pu.getIdPublicacion());
+					List<PublicacionOld> inPublicacion = new ArrayList<PublicacionOld>();
+					List<PublicacionOld> outPublicacion = new ArrayList<PublicacionOld>();
 					if (resultPU != null && resultPU.isPresent()) {
-						Publicacion publicacion = resultPU.get();
+						PublicacionOld publicacion = resultPU.get();
 						List<ReaccionPost> lstReacciones = new ArrayList<ReaccionPost>();
 						int reaccion = paramsReaccion.getIdReaccion();
 						int reaccionAnterior = savePU.getIdReaccionAnterior();
@@ -166,14 +166,14 @@ public class PublicacionServiceImpl implements PublicacionService {
 	}
 	
 	@Override
-	public Optional<Publicacion> findByIdPost(Long id) {		
+	public Optional<PublicacionOld> findByIdPost(Long id) {		
 		return postDao.findByIdPost(id);
 	}
 	
 	@Override
-	public Optional<Publicacion> findByIdPostUser(Long id, String user) {		
-		Optional<Publicacion> optional = postDao.findByIdPost(id);
-		Publicacion post = optional.get();
+	public Optional<PublicacionOld> findByIdPostUser(Long id, String user) {		
+		Optional<PublicacionOld> optional = postDao.findByIdPost(id);
+		PublicacionOld post = optional.get();
 		if (post != null) {
 			// Seteamos solo el usuario de busqueda
 			List<Usuario> lstUsuarios = new ArrayList<Usuario>();
@@ -202,18 +202,18 @@ public class PublicacionServiceImpl implements PublicacionService {
 	}
 
 	@Override
-	public List<Publicacion> listPost() {
+	public List<PublicacionOld> listPost() {
 				
-		List<Publicacion> publicaciones =  postDao.findAll();
+		List<PublicacionOld> publicaciones =  postDao.findAll();
 		
 		return publicaciones;
 
 	}
 	
 	@Override
-	public List<Publicacion> listPostUser(String user, Long lastPost, Integer size, Boolean back) {
-		List<Publicacion> lstFinal = new ArrayList<Publicacion>();
-		List<Publicacion> lstFind = new ArrayList<Publicacion>();
+	public List<PublicacionOld> listPostUser(String user, Long lastPost, Integer size, Boolean back) {
+		List<PublicacionOld> lstFinal = new ArrayList<PublicacionOld>();
+		List<PublicacionOld> lstFind = new ArrayList<PublicacionOld>();
 		if (!back) {
 			//List<Publicacion> lstFind = postDao.findAllUser(user, lastPost);
 			PageRequest request = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "fecha"));
@@ -232,7 +232,7 @@ public class PublicacionServiceImpl implements PublicacionService {
 			usuario.setUsuarioBT(user);
 			usuario.setUltimaPublicacion(lastPost);
 			lstUsuarios.add(usuario);
-			for(Publicacion post : lstFind) {
+			for(PublicacionOld post : lstFind) {
 				post.setUsuarios(lstUsuarios);
 				// Validamos el estado de la reacción
 				List<PublicacionUsuario> relaciones = relationDao.findAllReaction(post.getId(), user);
@@ -255,7 +255,7 @@ public class PublicacionServiceImpl implements PublicacionService {
 		return lstFinal;
 	}				
 	
-	private String validatePost(Publicacion post) {
+	private String validatePost(PublicacionOld post) {
 		String validado = null;
 		if (post.getTitulo() == null || post.getTitulo().equals("")) {
 			validado = "Debe ingresar un titulo para la publicación";

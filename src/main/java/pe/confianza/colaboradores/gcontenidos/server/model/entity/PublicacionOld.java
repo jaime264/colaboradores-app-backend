@@ -8,14 +8,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import pe.confianza.colaboradores.gcontenidos.server.bean.Imagen;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ImagenOld;
 import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ReaccionPost;
 import pe.confianza.colaboradores.gcontenidos.server.bean.Usuario;
-import pe.confianza.colaboradores.gcontenidos.server.bean.Video;
+import pe.confianza.colaboradores.gcontenidos.server.bean.VideoOld;
 
 @Document(collection= "publicacion")
-public class Publicacion implements Serializable{
+public class PublicacionOld implements Serializable{
 		
 	@Id private ObjectId _id;
 	private Long id;
@@ -32,8 +32,8 @@ public class Publicacion implements Serializable{
 	private String detalle;
 	private Integer flgmultimedia;
 	private Integer flgpermanente;
-	private List<Imagen> imagenes;
-	private List<Video> videos;
+	private List<ImagenOld> imagenes;
+	private List<VideoOld> videos;
 	private Integer flgreaccion;
 	private List<ReaccionPost> reacciones;
 	private List<Usuario> usuarios;
@@ -170,19 +170,19 @@ public class Publicacion implements Serializable{
 		this.flgpermanente = flgpermanente;
 	}
 
-	public List<Imagen> getImagenes() {
+	public List<ImagenOld> getImagenes() {
 		return imagenes;
 	}
 
-	public void setImagenes(List<Imagen> imagenes) {
+	public void setImagenes(List<ImagenOld> imagenes) {
 		this.imagenes = imagenes;
 	}
 
-	public List<Video> getVideos() {
+	public List<VideoOld> getVideos() {
 		return videos;
 	}
 
-	public void setVideos(List<Video> videos) {
+	public void setVideos(List<VideoOld> videos) {
 		this.videos = videos;
 	}
 
