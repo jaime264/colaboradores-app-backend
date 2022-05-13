@@ -43,20 +43,13 @@ private static Logger logger = LoggerFactory.getLogger(PublicacionController.cla
 		return new ResponseEntity<List<Publicacion>>(lstPublicaciones, HttpStatus.OK);
 	}
 	
-	@PostMapping("/publicacionApp/{id}")
-	public ResponseEntity<Publicacion> listByIdPublicacion(@PathVariable long id) {
+	
+	@PostMapping("/publicacionApp/get/id")
+	public ResponseEntity<Publicacion> listByIdPublicacion(Long idPublicacion) {
 		
-		Publicacion pub = publicacionAppService.publicacionById(id);
+		Publicacion publicaciones = publicacionAppService.publicacionById(idPublicacion);
 		
-		return new ResponseEntity<Publicacion>(pub, HttpStatus.OK);
-	}
-
-	@PostMapping("/publicacionApp/list/idPublicacion")
-	public ResponseEntity<List<Publicacion>> listByIdPublicacion(Integer idPublicacion) {
-		
-		List<Publicacion> lstPublicaciones = new ArrayList<>();
-		
-		return new ResponseEntity<List<Publicacion>>(lstPublicaciones, HttpStatus.OK);
+		return new ResponseEntity<Publicacion>(publicaciones, HttpStatus.OK);
 	}
 
 	
@@ -78,10 +71,10 @@ private static Logger logger = LoggerFactory.getLogger(PublicacionController.cla
 	}
 	
 
-	@PostMapping("/publicacionApp/delete/{id}")
-	public ResponseEntity<?> deletePost(@PathVariable long id) {
+	@PostMapping("/publicacionApp/delete/id")
+	public ResponseEntity<?> deletePost(Long idPublicacion) {
 		
-		ResponseStatus response = publicacionAppService.delete(id);
+		ResponseStatus response = publicacionAppService.delete(idPublicacion);
 
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
