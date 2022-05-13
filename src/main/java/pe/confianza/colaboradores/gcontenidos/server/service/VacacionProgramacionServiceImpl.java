@@ -23,64 +23,64 @@ import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 
 @Service
 public class VacacionProgramacionServiceImpl implements VacacionProgramacionService {
-
+	
 	private static Logger logger = LoggerFactory.getLogger(VacacionProgramacionServiceImpl.class);
-
+	
+	
 	private final int DIAS_VACACIONES_PERIODO = 30;
-
+	
 	@Autowired
 	private VacacionProgramacionDao vacacionProgramacionDao;
-
+	
 	@Autowired
 	private EmpleadoService empleadoService;
-
+	
 	@Autowired
 	private ProgramacionVacacionesValidacion programacionVacacionesValidacion;
+	
+
 
 	@Override
 	public ResponseProgramacionVacacion registroProgramacion(RequestProgramacionVacacion programacion) {
-		logger.info("[BEGIN] registroProgramacion: {} - {} - {}", new Object[] { programacion.getUsuarioBT(),
-				programacion.getFechaInicio(), programacion.getFechaFin() });
+		logger.info("[BEGIN] registroProgramacion: {} - {} - {}", new Object[] {programacion.getUsuarioBT(), programacion.getFechaInicio(), programacion.getFechaFin()});
 		programacionVacacionesValidacion.validarFechaRegistroProgramacion(programacion.getFechaInicio());
 		Empleado empleado = empleadoService.actualizarInformacionEmpleado(programacion.getUsuarioBT().trim());
-		if (empleado == null)
+		if(empleado == null)
 			throw new AppException("No existe el usuario " + programacion.getUsuarioBT());
-
+		
 		VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(programacion);
 		vacacionProgramacion.setEstado(EstadoVacacion.REGISTRADO);
-//vacacionProgramacion.setPeriodo("");
-//vacacionProgramacion.setEmpleado(empleado);
+		//vacacionProgramacion.setPeriodo("");
+		//vacacionProgramacion.setEmpleado(empleado);
 		vacacionProgramacion.setFechaCrea(LocalDate.now());
 		vacacionProgramacion.setUsuarioCrea(programacion.getUsuarioOperacion().trim());
-
+		
 		programacionVacacionesValidacion.validarEmpleadoNuevo(vacacionProgramacion, empleado);
 		programacionVacacionesValidacion.validarRangoFechas(vacacionProgramacion);
 		programacionVacacionesValidacion.validarTramoVacaciones(vacacionProgramacion);
-		vacacionProgramacion = programacionVacacionesValidacion.obtenerOrdenProgramacion(vacacionProgramacion,
-				programacion.getUsuarioOperacion());
-
+		vacacionProgramacion = programacionVacacionesValidacion.obtenerOrdenProgramacion(vacacionProgramacion, programacion.getUsuarioOperacion());
+		
 		vacacionProgramacion = vacacionProgramacionDao.save(vacacionProgramacion);
 		logger.info("[END] registroProgramacion");
 		return VacacionProgramacionMapper.convert(vacacionProgramacion);
-
+	
 	}
-
+	
 	@Override
 	public List<ResponseProgramacionVacacion> obtenerProgramacion(String estado, String periodo, String usuarioBt) {
-		logger.info("[BEGIN] obtenerProgramacion: {} - {} - {}", new Object[] { estado, periodo, usuarioBt });
+		logger.info("[BEGIN] obtenerProgramacion: {} - {} - {}", new Object[] {estado, periodo, usuarioBt});
 		List<VacacionProgramacion> programacion = new ArrayList<>();
 		EstadoVacacion estadoSeleccionado = EstadoVacacion.getEstado(estado);
-		if (estadoSeleccionado == null && !StringUtils.isEmpty(periodo)) {
+		if(estadoSeleccionado == null && !StringUtils.isEmpty(periodo)) {
 			programacion = vacacionProgramacionDao.findByUsuarioBTAndPeriodo(usuarioBt, periodo);
 		}
-		if (estadoSeleccionado != null && StringUtils.isEmpty(periodo)) {
+		if(estadoSeleccionado != null && StringUtils.isEmpty(periodo)) {
 			programacion = vacacionProgramacionDao.findByUsuarioBTAndIdEstado(usuarioBt, estadoSeleccionado.id);
 		}
-		if (estadoSeleccionado != null && !StringUtils.isEmpty(periodo)) {
-			programacion = vacacionProgramacionDao.findByUsuarioBTAndPeriodoAndEstado(usuarioBt, periodo,
-					estadoSeleccionado.id);
+		if(estadoSeleccionado != null && !StringUtils.isEmpty(periodo)) {
+			programacion = vacacionProgramacionDao.findByUsuarioBTAndPeriodoAndEstado(usuarioBt, periodo, estadoSeleccionado.id);
 		}
-		if (estadoSeleccionado == null && StringUtils.isEmpty(periodo)) {
+		if(estadoSeleccionado == null && StringUtils.isEmpty(periodo)) {
 			programacion = vacacionProgramacionDao.findByUsuarioBT(usuarioBt);
 		}
 		logger.info("[END] obtenerProgramacion");
@@ -88,5 +88,10 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 			return VacacionProgramacionMapper.convert(p);
 		}).collect(Collectors.toList());
 	}
+	
+	
+	
+	
+	
 
 }

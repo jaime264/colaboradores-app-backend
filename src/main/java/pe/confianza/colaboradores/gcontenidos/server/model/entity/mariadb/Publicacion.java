@@ -9,7 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 
@@ -54,13 +54,13 @@ public class Publicacion extends EntidadAuditoria {
 	private Integer reacciones;
 	
 
-	@ManyToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
 	private List<Comentario> comentarios;
 
-	@ManyToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
 	private List<Video> videos;
 
-	@ManyToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
 	private List<Imagen> imagenes;
 
 	private String idUsuario;

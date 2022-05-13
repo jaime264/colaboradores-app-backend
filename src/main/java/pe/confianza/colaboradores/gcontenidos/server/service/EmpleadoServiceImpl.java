@@ -20,18 +20,18 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Puesto
 
 @Service
 public class EmpleadoServiceImpl implements EmpleadoService {
-
+	
 	private static Logger LOGGER = LoggerFactory.getLogger(EmpleadoServiceImpl.class);
-
+	
 	@Autowired
 	private EmpleadoDao empleadoDao;
-
+	
 	@Autowired
 	private PuestoDao puestoDao;
-
+	
 	@Autowired
 	private AgenciaDao agenciaDao;
-
+	
 	@Autowired
 	private EmpleadoApi empleadoApi;
 

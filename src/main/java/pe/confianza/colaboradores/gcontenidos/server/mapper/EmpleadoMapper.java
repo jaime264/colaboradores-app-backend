@@ -5,6 +5,7 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Emplea
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 public class EmpleadoMapper {
+	
 	public static Empleado convert(final pe.confianza.colaboradores.gcontenidos.server.bean.Empleado source) {
 		Empleado destination = new Empleado();
 		destination.setCodigo(source.getIdEmpleado());
@@ -22,7 +23,7 @@ public class EmpleadoMapper {
 		destination.setUsuarioBT(source.getUsuarioBT() != null ? source.getUsuarioBT().trim() : null);
 		return destination;
 	}
-
+	
 	public static Empleado convert(final EmpleadoRes source) {
 		Empleado destination = new Empleado();
 		destination.setCodigo(source.getIdEmpleado());
@@ -40,4 +41,5 @@ public class EmpleadoMapper {
 		destination.setUsuarioBT(source.getUsuarioBT() != null ? source.getUsuarioBT().trim() : null);
 		return destination;
 	}
+
 }

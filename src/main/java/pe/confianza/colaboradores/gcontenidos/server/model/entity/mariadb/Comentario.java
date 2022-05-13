@@ -9,8 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,7 +27,7 @@ public class Comentario extends EntidadAuditoria  {
 
 	@ManyToOne
 	@JsonIgnore
-	@JoinColumn(nullable = true, name = "idPublciacion")
+	@JoinColumn(nullable = true, name = "idPublicacion")
 	private Publicacion publicacion;
 	
 	private String descripcion;
@@ -38,12 +38,10 @@ public class Comentario extends EntidadAuditoria  {
 	private Integer flgreaccion;
 	private Integer reacciones;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "idImagen")
+	@OneToMany(mappedBy = "comentario",  fetch = FetchType.LAZY)
 	private List<Imagen> imagenes;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "idVideo")
+	@OneToMany(mappedBy = "comentario", fetch = FetchType.LAZY)
 	private List<Video> videos;
 
 	private String idUsuario;

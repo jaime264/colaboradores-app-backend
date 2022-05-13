@@ -20,7 +20,7 @@ public class Video extends EntidadAuditoria  {
 	
 	@ManyToOne
 	@JsonIgnore
-	@JoinColumn(nullable = true, name = "idPublciacion")
+	@JoinColumn(nullable = true, name = "idPublicacion")
 	private Publicacion publicacion;
 	
 	@ManyToOne

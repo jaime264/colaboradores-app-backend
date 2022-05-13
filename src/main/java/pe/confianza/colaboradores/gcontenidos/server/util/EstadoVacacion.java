@@ -6,7 +6,8 @@ public enum EstadoVacacion {
 	GENERADO(2, "Generado"),
 	APROBADO(3, "Aprobado"),
 	RECHAZADO(4, "Rechazado"),
-	GOZADO(5, "Gozado");
+	GOZANDO(5, "Gozando"),
+	GOZADO(6, "Gozado");
 	
 	public int id;
 	public String descripcion;

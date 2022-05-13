@@ -13,9 +13,9 @@ public class VacacionProgramacionMapper {
 		destination.setFechaFin(source.getFechaFin());
 		destination.setNumeroDias(Utilitario.obtenerDiferenciaDias(source.getFechaInicio(), source.getFechaFin()));
 		return destination;
-		}
-
-		public static ResponseProgramacionVacacion convert(final VacacionProgramacion source) {
+	}
+	
+	public static ResponseProgramacionVacacion convert(final VacacionProgramacion source) {
 		ResponseProgramacionVacacion destination = new ResponseProgramacionVacacion();
 		destination.setId(source.getId());
 		destination.setUsuarioBT(source.getPeriodo().getEmpleado().getUsuarioBT());
@@ -27,6 +27,9 @@ public class VacacionProgramacionMapper {
 		destination.setPeriodo(source.getPeriodo().getDescripcion());
 		destination.setOrden(source.getOrden());
 		return destination;
-		}	
+	}
+	
+	
 
+	
 }

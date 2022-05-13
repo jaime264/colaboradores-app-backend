@@ -25,10 +25,7 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne
-	@JoinColumn(nullable = false, name = "idEmpleado")
-	private Empleado empleado;
-
+	
 	@Column(columnDefinition = "DATE" )
 	private LocalDate fechaInicio;
 	
@@ -41,7 +38,7 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 	private int orden;
 	
 	private int idEstado;
-
+	
 	@ManyToOne
 	@JoinColumn(nullable = true, name = "idPeriodo")
 	private PeriodoVacacion periodo;	
@@ -66,15 +63,17 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 		this.id = id;
 	}
 
+	
 
-	public Empleado getEmpleado() {
-		return empleado;
+	public void setPeriodo(PeriodoVacacion periodo) {
+		this.periodo = periodo;
 	}
+	
+	
 
-	public void setEmpleado(Empleado empleado) {
-		this.empleado = empleado;
+	public PeriodoVacacion getPeriodo() {
+		return periodo;
 	}
-
 
 	public LocalDate getFechaInicio() {
 		return fechaInicio;
@@ -115,15 +114,6 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 	public void setNumeroDias(int numeroDias) {
 		this.numeroDias = numeroDias;
 	}
-
-	public PeriodoVacacion getPeriodo() {
-		return periodo;
-	}
-
-	public void setPeriodo(PeriodoVacacion periodo) {
-		this.periodo = periodo;
-	}
-	
 	
 	
 }

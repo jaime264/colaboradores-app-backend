@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestBuscarPorId;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
@@ -76,14 +77,14 @@ public class ParametrosController {
 		}
 	}
 	
-	@GetMapping("/parametro/{id}")
-	public ResponseEntity<ResponseStatus> obtenerParametro(@PathVariable long id) {
-		logger.info("Obtener parametro con id: {} " , new Object[] { id });
+	@GetMapping("/parametro")
+	public ResponseEntity<ResponseStatus> obtenerParametro(@RequestBody RequestBuscarPorId request) {
+		logger.info("Obtener parametro con id: {} " , new Object[] { request.getId() });
 		ResponseStatus responseStatus = new ResponseStatus();
 		try {
 			responseStatus.setCodeStatus(Constantes.COD_OK);
 			responseStatus.setMsgStatus(Constantes.OK);
-			responseStatus.setResultObj(parametrosService.buscarPorId(id));
+			responseStatus.setResultObj(parametrosService.buscarPorId(request.getId()));
 			return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 		} catch (Exception e) {
 			responseStatus.setCodeStatus(Constantes.COD_ERR);

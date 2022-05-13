@@ -66,7 +66,7 @@ public class Empleado {
 	
 	@Column(columnDefinition = "TIMESTAMP" )
 	private LocalDateTime fechaActualizacion;
-
+	
 	@Column(nullable = true)
 	private Long codigoUnidadNegocio;
 	
@@ -251,4 +251,5 @@ public class Empleado {
 	}
 	
 	
+
 }
