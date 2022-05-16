@@ -77,7 +77,7 @@ public class ParametrosController {
 		}
 	}
 	
-	@GetMapping("/parametro")
+	@PostMapping("/parametro")
 	public ResponseEntity<ResponseStatus> obtenerParametro(@RequestBody RequestBuscarPorId request) {
 		logger.info("Obtener parametro con id: {} " , new Object[] { request.getId() });
 		ResponseStatus responseStatus = new ResponseStatus();
