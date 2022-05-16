@@ -17,6 +17,7 @@ public class Dispositivo implements Serializable {
 	@Id	private ObjectId _id;
 	private String usuario;
 	private String idDispositivo;
+	private String idDispositivoFirebase;
 	
 	public ObjectId get_id() {
 		return _id;
@@ -36,10 +37,18 @@ public class Dispositivo implements Serializable {
 	public void setIdDispositivo(String idDispositivo) {
 		this.idDispositivo = idDispositivo;
 	}
-	
+	public String getIdDispositivoFirebase() {
+		return idDispositivoFirebase;
+	}
+	public void setIdDispositivoFirebase(String idDispositivoFirebase) {
+		this.idDispositivoFirebase = idDispositivoFirebase;
+	}
 	@Override
-    public String toString() {
-        return "Dispositivo [_id= " + _id + ", usuario=" + usuario + ", device=" + idDispositivo + "]";
-    }
+	public String toString() {
+		return "Dispositivo [_id=" + _id + ", usuario=" + usuario + ", idDispositivo=" + idDispositivo
+				+ ", idDispositivoFirebase=" + idDispositivoFirebase + "]";
+	}
+	
+	
 
 }
