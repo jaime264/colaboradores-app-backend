@@ -36,10 +36,6 @@ public class Publicacion extends EntidadAuditoria {
 	@Column(nullable = true)
 	private Integer flagAprobacion;
 
-	@Column(nullable = true)
-	private Integer flgaprobacion;
-
-
 	@Column(columnDefinition = "TIMESTAMP")
 	private LocalDateTime fecha;
 
@@ -53,7 +49,9 @@ public class Publicacion extends EntidadAuditoria {
 
 	private Integer reacciones;
 	
-
+	@Column(nullable = true)
+	private String observacion;
+	
 	@OneToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
 	private List<Comentario> comentarios;
 
@@ -67,7 +65,6 @@ public class Publicacion extends EntidadAuditoria {
 	
 	@Column(nullable = true)
 	private Boolean activo;
-
 
 	public long getId() {
 		return id;
@@ -109,14 +106,12 @@ public class Publicacion extends EntidadAuditoria {
 		this.categoria = categoria;
 	}
 
-
 	public Integer getFlagAprobacion() {
 		return flagAprobacion;
 	}
 
-	public void setFlagAprobacion(Integer flgaprobacion) {
-		this.flagAprobacion = flgaprobacion;
-
+	public void setFlagAprobacion(Integer flagAprobacion) {
+		this.flagAprobacion = flagAprobacion;
 	}
 
 	public LocalDateTime getFecha() {
@@ -159,6 +154,14 @@ public class Publicacion extends EntidadAuditoria {
 		this.reacciones = reacciones;
 	}
 
+	public String getObservacion() {
+		return observacion;
+	}
+
+	public void setObservacion(String observacion) {
+		this.observacion = observacion;
+	}
+
 	public List<Comentario> getComentarios() {
 		return comentarios;
 	}
@@ -190,7 +193,7 @@ public class Publicacion extends EntidadAuditoria {
 	public void setIdUsuario(String idUsuario) {
 		this.idUsuario = idUsuario;
 	}
-	
+
 	public Boolean getActivo() {
 		return activo;
 	}
@@ -198,6 +201,5 @@ public class Publicacion extends EntidadAuditoria {
 	public void setActivo(Boolean activo) {
 		this.activo = activo;
 	}	
-	
 
 }

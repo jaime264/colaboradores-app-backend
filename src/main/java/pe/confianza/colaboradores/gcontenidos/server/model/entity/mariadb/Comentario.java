@@ -3,6 +3,7 @@ package pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -18,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "comentario")
-
 public class Comentario extends EntidadAuditoria  {	
 
 	@Id
@@ -30,13 +30,29 @@ public class Comentario extends EntidadAuditoria  {
 	@JoinColumn(nullable = true, name = "idPublicacion")
 	private Publicacion publicacion;
 	
+	@Column(nullable = true)
 	private String descripcion;
+	
+	@Column(nullable = true)
 	private Boolean flAprobacion;
+	
+	@Column(nullable = true)
 	private Date fecha;
+	
+	@Column(nullable = true)
 	private Date fechaInicio;
-	private Date fechaFin; 
+	
+	@Column(nullable = true)
+	private Date fechaFin;
+	
+	@Column(nullable = true)
 	private Integer flgreaccion;
+	
+	@Column(nullable = true)
 	private Integer reacciones;
+	
+	@Column(nullable = true)
+	private Boolean activo;
 	
 	@OneToMany(mappedBy = "comentario",  fetch = FetchType.LAZY)
 	private List<Imagen> imagenes;
@@ -44,7 +60,10 @@ public class Comentario extends EntidadAuditoria  {
 	@OneToMany(mappedBy = "comentario", fetch = FetchType.LAZY)
 	private List<Video> videos;
 
+	@Column(nullable = true)
 	private String idUsuario;
+	
+	
 	
 	public long getId() {
 		return id;
@@ -140,6 +159,14 @@ public class Comentario extends EntidadAuditoria  {
 
 	public void setPublicacion(Publicacion publicacion) {
 		this.publicacion = publicacion;
+	}
+
+	public Boolean getActivo() {
+		return activo;
+	}
+
+	public void setActivo(Boolean activo) {
+		this.activo = activo;
 	}
 	
 	

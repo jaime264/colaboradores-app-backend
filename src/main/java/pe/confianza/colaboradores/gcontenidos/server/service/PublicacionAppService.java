@@ -11,6 +11,8 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Public
 public interface PublicacionAppService {
 
 	public List<Publicacion> list();
+	
+	public List<Publicacion> listByActivo();
 
 	public ResponseStatus add(Publicacion publicacion);
 	

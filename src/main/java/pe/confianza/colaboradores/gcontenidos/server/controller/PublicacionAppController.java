@@ -1,6 +1,5 @@
 package pe.confianza.colaboradores.gcontenidos.server.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -8,19 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.annotations.ApiOperation;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Publicacion;
-import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.PublicacionAppService;
 
 @RestController
@@ -33,12 +26,10 @@ private static Logger logger = LoggerFactory.getLogger(PublicacionController.cla
 	@Autowired
 	private PublicacionAppService publicacionAppService;
 	
-	@Autowired
-	private AuditoriaService auditoriaService;
 	
 	@PostMapping("/publicacionApp/list")
-	public ResponseEntity<List<Publicacion>> show() {
-		List<Publicacion> lstPublicaciones = publicacionAppService.list();		
+	public ResponseEntity<List<Publicacion>> list() {
+		List<Publicacion> lstPublicaciones = publicacionAppService.listByActivo();		
 	
 		return new ResponseEntity<List<Publicacion>>(lstPublicaciones, HttpStatus.OK);
 	}

@@ -1,5 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,6 +28,9 @@ public class Video extends EntidadAuditoria  {
 	@JsonIgnore
 	@JoinColumn(nullable = true, name = "idComentario")
 	private Comentario comentario;
+
+	@Column(nullable = true)
+	private Boolean activo;
 	
 	private String url;
 	
@@ -53,6 +57,12 @@ public class Video extends EntidadAuditoria  {
 	}
 	public void setComentario(Comentario comentario) {
 		this.comentario = comentario;
+	}
+	public Boolean getActivo() {
+		return activo;
+	}
+	public void setActivo(Boolean activo) {
+		this.activo = activo;
 	}
 
 	
