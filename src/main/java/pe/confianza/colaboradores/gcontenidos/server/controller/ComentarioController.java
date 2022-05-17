@@ -1,6 +1,5 @@
 package pe.confianza.colaboradores.gcontenidos.server.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Comentario;
-import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.ComentarioService;
 
 @RestController
@@ -29,21 +27,18 @@ public class ComentarioController {
 	@Autowired
 	private ComentarioService comentarioService;
 	
-	@Autowired
-	private AuditoriaService auditoriaService;
-	
 	
 	@PostMapping("/comentario/list")
 	public ResponseEntity<List<Comentario>> list() {
-		List<Comentario> lstComentarios = comentarioService.list();		
+		List<Comentario> lstComentarios = comentarioService.listByActivo();		
 	
 		return new ResponseEntity<List<Comentario>>(lstComentarios, HttpStatus.OK);
 	}
 	
 	@PostMapping("/comentario/list/idPublicacion")
-	public ResponseEntity<?> listByIdPublicacion(Integer idPublicacion) {
+	public ResponseEntity<?> listByIdPublicacion(Long idPublicacion) {
 		
-		List<Comentario> comentarios = new ArrayList<>();
+		List<Comentario> comentarios = comentarioService.listByIdPublicacion(idPublicacion);
 		
 		return new ResponseEntity<List<Comentario>>(comentarios, HttpStatus.OK);
 	}

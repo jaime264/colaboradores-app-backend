@@ -1,9 +1,9 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,41 +18,23 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Imagen
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Video;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.apache.http.protocol.HTTP;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
-import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
-import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.ComentarioDao;
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.PublicacionAppDao;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Comentario;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Publicacion;
-
-
 @Service
-public class PublicacionAppServiceImpl implements PublicacionAppService{
+public class PublicacionAppServiceImpl implements PublicacionAppService {
 
-	
 	@Autowired
 	PublicacionAppDao publicacionAppDao;
-	
+
 	@Autowired
 	ImagenDao imagenDao;
-	
+
 	@Autowired
 	VideoDao videoDao;
-	
+
 	@Autowired
 	ComentarioDao comentarioDao;
-	
+
 	@Override
 	public List<Publicacion> list() {
-		// TODO Auto-generated method stub
 		return publicacionAppDao.findAll();
 
 	}
@@ -62,87 +44,78 @@ public class PublicacionAppServiceImpl implements PublicacionAppService{
 
 		ResponseStatus status = new ResponseStatus();
 		try {
-			
+
 			publicacion.setFecha(LocalDateTime.now());
 			publicacion.setFechaCrea(LocalDate.now());
 			publicacion.setActivo(true);
-			
+
 			Publicacion pub = publicacionAppDao.save(publicacion);
-			
-			pub.getImagenes().forEach(e->{
-				Imagen imagen = new Imagen();
-				imagen.setPublicacion(pub);
-				imagen.setFechaCrea(LocalDate.now());
-				imagen.setUrl(e.getUrl());
-				imagen.setUsuarioCrea(pub.getUsuarioCrea());
-				imagenDao.save(imagen);
-			});
-			
-			pub.getVideos().forEach(e->{
-				Video video = new Video();
-				video.setPublicacion(pub);
-				video.setFechaCrea(LocalDate.now());
-				video.setUrl(e.getUrl());
-				video.setUsuarioCrea(pub.getUsuarioCrea());
-				videoDao.save(video);
-			});
-			
+
+			if (pub.getImagenes() != null) {
+				pub.getImagenes().forEach(e -> {
+					Imagen imagen = new Imagen();
+					imagen.setPublicacion(pub);
+					imagen.setFechaCrea(LocalDate.now());
+					imagen.setUrl(e.getUrl());
+					imagen.setActivo(true);
+					imagen.setUsuarioCrea(pub.getUsuarioCrea());
+					imagenDao.save(imagen);
+				});
+			}
+			if (pub.getVideos() != null) {
+				pub.getVideos().forEach(e -> {
+					Video video = new Video();
+					video.setPublicacion(pub);
+					video.setFechaCrea(LocalDate.now());
+					video.setUrl(e.getUrl());
+					video.setActivo(true);
+					video.setUsuarioCrea(pub.getUsuarioCrea());
+					videoDao.save(video);
+				});
+			}
+
 			status.setCodeStatus(200);
 		} catch (Exception e) {
 			status.setCodeStatus(500);
 		}
 
-		// TODO Auto-generated method stub
 		return status;
 	}
 
 	@Override
 	public ResponseStatus update(Publicacion publicacion) {
-		// TODO Auto-generated method stub
+
 		ResponseStatus status = new ResponseStatus();
-		
 
 		Optional<Publicacion> pub = publicacionAppDao.findById(publicacion.getId());
 		if (pub.isPresent()) {
-			
-			pub.get().setCategoria(publicacion.getCategoria());
-			pub.get().setDescripcion(publicacion.getDescripcion());
-			pub.get().setFechaFin(publicacion.getFechaFin());
-			pub.get().setFechaInicio(publicacion.getFechaInicio());
-			pub.get().setFechaModifica(LocalDate.now());
-			pub.get().setFlagReacion(publicacion.getFlagReacion());
-			pub.get().setFlagAprobacion(publicacion.getFlagAprobacion());
-			pub.get().setMenu(publicacion.getMenu());
-			pub.get().setReacciones(publicacion.getReacciones());
-			pub.get().setUsuarioModifica(publicacion.getUsuarioModifica());
-			
-			for(Imagen img : publicacion.getImagenes()) {
-				Optional<Imagen> ig = imagenDao.findById(img.getId());
-				
-				ig.get().setPublicacion(publicacion);
-				ig.get().setFechaModifica(LocalDate.now());
-				ig.get().setUsuarioModifica(publicacion.getUsuarioModifica());
-				ig.get().setUrl(img.getUrl());
-				imagenDao.save(ig.get());
+			if (pub.get().getActivo()) {
+
+				pub.get().setCategoria(publicacion.getCategoria());
+				pub.get().setDescripcion(publicacion.getDescripcion());
+				pub.get().setFechaFin(publicacion.getFechaFin());
+				pub.get().setFechaInicio(publicacion.getFechaInicio());
+				pub.get().setFechaModifica(LocalDate.now());
+				pub.get().setFlagReacion(publicacion.getFlagReacion());
+				pub.get().setFlagAprobacion(publicacion.getFlagAprobacion());
+				pub.get().setMenu(publicacion.getMenu());
+				pub.get().setReacciones(publicacion.getReacciones());
+				pub.get().setUsuarioModifica(publicacion.getUsuarioModifica());
+
+				guardarImg(publicacion, pub);
+				guardarVid(publicacion, pub);
+
+				publicacionAppDao.save(pub.get());
+				status.setCodeStatus(200);
+				status.setMsgStatus("Publicación actualizada");
+			} else {
+				status.setCodeStatus(200);
+				status.setMsgStatus("No existe la publicación");
 			}
-			
-			for(Video vdo : publicacion.getVideos()) {
-				Optional<Video> vd = videoDao.findById(vdo.getId());
-				
-				vd.get().setPublicacion(publicacion);
-				vd.get().setFechaModifica(LocalDate.now());
-				vd.get().setUsuarioModifica(publicacion.getUsuarioModifica());
-				vd.get().setUrl(vdo.getUrl());
-				videoDao.save(vd.get());
-			}
-			
-			
-			publicacionAppDao.save(pub.get());
+		} else {
 			status.setCodeStatus(200);
-		}else {
-			status.setCodeStatus(200);
+			status.setMsgStatus("No existe la publicación");
 		}
-		
 
 		return status;
 	}
@@ -153,30 +126,132 @@ public class PublicacionAppServiceImpl implements PublicacionAppService{
 		ResponseStatus status = new ResponseStatus();
 
 		Optional<Publicacion> pub = publicacionAppDao.findById(idPublicacion);
-		
-		if(pub.isPresent()) {
+
+		if (pub.isPresent()) {
 			pub.get().setActivo(false);
 			publicacionAppDao.save(pub.get());
 		}
-		
+
 		status.setCodeStatus(200);
 
 		return status;
 	}
 
-
 	@Override
 	public Publicacion publicacionById(Long id) {
 		// TODO Auto-generated method stub
-		Optional<Publicacion> pub =  publicacionAppDao.findById(id);
-		
-		if(pub.isPresent()) {
-			return pub.get();
+		Optional<Publicacion> pub = publicacionAppDao.findById(id);
+
+		if (pub.isPresent()) {
+
+			if (pub.get().getActivo()) {
+				return pub.get();
+			}
+			return null;
 		}
-		
+
 		return null;
 	}
 
-	
+	@Override
+	public List<Publicacion> listByActivo() {
+
+		return publicacionAppDao.listByActivo(true);
+	}
+
+	public void guardarImg(Publicacion publicacion, Optional<Publicacion> pub) {
+
+		if (!publicacion.getImagenes().isEmpty()) {
+
+			if (!pub.get().getImagenes().isEmpty()) {
+				for (Imagen img : pub.get().getImagenes()) {
+					Optional<Imagen> ig = imagenDao.findById(img.getId());
+					ig.get().setActivo(false);
+					imagenDao.save(ig.get());
+				}
+			}
+
+			for (Imagen img : publicacion.getImagenes()) {
+
+				if (img.getId() == null) {
+					Imagen imagen = new Imagen();
+					imagen.setPublicacion(publicacion);
+					imagen.setFechaCrea(LocalDate.now());
+					imagen.setUrl(img.getUrl());
+					imagen.setActivo(true);
+					imagen.setUsuarioCrea(publicacion.getUsuarioModifica());
+					imagenDao.save(imagen);
+				} else {
+					Optional<Imagen> ig = imagenDao.findById(img.getId());
+
+					if (ig.isPresent()) {
+						ig.get().setPublicacion(publicacion);
+						ig.get().setFechaModifica(LocalDate.now());
+						ig.get().setUsuarioModifica(publicacion.getUsuarioModifica());
+						ig.get().setUrl(img.getUrl());
+						ig.get().setActivo(true);
+						imagenDao.save(ig.get());
+					}
+				}
+
+			}
+		} else {
+			if (!pub.get().getImagenes().isEmpty()) {
+				for (Imagen img : pub.get().getImagenes()) {
+					Optional<Imagen> ig = imagenDao.findById(img.getId());
+					ig.get().setActivo(false);
+					imagenDao.save(ig.get());
+				}
+			}
+		}
+
+	}
+
+	public void guardarVid(Publicacion publicacion, Optional<Publicacion> pub) {
+
+		if (!publicacion.getVideos().isEmpty()) {
+
+			if (!pub.get().getVideos().isEmpty()) {
+				for (Video video : pub.get().getVideos()) {
+					Optional<Video> vd = videoDao.findById(video.getId());
+					vd.get().setActivo(false);
+					videoDao.save(vd.get());
+				}
+			}
+
+			for (Video vdo : publicacion.getVideos()) {
+
+				if (vdo.getId() == null) {
+					Video video = new Video();
+					video.setPublicacion(publicacion);
+					video.setFechaCrea(LocalDate.now());
+					video.setUrl(vdo.getUrl());
+					video.setActivo(true);
+					video.setUsuarioCrea(publicacion.getUsuarioModifica());
+					videoDao.save(video);
+				} else {
+					Optional<Video> vo = videoDao.findById(vdo.getId());
+
+					if (vo.isPresent()) {
+						vo.get().setPublicacion(publicacion);
+						vo.get().setFechaModifica(LocalDate.now());
+						vo.get().setUsuarioModifica(publicacion.getUsuarioModifica());
+						vo.get().setUrl(vdo.getUrl());
+						vo.get().setActivo(true);
+						videoDao.save(vo.get());
+					}
+				}
+
+			}
+		} else {
+			if (!pub.get().getVideos().isEmpty()) {
+				for (Video vdo : pub.get().getVideos()) {
+					Optional<Video> vo = videoDao.findById(vdo.getId());
+					vo.get().setActivo(false);
+					videoDao.save(vo.get());
+				}
+			}
+		}
+	}
 
 }
