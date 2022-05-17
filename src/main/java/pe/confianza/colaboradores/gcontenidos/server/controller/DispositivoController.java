@@ -41,9 +41,12 @@ public class DispositivoController {
 				responseStatus = deviceService.createDevice(devices);
 			} else {
 				Dispositivo newDevice = new Dispositivo();
-				newDevice.set_id(dispositivo.get().get_id());
+				newDevice.set_id(((Dispositivo) dispositivo.get()).get_id());
 				newDevice.setUsuario(device.getUsuario());
-				newDevice.setIdDispositivo(device.getIdDispositivo());
+				if(device.getIdDispositivo() != null)
+					newDevice.setIdDispositivo(device.getIdDispositivo());
+				if(device.getIdDispositivoFirebase() != null)
+					newDevice.setIdDispositivoFirebase(device.getIdDispositivoFirebase());
 				devices.add(newDevice);
 				responseStatus = deviceService.createDevice(devices);
 			}

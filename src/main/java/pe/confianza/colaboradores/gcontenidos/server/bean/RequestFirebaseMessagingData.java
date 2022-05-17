@@ -1,10 +1,14 @@
 package pe.confianza.colaboradores.gcontenidos.server.bean;
 
+import java.util.Map;
+
 public class RequestFirebaseMessagingData {
 	
 	private String title;
 	private String body;
 	private String icon;
+	private Map<String, String> extra;
+	
 	public String getTitle() {
 		return title;
 	}
@@ -22,6 +26,12 @@ public class RequestFirebaseMessagingData {
 	}
 	public void setIcon(String icon) {
 		this.icon = icon;
+	}
+	public Map<String, String> getExtra() {
+		return extra;
+	}
+	public void setExtra(Map<String, String> extra) {
+		this.extra = extra;
 	}
 	
 	
