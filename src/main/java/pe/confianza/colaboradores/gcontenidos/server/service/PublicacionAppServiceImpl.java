@@ -100,6 +100,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 				pub.get().setFlagAprobacion(publicacion.getFlagAprobacion());
 				pub.get().setMenu(publicacion.getMenu());
 				pub.get().setReacciones(publicacion.getReacciones());
+				pub.get().setObservacion(publicacion.getObservacion());
 				pub.get().setUsuarioModifica(publicacion.getUsuarioModifica());
 
 				guardarImg(publicacion, pub);
