@@ -42,7 +42,7 @@ public class PeriodoVacacion extends EntidadAuditoria{
 	
 	private String fuente;
 	
-	private Integer codigoEmpleado;
+	private long codigoEmpleado;
 	
 	@ManyToOne
 	@JoinColumn(nullable = true, name = "idEmpleado")
@@ -160,11 +160,11 @@ public class PeriodoVacacion extends EntidadAuditoria{
 		this.fuente = fuente;
 	}
 
-	public Integer getCodigoEmpleado() {
+	public long getCodigoEmpleado() {
 		return codigoEmpleado;
 	}
 
-	public void setCodigoEmpleado(Integer codigoEmpleado) {
+	public void setCodigoEmpleado(long codigoEmpleado) {
 		this.codigoEmpleado = codigoEmpleado;
 	}
 

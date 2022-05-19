@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.stereotype.Repository;
 
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Empleado;
@@ -33,4 +34,11 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	List<VacacionProgramacion> findVacacionProgramacionByUsuarioBTAndIdEstado(String usuarioBt, int idEstado);
 	
 	List<VacacionProgramacion> findVacacionProgramacionByUsuarioBTAndPeriodoAndIdEstado(String usuarioBt, String periodo, int idEstado);*/
+	
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.id = ?1 AND vp.idEstado = ?2 order by vp.orden asc")
+	List<VacacionProgramacion> findByPeriodoAndEstado(long idPeriodo, int idEstado);
+	
+	
+	@Procedure(procedureName =  "proc_vacacion_programacion_actualizar_estado")
+	void actualizarEstadoProgramaciones();
 }

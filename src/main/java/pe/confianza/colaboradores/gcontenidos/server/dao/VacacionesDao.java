@@ -9,4 +9,6 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.Vacacion;
 public interface VacacionesDao extends MongoRepository<Vacacion, Long> {
 
 	Vacacion findByCodigoSpring(String codigoString);
+	
+
 }
