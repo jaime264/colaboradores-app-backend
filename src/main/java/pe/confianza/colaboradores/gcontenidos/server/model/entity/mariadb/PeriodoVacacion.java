@@ -26,7 +26,7 @@ public class PeriodoVacacion extends EntidadAuditoria{
 	
 	private Double derecho;
 	
-	private Double pendientePeriodoAnterior;
+	private Double diasPendientesGozar;
 	
 	private Double diasRegistradosGozar;
 	
@@ -96,12 +96,14 @@ public class PeriodoVacacion extends EntidadAuditoria{
 		this.derecho = derecho;
 	}
 
-	public Double getPendientePeriodoAnterior() {
-		return pendientePeriodoAnterior;
+	
+
+	public Double getDiasPendientesGozar() {
+		return diasPendientesGozar;
 	}
 
-	public void setPendientePeriodoAnterior(Double pendientePeriodoAnterior) {
-		this.pendientePeriodoAnterior = pendientePeriodoAnterior;
+	public void setDiasPendientesGozar(Double diasPendientesGozar) {
+		this.diasPendientesGozar = diasPendientesGozar;
 	}
 
 	public Double getDiasRegistradosGozar() {

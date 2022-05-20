@@ -39,6 +39,12 @@ public class EmpleadoMapper {
 		destination.setDireccion(source.getDireccion() != null ? source.getDireccion().trim() : null);
 		destination.setSexo(source.getSexo() != null ? source.getSexo().trim() : null);
 		destination.setUsuarioBT(source.getUsuarioBT() != null ? source.getUsuarioBT().trim() : null);
+		destination.setFechaFinContrato(Utilitario.obtenerLocalDate(source.getFechaFinContrato()));
+		destination.setCodigoUnidadNegocio(source.getCodigoUnidadNegocio());
+		destination.setCodigoJefeInmediato(source.getCodigoJefeInmediato());
+		destination.setCodigoNIvel1(source.getCodigoNIvel1());
+		destination.setCodigoNivel2(source.getCodigoNivel2());
+		destination.setBloqueoVacaciones(source.isBloqueoVacaciones());
 		return destination;
 	}
 

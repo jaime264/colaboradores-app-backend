@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.stereotype.Repository;
 
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.VacacionProgramacion;
 
 @Repository

@@ -39,6 +39,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	public Empleado actualizarInformacionEmpleado(String usuarioBT) {
 		LOGGER.info("[BEGIN] actualizarInformacionEmpleado");
 		EmpleadoRes empleadoSpring = empleadoApi.getPerfil(usuarioBT);
+		LOGGER.info("EMpleado: " + empleadoSpring.toString());
 		Optional<Puesto> optPuesto = puestoDao.findOneByCodigo(empleadoSpring.getIdCargo());
 		Optional<Agencia> optAgencia = agenciaDao.findOneByCodigo(empleadoSpring.getIdSucursal().trim());
 		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(usuarioBT);

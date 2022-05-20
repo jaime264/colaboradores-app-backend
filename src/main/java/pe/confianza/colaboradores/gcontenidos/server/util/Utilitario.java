@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -186,6 +187,31 @@ public class Utilitario {
 				fechaFin.atStartOfDay(ZoneId.of(Constantes.TIME_ZONE)).toInstant().toEpochMilli() >= fechaMilliseconds	)
 			return true;
 		return false;
+	}
+	
+	/**
+	 * Calcula el derecho de vacaciones hasta la fecha de corte
+	 * @param fechaIngreso
+	 * @param fechaCorte
+	 * @return
+	 */
+	public static double calcularDerechoVacaciones(LocalDate fechaIngreso, LocalDate fechaCorte) {
+		double derecho = 0;
+		final double diasPorMes = 2.5;
+		LocalDate fechaInicioPeriodo = fechaIngreso.plusYears(fechaCorte.getYear() - fechaIngreso.getYear() - 1);
+		int diferenciaMeses = fechaCorte.getMonthValue() - fechaInicioPeriodo.getMonthValue();
+		diferenciaMeses = diferenciaMeses > 0 ? diferenciaMeses : ( diferenciaMeses + 12 );
+		for(int i = 1; i <= diferenciaMeses; i++) {
+			LocalDate mesPeriodo = fechaInicioPeriodo.plusMonths(i);
+			if(mesPeriodo.isBefore(fechaCorte)) {
+				derecho += diasPorMes;
+			} else {
+				System.out.println(obtenerDiferenciaDias(fechaCorte, mesPeriodo));
+				derecho += obtenerDiferenciaDias(fechaCorte, mesPeriodo)  * diasPorMes / 30;
+			}
+		}
+		
+		return derecho;
 	}
 	
 	private static Calendar getCalendarWithoutTime(Date date) {
