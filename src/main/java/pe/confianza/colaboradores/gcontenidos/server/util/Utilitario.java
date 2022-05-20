@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Parametro;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
 
 public class Utilitario {
 	

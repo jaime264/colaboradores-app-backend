@@ -19,9 +19,9 @@ import com.google.gson.Gson;
 import pe.confianza.colaboradores.gcontenidos.server.api.onesignal.dto.RequestNotificacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.Heading;
 import pe.confianza.colaboradores.gcontenidos.server.bean.Notification;
-import pe.confianza.colaboradores.gcontenidos.server.dao.DispositivoDao;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Dispositivo;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.dao.DispositivoDao;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Dispositivo;
 
 @Component
 public class OneSignalCliente {

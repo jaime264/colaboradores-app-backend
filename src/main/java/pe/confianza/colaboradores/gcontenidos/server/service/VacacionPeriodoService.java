@@ -1,8 +1,8 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Empleado;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.PeriodoVacacion;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 
 public interface VacacionPeriodoService {
 	

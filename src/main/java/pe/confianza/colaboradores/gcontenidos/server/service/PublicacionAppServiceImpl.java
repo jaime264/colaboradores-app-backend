@@ -10,13 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.ComentarioDao;
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.ImagenDao;
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.PublicacionAppDao;
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.VideoDao;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Imagen;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Publicacion;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Video;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ComentarioDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ImagenDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PublicacionAppDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VideoDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Imagen;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Publicacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Video;
 
 @Service
 public class PublicacionAppServiceImpl implements PublicacionAppService {

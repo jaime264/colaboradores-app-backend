@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import pe.confianza.colaboradores.gcontenidos.server.dao.PublicacionUsuarioDao;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.PublicacionUsuario;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.dao.PublicacionUsuarioDao;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.PublicacionUsuario;
 
 @Service
 public class PublicacionUsuarioServiceImpl implements PublicacionUsuarioService {

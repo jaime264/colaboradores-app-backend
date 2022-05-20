@@ -5,8 +5,8 @@ import java.util.Optional;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Comentario;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Publicacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Comentario;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Publicacion;
 
 public interface PublicacionAppService {
 

@@ -25,7 +25,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsPublicacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.bean.Usuario;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.PublicacionOld;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.PublicacionOld;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.PublicacionService;
 

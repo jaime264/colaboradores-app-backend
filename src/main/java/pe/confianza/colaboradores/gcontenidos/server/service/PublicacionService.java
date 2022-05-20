@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.PublicacionOld;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.PublicacionOld;
 
 public interface PublicacionService {
 	

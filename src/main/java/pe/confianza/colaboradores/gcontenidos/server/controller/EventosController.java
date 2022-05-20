@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestEvento;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Evento;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Evento;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.EventoService;
 

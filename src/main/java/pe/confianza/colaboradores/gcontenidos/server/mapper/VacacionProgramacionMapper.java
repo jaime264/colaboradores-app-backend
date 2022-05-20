@@ -2,7 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.mapper;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 public class VacacionProgramacionMapper {

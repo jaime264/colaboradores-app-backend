@@ -10,13 +10,13 @@ import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmpleadoRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.spring.EmpleadoApi;
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.AgenciaDao;
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.EmpleadoDao;
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.PuestoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.EmpleadoMapper;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Agencia;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Empleado;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Puesto;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.AgenciaDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PuestoDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Agencia;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Puesto;
 
 @Service
 public class EmpleadoServiceImpl implements EmpleadoService {

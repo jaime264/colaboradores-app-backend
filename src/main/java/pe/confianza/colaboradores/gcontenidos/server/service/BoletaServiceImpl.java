@@ -16,7 +16,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.BoletaModel;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.BoletaModel;
 
 @Service("boletaService")
 public class BoletaServiceImpl implements BoletaService {

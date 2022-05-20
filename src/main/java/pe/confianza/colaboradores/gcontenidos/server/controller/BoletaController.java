@@ -33,7 +33,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsBoleta;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestBoleta;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.BoletaModel;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.BoletaModel;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.BoletaService;
 

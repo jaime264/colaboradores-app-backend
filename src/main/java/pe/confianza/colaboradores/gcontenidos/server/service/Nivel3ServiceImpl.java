@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import pe.confianza.colaboradores.gcontenidos.server.dao.Nivel3Dao;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Nivel2;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Nivel3;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.dao.Nivel3Dao;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Nivel2;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Nivel3;
 
 @Service
 public class Nivel3ServiceImpl implements Nivel3Service{

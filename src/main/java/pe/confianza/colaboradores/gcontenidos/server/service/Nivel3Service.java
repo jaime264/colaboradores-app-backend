@@ -2,7 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.util.List;
 
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Nivel3;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Nivel3;
 
 public interface Nivel3Service {
 

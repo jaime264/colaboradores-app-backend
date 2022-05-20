@@ -27,8 +27,8 @@ import com.google.gson.Gson;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestStatus;
 import pe.confianza.colaboradores.gcontenidos.server.bean.bt.RequestVersion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.bt.ResponseJsonVersion;
-import pe.confianza.colaboradores.gcontenidos.server.dao.UsuarioDao;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Usuario;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.dao.UsuarioDao;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Usuario;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 
 @RestController
