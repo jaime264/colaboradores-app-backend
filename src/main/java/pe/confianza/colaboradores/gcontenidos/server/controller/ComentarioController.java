@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Comentario;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Comentario;
 import pe.confianza.colaboradores.gcontenidos.server.service.ComentarioService;
 
 @RestController

@@ -167,6 +167,18 @@ public class EmpleadoRes {
 	public void setBloqueoVacaciones(boolean bloqueoVacaciones) {
 		this.bloqueoVacaciones = bloqueoVacaciones;
 	}
+	@Override
+	public String toString() {
+		return "EmpleadoRes [idEmpleado=" + idEmpleado + ", nombres=" + nombres + ", apeMaterno=" + apeMaterno
+				+ ", apePaterno=" + apePaterno + ", idCargo=" + idCargo + ", descCargo=" + descCargo + ", idSucursal="
+				+ idSucursal + ", nomSucursal=" + nomSucursal + ", fechaNac=" + fechaNac + ", fechaIng=" + fechaIng
+				+ ", email=" + email + ", celular=" + celular + ", direccion=" + direccion + ", sexo=" + sexo
+				+ ", usuarioBT=" + usuarioBT + ", ultimaPublicacion=" + ultimaPublicacion + ", logAuditoria="
+				+ logAuditoria + ", fechaFinContrato=" + fechaFinContrato + ", codigoUnidadNegocio="
+				+ codigoUnidadNegocio + ", codigoJefeInmediato=" + codigoJefeInmediato + ", codigoNIvel1="
+				+ codigoNIvel1 + ", codigoNivel2=" + codigoNivel2 + ", bloqueoVacaciones=" + bloqueoVacaciones + "]";
+	}
+	
 	
 	
 }

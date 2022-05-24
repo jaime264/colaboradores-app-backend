@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import pe.confianza.colaboradores.gcontenidos.server.dao.Nivel2Dao;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Nivel2;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.dao.Nivel2Dao;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Nivel2;
 
 @Service
 public class Nivel2ServiceImpl implements Nivel2Service{

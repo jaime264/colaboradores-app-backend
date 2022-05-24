@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Dispositivo;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Dispositivo;
 
 public interface DispositivoService {
 

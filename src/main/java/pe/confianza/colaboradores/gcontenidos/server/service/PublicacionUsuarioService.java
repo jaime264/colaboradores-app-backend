@@ -2,7 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.util.List;
 
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.PublicacionUsuario;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.PublicacionUsuario;
 
 public interface PublicacionUsuarioService {
 	

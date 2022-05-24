@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Dispositivo;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Dispositivo;
 import pe.confianza.colaboradores.gcontenidos.server.service.DispositivoService;
 
 @RestController
@@ -43,6 +43,8 @@ public class DispositivoController {
 				Dispositivo newDevice = new Dispositivo();
 				newDevice.set_id(((Dispositivo) dispositivo.get()).get_id());
 				newDevice.setUsuario(device.getUsuario());
+				newDevice.setIdDispositivo(dispositivo.get().getIdDispositivo());
+				newDevice.setIdDispositivoFirebase(dispositivo.get().getIdDispositivoFirebase());
 				if(device.getIdDispositivo() != null)
 					newDevice.setIdDispositivo(device.getIdDispositivo());
 				if(device.getIdDispositivoFirebase() != null)

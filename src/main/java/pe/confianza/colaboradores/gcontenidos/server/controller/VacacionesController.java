@@ -29,7 +29,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarVacacionP
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Vacacion;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Vacacion;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionService;

@@ -11,12 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.ParametrosDao;
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.VacacionProgramacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Empleado;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Parametro;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ParametrosDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VacacionProgramacionDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.service.VacacionPeriodoService;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.ParametrosConstants;
@@ -33,8 +35,13 @@ public class ProgramacionVacacionesValidacion {
 	@Autowired
 	private ParametrosConstants parametrosConstants;
 	
+	@Autowired
+	private VacacionPeriodoService vacacionPeriodoService;
+	
 	public List<VacacionProgramacion> ordernarTramos(List<VacacionProgramacion> programaciones) {
+		logger.info("[BEGIN] ordernarTramos");
 		programaciones.sort(Comparator.comparing(VacacionProgramacion::getOrden));
+		logger.info("[END] ordernarTramos");
 		return programaciones;
 	}
 	
@@ -47,9 +54,11 @@ public class ProgramacionVacacionesValidacion {
 
 	public void validarTramoVacaciones(VacacionProgramacion programacion) {
 		logger.info("[BEGIN] validarTramoVacaciones");
-		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionDao.findByUsuarioBTAndIdEstado(programacion.getPeriodo().getEmpleado().getUsuarioBT(), EstadoVacacion.REGISTRADO.id);
+		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionDao.findByPeriodoAndEstado(programacion.getPeriodo().getId(), EstadoVacacion.REGISTRADO.id);
+				//vacacionProgramacionDao.findByUsuarioBTAndIdEstado(programacion.getPeriodo().getEmpleado().getUsuarioBT(), EstadoVacacion.REGISTRADO.id);
+		System.out.println("-----------------------");
 		programacionesRegistradas = ordernarTramos(programacionesRegistradas);
-		
+		System.out.println("---ddddddddddddd-------------------");
 		int diasAcumuladosVacaciones = 0;
 		int contadorSabados = 0;
 		int contadorDomingos = 0;
@@ -97,7 +106,7 @@ public class ProgramacionVacacionesValidacion {
 	
 	public VacacionProgramacion obtenerOrdenProgramacion(VacacionProgramacion programacion, String usuarioModifica) {
 		logger.info("[BEGIN] obtenerOrdenProgramacion");
-		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionDao.findByUsuarioBTAndIdEstado(programacion.getPeriodo().getEmpleado().getUsuarioBT(), EstadoVacacion.REGISTRADO.id);
+		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionDao.findByPeriodoAndEstado(programacion.getPeriodo().getId(), EstadoVacacion.REGISTRADO.id);
 		if(programacionesRegistradas.isEmpty()) {
 			programacion.setOrden(1);
 		} else {
@@ -144,6 +153,26 @@ public class ProgramacionVacacionesValidacion {
 			throw new AppException("No se puede registrar después de " + strFechaFinRegistroProgramacion);
 		logger.info("[END] validarFechaRegistroProgramacion");
 	}
+	
+	public void actualizarPeriodo(Empleado empleado, String usuarioOperacion) {
+		logger.info("[BEGIN] actualizarPeriodo");
+		try {
+			vacacionPeriodoService.actualizarPeriodo(empleado, usuarioOperacion);
+		} catch (Exception e) {
+			throw new AppException("Ocurrió un error al actualizar periodo", e);
+		}
+		logger.info("[END] actualizarPeriodo");
+	}
+	
+	public VacacionProgramacion obtenerPeriodo(Empleado empleado, VacacionProgramacion programacion) {
+		logger.info("[BEGIN] obtenerPeriodo");
+		PeriodoVacacion periodo = vacacionPeriodoService.obtenerPeriodo(empleado, programacion);
+		if(periodo == null)
+			throw new AppException("La cantidad de días supera los días pendientes");
+		programacion.setPeriodo(periodo);
+		logger.info("[END] obtenerPeriodo");
+		return programacion;
+	} 
 	
 	
 	

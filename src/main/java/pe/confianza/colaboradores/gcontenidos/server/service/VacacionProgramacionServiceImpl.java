@@ -13,11 +13,11 @@ import org.springframework.util.StringUtils;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.VacacionProgramacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.VacacionProgramacionMapper;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Empleado;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VacacionProgramacionDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.service.negocio.ProgramacionVacacionesValidacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 
@@ -38,6 +38,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	@Autowired
 	private ProgramacionVacacionesValidacion programacionVacacionesValidacion;
 	
+	
+	
 
 
 	@Override
@@ -48,15 +50,16 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		if(empleado == null)
 			throw new AppException("No existe el usuario " + programacion.getUsuarioBT());
 		
+		
 		VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(programacion);
 		vacacionProgramacion.setEstado(EstadoVacacion.REGISTRADO);
-		//vacacionProgramacion.setPeriodo("");
-		//vacacionProgramacion.setEmpleado(empleado);
 		vacacionProgramacion.setFechaCrea(LocalDate.now());
 		vacacionProgramacion.setUsuarioCrea(programacion.getUsuarioOperacion().trim());
 		
+		programacionVacacionesValidacion.actualizarPeriodo(empleado, programacion.getUsuarioOperacion().trim());
 		programacionVacacionesValidacion.validarEmpleadoNuevo(vacacionProgramacion, empleado);
 		programacionVacacionesValidacion.validarRangoFechas(vacacionProgramacion);
+		vacacionProgramacion = programacionVacacionesValidacion.obtenerPeriodo(empleado, vacacionProgramacion);
 		programacionVacacionesValidacion.validarTramoVacaciones(vacacionProgramacion);
 		vacacionProgramacion = programacionVacacionesValidacion.obtenerOrdenProgramacion(vacacionProgramacion, programacion.getUsuarioOperacion());
 		

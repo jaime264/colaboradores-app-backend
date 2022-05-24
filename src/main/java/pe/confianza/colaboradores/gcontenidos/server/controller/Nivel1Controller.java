@@ -13,7 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Nivel1;
+
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Nivel1;
 import pe.confianza.colaboradores.gcontenidos.server.service.Nivel1Service;
 
 @RestController

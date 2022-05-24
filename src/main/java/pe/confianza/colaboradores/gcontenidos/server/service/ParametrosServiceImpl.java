@@ -10,7 +10,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.ParametroMapper;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Parametro;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
 import pe.confianza.colaboradores.gcontenidos.server.util.ParametrosConstants;
 
 @Service

@@ -10,7 +10,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.VacacionProgramacionDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VacacionProgramacionDao;
 
 @Component
 @PropertySource("classpath:tareas-programadas.properties")

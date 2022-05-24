@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Nivel2;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Nivel3;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Nivel2;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Nivel3;
 import pe.confianza.colaboradores.gcontenidos.server.service.Nivel2Service;
 import pe.confianza.colaboradores.gcontenidos.server.service.Nivel3Service;
 

@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.PeriodoVacacionDao;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Empleado;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.PeriodoVacacion;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PeriodoVacacionDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 
 @Component
 public class PeriodoVacacionValidacion {

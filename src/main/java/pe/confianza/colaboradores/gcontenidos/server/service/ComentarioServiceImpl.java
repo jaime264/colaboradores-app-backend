@@ -8,12 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.ComentarioDao;
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.ImagenDao;
-import pe.confianza.colaboradores.gcontenidos.server.dao.mariadb.VideoDao;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Comentario;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Imagen;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Video;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ComentarioDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ImagenDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VideoDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Comentario;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Imagen;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Video;
 
 @Service
 public class ComentarioServiceImpl implements ComentarioService {

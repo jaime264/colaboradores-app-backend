@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.dao.DispositivoDao;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Dispositivo;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.dao.DispositivoDao;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Dispositivo;
 
 @Service
 public class DispositivoServiceImpl implements DispositivoService {

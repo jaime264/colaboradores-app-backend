@@ -5,7 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.jasperreports.engine.JasperPrint;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.BoletaModel;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.BoletaModel;
 
 public interface BoletaService {
 	

@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import pe.confianza.colaboradores.gcontenidos.server.dao.AuditoriaDao;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Auditoria;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.dao.AuditoriaDao;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Auditoria;
 
 @Service
 public class AuditoriaServiceImpl implements AuditoriaService {

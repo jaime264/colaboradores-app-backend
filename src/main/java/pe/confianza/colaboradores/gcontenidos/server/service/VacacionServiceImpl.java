@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.spring.VacacionApi;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.dao.VacacionesDao;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.Vacacion;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.dao.VacacionesDao;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Vacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.MetaVacacion;
 

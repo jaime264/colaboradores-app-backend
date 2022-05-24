@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Publicacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.service.PublicacionAppService;
 
 @RestController

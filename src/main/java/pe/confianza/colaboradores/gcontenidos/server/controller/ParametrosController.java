@@ -24,7 +24,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestBuscarPorId;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Parametro;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
 import pe.confianza.colaboradores.gcontenidos.server.service.ParametrosService;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 
