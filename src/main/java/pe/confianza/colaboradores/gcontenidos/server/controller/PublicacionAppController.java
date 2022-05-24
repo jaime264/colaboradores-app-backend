@@ -61,6 +61,22 @@ private static Logger logger = LoggerFactory.getLogger(PublicacionController.cla
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
 	
+	@PostMapping("/publicacionApp/update/aprobacion")
+	public ResponseEntity<?> updateStatus(@RequestBody Publicacion publicacion) {
+		
+		ResponseStatus response = publicacionAppService.updateAprobacion(publicacion);
+
+		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
+	}
+	
+	@PostMapping("/publicacionApp/update/reaccion")
+	public ResponseEntity<?> updateReaccion(@RequestBody Publicacion publicacion) {
+		
+		ResponseStatus response = publicacionAppService.updateReaccion(publicacion);
+
+		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
+	}
+	
 
 	@PostMapping("/publicacionApp/delete/id")
 	public ResponseEntity<?> deletePost(Long idPublicacion) {

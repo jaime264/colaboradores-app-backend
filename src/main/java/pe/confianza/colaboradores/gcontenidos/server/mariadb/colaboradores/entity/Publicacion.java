@@ -12,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-
 @Entity
 @Table(name = "publicacionApp")
 public class Publicacion extends EntidadAuditoria {
@@ -23,13 +22,13 @@ public class Publicacion extends EntidadAuditoria {
 
 	@Column(nullable = true)
 	private String Descripcion;
-	
+
 	@Column(nullable = true)
 	private String menu;
-	
+
 	@Column(nullable = true)
 	private String submenu;
-	
+
 	@Column(nullable = true)
 	private String categoria;
 
@@ -48,10 +47,10 @@ public class Publicacion extends EntidadAuditoria {
 	private Boolean flagReacion;
 
 	private Integer reacciones;
-	
+
 	@Column(nullable = true)
 	private String observacion;
-	
+
 	@OneToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
 	private List<Comentario> comentarios;
 
@@ -62,9 +61,20 @@ public class Publicacion extends EntidadAuditoria {
 	private List<Imagen> imagenes;
 
 	private String idUsuario;
-	
+
 	@Column(nullable = true)
 	private Boolean activo;
+
+	@Column(nullable = true)
+	private Boolean flagPermanente;
+
+	public Boolean getFlagPermanente() {
+		return flagPermanente;
+	}
+
+	public void setFlagPermanente(Boolean flagPermanente) {
+		this.flagPermanente = flagPermanente;
+	}
 
 	public long getId() {
 		return id;
@@ -200,6 +210,6 @@ public class Publicacion extends EntidadAuditoria {
 
 	public void setActivo(Boolean activo) {
 		this.activo = activo;
-	}	
+	}
 
 }

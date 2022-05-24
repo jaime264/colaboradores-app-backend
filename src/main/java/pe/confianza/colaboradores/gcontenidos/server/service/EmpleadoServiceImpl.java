@@ -21,18 +21,18 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 
 @Service
 public class EmpleadoServiceImpl implements EmpleadoService {
-	
+
 	private static Logger LOGGER = LoggerFactory.getLogger(EmpleadoServiceImpl.class);
-	
+
 	@Autowired
 	private EmpleadoDao empleadoDao;
-	
+
 	@Autowired
 	private PuestoDao puestoDao;
-	
+
 	@Autowired
 	private AgenciaDao agenciaDao;
-	
+
 	@Autowired
 	private EmpleadoApi empleadoApi;
 	
@@ -60,6 +60,19 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		LOGGER.info("[END] actualizarInformacionEmpleado");
 		return empleado;
 	}
+
+	public List<Empleado> listEmpleado() {
+
+		empleadoDao.findAll();
+
+		return null;
+	}
+
+	public Empleado listEmpleadoById(Long id) {
+
+		return empleadoDao.findById(id).get();
+	}
+
 
 	@Override
 	public List<Empleado> listar() {

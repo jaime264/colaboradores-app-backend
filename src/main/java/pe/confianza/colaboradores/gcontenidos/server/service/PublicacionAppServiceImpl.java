@@ -160,6 +160,71 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		return publicacionAppDao.listByActivo(true);
 	}
 
+	@Override
+	public ResponseStatus updateAprobacion(Publicacion publicacion) {
+		ResponseStatus status = new ResponseStatus();
+
+		Optional<Publicacion> pub = publicacionAppDao.findById(publicacion.getId());
+
+		if (pub.isPresent()) {
+
+			if (pub.get().getActivo()) {
+				
+				pub.get().setCategoria(publicacion.getCategoria());
+				pub.get().setMenu(publicacion.getMenu());
+				pub.get().setSubmenu(publicacion.getSubmenu());
+				pub.get().setFechaModifica(LocalDate.now());
+				pub.get().setFlagReacion(publicacion.getFlagReacion());
+				pub.get().setFlagAprobacion(publicacion.getFlagAprobacion());
+				pub.get().setReacciones(publicacion.getReacciones());
+				pub.get().setObservacion(publicacion.getObservacion());
+				pub.get().setFlagPermanente(publicacion.getFlagPermanente());
+				pub.get().setUsuarioModifica(publicacion.getUsuarioModifica());
+
+				publicacionAppDao.save(pub.get());
+				status.setCodeStatus(200);
+				status.setMsgStatus("Publicación actualizada");
+			} else {
+				status.setCodeStatus(200);
+				status.setMsgStatus("No existe la publicación");
+			}
+
+		} else {
+			status.setCodeStatus(200);
+			status.setMsgStatus("No existe la publicación");
+		}
+
+		return null;
+	}
+	
+	@Override
+	public ResponseStatus updateReaccion(Publicacion publicacion) {
+		ResponseStatus status = new ResponseStatus();
+
+		Optional<Publicacion> pub = publicacionAppDao.findById(publicacion.getId());
+
+		if (pub.isPresent()) {
+
+			if (pub.get().getActivo()) {
+				
+				pub.get().setReacciones(publicacion.getReacciones());
+
+				publicacionAppDao.save(pub.get());
+				status.setCodeStatus(200);
+				status.setMsgStatus("Publicación actualizada");
+			} else {
+				status.setCodeStatus(200);
+				status.setMsgStatus("No existe la publicación");
+			}
+
+		} else {
+			status.setCodeStatus(200);
+			status.setMsgStatus("No existe la publicación");
+		}
+
+		return null;
+	}
+
 	public void guardarImg(Publicacion publicacion, Optional<Publicacion> pub) {
 
 		if (!publicacion.getImagenes().isEmpty()) {

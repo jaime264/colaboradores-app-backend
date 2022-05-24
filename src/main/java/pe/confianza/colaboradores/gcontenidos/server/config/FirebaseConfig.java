@@ -22,6 +22,7 @@ public class FirebaseConfig {
 	@Value("${firebase.path.certificado}")
 	private String certificadoFirebase;
 	
+	
 	@Primary
 	@Bean
 	public FirebaseApp getfirebaseApp() throws IOException {
