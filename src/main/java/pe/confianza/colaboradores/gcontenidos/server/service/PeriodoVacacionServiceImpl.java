@@ -13,11 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PeriodoVacacionDao;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VacacionProgramacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
-import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 @Service
@@ -27,9 +25,6 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 	
 	@Autowired
 	private PeriodoVacacionDao periodoVacacionDao;
-	
-	@Autowired
-	private VacacionProgramacionDao programacionVacacionDao;
 
 	@Override
 	public void actualizarPeriodos(Empleado empleado, String usuarioOPeracion) {
@@ -57,20 +52,9 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 	@Override
 	public void actualizarPeriodo(Empleado empleado, PeriodoVacacion periodo, String usuarioOperacion) {
 		LOGGER.info("[BEGIN] actualizarPeriodo: " + periodo.getDescripcion());
+		periodoVacacionDao.actualizarDias(periodo.getId());
 		LocalDate fechaIngreso = empleado.getFechaIngreso();
 		LocalDate fechaActual = LocalDate.now();
-		List<VacacionProgramacion> progRegistradas = programacionVacacionDao.findByPeriodoAndEstado(periodo.getId(), EstadoVacacion.REGISTRADO.id);
-		long totalDiasRegistrados = progRegistradas != null ? progRegistradas.stream().mapToInt(VacacionProgramacion::getNumeroDias).sum() : 0;
-		List<VacacionProgramacion> progGenerados = programacionVacacionDao.findByPeriodoAndEstado(periodo.getId(), EstadoVacacion.GENERADO.id);
-		long totalDiasGenerados = progGenerados != null ? progGenerados.stream().mapToInt(VacacionProgramacion::getNumeroDias).sum() : 0;
-		List<VacacionProgramacion> progAprobados = programacionVacacionDao.findByPeriodoAndEstado(periodo.getId(), EstadoVacacion.APROBADO.id);
-		long totalDiasAprobados = progAprobados != null ? progAprobados.stream().mapToInt(VacacionProgramacion::getNumeroDias).sum() : 0;
-		List<VacacionProgramacion> progGozadas = programacionVacacionDao.findByPeriodoAndEstado(periodo.getId(), EstadoVacacion.GOZADO.id);
-		long totalDiasGozados = progGozadas != null ? progGozadas.stream().mapToInt(VacacionProgramacion::getNumeroDias).sum() : 0;
-		periodo.setDiasRegistradosGozar((double) totalDiasRegistrados);
-		periodo.setDiasGeneradosGozar((double) totalDiasGenerados);
-		periodo.setDiasAprobadosGozar((double) totalDiasAprobados);
-		periodo.setDiasGozados((double) totalDiasGozados);
 		periodo.setCodigoEmpleado(empleado.getCodigo());
 		
 		LocalDate fechaLimiteIdemnizablePeriodo = fechaIngreso.plusYears(periodo.getAnio() - fechaIngreso.getYear() + 1);
