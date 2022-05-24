@@ -7,18 +7,16 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
-
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 
 public class Utilitario {
 	
@@ -206,12 +204,21 @@ public class Utilitario {
 			if(mesPeriodo.isBefore(fechaCorte)) {
 				derecho += diasPorMes;
 			} else {
-				System.out.println(obtenerDiferenciaDias(fechaCorte, mesPeriodo));
 				derecho += obtenerDiferenciaDias(fechaCorte, mesPeriodo)  * diasPorMes / 30;
 			}
 		}
 		
 		return derecho;
+	}
+	
+	/**
+	 * Ordena las programacioens de manera ascendente por el campo orden
+	 * @param programaciones
+	 * @return
+	 */
+	public static List<VacacionProgramacion> ordenarProgramaciones(List<VacacionProgramacion> programaciones) {
+		programaciones.sort(Comparator.comparing(VacacionProgramacion::getOrden));
+		return programaciones;
 	}
 	
 	private static Calendar getCalendarWithoutTime(Date date) {

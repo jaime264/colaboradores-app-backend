@@ -35,20 +35,28 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
 	@Autowired
 	private EmpleadoApi empleadoApi;
+	
+	@Autowired
+	private PeriodoVacacionService periodoVacacionService;
 
 	@Override
 	public Empleado actualizarInformacionEmpleado(String usuarioBT) {
 		LOGGER.info("[BEGIN] actualizarInformacionEmpleado");
 		EmpleadoRes empleadoSpring = empleadoApi.getPerfil(usuarioBT);
-		LOGGER.info("EMpleado: " + empleadoSpring.toString());
+		LOGGER.info("Empleado: " + empleadoSpring.toString());
+		if(!usuarioBT.trim().equalsIgnoreCase(empleadoSpring.getUsuarioBT().trim()))
+			return null;
 		Optional<Puesto> optPuesto = puestoDao.findOneByCodigo(empleadoSpring.getIdCargo());
 		Optional<Agencia> optAgencia = agenciaDao.findOneByCodigo(empleadoSpring.getIdSucursal().trim());
-		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(usuarioBT);
-		Empleado empleado = optEmpleado.isPresent() ? optEmpleado.get() : EmpleadoMapper.convert(empleadoSpring);
+		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(empleadoSpring.getUsuarioBT().trim());
+		Empleado empleado = EmpleadoMapper.convert(empleadoSpring);;
+		if(optEmpleado.isPresent())
+			empleado.setId(optEmpleado.get().getId());
 		empleado.setPuesto(optPuesto.isPresent() ? optPuesto.get() : null);
 		empleado.setAgencia(optAgencia.isPresent() ? optAgencia.get() : null);
 		empleado.setFechaActualizacion(LocalDateTime.now());
 		empleado = empleadoDao.save(empleado);
+		periodoVacacionService.actualizarPeriodos(empleado, usuarioBT);
 		LOGGER.info("[END] actualizarInformacionEmpleado");
 		return empleado;
 	}
@@ -63,7 +71,20 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	public Empleado listEmpleadoById(Long id) {
 
 		return empleadoDao.findById(id).get();
+	}
 
+
+	@Override
+	public List<Empleado> listar() {
+		return empleadoDao.findAll();
+	}
+
+	@Override
+	public Empleado buscarPorUsuarioBT(String usuarioBT) {
+		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(usuarioBT.trim());
+		if(optEmpleado.isPresent())
+			return null;
+		return optEmpleado.get();
 	}
 
 }
