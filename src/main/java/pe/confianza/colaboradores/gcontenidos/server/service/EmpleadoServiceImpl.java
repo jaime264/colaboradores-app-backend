@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -20,18 +21,18 @@ import pe.confianza.colaboradores.gcontenidos.server.model.entity.mariadb.Puesto
 
 @Service
 public class EmpleadoServiceImpl implements EmpleadoService {
-	
+
 	private static Logger LOGGER = LoggerFactory.getLogger(EmpleadoServiceImpl.class);
-	
+
 	@Autowired
 	private EmpleadoDao empleadoDao;
-	
+
 	@Autowired
 	private PuestoDao puestoDao;
-	
+
 	@Autowired
 	private AgenciaDao agenciaDao;
-	
+
 	@Autowired
 	private EmpleadoApi empleadoApi;
 
@@ -49,6 +50,19 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		empleado = empleadoDao.save(empleado);
 		LOGGER.info("[END] actualizarInformacionEmpleado");
 		return empleado;
+	}
+
+	public List<Empleado> listEmpleado() {
+
+		empleadoDao.findAll();
+
+		return null;
+	}
+
+	public Empleado listEmpleadoById(Long id) {
+
+		return empleadoDao.findById(id).get();
+
 	}
 
 }

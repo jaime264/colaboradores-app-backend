@@ -12,5 +12,6 @@ import java.util.Optional;
 public interface EmpleadoDao extends JpaRepository<Empleado, Long>{
 	
 	Optional<Empleado> findOneByUsuarioBT(String usuarioBT);
+	
 
 }
