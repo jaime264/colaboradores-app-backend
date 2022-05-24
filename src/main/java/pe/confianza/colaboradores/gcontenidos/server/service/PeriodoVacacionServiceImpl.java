@@ -2,6 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -117,6 +118,15 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 		}
 		LOGGER.info("[END] obtenerPeriodo ");
 		return periodoSeleccionado;
+	}
+
+	@Override
+	public List<PeriodoVacacion> consultar(Empleado empleado) {
+		LOGGER.info("[BEGIN] consultar");
+		List<PeriodoVacacion> lstPeriodo = periodoVacacionDao.findByIdEmpleado(empleado.getId());
+		lstPeriodo = lstPeriodo == null ? new ArrayList<>() : lstPeriodo;
+		LOGGER.info("[BEGIN] consultar");
+		return lstPeriodo;
 	}
 
 

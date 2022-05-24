@@ -25,14 +25,11 @@ public class FirebaseConfig {
 	@Primary
 	@Bean
 	public FirebaseApp getfirebaseApp() throws IOException {
-		if(FirebaseApp.getInstance() == null) {
-			FirebaseOptions options = new FirebaseOptions.Builder()
-					  .setCredentials(GoogleCredentials.fromStream(new FileInputStream(new File(certificadoFirebase))))
-					  .setDatabaseUrl(urlFirebase)
-					  .build();
-			return FirebaseApp.initializeApp(options).getInstance();
-		}
-		return FirebaseApp.getInstance();
+		FirebaseOptions options = new FirebaseOptions.Builder()
+				  .setCredentials(GoogleCredentials.fromStream(new FileInputStream(new File(certificadoFirebase))))
+				  .setDatabaseUrl(urlFirebase)
+				  .build();
+		return FirebaseApp.initializeApp(options).getInstance();
 	}
 
 }

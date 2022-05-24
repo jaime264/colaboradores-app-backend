@@ -7,7 +7,9 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCancelarProgram
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGenerarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarVacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestResumenVacaciones;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseResumenVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 
@@ -20,6 +22,8 @@ public interface ProgramacionVacacionNegocio {
 	List<ResponseProgramacionVacacion> generar(RequestGenerarProgramacionVacacion request);
 	
 	List<ResponseProgramacionVacacion> consultar(RequestListarVacacionProgramacion request);
+	
+	ResponseResumenVacacion consultar(RequestResumenVacaciones request);
 	
 	void validarFechaRegistro(LocalDate fechaInicioVacacion);
 	

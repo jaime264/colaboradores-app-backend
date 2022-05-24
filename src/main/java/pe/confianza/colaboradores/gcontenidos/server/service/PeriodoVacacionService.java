@@ -1,5 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
+import java.util.List;
+
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
@@ -13,4 +15,6 @@ public interface PeriodoVacacionService {
 	void agregarNuevoPeriodo(Empleado empleado, int anio, int numero, String usuarioOperacion);
 	
 	PeriodoVacacion obtenerPeriodo(Empleado empleado, VacacionProgramacion programacion);
+	
+	List<PeriodoVacacion> consultar(Empleado empleado);
 }

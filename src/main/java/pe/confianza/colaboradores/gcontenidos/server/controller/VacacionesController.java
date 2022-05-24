@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,7 +28,9 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCancelarProgram
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGenerarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarVacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestResumenVacaciones;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseResumenVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Vacacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacionNegocio;
@@ -160,6 +161,26 @@ public class VacacionesController {
 			return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 		} catch (Exception e) {
 			auditoriaService.createAuditoria("002", "006", Constantes.COD_ERR, "Error al consultar programación de vacaciones: " + e.getMessage(), BsonDocument.parse(jsonData));
+			responseStatus.setCodeStatus(Constantes.COD_ERR);
+			responseStatus.setMsgStatus(e.getMessage());
+			return new ResponseEntity<>(responseStatus, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PostMapping("/vacaciones/resumen")
+	public ResponseEntity<ResponseStatus> consultarResumen(@Valid @RequestBody RequestResumenVacaciones request) {
+		Gson gson = new Gson();
+		String jsonData = gson.toJson(request);
+		ResponseStatus responseStatus = new ResponseStatus();
+		try {
+			ResponseResumenVacacion resumen = programacionVacacionNegocio.consultar(request);
+			auditoriaService.createAuditoria("002", "006", Constantes.COD_OK, Constantes.OK, BsonDocument.parse(jsonData));
+			responseStatus.setCodeStatus(Constantes.COD_OK);
+			responseStatus.setMsgStatus(Constantes.OK);
+			responseStatus.setResultObj(resumen);
+			return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+		} catch (Exception e) {
+			auditoriaService.createAuditoria("002", "006", Constantes.COD_ERR, "Error al consultar resumen de vacaciones: " + e.getMessage(), BsonDocument.parse(jsonData));
 			responseStatus.setCodeStatus(Constantes.COD_ERR);
 			responseStatus.setMsgStatus(e.getMessage());
 			return new ResponseEntity<>(responseStatus, HttpStatus.INTERNAL_SERVER_ERROR);

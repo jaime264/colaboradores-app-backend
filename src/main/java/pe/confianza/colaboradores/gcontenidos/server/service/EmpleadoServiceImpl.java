@@ -69,7 +69,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	@Override
 	public Empleado buscarPorUsuarioBT(String usuarioBT) {
 		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(usuarioBT.trim());
-		if(optEmpleado.isPresent())
+		if(!optEmpleado.isPresent())
 			return null;
 		return optEmpleado.get();
 	}

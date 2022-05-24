@@ -17,8 +17,12 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCancelarProgram
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGenerarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarVacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestResumenVacaciones;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseResumenPeriodoVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseResumenVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
+import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.VacacionProgramacionMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
@@ -77,7 +81,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] cancelar");
 		Empleado empleado = empleadoService.buscarPorUsuarioBT(cancelacion.getUsuarioOperacion().trim());
 		if(empleado == null)
-			throw new AppException("No existe el usuario " + cancelacion.getUsuarioOperacion());
+			throw new ModelNotFoundException("No existe el usuario " + cancelacion.getUsuarioOperacion());
 		VacacionProgramacion programacion = vacacionProgramacionService.buscarPorId(cancelacion.getIdProgramacion());
 		if(programacion.getPeriodo().getEmpleado().getId() != empleado.getId())
 			throw new AppException("El usuario no tiene permisos para eliminar esta programación");
@@ -93,7 +97,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] generar");
 		Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioOperacion().trim());
 		if(empleado == null)
-			throw new AppException("No existe el usuario " + request.getUsuarioOperacion());
+			throw new ModelNotFoundException("No existe el usuario " + request.getUsuarioOperacion());
 		List<VacacionProgramacion> programacionesGenerar = new ArrayList<>();
 		for (long idProgramacion : request.getIdProgramaciones()) {
 			VacacionProgramacion programacion = vacacionProgramacionService.buscarPorId(idProgramacion);
@@ -119,7 +123,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] consultar");
 		Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioBT());
 		if(empleado == null)
-			throw new AppException("No existe el usuario " + request.getUsuarioBT());
+			throw new ModelNotFoundException("No existe el usuario " + request.getUsuarioBT());
 		List<VacacionProgramacion> lstProgramacion = new ArrayList<>();
 		EstadoVacacion estadoSeleccionado = EstadoVacacion.getEstado(request.getEstado());
 		if(estadoSeleccionado == null && !StringUtils.isEmpty(request.getPeriodo()))
@@ -133,6 +137,46 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			return VacacionProgramacionMapper.convert(p);
 		}).collect(Collectors.toList());
 	}
+	
+	@Override
+	public ResponseResumenVacacion consultar(RequestResumenVacaciones request) {
+		LOGGER.info("[BEGIN] consultar");
+		Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioBT());
+		if(empleado == null)
+			throw new ModelNotFoundException("No existe el usuario " + request.getUsuarioBT());
+		
+		LocalDate fechaConsulta = LocalDate.now();
+		ResponseResumenVacacion response = new ResponseResumenVacacion();
+		response.setFechaConsulta(fechaConsulta);
+		response.setNombres(empleado.getNombres());
+		response.setApellidoPaterno(empleado.getApellidoPaterno());
+		response.setApellidoMaterno(empleado.getApellidoMaterno());
+		response.setFechaInicioLabores(empleado.getFechaIngreso());
+		response.setFechaFinLabores(empleado.getFechaFinContrato());
+		
+		ResponseResumenPeriodoVacacion periodoTrunco = null;
+		ResponseResumenPeriodoVacacion periodoVencido = null;
+		List<PeriodoVacacion> lstPeriodos = periodoVacacionService.consultar(empleado);
+		for (PeriodoVacacion periodo : lstPeriodos) {
+			if(periodo.getAnio() == fechaConsulta.getYear() - 1) {
+				periodoTrunco = new ResponseResumenPeriodoVacacion();
+				periodoTrunco.setDias(periodo.getDerecho() - periodo.getDiasGozados());
+				LocalDate fechaLimite = empleado.getFechaIngreso().plusYears(fechaConsulta.getYear() - empleado.getFechaIngreso().getYear() + 1).plusDays(-1);
+				periodoTrunco.setFechaLimite(fechaLimite);
+			}
+			if(periodo.getAnio() == fechaConsulta.getYear() - 2) {
+				periodoVencido = new ResponseResumenPeriodoVacacion();
+				periodoVencido.setDias(periodo.getDerecho() - periodo.getDiasGozados());
+				LocalDate fechaLimite = empleado.getFechaIngreso().plusYears(fechaConsulta.getYear() - empleado.getFechaIngreso().getYear() ).plusDays(-1);
+				periodoVencido.setFechaLimite(fechaLimite);
+			}
+		}
+		response.setPeriodoTrunco(periodoTrunco);
+		response.setPeriodoVencido(periodoVencido);
+		LOGGER.info("[BEGIN] consultar");
+		return response;
+	}
+
 
 	@Override
 	public void validarFechaRegistro(LocalDate fechaInicioVacacion) {
@@ -259,8 +303,5 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[END] actualizarPeriodo");
 		
 	}
-
-	
-
 	
 }
