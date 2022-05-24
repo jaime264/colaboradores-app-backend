@@ -1,11 +1,5 @@
 package pe.confianza.colaboradores.gcontenidos.server.api.entity;
 
-import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
-
 public class VacacionRes {
 
 	private String fechaIngreso;

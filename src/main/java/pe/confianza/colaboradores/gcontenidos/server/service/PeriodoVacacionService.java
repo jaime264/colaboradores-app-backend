@@ -4,10 +4,12 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 
-public interface VacacionPeriodoService {
+public interface PeriodoVacacionService {
 	
-	void actualizarPeriodo(Empleado empleado, String usuarioOperacion);
-
+	void actualizarPeriodos(Empleado empleado, String usuarioOPeracion);
+	
+	void actualizarPeriodo(Empleado empleado, PeriodoVacacion periodo, String usuarioOperacion);
+	
 	void agregarNuevoPeriodo(Empleado empleado, int anio, int numero, String usuarioOperacion);
 	
 	PeriodoVacacion obtenerPeriodo(Empleado empleado, VacacionProgramacion programacion);

@@ -25,31 +25,32 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.gson.Gson;
 
 import net.sf.jasperreports.engine.JRException;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCancelarProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGenerarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarVacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Vacacion;
+import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
-import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 
 @RestController
 @RequestMapping("/api")
-//@CrossOrigin(origins = { "https://200.107.154.52:6020", "http://localhost", "http://localhost:8100", "http://localhost:4200", "http://172.20.9.12:7445", "http://172.20.10.13:7445" })
 public class VacacionesController {
 	
 	private static Logger logger = LoggerFactory.getLogger(VacacionesController.class);
 
 	@Autowired
 	private VacacionService vacacionService;
-	
-	@Autowired
-	private VacacionProgramacionService vacacionProgramacionService;
 
 	@Autowired
 	private AuditoriaService auditoriaService;
+	
+	@Autowired
+	private ProgramacionVacacionNegocio programacionVacacionNegocio;
 	
 	@SuppressWarnings("resource")
 	@PostMapping("/vacaciones/upload/{fechaCorte}")
@@ -91,7 +92,7 @@ public class VacacionesController {
 		String jsonData = gson.toJson(programacionRequest);
 		ResponseStatus responseStatus = new ResponseStatus();
 		try {
-			ResponseProgramacionVacacion programacion = vacacionProgramacionService.registroProgramacion(programacionRequest);
+			ResponseProgramacionVacacion programacion = programacionVacacionNegocio.registro(programacionRequest);
 			auditoriaService.createAuditoria("002", "006", Constantes.COD_OK, Constantes.OK, BsonDocument.parse(jsonData));
 			responseStatus.setCodeStatus(Constantes.COD_OK);
 			responseStatus.setMsgStatus(Constantes.OK);
@@ -105,21 +106,60 @@ public class VacacionesController {
 		}
 	}
 	
+	@PostMapping("/vacaciones/cancelacion-programacion")
+	public ResponseEntity<ResponseStatus> cancelacionProgramacion(@Valid @RequestBody RequestCancelarProgramacionVacacion cancelacion) {
+		Gson gson = new Gson();
+		String jsonData = gson.toJson(cancelacion);
+		ResponseStatus responseStatus = new ResponseStatus();
+		try {
+			programacionVacacionNegocio.cancelar(cancelacion);
+			auditoriaService.createAuditoria("002", "006", Constantes.COD_OK, Constantes.OK, BsonDocument.parse(jsonData));
+			responseStatus.setCodeStatus(Constantes.COD_OK);
+			responseStatus.setMsgStatus(Constantes.OK);
+			return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+		} catch (Exception e) {
+			auditoriaService.createAuditoria("002", "006", Constantes.COD_ERR, "Error al cancelar programación de vacaciones: " + e.getMessage(), BsonDocument.parse(jsonData));
+			responseStatus.setCodeStatus(Constantes.COD_ERR);
+			responseStatus.setMsgStatus(e.getMessage());
+			return new ResponseEntity<>(responseStatus, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PostMapping("/vacaciones/generar-programacion")
+	public ResponseEntity<ResponseStatus> generarProgramacion(@Valid @RequestBody RequestGenerarProgramacionVacacion generacion) {
+		Gson gson = new Gson();
+		String jsonData = gson.toJson(generacion);
+		ResponseStatus responseStatus = new ResponseStatus();
+		try {
+			List<ResponseProgramacionVacacion> programaciones = programacionVacacionNegocio.generar(generacion);
+			auditoriaService.createAuditoria("002", "006", Constantes.COD_OK, Constantes.OK, BsonDocument.parse(jsonData));
+			responseStatus.setCodeStatus(Constantes.COD_OK);
+			responseStatus.setMsgStatus(Constantes.OK);
+			responseStatus.setResultObj(programaciones);
+			return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+		} catch (Exception e) {
+			auditoriaService.createAuditoria("002", "006", Constantes.COD_ERR, "Error al generar programación de vacaciones: " + e.getMessage(), BsonDocument.parse(jsonData));
+			responseStatus.setCodeStatus(Constantes.COD_ERR);
+			responseStatus.setMsgStatus(e.getMessage());
+			return new ResponseEntity<>(responseStatus, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
 	@PostMapping("/vacaciones/listar-programacion")
-	public ResponseEntity<ResponseStatus> listarVacionProgramacion(@Valid @RequestBody RequestListarVacacionProgramacion request) {
+	public ResponseEntity<ResponseStatus> consultarProgramacion(@Valid @RequestBody RequestListarVacacionProgramacion request) {
 		logger.info("Empleado: " + request.getUsuarioBT());
 		Gson gson = new Gson();
 		String jsonData = gson.toJson(request);
 		ResponseStatus responseStatus = new ResponseStatus();
 		try {
-			List<ResponseProgramacionVacacion> lstProgramacion = vacacionProgramacionService.obtenerProgramacion(request.getEstado(), request.getPeriodo(), request.getUsuarioBT());
+			List<ResponseProgramacionVacacion> lstProgramacion = programacionVacacionNegocio.consultar(request);
 			auditoriaService.createAuditoria("002", "006", Constantes.COD_OK, Constantes.OK, BsonDocument.parse(jsonData));
 			responseStatus.setCodeStatus(Constantes.COD_OK);
 			responseStatus.setMsgStatus(Constantes.OK);
 			responseStatus.setResultObj(lstProgramacion);
 			return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 		} catch (Exception e) {
-			auditoriaService.createAuditoria("002", "006", Constantes.COD_ERR, "Error al listar programación de vacaciones: " + e.getMessage(), BsonDocument.parse(jsonData));
+			auditoriaService.createAuditoria("002", "006", Constantes.COD_ERR, "Error al consultar programación de vacaciones: " + e.getMessage(), BsonDocument.parse(jsonData));
 			responseStatus.setCodeStatus(Constantes.COD_ERR);
 			responseStatus.setMsgStatus(e.getMessage());
 			return new ResponseEntity<>(responseStatus, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -33,9 +33,11 @@ public class EmpleadoApi {
 		HttpHeaders headers = new HttpHeaders();
 		HttpEntity<Map<String, String>> entity = new HttpEntity<Map<String, String>>(requestBody, headers);
 		ResponseEntity<EmpleadoRes> response = rt.exchange(urlEmpleado, HttpMethod.POST, entity, EmpleadoRes.class);
-		if(response.getStatusCodeValue() == HttpStatus.OK.value())
-			return response.getBody();
-		throw new AppException("Error al obtener información del empleado");
+		if(response.getStatusCodeValue() != HttpStatus.OK.value())
+			throw new AppException("Error al obtener información del empleado");
+		logger.info("[END] getPerfil");
+		return response.getBody();
+		
 	}
 
 }
