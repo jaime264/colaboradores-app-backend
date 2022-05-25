@@ -224,7 +224,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] obtenerPeriodo");
 		PeriodoVacacion periodo = periodoVacacionService.obtenerPeriodo(empleado, programacion);
 		if(periodo == null)
-			throw new AppException("La cantidad de días supera los días pendientes");
+			throw new AppException("La cantidad de días supera los días pendientes de programar");
 		programacion.setPeriodo(periodo);
 		LOGGER.info("[END] obtenerPeriodo");
 	}
