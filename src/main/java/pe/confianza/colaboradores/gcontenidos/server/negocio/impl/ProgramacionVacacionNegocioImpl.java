@@ -125,14 +125,19 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		if(empleado == null)
 			throw new ModelNotFoundException("No existe el usuario " + request.getUsuarioBT());
 		List<VacacionProgramacion> lstProgramacion = new ArrayList<>();
-		EstadoVacacion estadoSeleccionado = EstadoVacacion.getEstado(request.getEstado());
+		EstadoVacacion estadoSeleccionado = null;
+		if(!StringUtils.isEmpty(request.getEstado()))
+			estadoSeleccionado = EstadoVacacion.getEstado(request.getEstado());
+		
+		if(estadoSeleccionado == null && StringUtils.isEmpty(request.getPeriodo()))
+			lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBT(request.getUsuarioBT().trim());
+		if(estadoSeleccionado != null && !StringUtils.isEmpty(request.getPeriodo()))
+			lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBTYPeriodoYEstado(request.getUsuarioBT().trim(), request.getPeriodo().trim(), estadoSeleccionado);
 		if(estadoSeleccionado == null && !StringUtils.isEmpty(request.getPeriodo()))
 			lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBTYPeriodo(request.getUsuarioBT().trim(), request.getPeriodo().trim());
 		if(estadoSeleccionado != null && StringUtils.isEmpty(request.getPeriodo()))
-			lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBTYPeriodoYEstado(request.getUsuarioBT().trim(), request.getPeriodo().trim(), estadoSeleccionado);
-		if(estadoSeleccionado == null && StringUtils.isEmpty(request.getPeriodo()))
-			lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBT(request.getUsuarioBT().trim());
-		LOGGER.info("[BEGIN] consultar");
+			lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBTYEstado(request.getUsuarioBT().trim(), estadoSeleccionado);		
+		LOGGER.info("[END] consultar");
 		return lstProgramacion.stream().map(p -> {
 			return VacacionProgramacionMapper.convert(p);
 		}).collect(Collectors.toList());
@@ -153,6 +158,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		response.setApellidoMaterno(empleado.getApellidoMaterno());
 		response.setFechaInicioLabores(empleado.getFechaIngreso());
 		response.setFechaFinLabores(empleado.getFechaFinContrato());
+		response.setCargo(empleado.getPuesto().getDescripcion().trim());
 		
 		ResponseResumenPeriodoVacacion periodoTrunco = null;
 		ResponseResumenPeriodoVacacion periodoVencido = null;
@@ -173,6 +179,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		}
 		response.setPeriodoTrunco(periodoTrunco);
 		response.setPeriodoVencido(periodoVencido);
+		response.setMeta(0);
 		LOGGER.info("[BEGIN] consultar");
 		return response;
 	}
@@ -285,6 +292,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			programacionesRegistradas.add(programacion);
 			programacionesRegistradas.sort(odenPorFechas);
 			for (int i = 0; i < programacionesRegistradas.size(); i++) {
+				programacionesRegistradas.get(i).setCodigoEmpleado(programacion.getPeriodo().getEmpleado().getCodigo());
 				programacionesRegistradas.get(i).setOrden(i + 1);
 				if(programacionesRegistradas.get(i).getId() != null) {
 					vacacionProgramacionService.actualizar(programacionesRegistradas.get(i), usuarioModifica);

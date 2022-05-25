@@ -26,6 +26,10 @@ public class ResponseResumenVacacion {
 	private String apellidoPaterno;
 	
 	private String apellidoMaterno;
+	
+	private String cargo;
+	
+	private double meta;
 
 	public LocalDate getFechaConsulta() {
 		return fechaConsulta;
@@ -89,6 +93,22 @@ public class ResponseResumenVacacion {
 
 	public void setApellidoMaterno(String apellidoMaterno) {
 		this.apellidoMaterno = apellidoMaterno;
+	}
+
+	public String getCargo() {
+		return cargo;
+	}
+
+	public void setCargo(String cargo) {
+		this.cargo = cargo;
+	}
+
+	public double getMeta() {
+		return meta;
+	}
+
+	public void setMeta(double meta) {
+		this.meta = meta;
 	}
 
 	

@@ -41,7 +41,13 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 	
 	@ManyToOne
 	@JoinColumn(nullable = true, name = "idPeriodo")
-	private PeriodoVacacion periodo;	
+	private PeriodoVacacion periodo;
+	
+	private Long codigoEmpleado;
+	
+	private Long secuencia;
+	
+	private Long numeroPeriodo;
 	
 	@Transient
 	private EstadoVacacion estado;
@@ -63,12 +69,9 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 		this.id = id;
 	}
 
-	
-
 	public void setPeriodo(PeriodoVacacion periodo) {
 		this.periodo = periodo;
 	}
-	
 	
 
 	public PeriodoVacacion getPeriodo() {
@@ -113,6 +116,30 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 
 	public void setNumeroDias(int numeroDias) {
 		this.numeroDias = numeroDias;
+	}
+
+	public Long getCodigoEmpleado() {
+		return codigoEmpleado;
+	}
+
+	public void setCodigoEmpleado(Long codigoEmpleado) {
+		this.codigoEmpleado = codigoEmpleado;
+	}
+
+	public Long getSecuencia() {
+		return secuencia;
+	}
+
+	public void setSecuencia(Long secuencia) {
+		this.secuencia = secuencia;
+	}
+
+	public Long getNumeroPeriodo() {
+		return numeroPeriodo;
+	}
+
+	public void setNumeroPeriodo(Long numeroPeriodo) {
+		this.numeroPeriodo = numeroPeriodo;
 	}
 	
 	

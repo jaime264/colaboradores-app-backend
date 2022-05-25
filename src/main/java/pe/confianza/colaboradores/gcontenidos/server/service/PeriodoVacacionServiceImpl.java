@@ -55,6 +55,10 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 		periodoVacacionDao.actualizarDias(periodo.getId());
 		LocalDate fechaIngreso = empleado.getFechaIngreso();
 		LocalDate fechaActual = LocalDate.now();
+		Optional<PeriodoVacacion> optPeriodo = periodoVacacionDao.findById(periodo.getId());
+		if(!optPeriodo.isPresent())
+			return;
+		periodo = optPeriodo.get();
 		periodo.setCodigoEmpleado(empleado.getCodigo());
 		
 		LocalDate fechaLimiteIdemnizablePeriodo = fechaIngreso.plusYears(periodo.getAnio() - fechaIngreso.getYear() + 1);

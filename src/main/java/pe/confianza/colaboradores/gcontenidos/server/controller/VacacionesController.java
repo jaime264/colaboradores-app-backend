@@ -23,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import net.sf.jasperreports.engine.JRException;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCancelarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGenerarProgramacionVacacion;
@@ -40,6 +42,7 @@ import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 
 @RestController
 @RequestMapping("/api")
+@Api(value = "Vacaciones API REST Endpoint", description = "Operaciones con vacaciones")
 public class VacacionesController {
 	
 	private static Logger logger = LoggerFactory.getLogger(VacacionesController.class);
@@ -85,7 +88,7 @@ public class VacacionesController {
 		return vacacionOut;
 	}
 	
-	
+	@ApiOperation(notes = "Registra una programación de vacación de un empleado", value = "url proxy /vacacionesadd")
 	@PostMapping("/vacaciones/registro-programacion")
 	public ResponseEntity<ResponseStatus> registroProgramacion(@Valid @RequestBody RequestProgramacionVacacion programacionRequest) {
 		logger.info("Empleado: " + programacionRequest.getUsuarioBT());
@@ -107,6 +110,7 @@ public class VacacionesController {
 		}
 	}
 	
+	@ApiOperation(notes = "Cancela una programación de vacación de un empleado", value = "url proxy /vacacionescancelar")
 	@PostMapping("/vacaciones/cancelacion-programacion")
 	public ResponseEntity<ResponseStatus> cancelacionProgramacion(@Valid @RequestBody RequestCancelarProgramacionVacacion cancelacion) {
 		Gson gson = new Gson();
@@ -126,6 +130,7 @@ public class VacacionesController {
 		}
 	}
 	
+	@ApiOperation(notes = "Pasa a estado generados las programaciones de vacaciones de un empleado", value = "url proxy /vacacionesgenerar")
 	@PostMapping("/vacaciones/generar-programacion")
 	public ResponseEntity<ResponseStatus> generarProgramacion(@Valid @RequestBody RequestGenerarProgramacionVacacion generacion) {
 		Gson gson = new Gson();
@@ -146,6 +151,7 @@ public class VacacionesController {
 		}
 	}
 	
+	@ApiOperation(notes = "Lista de programaciones de vacaciones de un empleado", value = "url proxy /vacacioneslist")
 	@PostMapping("/vacaciones/listar-programacion")
 	public ResponseEntity<ResponseStatus> consultarProgramacion(@Valid @RequestBody RequestListarVacacionProgramacion request) {
 		logger.info("Empleado: " + request.getUsuarioBT());
@@ -167,6 +173,7 @@ public class VacacionesController {
 		}
 	}
 	
+	@ApiOperation(notes = "Resumen de vacaciones para un empleado", value = "url proxy /vacacionesresumen")
 	@PostMapping("/vacaciones/resumen")
 	public ResponseEntity<ResponseStatus> consultarResumen(@Valid @RequestBody RequestResumenVacaciones request) {
 		Gson gson = new Gson();
