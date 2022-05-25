@@ -1,6 +1,5 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,8 +13,6 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ReaccionPost;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.bean.Usuario;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ComentarioDao;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Comentario;
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.dao.DispositivoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.dao.PublicacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.dao.PublicacionUsuarioDao;
@@ -35,8 +32,6 @@ public class PublicacionServiceImpl implements PublicacionService {
 	@Autowired 
 	private DispositivoDao dispositivoDao;
 	
-	@Autowired
-	private ComentarioDao comentarioDao;
 
 	@Override
 	public ResponseStatus createPost(List<PublicacionOld> postsIn) {

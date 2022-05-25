@@ -1,9 +1,5 @@
 package pe.confianza.colaboradores.gcontenidos.server.util;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import pe.confianza.colaboradores.gcontenidos.server.service.ParametrosServiceImpl;
-
 public class Constantes {
 	
 
