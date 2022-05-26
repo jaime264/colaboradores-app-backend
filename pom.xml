@@ -158,35 +158,46 @@
 			<id>local</id>
 			<properties>
 				<activatedProperties>local</activatedProperties>
-			</properties>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-		</profile>
-		<profile>
-			<id>dev</id>
-			<properties>
-				<activatedProperties>dev</activatedProperties>
+				<rp.build.warname>local</rp.build.warname>
 			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
 		</profile>
 		<profile>
+			<id>dev</id>
+			<properties>
+				<activatedProperties>dev</activatedProperties>
+				<rp.build.warname>dev</rp.build.warname>
+			</properties>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
 			<id>pre</id>
 			<properties>
 				<activatedProperties>pre</activatedProperties>
+				<rp.build.warname>qa</rp.build.warname>
 			</properties>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
 		</profile>
 		<profile>
 			<id>prod</id>
 			<properties>
 				<activatedProperties>prod</activatedProperties>
+				<rp.build.warname>prod</rp.build.warname>
 			</properties>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
 		</profile>
 	</profiles>
 
 	<build>
+		<finalName>${artifactId}-${version}-${rp.build.warname}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
