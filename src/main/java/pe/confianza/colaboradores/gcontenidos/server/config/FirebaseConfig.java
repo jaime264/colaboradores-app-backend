@@ -23,14 +23,14 @@ public class FirebaseConfig {
 	private String certificadoFirebase;
 	
 	
-	@Primary
-	@Bean
-	public FirebaseApp getfirebaseApp() throws IOException {
-		FirebaseOptions options = new FirebaseOptions.Builder()
-				  .setCredentials(GoogleCredentials.fromStream(new FileInputStream(new File(certificadoFirebase))))
-				  .setDatabaseUrl(urlFirebase)
-				  .build();
-		return FirebaseApp.initializeApp(options).getInstance();
-	}
+//	@Primary
+//	@Bean
+//	public FirebaseApp getfirebaseApp() throws IOException {
+//		FirebaseOptions options = new FirebaseOptions.Builder()
+//				  .setCredentials(GoogleCredentials.fromStream(new FileInputStream(new File(certificadoFirebase))))
+//				  .setDatabaseUrl(urlFirebase)
+//				  .build();
+//		return FirebaseApp.initializeApp(options).getInstance();
+//	}
 
 }

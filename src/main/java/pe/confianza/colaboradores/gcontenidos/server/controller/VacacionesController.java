@@ -26,6 +26,8 @@ import com.google.gson.Gson;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.sf.jasperreports.engine.JRException;
+import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmplVacPerRes;
+import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCancelarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGenerarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarVacacionProgramacion;
@@ -37,6 +39,8 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Vacacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
+import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
+import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 
@@ -55,6 +59,12 @@ public class VacacionesController {
 	
 	@Autowired
 	private ProgramacionVacacionNegocio programacionVacacionNegocio;
+	
+	@Autowired
+	private VacacionProgramacionService vacacionProgramacionService;
+	
+	@Autowired
+	private EmpleadoService empleadoService;
 	
 	@SuppressWarnings("resource")
 	@PostMapping("/vacaciones/upload/{fechaCorte}")
@@ -194,4 +204,22 @@ public class VacacionesController {
 		}
 	}
 	
+	@RequestMapping("/vacaciones/programacion-empleado")
+	public ResponseEntity<?> listEmpleadoByprogramacion(Long codigo) throws IOException {
+		
+		logger.info("Empleado: " + codigo.toString());
+		List<EmplVacPerRes> em = empleadoService.listEmpleadoByprogramacion(codigo);
+		
+		return new ResponseEntity<List<EmplVacPerRes>>(em, HttpStatus.OK);
+	}
+	
+
+	@RequestMapping("/vacaciones/programacion-aprobacion")
+	public ResponseEntity<?> aprobacionVacacionProgramacion(@RequestBody List<VacacionPeriodo> vacacionPeriodos) throws IOException {
+		
+		logger.info("VacacionPeriodo: " + vacacionPeriodos.toString());
+		vacacionProgramacionService.aprobarVacacionPeriodos(vacacionPeriodos);
+		
+		return new ResponseEntity<Object>(HttpStatus.OK);
+	}
 }
