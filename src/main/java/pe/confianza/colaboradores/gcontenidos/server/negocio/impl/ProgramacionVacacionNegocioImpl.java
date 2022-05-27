@@ -144,10 +144,10 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		
 		LocalDate fechaConsulta = LocalDate.now();
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		String valorFechaInicio = parametrosConstants.FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES;
-		if(valorFechaInicio.isEmpty())
-			throw new AppException("No existe el parámetro para inicio de registro de programación de vacaciones");
-		LocalDate fechaCorte = LocalDate.parse(valorFechaInicio + "/" + fechaConsulta.getYear(), formatter);
+		String valorFechaFin = parametrosConstants.FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES;
+		if(valorFechaFin.isEmpty())
+			throw new AppException("No existe el parámetro para fin de registro de programación de vacaciones");
+		LocalDate fechaCorte = LocalDate.parse(valorFechaFin + "/" + fechaConsulta.getYear(), formatter);
 		ResponseResumenVacacion response = new ResponseResumenVacacion();
 		response.setFechaConsulta(fechaConsulta);
 		response.setFechaCorte(fechaCorte);
@@ -237,7 +237,10 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] obtenerPeriodo");
 		PeriodoVacacion periodo = periodoVacacionService.obtenerPeriodo(empleado, programacion);
 		if(periodo == null)
-			throw new AppException("La cantidad de días supera los días pendientes de programar");
+			throw new AppException("No tiene perido habilitado");
+		double diasLibresPorProgramar = periodo.getDerecho() - periodo.getDiasGozados() - periodo.getDiasAprobadosGozar() - periodo.getDiasRegistradosGozar();
+		if(programacion.getNumeroDias() > diasLibresPorProgramar)
+			throw new AppException("Debe dividir su programación en dos tramos");
 		programacion.setPeriodo(periodo);
 		LOGGER.info("[END] obtenerPeriodo");
 	}
@@ -285,8 +288,9 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	@Override
 	public void obtenerOrden(VacacionProgramacion programacion, String usuarioModifica) {
 		LOGGER.info("[BEGIN] obtenerOrdenProgramacion");
-		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.REGISTRADO);
-		if(programacionesRegistradas.isEmpty()) {
+		List<VacacionProgramacion> programaciones = vacacionProgramacionService.listarPorPeriodo(programacion.getPeriodo().getId());
+		programaciones = programaciones.stream().filter(p -> p.getIdEstado() != EstadoVacacion.RECHAZADO.id).collect(Collectors.toList());
+		if(programaciones.isEmpty()) {
 			programacion.setOrden(1);
 		} else {
 			Comparator<VacacionProgramacion> odenPorFechas = new Comparator<VacacionProgramacion>() {
@@ -295,15 +299,15 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 					return prog1.getFechaInicio().compareTo(prog2.getFechaInicio());
 				}
 			};
-			programacionesRegistradas.add(programacion);
-			programacionesRegistradas.sort(odenPorFechas);
-			for (int i = 0; i < programacionesRegistradas.size(); i++) {
-				programacionesRegistradas.get(i).setCodigoEmpleado(programacion.getPeriodo().getEmpleado().getCodigo());
-				programacionesRegistradas.get(i).setOrden(i + 1);
-				if(programacionesRegistradas.get(i).getId() != null) {
-					vacacionProgramacionService.actualizar(programacionesRegistradas.get(i), usuarioModifica);
+			programaciones.add(programacion);
+			programaciones.sort(odenPorFechas);
+			for (int i = 0; i < programaciones.size(); i++) {
+				programaciones.get(i).setCodigoEmpleado(programacion.getPeriodo().getEmpleado().getCodigo());
+				programaciones.get(i).setOrden(i + 1);
+				if(programaciones.get(i).getId() != null) {
+					vacacionProgramacionService.actualizar(programaciones.get(i), usuarioModifica);
 				} else {
-					programacion = programacionesRegistradas.get(i);
+					programacion = programaciones.get(i);
 				}
 			}
 		}

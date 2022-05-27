@@ -33,4 +33,6 @@ public interface VacacionProgramacionService {
 	
 	VacacionProgramacion obtenerUltimaProgramacion(long idPeriodo);
 	
+	List<VacacionProgramacion> listarPorPeriodo(long idPeriodo);
+	
 }

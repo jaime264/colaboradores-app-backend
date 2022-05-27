@@ -127,12 +127,23 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	@Override
 	public VacacionProgramacion obtenerUltimaProgramacion(long idPeriodo) {
+		logger.info("[BEGIN] obtenerUltimaProgramacion");
 		List<VacacionProgramacion> lstProgramacion = vacacionProgramacionDao.findByIdPeriodo(idPeriodo);
 		if(lstProgramacion == null)
 			return null;
 		if(lstProgramacion.isEmpty())
 			return null;
+		logger.info("[END] obtenerUltimaProgramacion");
 		return lstProgramacion.get(0);
+	}
+
+	@Override
+	public List<VacacionProgramacion> listarPorPeriodo(long idPeriodo) {
+		logger.info("[BEGIN] listarPorPeriodo");
+		List<VacacionProgramacion> lstProgramacion = vacacionProgramacionDao.findByIdPeriodo(idPeriodo);
+		lstProgramacion = lstProgramacion == null ? new ArrayList<>() : lstProgramacion;
+		logger.info("[END] listarPorPeriodo");
+		return lstProgramacion;
 	}
 
 }

@@ -51,7 +51,7 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 	
 	@Override
 	public void actualizarPeriodo(Empleado empleado, PeriodoVacacion periodo, String usuarioOperacion) {
-		LOGGER.info("[BEGIN] actualizarPeriodo: " + periodo.getDescripcion());
+		LOGGER.info("[BEGIN] actualizarPeriodo");
 		periodoVacacionDao.actualizarDias(periodo.getId());
 		LocalDate fechaIngreso = empleado.getFechaIngreso();
 		LocalDate fechaActual = LocalDate.now();
@@ -61,16 +61,15 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 		periodo = optPeriodo.get();
 		periodo.setCodigoEmpleado(empleado.getCodigo());
 		
-		LocalDate fechaLimiteIdemnizablePeriodo = Utilitario.obtenerFechaLimiteIndemnizablePeriodo(fechaIngreso, periodo.getAnio());
-		LocalDate fechaLimitePeriodo = Utilitario.obtenerFechaLimitePeriodo(fechaIngreso, periodo.getAnio());
-		LOGGER.info("Periodo: " + periodo.getDescripcion() + " fechaLimitePeriodo" + fechaLimitePeriodo + " fechaIndemnizable: " + fechaLimiteIdemnizablePeriodo);
+		LOGGER.info("Empleado: {} - Fecha ingreso: {} - Inicio: {} Fin: {} Idemnizable: {}", 
+				new Object[] { empleado.getUsuarioBT(), empleado.getFechaIngreso(), periodo.getFechaInicioPeriodo(), periodo.getFechaFinPeriodo(), periodo.getFechaLimiteIndemnizacion()} );
 		if(!periodo.isCompletado()) {
-			if(fechaLimiteIdemnizablePeriodo.isBefore(fechaActual)) {
+			if(periodo.getFechaLimiteIndemnizacion().isBefore(fechaActual)) {
 				periodo.setCompletado(true);
 				periodo.setDerecho(30.0);
 				periodo.setDiasIndemnizables(periodo.getDerecho() - periodo.getDiasGozados());
 			} else {
-				if(fechaLimitePeriodo.isBefore(fechaActual)) {
+				if(periodo.getFechaFinPeriodo().isBefore(fechaActual)) {
 					periodo.setDerecho(30.0);
 				} else {
 					periodo.setDerecho(Utilitario.calcularDerechoVacaciones(fechaIngreso, fechaActual));
@@ -106,6 +105,9 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 		periodo.setUsuarioCrea(usuarioOperacion);
 		periodo.setMes(empleado.getFechaIngreso().getMonthValue());
 		periodo.setNumero(numero);
+		periodo.setFechaInicioPeriodo(empleado.getFechaIngreso().plusYears(anio - empleado.getFechaIngreso().getYear()));
+		periodo.setFechaFinPeriodo(empleado.getFechaIngreso().plusYears(anio - empleado.getFechaIngreso().getYear() + 1).plusDays(-1));
+		periodo.setFechaLimiteIndemnizacion(empleado.getFechaIngreso().plusYears(anio - empleado.getFechaIngreso().getYear() + 2).plusDays(-1));
 		periodo = periodoVacacionDao.save(periodo);
 		LOGGER.info("[END] agregarNuevoPeriodo");
 	}
@@ -116,14 +118,11 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 		PeriodoVacacion periodoSeleccionado = null;
 		List<PeriodoVacacion> periodos = periodoVacacionDao.findByIdEmpleado(empleado.getId())
 				.stream().filter(p -> !p.isCompletado()).collect(Collectors.toList());
-		if(periodos != null) {
-			for (PeriodoVacacion periodo : periodos) {
-				if(programacion.getNumeroDias() <= periodo.getDiasPendientesGozar()) {
-					periodoSeleccionado = periodo;
-					break;
-				}
-			}
-		}
+		periodos = periodos == null ? new ArrayList<>() : periodos;
+		periodos = periodos.stream().filter(p -> !p.isCompletado()).collect(Collectors.toList());
+		periodos.sort(Comparator.comparing(PeriodoVacacion::getAnio));
+		if(!periodos.isEmpty()) 
+			periodoSeleccionado = periodos.get(0);
 		LOGGER.info("[END] obtenerPeriodo ");
 		return periodoSeleccionado;
 	}

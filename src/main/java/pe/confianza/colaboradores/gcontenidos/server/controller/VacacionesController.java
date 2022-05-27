@@ -112,9 +112,9 @@ public class VacacionesController {
 			ResponseProgramacionVacacion programacion = programacionVacacionNegocio.registro(programacionRequest);
 			respuesta.put("programacion", programacion);
 			RequestResumenVacaciones requestResumen = new RequestResumenVacaciones();
+			requestResumen.setUsuarioBT(programacion.getUsuarioBT());
 			ResponseResumenVacacion resumen = programacionVacacionNegocio.consultar(requestResumen);
 			respuesta.put("meta", resumen.getMeta());
-			programacionVacacionNegocio.consultar(requestResumen);
 			auditoriaService.createAuditoria("002", "006", Constantes.COD_OK, Constantes.OK, BsonDocument.parse(jsonData));
 			responseStatus.setCodeStatus(Constantes.COD_OK);
 			responseStatus.setMsgStatus(Constantes.OK);

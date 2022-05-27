@@ -1,5 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity;
 
+import java.time.LocalDate;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -47,6 +49,12 @@ public class PeriodoVacacion extends EntidadAuditoria{
 	@ManyToOne
 	@JoinColumn(nullable = true, name = "idEmpleado")
 	private Empleado empleado;
+	
+	private LocalDate fechaInicioPeriodo;
+	
+	private LocalDate fechaFinPeriodo;
+	
+	private LocalDate fechaLimiteIndemnizacion;
 
 	public long getId() {
 		return id;
@@ -176,6 +184,30 @@ public class PeriodoVacacion extends EntidadAuditoria{
 
 	public void setEmpleado(Empleado empleado) {
 		this.empleado = empleado;
+	}
+
+	public LocalDate getFechaInicioPeriodo() {
+		return fechaInicioPeriodo;
+	}
+
+	public void setFechaInicioPeriodo(LocalDate fechaInicioPeriodo) {
+		this.fechaInicioPeriodo = fechaInicioPeriodo;
+	}
+
+	public LocalDate getFechaFinPeriodo() {
+		return fechaFinPeriodo;
+	}
+
+	public void setFechaFinPeriodo(LocalDate fechaFinPeriodo) {
+		this.fechaFinPeriodo = fechaFinPeriodo;
+	}
+
+	public LocalDate getFechaLimiteIndemnizacion() {
+		return fechaLimiteIndemnizacion;
+	}
+
+	public void setFechaLimiteIndemnizacion(LocalDate fechaLimiteIndemnizacion) {
+		this.fechaLimiteIndemnizacion = fechaLimiteIndemnizacion;
 	}
 
 	
