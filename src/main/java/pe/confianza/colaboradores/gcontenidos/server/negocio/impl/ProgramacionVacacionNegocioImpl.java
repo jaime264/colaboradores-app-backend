@@ -98,15 +98,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioOperacion().trim());
 		if(empleado == null)
 			throw new ModelNotFoundException("No existe el usuario " + request.getUsuarioOperacion());
-		List<VacacionProgramacion> programacionesGenerar = new ArrayList<>();
-		for (long idProgramacion : request.getIdProgramaciones()) {
-			VacacionProgramacion programacion = vacacionProgramacionService.buscarPorId(idProgramacion);
-			if(programacion.getPeriodo().getEmpleado().getId() != empleado.getId())
-				throw new AppException("El usuario no tiene permisos para generar la programacion " + idProgramacion);
-			if(programacion.getIdEstado() != EstadoVacacion.REGISTRADO.id)
-				throw new AppException("La programación " + idProgramacion + " no se encuentra en estado " + EstadoVacacion.REGISTRADO.descripcion);
-			programacionesGenerar.add(programacion);
-		}
+		List<VacacionProgramacion> programacionesGenerar = vacacionProgramacionService.buscarPorUsuarioBTYEstado(request.getUsuarioOperacion().trim(), EstadoVacacion.REGISTRADO);
 		List<ResponseProgramacionVacacion> response = new ArrayList<>();
 		for (VacacionProgramacion programacion : programacionesGenerar) {
 			programacion.setEstado(EstadoVacacion.GENERADO);
@@ -151,8 +143,14 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			throw new ModelNotFoundException("No existe el usuario " + request.getUsuarioBT());
 		
 		LocalDate fechaConsulta = LocalDate.now();
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		String valorFechaInicio = parametrosConstants.FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES;
+		if(valorFechaInicio.isEmpty())
+			throw new AppException("No existe el parámetro para inicio de registro de programación de vacaciones");
+		LocalDate fechaCorte = LocalDate.parse(valorFechaInicio + "/" + fechaConsulta.getYear(), formatter);
 		ResponseResumenVacacion response = new ResponseResumenVacacion();
 		response.setFechaConsulta(fechaConsulta);
+		response.setFechaCorte(fechaCorte);
 		response.setNombres(empleado.getNombres());
 		response.setApellidoPaterno(empleado.getApellidoPaterno());
 		response.setApellidoMaterno(empleado.getApellidoMaterno());
@@ -163,23 +161,31 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		ResponseResumenPeriodoVacacion periodoTrunco = null;
 		ResponseResumenPeriodoVacacion periodoVencido = null;
 		List<PeriodoVacacion> lstPeriodos = periodoVacacionService.consultar(empleado);
-		for (PeriodoVacacion periodo : lstPeriodos) {
-			if(periodo.getAnio() == fechaConsulta.getYear() - 1) {
-				periodoTrunco = new ResponseResumenPeriodoVacacion();
-				periodoTrunco.setDias(periodo.getDerecho() - periodo.getDiasGozados());
-				LocalDate fechaLimite = empleado.getFechaIngreso().plusYears(fechaConsulta.getYear() - empleado.getFechaIngreso().getYear() + 1).plusDays(-1);
-				periodoTrunco.setFechaLimite(fechaLimite);
-			}
-			if(periodo.getAnio() == fechaConsulta.getYear() - 2) {
-				periodoVencido = new ResponseResumenPeriodoVacacion();
-				periodoVencido.setDias(periodo.getDerecho() - periodo.getDiasGozados());
-				LocalDate fechaLimite = empleado.getFechaIngreso().plusYears(fechaConsulta.getYear() - empleado.getFechaIngreso().getYear() ).plusDays(-1);
-				periodoVencido.setFechaLimite(fechaLimite);
-			}
+		lstPeriodos.sort(Comparator.comparing(PeriodoVacacion::getAnio).reversed());
+		if(lstPeriodos.size() > 0) { // PERIODO TRUNCO
+			PeriodoVacacion periodo = lstPeriodos.get(0);
+			VacacionProgramacion ultimaProgramacion = vacacionProgramacionService.obtenerUltimaProgramacion(periodo.getId());
+			periodoTrunco = new ResponseResumenPeriodoVacacion();
+			periodoTrunco.setDescripcion(periodo.getDescripcion());
+			double derecho = Utilitario.calcularDerechoVacaciones(empleado.getFechaIngreso(), fechaCorte);
+			periodoTrunco.setDias(derecho - periodo.getDiasGozados() - periodo.getDiasRegistradosGozar());
+			LocalDate fechaLimite = empleado.getFechaIngreso().plusYears(periodo.getAnio() - empleado.getFechaIngreso().getYear() + 1).plusDays(-1);
+			periodoTrunco.setFechaLimite(fechaLimite);
+			periodoTrunco.setUltimoTramo(ultimaProgramacion == null ? 0  : ultimaProgramacion.getOrden());
+		}
+		if(lstPeriodos.size() > 1) { // PERIODO VENCIDO
+			PeriodoVacacion periodo = lstPeriodos.get(1);
+			VacacionProgramacion ultimaProgramacion = vacacionProgramacionService.obtenerUltimaProgramacion(periodo.getId());
+			periodoVencido = new ResponseResumenPeriodoVacacion();
+			periodoVencido.setDescripcion(periodo.getDescripcion());
+			periodoVencido.setDias(periodo.getDerecho() - periodo.getDiasGozados() - periodo.getDiasRegistradosGozar());
+			LocalDate fechaLimite = empleado.getFechaIngreso().plusYears(periodo.getAnio() - empleado.getFechaIngreso().getYear() + 1 ).plusDays(-1);
+			periodoVencido.setFechaLimite(fechaLimite);
+			periodoVencido.setUltimoTramo(ultimaProgramacion == null ? 0  : ultimaProgramacion.getOrden());
 		}
 		response.setPeriodoTrunco(periodoTrunco);
 		response.setPeriodoVencido(periodoVencido);
-		response.setMeta(0);
+		response.setMeta(Utilitario.calcularMetaVacaciones(empleado.getFechaIngreso(), periodoVencido == null ? 0 : periodoVencido.getDias()));
 		LOGGER.info("[BEGIN] consultar");
 		return response;
 	}

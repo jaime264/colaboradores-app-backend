@@ -30,7 +30,6 @@ import com.google.gson.reflect.TypeToken;
 import pe.confianza.colaboradores.gcontenidos.server.bean.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.bean.InstruccionAcademica;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
-import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 
 @RestController
 @RequestMapping("/api")

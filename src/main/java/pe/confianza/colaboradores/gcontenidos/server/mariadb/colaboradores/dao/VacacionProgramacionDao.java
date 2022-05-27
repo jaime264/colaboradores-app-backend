@@ -44,4 +44,7 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	@Modifying
 	@Query("update VacacionProgramacion v set v.idEstado = ?1 where v.id = ?2")
 	void aprobarVacacionByPeriodo(int idEstado, Long id);
+	
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.id = ?1 order by vp.orden desc")
+	List<VacacionProgramacion> findByIdPeriodo(long idPeriodo);
 }

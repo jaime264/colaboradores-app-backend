@@ -125,4 +125,14 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	}
 
+	@Override
+	public VacacionProgramacion obtenerUltimaProgramacion(long idPeriodo) {
+		List<VacacionProgramacion> lstProgramacion = vacacionProgramacionDao.findByIdPeriodo(idPeriodo);
+		if(lstProgramacion == null)
+			return null;
+		if(lstProgramacion.isEmpty())
+			return null;
+		return lstProgramacion.get(0);
+	}
+
 }

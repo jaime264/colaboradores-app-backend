@@ -30,4 +30,7 @@ public interface VacacionProgramacionService {
 	void actualizarEstadoProgramaciones();
 	
 	public void aprobarVacacionPeriodos(List<VacacionPeriodo> vacacionPeriodos);
+	
+	VacacionProgramacion obtenerUltimaProgramacion(long idPeriodo);
+	
 }
