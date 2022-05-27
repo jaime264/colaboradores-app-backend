@@ -31,11 +31,11 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 		LOGGER.info("[BEGIN] actualizarPeriodos " + empleado.getUsuarioBT());
 		LocalDate fechaIngreso = empleado.getFechaIngreso();
 		LocalDate fechaActual = LocalDate.now();
-		LocalDate fechaLimiteIdemnizable = fechaIngreso.plusYears(fechaActual.getYear() - fechaIngreso.getYear());
-		LOGGER.info("fechaIngreso: " + fechaIngreso + " fechaLimiteIdemnizable: " + fechaLimiteIdemnizable);
+		LocalDate fechaLimitePeriodo = fechaIngreso.plusYears(fechaActual.getYear() - fechaIngreso.getYear());
+		LOGGER.info("fechaIngreso: " + fechaIngreso + " fechaLimitePeriodo: " + fechaLimitePeriodo);
 		List<PeriodoVacacion> periodos = periodoVacacionDao.findByIdEmpleado(empleado.getId());
 		periodos = periodos != null ? periodos : new ArrayList<>();
-		int anio = fechaActual.isBefore(fechaLimiteIdemnizable) ? (fechaLimiteIdemnizable.getYear() - 1) : fechaLimiteIdemnizable.getYear();
+		int anio = fechaActual.isBefore(fechaLimitePeriodo) ? (fechaLimitePeriodo.getYear() - 1) : fechaLimitePeriodo.getYear();
 		PeriodoVacacion periodoMaximo = periodos.stream().max(Comparator.comparing(PeriodoVacacion::getNumero)).orElse(null);
 		int numero = periodoMaximo == null ? 0 : periodoMaximo.getNumero();
 		Optional<PeriodoVacacion> optPeriodoActual = periodos.stream().filter(p -> p.getAnio() == anio).findFirst();
@@ -61,15 +61,21 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 		periodo = optPeriodo.get();
 		periodo.setCodigoEmpleado(empleado.getCodigo());
 		
-		LocalDate fechaLimiteIdemnizablePeriodo = fechaIngreso.plusYears(periodo.getAnio() - fechaIngreso.getYear() + 1);
-		LOGGER.info("Periodo: " + periodo.getDescripcion() + " fechaIndemnizable: " + fechaLimiteIdemnizablePeriodo);
+		LocalDate fechaLimiteIdemnizablePeriodo = Utilitario.obtenerFechaLimiteIndemnizablePeriodo(fechaIngreso, periodo.getAnio());
+		LocalDate fechaLimitePeriodo = Utilitario.obtenerFechaLimitePeriodo(fechaIngreso, periodo.getAnio());
+		LOGGER.info("Periodo: " + periodo.getDescripcion() + " fechaLimitePeriodo" + fechaLimitePeriodo + " fechaIndemnizable: " + fechaLimiteIdemnizablePeriodo);
 		if(!periodo.isCompletado()) {
 			if(fechaLimiteIdemnizablePeriodo.isBefore(fechaActual)) {
 				periodo.setCompletado(true);
 				periodo.setDerecho(30.0);
 				periodo.setDiasIndemnizables(periodo.getDerecho() - periodo.getDiasGozados());
 			} else {
-				periodo.setDerecho(Utilitario.calcularDerechoVacaciones(fechaIngreso, fechaActual));
+				if(fechaLimitePeriodo.isBefore(fechaActual)) {
+					periodo.setDerecho(30.0);
+				} else {
+					periodo.setDerecho(Utilitario.calcularDerechoVacaciones(fechaIngreso, fechaActual));
+				}
+				periodo.setCompletado(false);
 				periodo.setDiasIndemnizables(0.0);
 				periodo.setDiasPendientesGozar(periodo.getDerecho() - periodo.getDiasGozados());
 			}

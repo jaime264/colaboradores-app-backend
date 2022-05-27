@@ -13,6 +13,8 @@ public class ResponseResumenPeriodoVacacion {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
 	private LocalDate fechaLimite;
 	
+	private String descripcion;
+	
 	public double getDias() {
 		return dias;
 	}
@@ -24,6 +26,12 @@ public class ResponseResumenPeriodoVacacion {
 	}
 	public void setFechaLimite(LocalDate fechaLimite) {
 		this.fechaLimite = fechaLimite;
+	}
+	public String getDescripcion() {
+		return descripcion;
+	}
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
 	}
 	
 	

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -163,19 +164,22 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		ResponseResumenPeriodoVacacion periodoTrunco = null;
 		ResponseResumenPeriodoVacacion periodoVencido = null;
 		List<PeriodoVacacion> lstPeriodos = periodoVacacionService.consultar(empleado);
-		for (PeriodoVacacion periodo : lstPeriodos) {
-			if(periodo.getAnio() == fechaConsulta.getYear() - 1) {
-				periodoTrunco = new ResponseResumenPeriodoVacacion();
-				periodoTrunco.setDias(periodo.getDerecho() - periodo.getDiasGozados());
-				LocalDate fechaLimite = empleado.getFechaIngreso().plusYears(fechaConsulta.getYear() - empleado.getFechaIngreso().getYear() + 1).plusDays(-1);
-				periodoTrunco.setFechaLimite(fechaLimite);
-			}
-			if(periodo.getAnio() == fechaConsulta.getYear() - 2) {
-				periodoVencido = new ResponseResumenPeriodoVacacion();
-				periodoVencido.setDias(periodo.getDerecho() - periodo.getDiasGozados());
-				LocalDate fechaLimite = empleado.getFechaIngreso().plusYears(fechaConsulta.getYear() - empleado.getFechaIngreso().getYear() ).plusDays(-1);
-				periodoVencido.setFechaLimite(fechaLimite);
-			}
+		lstPeriodos.sort(Comparator.comparing(PeriodoVacacion::getAnio).reversed());
+		if(lstPeriodos.size() > 0) {
+			PeriodoVacacion periodo = lstPeriodos.get(0);
+			periodoTrunco = new ResponseResumenPeriodoVacacion();
+			periodoTrunco.setDescripcion(periodo.getDescripcion());
+			periodoTrunco.setDias(periodo.getDerecho() - periodo.getDiasGozados());
+			LocalDate fechaLimite = empleado.getFechaIngreso().plusYears(periodo.getAnio() - empleado.getFechaIngreso().getYear() + 1).plusDays(-1);
+			periodoTrunco.setFechaLimite(fechaLimite);
+		}
+		if(lstPeriodos.size() > 1) {
+			PeriodoVacacion periodo = lstPeriodos.get(1);
+			periodoVencido = new ResponseResumenPeriodoVacacion();
+			periodoVencido.setDescripcion(periodo.getDescripcion());
+			periodoVencido.setDias(periodo.getDerecho() - periodo.getDiasGozados());
+			LocalDate fechaLimite = empleado.getFechaIngreso().plusYears(periodo.getAnio() - empleado.getFechaIngreso().getYear() + 1 ).plusDays(-1);
+			periodoVencido.setFechaLimite(fechaLimite);
 		}
 		response.setPeriodoTrunco(periodoTrunco);
 		response.setPeriodoVencido(periodoVencido);

@@ -221,6 +221,16 @@ public class Utilitario {
 		return programaciones;
 	}
 	
+	public static LocalDate obtenerFechaLimiteIndemnizablePeriodo(LocalDate fechaIngreso, int anioPeriodo) {
+		LocalDate fechaLimiteIdemnizablePeriodo =  fechaIngreso.plusYears(anioPeriodo - fechaIngreso.getYear() + 2);
+		return fechaLimiteIdemnizablePeriodo;
+	}
+	
+	public static LocalDate obtenerFechaLimitePeriodo(LocalDate fechaIngreso, int anioPeriodo) {
+		LocalDate fechaLimitePeriodo =  fechaIngreso.plusYears(anioPeriodo - fechaIngreso.getYear() + 1);
+		return fechaLimitePeriodo;
+	}
+	
 	private static Calendar getCalendarWithoutTime(Date date) {
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTime(date);
