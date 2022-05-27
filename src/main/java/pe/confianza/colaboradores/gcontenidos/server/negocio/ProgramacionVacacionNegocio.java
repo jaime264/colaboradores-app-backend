@@ -38,4 +38,6 @@ public interface ProgramacionVacacionNegocio {
 	void obtenerOrden(VacacionProgramacion programacion, String usuarioModifica);
 	
 	void actualizarPeriodo(Empleado empleado, String usuarioOperacion);
+	
+
 }

@@ -1,7 +1,9 @@
 package pe.confianza.colaboradores.gcontenidos.server.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -106,11 +108,17 @@ public class VacacionesController {
 		String jsonData = gson.toJson(programacionRequest);
 		ResponseStatus responseStatus = new ResponseStatus();
 		try {
+			Map<String, Object> respuesta = new HashMap<>();
 			ResponseProgramacionVacacion programacion = programacionVacacionNegocio.registro(programacionRequest);
+			respuesta.put("programacion", programacion);
+			RequestResumenVacaciones requestResumen = new RequestResumenVacaciones();
+			ResponseResumenVacacion resumen = programacionVacacionNegocio.consultar(requestResumen);
+			respuesta.put("meta", resumen.getMeta());
+			programacionVacacionNegocio.consultar(requestResumen);
 			auditoriaService.createAuditoria("002", "006", Constantes.COD_OK, Constantes.OK, BsonDocument.parse(jsonData));
 			responseStatus.setCodeStatus(Constantes.COD_OK);
 			responseStatus.setMsgStatus(Constantes.OK);
-			responseStatus.setResultObj(programacion);
+			responseStatus.setResultObj(respuesta);
 			return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 		} catch (Exception e) {
 			auditoriaService.createAuditoria("002", "006", Constantes.COD_ERR, "Error al registrar programación de vacaciones: " + e.getMessage(), BsonDocument.parse(jsonData));
@@ -140,7 +148,7 @@ public class VacacionesController {
 		}
 	}
 	
-	@ApiOperation(notes = "Pasa a estado generados las programaciones de vacaciones de un empleado", value = "url proxy /vacacionesgenerar")
+	@ApiOperation(notes = "Pasa a estado generados las programaciones registradas de un empleado", value = "url proxy /vacacionesgenerar")
 	@PostMapping("/vacaciones/generar-programacion")
 	public ResponseEntity<ResponseStatus> generarProgramacion(@Valid @RequestBody RequestGenerarProgramacionVacacion generacion) {
 		Gson gson = new Gson();

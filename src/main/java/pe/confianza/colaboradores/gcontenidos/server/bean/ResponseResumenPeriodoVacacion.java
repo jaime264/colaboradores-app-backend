@@ -15,6 +15,8 @@ public class ResponseResumenPeriodoVacacion {
 	
 	private String descripcion;
 	
+	private int ultimoTramo;
+	
 	public double getDias() {
 		return dias;
 	}
@@ -33,7 +35,12 @@ public class ResponseResumenPeriodoVacacion {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
-	
+	public int getUltimoTramo() {
+		return ultimoTramo;
+	}
+	public void setUltimoTramo(int ultimoTramo) {
+		this.ultimoTramo = ultimoTramo;
+	}
 	
 
 }

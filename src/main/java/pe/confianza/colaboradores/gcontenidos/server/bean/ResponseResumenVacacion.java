@@ -12,6 +12,9 @@ public class ResponseResumenVacacion {
 	private LocalDate fechaConsulta;
 	
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
+	private LocalDate fechaCorte;
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
 	private LocalDate fechaInicioLabores;
 	
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
@@ -111,8 +114,13 @@ public class ResponseResumenVacacion {
 		this.meta = meta;
 	}
 
-	
-	
+	public LocalDate getFechaCorte() {
+		return fechaCorte;
+	}
+
+	public void setFechaCorte(LocalDate fechaCorte) {
+		this.fechaCorte = fechaCorte;
+	}
 	
 
 }

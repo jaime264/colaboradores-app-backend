@@ -25,15 +25,11 @@ public enum MetaVacacion {
 	}
 	
 	public static Double cantidadDias(int numeroMes) {
-		
 		for (MetaVacacion metaVac : MetaVacacion.values()) {
-			
 			if(numeroMes == metaVac.numeroeMes) {
 				return metaVac.cantidadDias;
 			}
-			
 		}
-		
 		return null;
 				
 	}

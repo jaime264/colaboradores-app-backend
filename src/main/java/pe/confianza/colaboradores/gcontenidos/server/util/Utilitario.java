@@ -231,6 +231,11 @@ public class Utilitario {
 		return fechaLimitePeriodo;
 	}
 	
+	public static double calcularMetaVacaciones(LocalDate fechaIngreso, double diasVencidos) {
+		int mesIngreso = fechaIngreso.getMonthValue();
+		return diasVencidos + MetaVacacion.cantidadDias(mesIngreso);
+	}
+	
 	private static Calendar getCalendarWithoutTime(Date date) {
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTime(date);
