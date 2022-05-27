@@ -43,10 +43,25 @@ public class ComentarioServiceImpl implements ComentarioService {
 		ResponseStatus status = new ResponseStatus();
 
 		try {
-			Comentario cm = comentarioDao.save(comentario);
+			Comentario com = new Comentario();
+			
+			com.setActivo(true);
+			com.setDescripcion(null);
+			com.setFecha(null);
+			com.setFechaCrea(null);
+			com.setFechaFin(null);
+			com.setFechaInicio(null);
+			com.setFlAprobacion(null);
+			com.setFlgreaccion(null);
+			com.setIdUsuario(null);
+			com.setPublicacion(null);
+			com.setReacciones(null);
+			com.setUsuarioCrea(null);
+			
+			comentarioDao.save(comentario);
 
-			if (cm.getImagenes() != null) {
-				cm.getImagenes().forEach(e -> {
+			if (!comentario.getImagenes().isEmpty()) {
+				comentario.getImagenes().forEach(e -> {
 					Imagen imagen = new Imagen();
 					imagen.setComentario(cm);
 					imagen.setFechaCrea(LocalDate.now());
@@ -55,8 +70,8 @@ public class ComentarioServiceImpl implements ComentarioService {
 					imagenDao.save(imagen);
 				});
 			}
-			if (cm.getVideos() != null) {
-				cm.getVideos().forEach(e -> {
+			if (!comentario.getVideos().isEmpty()) {
+				comentario.getVideos().forEach(e -> {
 					Video video = new Video();
 					video.setComentario(cm);
 					video.setFechaCrea(LocalDate.now());
