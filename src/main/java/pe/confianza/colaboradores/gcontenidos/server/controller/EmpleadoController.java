@@ -30,6 +30,7 @@ import com.google.gson.reflect.TypeToken;
 import pe.confianza.colaboradores.gcontenidos.server.bean.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.bean.InstruccionAcademica;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
+import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 
 @RestController
 @RequestMapping("/api")
@@ -46,6 +47,7 @@ public class EmpleadoController {
 	
 	@Value("${rest.instruccion.academica.url}")
 	private String instruccionAcademicaUrl;
+	
 	
 	@RequestMapping("/empleado")
 	public ResponseEntity<?> unidadoperativabydivision(@RequestBody Empleado empleado) throws IOException {
@@ -109,4 +111,7 @@ public class EmpleadoController {
 		}
 		return new ResponseEntity<List<InstruccionAcademica>>(instruccionAcademicaOut, HttpStatus.OK);
 	}
+	
+	
+	
 }

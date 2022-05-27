@@ -161,7 +161,7 @@
 				<rp.build.warname>local</rp.build.warname>
 			</properties>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 		</profile>
 		<profile>
@@ -171,7 +171,7 @@
 				<rp.build.warname>dev</rp.build.warname>
 			</properties>
 			<activation>
-				<activeByDefault>false</activeByDefault>
+				<activeByDefault>true</activeByDefault>
 			</activation>
 		</profile>
 		<profile>

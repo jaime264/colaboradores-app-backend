@@ -2,6 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.util.List;
 
+import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
@@ -27,4 +28,6 @@ public interface VacacionProgramacionService {
 	List<VacacionProgramacion> buscarPorUsuarioBT(String usuarioBT);
 	
 	void actualizarEstadoProgramaciones();
+	
+	public void aprobarVacacionPeriodos(List<VacacionPeriodo> vacacionPeriodos);
 }

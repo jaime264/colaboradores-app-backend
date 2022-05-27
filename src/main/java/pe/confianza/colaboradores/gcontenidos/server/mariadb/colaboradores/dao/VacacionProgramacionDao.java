@@ -3,6 +3,7 @@ package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.stereotype.Repository;
@@ -37,7 +38,10 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.id = ?1 AND vp.idEstado = ?2 order by vp.orden asc")
 	List<VacacionProgramacion> findByPeriodoAndEstado(long idPeriodo, int idEstado);
 	
-	
 	@Procedure(procedureName =  "proc_vacacion_programacion_actualizar_estado")
 	void actualizarEstadoProgramaciones();
+	
+	@Modifying
+	@Query("update VacacionProgramacion v set v.idEstado = ?1 where v.id = ?2")
+	void aprobarVacacionByPeriodo(int idEstado, Long id);
 }

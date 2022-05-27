@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,8 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmplVacPerRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmpleadoRes;
+import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.api.spring.EmpleadoApi;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.EmpleadoMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.AgenciaDao;
@@ -18,6 +22,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.P
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Agencia;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Puesto;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 
 @Service
 public class EmpleadoServiceImpl implements EmpleadoService {
@@ -61,12 +66,50 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		return empleado;
 	}
 
-	public List<Empleado> listEmpleado() {
-
-		empleadoDao.findAll();
-
-		return null;
+	@Override
+	public List<EmplVacPerRes> listEmpleadoByprogramacion(Long codigo) {
+		
+		List<EmplVacPerRes> listEmp = new ArrayList<EmplVacPerRes>();
+		List<VacacionPeriodo> listVp = new ArrayList<VacacionPeriodo>();
+		
+		List<Empleado> emsByJefe = empleadoDao.findByCodigoJefe(codigo);
+		
+		if(!CollectionUtils.isEmpty(emsByJefe)) {
+			
+			for(Empleado e: emsByJefe) {
+				EmplVacPerRes emp = new EmplVacPerRes();
+				emp.setNombres(e.getNombres());
+				emp.setApellidoPaterno(e.getApellidoPaterno());
+				emp.setApellidoMaterno(e.getApellidoMaterno());
+				emp.setIdEmpleado(e.getId());
+				emp.setPuesto(e.getPuesto().getDescripcion());
+				emp.setUsuarioBt(e.getUsuarioBT());
+				
+				List<VacacionProgramacion> lVp = empleadoDao.findPeriodosByEmpleado(e.getId());
+				
+				for(VacacionProgramacion v : lVp) {
+					VacacionPeriodo vp = new VacacionPeriodo();
+					vp.setIdProgramacion(v.getId());
+					vp.setFechaInicio(v.getFechaInicio());
+					vp.setFechaFin(v.getFechaFin());
+					vp.setIdEstado(vp.getIdEstado());
+					vp.setPeriodo(v.getPeriodo().getDescripcion());
+					
+					listVp.add(vp);
+				}
+				if(!lVp.isEmpty()) {
+					emp.setVacacionPeriodo(listVp);
+				}
+				
+				listEmp.add(emp);
+			}
+			
+		}
+				
+		return listEmp;
 	}
+	
+	
 
 	public Empleado listEmpleadoById(Long id) {
 
