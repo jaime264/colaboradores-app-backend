@@ -113,18 +113,13 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 	}
 	
 	@Override
-	public PeriodoVacacion obtenerPeriodo(Empleado empleado, VacacionProgramacion programacion) {
-		LOGGER.info("[BEGIN] obtenerPeriodo ");
-		PeriodoVacacion periodoSeleccionado = null;
-		List<PeriodoVacacion> periodos = periodoVacacionDao.findByIdEmpleado(empleado.getId())
-				.stream().filter(p -> !p.isCompletado()).collect(Collectors.toList());
+	public List<PeriodoVacacion> obtenerPeriodosNoCompletados(Empleado empleado, VacacionProgramacion programacion) {
+		LOGGER.info("[BEGIN] obtenerPeriodosNoCompletados ");
+		List<PeriodoVacacion> periodos = periodoVacacionDao.findByIdEmpleado(empleado.getId());
 		periodos = periodos == null ? new ArrayList<>() : periodos;
 		periodos = periodos.stream().filter(p -> !p.isCompletado()).collect(Collectors.toList());
-		periodos.sort(Comparator.comparing(PeriodoVacacion::getAnio));
-		if(!periodos.isEmpty()) 
-			periodoSeleccionado = periodos.get(0);
-		LOGGER.info("[END] obtenerPeriodo ");
-		return periodoSeleccionado;
+		LOGGER.info("[END] obtenerPeriodosNoCompletados ");
+		return periodos;
 	}
 
 	@Override

@@ -14,7 +14,7 @@ public interface PeriodoVacacionService {
 	
 	void agregarNuevoPeriodo(Empleado empleado, int anio, int numero, String usuarioOperacion);
 	
-	PeriodoVacacion obtenerPeriodo(Empleado empleado, VacacionProgramacion programacion);
+	List<PeriodoVacacion> obtenerPeriodosNoCompletados(Empleado empleado, VacacionProgramacion programacion);
 	
 	List<PeriodoVacacion> consultar(Empleado empleado);
 }

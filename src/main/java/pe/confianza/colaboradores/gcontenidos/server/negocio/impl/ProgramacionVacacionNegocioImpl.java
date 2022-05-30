@@ -235,30 +235,44 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	@Override
 	public void obtenerPeriodo(Empleado empleado, VacacionProgramacion programacion) {
 		LOGGER.info("[BEGIN] obtenerPeriodo");
-		PeriodoVacacion periodo = periodoVacacionService.obtenerPeriodo(empleado, programacion);
-		if(periodo == null)
+		List<PeriodoVacacion> periodos = periodoVacacionService.obtenerPeriodosNoCompletados(empleado, programacion);
+		if(periodos.isEmpty())
 			throw new AppException("No tiene perido habilitado");
-		double diasLibresPorProgramar = periodo.getDerecho() - periodo.getDiasGozados() - periodo.getDiasAprobadosGozar() - periodo.getDiasRegistradosGozar();
-		if(programacion.getNumeroDias() > diasLibresPorProgramar)
-			throw new AppException("Debe dividir su programación en dos tramos");
-		programacion.setPeriodo(periodo);
+		for (PeriodoVacacion periodo : periodos) {
+			if(programacion.getNumeroDias() > Utilitario.calcularDiasPendientesPorRegistrar(periodo)) {
+				throw new AppException("Debe dividir su programación en dos tramos");
+			} else {
+				programacion.setPeriodo(periodo);
+				break;
+			}
+		}
 		LOGGER.info("[END] obtenerPeriodo");
 	}
 
 	@Override
 	public void validarTramoVacaciones(VacacionProgramacion programacion) {
 		LOGGER.info("[BEGIN] validarTramoVacaciones");
+		List<VacacionProgramacion> programaciones = new ArrayList<VacacionProgramacion>();
 		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.REGISTRADO);
-		programacionesRegistradas = Utilitario.ordenarProgramaciones(programacionesRegistradas);
+		List<VacacionProgramacion> promacionesGeneradas = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.GENERADO);
+		List<VacacionProgramacion> promacionesAprobadas = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.APROBADO);
+		List<VacacionProgramacion> promacionesGozando = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.GOZADO);
+		List<VacacionProgramacion> promacionesGozadas = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.GOZADO);
+		programaciones.addAll(programacionesRegistradas);
+		programaciones.addAll(promacionesGeneradas);
+		programaciones.addAll(promacionesAprobadas);
+		programaciones.addAll(promacionesGozando);
+		programaciones.addAll(promacionesGozadas);
+		programaciones = Utilitario.ordenarProgramaciones(programaciones);
 		int diasAcumuladosVacaciones = 0;
 		int contadorSabados = 0;
 		int contadorDomingos = 0;
-		for (VacacionProgramacion vacacionProgramacion : programacionesRegistradas) {
+		for (VacacionProgramacion vacacionProgramacion : programaciones) {
 			if(Utilitario.fechaEntrePeriodo(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin(), programacion.getFechaInicio())) {
-				throw new AppException("Cambie la fecha de inicio");
+				throw new AppException("La fecha de inicio se encuentra comperendida dentro de otro tramo");
 			}
 			if(Utilitario.fechaEntrePeriodo(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin(), programacion.getFechaFin())) {
-				throw new AppException("Cambie la fecha de fin");
+				throw new AppException("La fecha fin se encuentra comprendida dentro de otro tramo");
 			}
 			diasAcumuladosVacaciones += Utilitario.obtenerDiferenciaDias(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin());
 			contadorSabados += Utilitario.obtenerCantidadSabados(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin());
