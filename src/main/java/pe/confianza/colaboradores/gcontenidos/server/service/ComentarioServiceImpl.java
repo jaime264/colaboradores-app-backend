@@ -4,15 +4,18 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ComentarioDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ImagenDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PublicacionAppDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VideoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Comentario;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Imagen;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Video;
 
 @Service
@@ -26,6 +29,9 @@ public class ComentarioServiceImpl implements ComentarioService {
 
 	@Autowired
 	VideoDao videoDao;
+	
+	@Autowired
+	PublicacionAppDao publicacionAppDao;
 
 	@Override
 	public List<Comentario> list() {
@@ -46,21 +52,24 @@ public class ComentarioServiceImpl implements ComentarioService {
 			Comentario com = new Comentario();
 			
 			com.setActivo(true);
-			com.setDescripcion(null);
-			com.setFecha(null);
-			com.setFechaCrea(null);
+			com.setDescripcion(comentario.getDescripcion());
+			com.setFecha(LocalDate.now());
+			com.setFechaCrea(LocalDate.now());
 			com.setFechaFin(null);
 			com.setFechaInicio(null);
-			com.setFlAprobacion(null);
-			com.setFlgreaccion(null);
-			com.setIdUsuario(null);
-			com.setPublicacion(null);
-			com.setReacciones(null);
-			com.setUsuarioCrea(null);
+			com.setFlAprobacion(true);
+			com.setFlagReaccion(true);
+			com.setIdUsuario(comentario.getIdUsuario());
+			com.setReacciones(0);
+			com.setUsuarioCrea(comentario.getIdUsuario());
 			
-			comentarioDao.save(comentario);
+			Optional<Publicacion> pb  = publicacionAppDao.findById(comentario.getPublicacionId());
+			
+			com.setPublicacion(pb.get());
+			
+			Comentario cm = comentarioDao.save(com);
 
-			if (!comentario.getImagenes().isEmpty()) {
+			if (!CollectionUtils.isEmpty(comentario.getImagenes())){
 				comentario.getImagenes().forEach(e -> {
 					Imagen imagen = new Imagen();
 					imagen.setComentario(cm);
@@ -70,7 +79,7 @@ public class ComentarioServiceImpl implements ComentarioService {
 					imagenDao.save(imagen);
 				});
 			}
-			if (!comentario.getVideos().isEmpty()) {
+			if (CollectionUtils.isEmpty(comentario.getVideos())) {
 				comentario.getVideos().forEach(e -> {
 					Video video = new Video();
 					video.setComentario(cm);
@@ -101,7 +110,7 @@ public class ComentarioServiceImpl implements ComentarioService {
 				cm.get().setFechaFin(comentario.getFechaFin());
 				cm.get().setFechaModifica(LocalDate.now());
 				cm.get().setFlAprobacion(comentario.getFlAprobacion());
-				cm.get().setFlgreaccion(comentario.getFlgreaccion());
+				cm.get().setFlagReaccion(comentario.getFlagReaccion());
 				cm.get().setPublicacion(comentario.getPublicacion());
 				cm.get().setReacciones(comentario.getReacciones());
 				cm.get().setUsuarioModifica(comentario.getUsuarioModifica());

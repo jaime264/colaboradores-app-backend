@@ -13,5 +13,6 @@ public interface PublicacionAppDao extends JpaRepository<Publicacion, Long> {
 	
 	@Query("SELECT pb FROM Publicacion pb WHERE pb.activo = ?1 order by pb.id desc")
 	public List<Publicacion> listByActivo(Boolean activo);
+	
 
 }
