@@ -3,6 +3,7 @@ package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.stereotype.Repository;
@@ -16,6 +17,7 @@ public interface PeriodoVacacionDao extends JpaRepository<PeriodoVacacion, Long>
 	@Query("SELECT pv FROM PeriodoVacacion pv WHERE pv.empleado.id = ?1 order by pv.numero asc")
 	List<PeriodoVacacion> findByIdEmpleado(long idEmpleado);
 	
+	@Modifying
 	@Procedure(procedureName =  "proc_vacacion_periodo_actualizar_dias")
 	void actualizarDias(long idPeriodo);
 	

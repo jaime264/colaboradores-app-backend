@@ -16,6 +16,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.context.MessageSource;
+
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 
@@ -243,6 +245,15 @@ public class Utilitario {
 				periodo.getDiasAprobadosGozar() +
 				periodo.getDiasRegistradosGozar()
 				);
+	}
+	
+	public static String obtenerMensaje(MessageSource source, String codigo, String[] valores) {
+		valores = valores == null ? new String[] {} : valores;
+		try {
+			return source.getMessage(codigo, valores, Constantes.LOCALE_PER);
+		} catch (Exception e) {
+			return "Mensaje no encontrado";
+		}
 	}
 	
 	private static Calendar getCalendarWithoutTime(Date date) {

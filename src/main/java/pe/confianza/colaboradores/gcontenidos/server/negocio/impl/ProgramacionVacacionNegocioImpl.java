@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -53,13 +54,16 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	@Autowired
 	private VacacionProgramacionService vacacionProgramacionService;
 	
+	@Autowired
+	private MessageSource messageSource;
+	
 	@Override
 	public ResponseProgramacionVacacion registro(RequestProgramacionVacacion programacion) {
 		LOGGER.info("[BEGIN] registro: {} - {} - {}", new Object[] {programacion.getUsuarioBT(), programacion.getFechaInicio(), programacion.getFechaFin()});
 		validarFechaRegistro(programacion.getFechaInicio());
 		Empleado empleado = empleadoService.actualizarInformacionEmpleado(programacion.getUsuarioBT().trim());
 		if(empleado == null)
-			throw new AppException("No existe el usuario " + programacion.getUsuarioBT());
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", new String[] { programacion.getUsuarioBT()}));
 		String usuarioOperacion = programacion.getUsuarioOperacion().trim();
 		VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(programacion);
 		vacacionProgramacion.setEstado(EstadoVacacion.REGISTRADO);
@@ -196,20 +200,20 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] validarFechaRegistro");
 		LocalDate ahora = LocalDate.now();
 		if(fechaInicioVacacion.isBefore(ahora))
-			throw new AppException("Fecha de inicio no puede ser una fecha anterior a la de hoy");
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fecha_inicio_error", null));
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String valorFechaInicio = parametrosConstants.FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES;
 		if(valorFechaInicio.isEmpty())
-			throw new AppException("No existe el parámetro para inicio de registro de programación de vacaciones");
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.inicio_programacion_parametro_noexiste", null));
 		String strFechaInicioRegistroProgramacion = valorFechaInicio.trim() + "/" + ahora.getYear();
 		if(ahora.isBefore(LocalDate.parse(strFechaInicioRegistroProgramacion, formatter)))
-			throw new AppException("No se puede registrar antes de " + strFechaInicioRegistroProgramacion);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.inicio_programacion_antes", new String[] {strFechaInicioRegistroProgramacion}));
 		String valorFechaFin = parametrosConstants.FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES;
 		if(valorFechaFin.isEmpty())
-			throw new AppException("No existe el parámetro para fin de registro de programación de vacaciones");
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fin_programacion_parametro_noexiste", null));
 		String strFechaFinRegistroProgramacion = valorFechaFin.trim() + "/" + ahora.getYear();
 		if(ahora.isAfter(LocalDate.parse(strFechaFinRegistroProgramacion, formatter)))
-			throw new AppException("No se puede registrar después de " + strFechaFinRegistroProgramacion);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fin_programacion_despues", new String[] {strFechaFinRegistroProgramacion}));
 		LOGGER.info("[END] validarFechaRegistro");
 		
 	}
@@ -220,7 +224,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LocalDate fechaParaPedirVacacion = empleado.getFechaIngreso().plusMonths(6);
 		LOGGER.info("Empleado -> fecha ingreso: {}", new Object[] {fechaParaPedirVacacion}  );
 		if(programacion.getFechaInicio().isBefore(fechaParaPedirVacacion))
-			throw new AppException("Debe tener una antiguedad de 6 meses");
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.empleado_nuevo", null));
 		LOGGER.info("[END] validarEmpleadoNuevo");
 	}
 
@@ -228,7 +232,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	public void validarRangoFechas(VacacionProgramacion programacion) {
 		LOGGER.info("[BEGIN] validarRangoFechas");
 		if(programacion.getFechaInicio().isAfter(programacion.getFechaFin()))
-			throw new AppException("La fecha de inicio no puede ser mayor a la fecha fin");
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.rango_error", null));
 		LOGGER.info("[END] validarRangoFechas");
 	}
 
@@ -237,15 +241,18 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] obtenerPeriodo");
 		List<PeriodoVacacion> periodos = periodoVacacionService.obtenerPeriodosNoCompletados(empleado, programacion);
 		if(periodos.isEmpty())
-			throw new AppException("No tiene perido habilitado");
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.periodo_inhabilitado", null));
+		periodos.sort(Comparator.comparing(PeriodoVacacion::getAnio));
+		PeriodoVacacion periodoSeleccionado = null;
 		for (PeriodoVacacion periodo : periodos) {
-			if(programacion.getNumeroDias() > Utilitario.calcularDiasPendientesPorRegistrar(periodo)) {
-				throw new AppException("Debe dividir su programación en dos tramos");
-			} else {
-				programacion.setPeriodo(periodo);
+			if(programacion.getNumeroDias() <= Utilitario.calcularDiasPendientesPorRegistrar(periodo)) {
+				periodoSeleccionado = periodo;
 				break;
 			}
 		}
+		if(periodoSeleccionado == null)
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.programacion_dividir", null));
+		programacion.setPeriodo(periodoSeleccionado);
 		LOGGER.info("[END] obtenerPeriodo");
 	}
 
@@ -269,10 +276,10 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		int contadorDomingos = 0;
 		for (VacacionProgramacion vacacionProgramacion : programaciones) {
 			if(Utilitario.fechaEntrePeriodo(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin(), programacion.getFechaInicio())) {
-				throw new AppException("La fecha de inicio se encuentra comperendida dentro de otro tramo");
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fecha_inicio_encontrada", null));
 			}
 			if(Utilitario.fechaEntrePeriodo(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin(), programacion.getFechaFin())) {
-				throw new AppException("La fecha fin se encuentra comprendida dentro de otro tramo");
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fecha_fin_encontrada", null));
 			}
 			diasAcumuladosVacaciones += Utilitario.obtenerDiferenciaDias(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin());
 			contadorSabados += Utilitario.obtenerCantidadSabados(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin());
@@ -280,21 +287,24 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		}
 		int diasProgramacion = Utilitario.obtenerDiferenciaDias(programacion.getFechaInicio(), programacion.getFechaFin());
 		if(diasAcumuladosVacaciones == 0 && diasProgramacion < 7) {
-			throw new AppException("Debe tener 7 dias como mínimo");
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()}));
 		}
 		if(diasAcumuladosVacaciones == 7 && diasProgramacion < 8) {
-			throw new AppException("Debe tener 8 dias como mínimo");
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()}));
 		}
 		if(diasAcumuladosVacaciones == 8 && diasProgramacion < 7) {
-			throw new AppException("Debe tener 7 dias como mínimo");
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()}));
 		}
-		contadorSabados += Utilitario.obtenerCantidadSabados(programacion.getFechaInicio(), programacion.getFechaFin());
-		if(contadorSabados > 4) {
-			throw new AppException("No debe haber más de 4 sábados");
-		}
-		contadorDomingos += Utilitario.obtenerCantidadDomingos(programacion.getFechaInicio(), programacion.getFechaFin());
-		if(contadorDomingos > 4) {
-			throw new AppException("No debe haber más de 4 domingos");
+		double diasPendientePorRegistrar = Utilitario.calcularDiasPendientesPorRegistrar(programacion.getPeriodo());
+		if(programacion.getNumeroDias() == diasPendientePorRegistrar ) {
+			contadorSabados += Utilitario.obtenerCantidadSabados(programacion.getFechaInicio(), programacion.getFechaFin());
+			if(contadorSabados != 4) {
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regularoria.cuatro_sabados.error", new String[] { programacion.getPeriodo().getDescripcion()}));
+			}
+			contadorDomingos += Utilitario.obtenerCantidadDomingos(programacion.getFechaInicio(), programacion.getFechaFin());
+			if(contadorDomingos != 4) {
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regularoria.cuatro_domingos.error", new String[] { programacion.getPeriodo().getDescripcion()}));
+			}
 		}
 		LOGGER.info("[END] validarTramoVacaciones");
 	}

@@ -1,8 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.util;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import pe.confianza.colaboradores.gcontenidos.server.service.ParametrosServiceImpl;
+import java.util.Locale;
 
 public class Constantes {
 	
@@ -18,6 +16,7 @@ public class Constantes {
 	public final static String FORMATO_FECHA = "dd/MM/yyyy";
 	public final static String FORMATO_FECHA_HORA = "dd/MM/yyyy HH:mm:ss";
 	public final static String FORMATO_FECHA_ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+	public static final Locale LOCALE_PER = new Locale("es", "PE");
 	
 	public final static String TIME_ZONE = "America/Bogota";
 
