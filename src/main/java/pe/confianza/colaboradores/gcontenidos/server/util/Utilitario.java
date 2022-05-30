@@ -16,6 +16,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 
 public class Utilitario {
@@ -234,6 +235,14 @@ public class Utilitario {
 	public static double calcularMetaVacaciones(LocalDate fechaIngreso, double diasVencidos) {
 		int mesIngreso = fechaIngreso.getMonthValue();
 		return diasVencidos + MetaVacacion.cantidadDias(mesIngreso);
+	}
+	
+	public static double calcularDiasPendientesPorRegistrar(PeriodoVacacion periodo) {
+		return periodo.getDerecho() - (
+				periodo.getDiasGozados() +
+				periodo.getDiasAprobadosGozar() +
+				periodo.getDiasRegistradosGozar()
+				);
 	}
 	
 	private static Calendar getCalendarWithoutTime(Date date) {
