@@ -1,5 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.springframework.data.annotation.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -37,16 +40,16 @@ public class Comentario extends EntidadAuditoria  {
 	private Boolean flAprobacion;
 	
 	@Column(nullable = true)
-	private Date fecha;
+	private LocalDate fecha;
 	
 	@Column(nullable = true)
-	private Date fechaInicio;
+	private LocalDate fechaInicio;
 	
 	@Column(nullable = true)
-	private Date fechaFin;
+	private LocalDate fechaFin;
 	
 	@Column(nullable = true)
-	private Integer flgreaccion;
+	private Boolean flagReaccion;
 	
 	@Column(nullable = true)
 	private Integer reacciones;
@@ -63,8 +66,26 @@ public class Comentario extends EntidadAuditoria  {
 	@Column(nullable = true)
 	private String idUsuario;
 	
+	@Transient
+	private long publicacionId;
 	
-	
+
+	public long getPublicacionId() {
+		return publicacionId;
+	}
+
+	public void setPublicacionId(long publicacionId) {
+		this.publicacionId = publicacionId;
+	}
+
+	public Boolean getFlagReaccion() {
+		return flagReaccion;
+	}
+
+	public void setFlagReaccion(Boolean flagReaccion) {
+		this.flagReaccion = flagReaccion;
+	}
+
 	public long getId() {
 		return id;
 	}
@@ -89,36 +110,28 @@ public class Comentario extends EntidadAuditoria  {
 		this.flAprobacion = flAprobacion;
 	}
 
-	public Date getFecha() {
+	public LocalDate getFecha() {
 		return fecha;
 	}
 
-	public void setFecha(Date fecha) {
+	public void setFecha(LocalDate fecha) {
 		this.fecha = fecha;
 	}
 
-	public Date getFechaInicio() {
+	public LocalDate getFechaInicio() {
 		return fechaInicio;
 	}
 
-	public void setFechaInicio(Date fechaInicio) {
+	public void setFechaInicio(LocalDate fechaInicio) {
 		this.fechaInicio = fechaInicio;
 	}
 
-	public Date getFechaFin() {
+	public LocalDate getFechaFin() {
 		return fechaFin;
 	}
 
-	public void setFechaFin(Date fechaFin) {
+	public void setFechaFin(LocalDate fechaFin) {
 		this.fechaFin = fechaFin;
-	}
-
-	public Integer getFlgreaccion() {
-		return flgreaccion;
-	}
-
-	public void setFlgreaccion(Integer flgreaccion) {
-		this.flgreaccion = flgreaccion;
 	}
 
 	public Integer getReacciones() {
