@@ -247,7 +247,7 @@ public class Utilitario {
 				);
 	}
 	
-	public static String obtenerMensaje(MessageSource source, String codigo, String[] valores) {
+	public static String obtenerMensaje(MessageSource source, String codigo, String ...valores) {
 		valores = valores == null ? new String[] {} : valores;
 		try {
 			return source.getMessage(codigo, valores, Constantes.LOCALE_PER);
