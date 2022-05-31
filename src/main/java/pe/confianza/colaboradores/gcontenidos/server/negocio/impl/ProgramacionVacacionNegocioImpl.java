@@ -245,10 +245,15 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		if(periodos.isEmpty())
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.periodo_inhabilitado"));
 		periodos.sort(Comparator.comparing(PeriodoVacacion::getAnio));
-		double diasPendientesPorRegistrar = Utilitario.calcularDiasPendientesPorRegistrar(periodos.get(0));
+		PeriodoVacacion periodoSeleccionado = periodos.get(0);
+		double diasPendientesPorRegistrar = Utilitario.calcularDiasPendientesPorRegistrar(periodoSeleccionado);
+		if(diasPendientesPorRegistrar == 0) {
+			periodoSeleccionado = periodos.get(1);
+			diasPendientesPorRegistrar = Utilitario.calcularDiasPendientesPorRegistrar(periodoSeleccionado);
+		}
 		if(diasPendientesPorRegistrar >= programacion.getNumeroDias()) {
-			programacion.setPeriodo(periodos.get(0));
-			programacion.setNumeroPeriodo((long)periodos.get(0).getNumero());
+			programacion.setPeriodo(periodoSeleccionado);
+			programacion.setNumeroPeriodo((long)periodoSeleccionado.getNumero());			
 		} else {
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.programacion_dividir", new String[] { diasPendientesPorRegistrar + "", periodos.get(0).getDescripcion() }));
 		}
@@ -262,7 +267,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.REGISTRADO);
 		List<VacacionProgramacion> promacionesGeneradas = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.GENERADO);
 		List<VacacionProgramacion> promacionesAprobadas = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.APROBADO);
-		List<VacacionProgramacion> promacionesGozando = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.GOZADO);
+		List<VacacionProgramacion> promacionesGozando = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.GOZANDO);
 		List<VacacionProgramacion> promacionesGozadas = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.GOZADO);
 		programaciones.addAll(programacionesRegistradas);
 		programaciones.addAll(promacionesGeneradas);
