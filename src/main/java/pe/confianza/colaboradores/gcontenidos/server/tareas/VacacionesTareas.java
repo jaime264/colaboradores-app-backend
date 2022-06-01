@@ -34,4 +34,11 @@ public class VacacionesTareas {
 		LOGGER.info("[END] actualizarEstadoProgramaciones " + LocalDate.now());
 	}
 	
+	@Scheduled(cron = "${vacaciones.programacion.consolidar_metas_anuales}")
+	public void calcularMetaAnual() {
+		LOGGER.info("[BEGIN] calcularMetaAnual " + LocalDate.now());
+		vacacionesTareasProgramadasService.consolidarMetasAnuales();
+		LOGGER.info("[END] calcularMetaAnual " + LocalDate.now());
+	}
+	
 }

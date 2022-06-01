@@ -5,5 +5,7 @@ public interface VacacionesTareasProgramadasNegocio {
 	void actualizarEstadoProgramaciones();
 	
 	void actualizarPeridos();
+	
+	void consolidarMetasAnuales();
 
 }

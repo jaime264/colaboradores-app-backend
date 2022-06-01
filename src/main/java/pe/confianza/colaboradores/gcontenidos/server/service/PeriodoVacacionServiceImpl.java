@@ -27,38 +27,37 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 	private PeriodoVacacionDao periodoVacacionDao;
 
 	@Override
-	public void actualizarPeriodos(Empleado empleado, String usuarioOPeracion) {
-		LOGGER.info("[BEGIN] actualizarPeriodos " + empleado.getUsuarioBT());
+	public void actualizarPeriodos(Empleado empleado, String usuarioOperacion) {
+		LOGGER.info("[BEGIN] actualizarPeriodos {}", empleado.getUsuarioBT());
 		LocalDate fechaIngreso = empleado.getFechaIngreso();
-		LocalDate fechaActual = LocalDate.now();
-		LocalDate fechaLimitePeriodo = fechaIngreso.plusYears(fechaActual.getYear() - fechaIngreso.getYear());
-		LOGGER.info("fechaIngreso: " + fechaIngreso + " fechaLimitePeriodo: " + fechaLimitePeriodo);
+		LocalDate[] periodoTrunco = Utilitario.rangoPeriodoTrunco(fechaIngreso);
+		LOGGER.info("fechaIngreso: {} Periodo trunco: {} - {}", new Object[] {fechaIngreso, periodoTrunco[0], periodoTrunco[1]});
 		List<PeriodoVacacion> periodos = periodoVacacionDao.findByIdEmpleado(empleado.getId());
 		periodos = periodos != null ? periodos : new ArrayList<>();
-		int anio = fechaActual.isBefore(fechaLimitePeriodo) ? (fechaLimitePeriodo.getYear() - 1) : fechaLimitePeriodo.getYear();
+		int anioPeriodoTrunco =  periodoTrunco[0].getYear();
 		PeriodoVacacion periodoMaximo = periodos.stream().max(Comparator.comparing(PeriodoVacacion::getNumero)).orElse(null);
 		int numero = periodoMaximo == null ? 0 : periodoMaximo.getNumero();
-		Optional<PeriodoVacacion> optPeriodoActual = periodos.stream().filter(p -> p.getAnio() == anio).findFirst();
+		Optional<PeriodoVacacion> optPeriodoActual = periodos.stream().filter(p -> p.getAnio() == anioPeriodoTrunco).findFirst();
 		if(!optPeriodoActual.isPresent()) {
-			agregarNuevoPeriodo(empleado, anio, numero + 1, usuarioOPeracion.trim());
+			agregarNuevoPeriodo(empleado, anioPeriodoTrunco, numero + 1, usuarioOperacion.trim());
 		}
 		periodos = periodoVacacionDao.findByIdEmpleado(empleado.getId());
-		for (PeriodoVacacion periodo : periodos) {
-			actualizarPeriodo(empleado, periodo, usuarioOPeracion);
-		}
-		LOGGER.info("[END] actualizarPeriodo");
+		periodos.forEach(p -> {
+			actualizarPeriodo(empleado, p.getId(), usuarioOperacion.trim());
+		});
+		LOGGER.info("[END] actualizarPeriodos");
 	}
 	
 	@Override
-	public void actualizarPeriodo(Empleado empleado, PeriodoVacacion periodo, String usuarioOperacion) {
-		LOGGER.info("[BEGIN] actualizarPeriodo");
-		periodoVacacionDao.actualizarDias(periodo.getId());
+	public void actualizarPeriodo(Empleado empleado, long idPeriodo, String usuarioOperacion) {
+		LOGGER.info("[BEGIN] actualizarPeriodo {}", idPeriodo);
+		periodoVacacionDao.actualizarDias(idPeriodo);
 		LocalDate fechaIngreso = empleado.getFechaIngreso();
 		LocalDate fechaActual = LocalDate.now();
-		Optional<PeriodoVacacion> optPeriodo = periodoVacacionDao.findById(periodo.getId());
+		Optional<PeriodoVacacion> optPeriodo = periodoVacacionDao.findById(idPeriodo);
 		if(!optPeriodo.isPresent())
 			return;
-		periodo = optPeriodo.get();
+		PeriodoVacacion periodo = optPeriodo.get();
 		periodo.setCodigoEmpleado(empleado.getCodigo());
 		
 		LOGGER.info("Empleado: {} - Fecha ingreso: {} - Inicio: {} Fin: {} Idemnizable: {}", 

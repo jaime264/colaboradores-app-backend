@@ -20,7 +20,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import pe.confianza.colaboradores.gcontenidos.server.negocio.VacacionesTareasProgramadasNegocio;
-import pe.confianza.colaboradores.gcontenidos.server.negocio.impl.VacacionesTareasProgramadasNegociompl;
+import pe.confianza.colaboradores.gcontenidos.server.negocio.impl.VacacionesTareasProgramadasNegocioImpl;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 
 @SpringBootApplication
@@ -57,9 +57,10 @@ public class GestorContenidosServerApplication {
 	}
 	
 	private static void iniciarVacacionesActualizacion(ApplicationContext applicationContext) {
-		VacacionesTareasProgramadasNegocio vacacioneTareas = applicationContext.getBean(VacacionesTareasProgramadasNegociompl.class);
+		VacacionesTareasProgramadasNegocio vacacioneTareas = applicationContext.getBean(VacacionesTareasProgramadasNegocioImpl.class);
 		vacacioneTareas.actualizarEstadoProgramaciones();
 		vacacioneTareas.actualizarPeridos();
+		vacacioneTareas.consolidarMetasAnuales();
 	}
 
 }
