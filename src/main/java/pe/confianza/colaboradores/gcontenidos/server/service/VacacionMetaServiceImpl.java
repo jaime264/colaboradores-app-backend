@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -49,12 +50,12 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 		LocalDate fechaIngreso = empleado.getFechaIngreso();
 		VacacionMeta meta = obtenerVacacionPorAnio(anio, empleado.getId());
 		if(meta != null) {
-			meta.setFechaModifica(LocalDate.now());
+			meta.setFechaModifica(LocalDateTime.now());
 			meta.setUsuarioModifica(usuarioOperacion);
 		} else {
 			meta = new VacacionMeta();
 			meta.setUsuarioCrea(usuarioOperacion);
-			meta.setFechaCrea(LocalDate.now());
+			meta.setFechaCrea(LocalDateTime.now());
 		}
 		meta.setEmpleado(empleado);
 		meta.setAnio(anio);

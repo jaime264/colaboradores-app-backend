@@ -366,6 +366,12 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		periodoVacacionService.actualizarPeriodo(empleado, idPeriodo, usuarioOperacion);
 		LOGGER.info("[END] actualizarPeriodo");
 	}
+
+	@Override
+	public void validarPoliticaBolsa(VacacionProgramacion programacion) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 	

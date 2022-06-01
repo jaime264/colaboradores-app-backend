@@ -43,5 +43,7 @@ public interface ProgramacionVacacionNegocio {
 	
 	void actualizarPeriodo(Empleado empleado, long idPeriodo, String usuarioOperacion);
 	
+	void validarPoliticaBolsa(VacacionProgramacion programacion);
+	
 
 }

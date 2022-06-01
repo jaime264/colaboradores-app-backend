@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,7 +55,7 @@ public class ComentarioServiceImpl implements ComentarioService {
 			com.setActivo(true);
 			com.setDescripcion(comentario.getDescripcion());
 			com.setFecha(LocalDate.now());
-			com.setFechaCrea(LocalDate.now());
+			com.setFechaCrea(LocalDateTime.now());
 			com.setFechaFin(null);
 			com.setFechaInicio(null);
 			com.setFlAprobacion(true);
@@ -73,7 +74,7 @@ public class ComentarioServiceImpl implements ComentarioService {
 				comentario.getImagenes().forEach(e -> {
 					Imagen imagen = new Imagen();
 					imagen.setComentario(cm);
-					imagen.setFechaCrea(LocalDate.now());
+					imagen.setFechaCrea(LocalDateTime.now());
 					imagen.setUrl(e.getUrl());
 					imagen.setUsuarioCrea(comentario.getUsuarioCrea());
 					imagenDao.save(imagen);
@@ -83,7 +84,7 @@ public class ComentarioServiceImpl implements ComentarioService {
 				comentario.getVideos().forEach(e -> {
 					Video video = new Video();
 					video.setComentario(cm);
-					video.setFechaCrea(LocalDate.now());
+					video.setFechaCrea(LocalDateTime.now());
 					video.setUrl(e.getUrl());
 					video.setUsuarioCrea(comentario.getUsuarioCrea());
 					videoDao.save(video);
@@ -108,7 +109,7 @@ public class ComentarioServiceImpl implements ComentarioService {
 
 				cm.get().setDescripcion(comentario.getDescripcion());
 				cm.get().setFechaFin(comentario.getFechaFin());
-				cm.get().setFechaModifica(LocalDate.now());
+				cm.get().setFechaModifica(LocalDateTime.now());
 				cm.get().setFlAprobacion(comentario.getFlAprobacion());
 				cm.get().setFlagReaccion(comentario.getFlagReaccion());
 				cm.get().setPublicacion(comentario.getPublicacion());
@@ -121,7 +122,7 @@ public class ComentarioServiceImpl implements ComentarioService {
 					comentario.getImagenes().forEach(e -> {
 						Imagen imagen = new Imagen();
 						imagen.setComentario(comentario);
-						imagen.setFechaCrea(LocalDate.now());
+						imagen.setFechaCrea(LocalDateTime.now());
 						imagen.setUrl(e.getUrl());
 						imagen.setUsuarioCrea(comentario.getUsuarioCrea());
 						imagenDao.save(imagen);
@@ -131,7 +132,7 @@ public class ComentarioServiceImpl implements ComentarioService {
 					comentario.getVideos().forEach(e -> {
 						Video video = new Video();
 						video.setComentario(comentario);
-						video.setFechaCrea(LocalDate.now());
+						video.setFechaCrea(LocalDateTime.now());
 						video.setUrl(e.getUrl());
 						video.setUsuarioCrea(comentario.getUsuarioCrea());
 						videoDao.save(video);

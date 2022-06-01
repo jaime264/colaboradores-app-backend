@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.util;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +54,7 @@ public class ParametrosConstants {
 		if(valorBuscado.isEmpty()) {
 			Parametro parametro = ParametroMapper.convert(nuevoParametro);
 			parametro.setUsuarioCrea(nuevoParametro.getUsuarioOperacion());
-			parametro.setFechaCrea(LocalDate.now());
+			parametro.setFechaCrea(LocalDateTime.now());
 			parametro.setEstado(1);
 			parametro = parametrosDao.save(parametro);
 			listParams.add(parametro);

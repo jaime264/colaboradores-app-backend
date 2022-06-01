@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -79,7 +80,7 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 			}
 		}
 		periodo.setUsuarioModifica(usuarioOperacion.trim());
-		periodo.setFechaModifica(LocalDate.now());
+		periodo.setFechaModifica(LocalDateTime.now());
 		periodoVacacionDao.save(periodo);
 		LOGGER.info("[BEGIN] actualizarPeriodo");
 	}
@@ -100,7 +101,7 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 		periodo.setDiasPendientesGozar(0.0);
 		periodo.setEmpleado(empleado);
 		periodo.setFuente("APP");
-		periodo.setFechaCrea(LocalDate.now());
+		periodo.setFechaCrea(LocalDateTime.now());
 		periodo.setUsuarioCrea(usuarioOperacion);
 		periodo.setMes(empleado.getFechaIngreso().getMonthValue());
 		periodo.setNumero(numero);

@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -16,16 +17,16 @@ public class EntidadAuditoria {
 	private String usuarioCrea;
 	
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = Constantes.TIME_ZONE)
-	@Column(nullable = false)
-	private LocalDate fechaCrea;
+	@Column(nullable = false, columnDefinition = "TIMESTAMP")
+	private LocalDateTime fechaCrea;
 	
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = Constantes.TIME_ZONE)
 	@Column(nullable = true)
 	private String usuarioModifica;
 	
 	
-	@Column(nullable = true)
-	private LocalDate fechaModifica;
+	@Column(nullable = true, columnDefinition = "TIMESTAMP")
+	private LocalDateTime fechaModifica;
 
 
 	public String getUsuarioCrea() {
@@ -38,12 +39,12 @@ public class EntidadAuditoria {
 	}
 
 
-	public LocalDate getFechaCrea() {
+	public LocalDateTime getFechaCrea() {
 		return fechaCrea;
 	}
 
 
-	public void setFechaCrea(LocalDate fechaCrea) {
+	public void setFechaCrea(LocalDateTime fechaCrea) {
 		this.fechaCrea = fechaCrea;
 	}
 
@@ -58,14 +59,17 @@ public class EntidadAuditoria {
 	}
 
 
-	public LocalDate getFechaModifica() {
+	public LocalDateTime getFechaModifica() {
 		return fechaModifica;
 	}
 
 
-	public void setFechaModifica(LocalDate fechaModifica) {
+	public void setFechaModifica(LocalDateTime fechaModifica) {
 		this.fechaModifica = fechaModifica;
 	}
+
+
+
 	
 	
 
