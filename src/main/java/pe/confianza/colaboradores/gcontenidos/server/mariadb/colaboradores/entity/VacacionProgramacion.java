@@ -49,6 +49,10 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 	
 	private Long numeroPeriodo;
 	
+	private int numeroSabados;
+	
+	private int numeroDomingos;
+	
 	@Transient
 	private EstadoVacacion estado;
 	
@@ -140,6 +144,22 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 
 	public void setNumeroPeriodo(Long numeroPeriodo) {
 		this.numeroPeriodo = numeroPeriodo;
+	}
+
+	public int getNumeroSabados() {
+		return numeroSabados;
+	}
+
+	public void setNumeroSabados(int numeroSabados) {
+		this.numeroSabados = numeroSabados;
+	}
+
+	public int getNumeroDomingos() {
+		return numeroDomingos;
+	}
+
+	public void setNumeroDomingos(int numeroDomingos) {
+		this.numeroDomingos = numeroDomingos;
 	}
 	
 	

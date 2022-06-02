@@ -1,7 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.negocio.impl;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -10,6 +9,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -26,10 +26,12 @@ import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundExce
 import pe.confianza.colaboradores.gcontenidos.server.mapper.VacacionProgramacionMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionMeta;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 import pe.confianza.colaboradores.gcontenidos.server.service.PeriodoVacacionService;
+import pe.confianza.colaboradores.gcontenidos.server.service.VacacionMetaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.ParametrosConstants;
@@ -53,13 +55,19 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	@Autowired
 	private VacacionProgramacionService vacacionProgramacionService;
 	
+	@Autowired
+	private VacacionMetaService vacacionMetaService;
+	
+	@Autowired
+	private MessageSource messageSource;
+	
 	@Override
 	public ResponseProgramacionVacacion registro(RequestProgramacionVacacion programacion) {
 		LOGGER.info("[BEGIN] registro: {} - {} - {}", new Object[] {programacion.getUsuarioBT(), programacion.getFechaInicio(), programacion.getFechaFin()});
 		validarFechaRegistro(programacion.getFechaInicio());
 		Empleado empleado = empleadoService.actualizarInformacionEmpleado(programacion.getUsuarioBT().trim());
 		if(empleado == null)
-			throw new AppException("No existe el usuario " + programacion.getUsuarioBT());
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", new String[] { programacion.getUsuarioBT()}));
 		String usuarioOperacion = programacion.getUsuarioOperacion().trim();
 		VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(programacion);
 		vacacionProgramacion.setEstado(EstadoVacacion.REGISTRADO);
@@ -71,7 +79,8 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		obtenerOrden(vacacionProgramacion, usuarioOperacion);
 		
 		vacacionProgramacion = vacacionProgramacionService.registrar(vacacionProgramacion, usuarioOperacion);
-		actualizarPeriodo(empleado, usuarioOperacion);
+		actualizarPeriodo(empleado,vacacionProgramacion.getPeriodo().getId(),  usuarioOperacion);
+		vacacionMetaService.consolidarMetaAnual(empleado, LocalDate.now().getYear() + 1, programacion.getUsuarioOperacion());
 		LOGGER.info("[END] registroProgramacion");
 		return VacacionProgramacionMapper.convert(vacacionProgramacion);
 	}
@@ -81,14 +90,18 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] cancelar");
 		Empleado empleado = empleadoService.buscarPorUsuarioBT(cancelacion.getUsuarioOperacion().trim());
 		if(empleado == null)
-			throw new ModelNotFoundException("No existe el usuario " + cancelacion.getUsuarioOperacion());
+			throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", new String[] { cancelacion.getUsuarioOperacion() }));
+		LocalDate ahora = LocalDate.now();
+		validarPeriodoRegistro(ahora);
 		VacacionProgramacion programacion = vacacionProgramacionService.buscarPorId(cancelacion.getIdProgramacion());
 		if(programacion.getPeriodo().getEmpleado().getId() != empleado.getId())
-			throw new AppException("El usuario no tiene permisos para eliminar esta programación");
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.cancelar.sin_permiso", new String[] { cancelacion.getUsuarioOperacion() }));
 		if(programacion.getIdEstado() != EstadoVacacion.REGISTRADO.id)
-			throw new AppException("La programación no se encuentra en estado " + EstadoVacacion.REGISTRADO.descripcion);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.cancelar.estado_error", new String[] {EstadoVacacion.REGISTRADO.descripcion}));
+		long idPeriodo = programacion.getPeriodo().getId();
 		vacacionProgramacionService.eliminar(cancelacion.getIdProgramacion());
-		actualizarPeriodo(empleado, cancelacion.getUsuarioOperacion());
+		actualizarPeriodo(empleado, idPeriodo,  cancelacion.getUsuarioOperacion());
+		vacacionMetaService.consolidarMetaAnual(empleado, ahora.getYear() + 1, cancelacion.getUsuarioOperacion().trim());
 		LOGGER.info("[END] cancelar");
 	}
 	
@@ -97,7 +110,9 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] generar");
 		Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioOperacion().trim());
 		if(empleado == null)
-			throw new ModelNotFoundException("No existe el usuario " + request.getUsuarioOperacion());
+			throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", new String[] { request.getUsuarioOperacion() }));
+		LocalDate ahora = LocalDate.now();
+		validarPeriodoRegistro(ahora);
 		List<VacacionProgramacion> programacionesGenerar = vacacionProgramacionService.buscarPorUsuarioBTYEstado(request.getUsuarioOperacion().trim(), EstadoVacacion.REGISTRADO);
 		List<ResponseProgramacionVacacion> response = new ArrayList<>();
 		for (VacacionProgramacion programacion : programacionesGenerar) {
@@ -106,6 +121,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			response.add(VacacionProgramacionMapper.convert(programacion));
 		}
 		actualizarPeriodo(empleado, request.getUsuarioOperacion());
+		vacacionMetaService.consolidarMetaAnual(empleado, ahora.getYear() + 1, request.getUsuarioOperacion());
 		LOGGER.info("[END] generar");
 		return response;
 	}
@@ -129,6 +145,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBTYPeriodo(request.getUsuarioBT().trim(), request.getPeriodo().trim());
 		if(estadoSeleccionado != null && StringUtils.isEmpty(request.getPeriodo()))
 			lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBTYEstado(request.getUsuarioBT().trim(), estadoSeleccionado);		
+		lstProgramacion.sort(Comparator.comparing(VacacionProgramacion::getFechaInicio));
 		LOGGER.info("[END] consultar");
 		return lstProgramacion.stream().map(p -> {
 			return VacacionProgramacionMapper.convert(p);
@@ -140,14 +157,13 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] consultar");
 		Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioBT());
 		if(empleado == null)
-			throw new ModelNotFoundException("No existe el usuario " + request.getUsuarioBT());
+			throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", new String[] {request.getUsuarioBT()}));
 		
 		LocalDate fechaConsulta = LocalDate.now();
-		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		String valorFechaFin = parametrosConstants.FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES;
-		if(valorFechaFin.isEmpty())
-			throw new AppException("No existe el parámetro para fin de registro de programación de vacaciones");
-		LocalDate fechaCorte = LocalDate.parse(valorFechaFin + "/" + fechaConsulta.getYear(), formatter);
+		VacacionMeta meta = vacacionMetaService.obtenerVacacionPorAnio(fechaConsulta.getYear() + 1, empleado.getId());
+		if(meta == null)
+			throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", new String[] {request.getUsuarioBT()}));
+		LocalDate fechaCorte = parametrosConstants.getFechaCorteMeta(LocalDate.now().getYear() + 1);
 		ResponseResumenVacacion response = new ResponseResumenVacacion();
 		response.setFechaConsulta(fechaConsulta);
 		response.setFechaCorte(fechaCorte);
@@ -160,32 +176,30 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		
 		ResponseResumenPeriodoVacacion periodoTrunco = null;
 		ResponseResumenPeriodoVacacion periodoVencido = null;
-		List<PeriodoVacacion> lstPeriodos = periodoVacacionService.consultar(empleado);
-		lstPeriodos.sort(Comparator.comparing(PeriodoVacacion::getAnio).reversed());
-		if(lstPeriodos.size() > 0) { // PERIODO TRUNCO
-			PeriodoVacacion periodo = lstPeriodos.get(0);
-			VacacionProgramacion ultimaProgramacion = vacacionProgramacionService.obtenerUltimaProgramacion(periodo.getId());
-			periodoTrunco = new ResponseResumenPeriodoVacacion();
-			periodoTrunco.setDescripcion(periodo.getDescripcion());
-			double derecho = Utilitario.calcularDerechoVacaciones(empleado.getFechaIngreso(), fechaCorte);
-			periodoTrunco.setDias(derecho - periodo.getDiasGozados() - periodo.getDiasRegistradosGozar());
-			LocalDate fechaLimite = empleado.getFechaIngreso().plusYears(periodo.getAnio() - empleado.getFechaIngreso().getYear() + 1).plusDays(-1);
-			periodoTrunco.setFechaLimite(fechaLimite);
-			periodoTrunco.setUltimoTramo(ultimaProgramacion == null ? 0  : ultimaProgramacion.getOrden());
-		}
-		if(lstPeriodos.size() > 1) { // PERIODO VENCIDO
-			PeriodoVacacion periodo = lstPeriodos.get(1);
+		
+		if(meta.getPeriodoVencido() != null) {
+			PeriodoVacacion periodo = meta.getPeriodoVencido();
 			VacacionProgramacion ultimaProgramacion = vacacionProgramacionService.obtenerUltimaProgramacion(periodo.getId());
 			periodoVencido = new ResponseResumenPeriodoVacacion();
 			periodoVencido.setDescripcion(periodo.getDescripcion());
-			periodoVencido.setDias(periodo.getDerecho() - periodo.getDiasGozados() - periodo.getDiasRegistradosGozar());
-			LocalDate fechaLimite = empleado.getFechaIngreso().plusYears(periodo.getAnio() - empleado.getFechaIngreso().getYear() + 1 ).plusDays(-1);
-			periodoVencido.setFechaLimite(fechaLimite);
+			periodoVencido.setDias(meta.getDiasVencidos());
+			periodoVencido.setFechaLimite(periodo.getFechaFinPeriodo());
 			periodoVencido.setUltimoTramo(ultimaProgramacion == null ? 0  : ultimaProgramacion.getOrden());
 		}
+		
+		if(meta.getPeriodoTrunco() != null) {
+			PeriodoVacacion periodo = meta.getPeriodoTrunco();
+			VacacionProgramacion ultimaProgramacion = vacacionProgramacionService.obtenerUltimaProgramacion(periodo.getId());
+			periodoTrunco = new ResponseResumenPeriodoVacacion();
+			periodoTrunco.setDescripcion(periodo.getDescripcion());
+			periodoTrunco.setDias(meta.getDiasTruncos());
+			periodoTrunco.setFechaLimite(periodo.getFechaFinPeriodo());
+			periodoTrunco.setUltimoTramo(ultimaProgramacion == null ? 0  : ultimaProgramacion.getOrden());
+		}
+			
 		response.setPeriodoTrunco(periodoTrunco);
 		response.setPeriodoVencido(periodoVencido);
-		response.setMeta(Utilitario.calcularMetaVacaciones(empleado.getFechaIngreso(), periodoVencido == null ? 0 : periodoVencido.getDias()));
+		response.setMeta(meta.getMeta());
 		LOGGER.info("[BEGIN] consultar");
 		return response;
 	}
@@ -196,22 +210,22 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] validarFechaRegistro");
 		LocalDate ahora = LocalDate.now();
 		if(fechaInicioVacacion.isBefore(ahora))
-			throw new AppException("Fecha de inicio no puede ser una fecha anterior a la de hoy");
-		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		String valorFechaInicio = parametrosConstants.FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES;
-		if(valorFechaInicio.isEmpty())
-			throw new AppException("No existe el parámetro para inicio de registro de programación de vacaciones");
-		String strFechaInicioRegistroProgramacion = valorFechaInicio.trim() + "/" + ahora.getYear();
-		if(ahora.isBefore(LocalDate.parse(strFechaInicioRegistroProgramacion, formatter)))
-			throw new AppException("No se puede registrar antes de " + strFechaInicioRegistroProgramacion);
-		String valorFechaFin = parametrosConstants.FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES;
-		if(valorFechaFin.isEmpty())
-			throw new AppException("No existe el parámetro para fin de registro de programación de vacaciones");
-		String strFechaFinRegistroProgramacion = valorFechaFin.trim() + "/" + ahora.getYear();
-		if(ahora.isAfter(LocalDate.parse(strFechaFinRegistroProgramacion, formatter)))
-			throw new AppException("No se puede registrar después de " + strFechaFinRegistroProgramacion);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fecha_inicio_error"));
+		validarPeriodoRegistro(fechaInicioVacacion);
 		LOGGER.info("[END] validarFechaRegistro");
 		
+	}
+	
+	@Override
+	public void validarPeriodoRegistro(LocalDate fechaEvaluar) {
+		LOGGER.info("[BEGIN] validarPeriodoRegistro");
+		LocalDate fechaInicioRegistroProgramacion = parametrosConstants.getFechaInicioRegistroProgramacion(fechaEvaluar.getYear());
+		LocalDate fechaFinRegistroProgramacion = parametrosConstants.getFechaFinRegistroProgramacion(fechaEvaluar.getYear());
+		if(fechaEvaluar.isBefore(fechaInicioRegistroProgramacion))
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.inicio_programacion_antes", fechaInicioRegistroProgramacion + ""));
+		if(fechaEvaluar.isAfter(fechaFinRegistroProgramacion))
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fin_programacion_despues", fechaFinRegistroProgramacion+ ""));
+		LOGGER.info("[END] validarPeriodoRegistro");
 	}
 
 	@Override
@@ -220,7 +234,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LocalDate fechaParaPedirVacacion = empleado.getFechaIngreso().plusMonths(6);
 		LOGGER.info("Empleado -> fecha ingreso: {}", new Object[] {fechaParaPedirVacacion}  );
 		if(programacion.getFechaInicio().isBefore(fechaParaPedirVacacion))
-			throw new AppException("Debe tener una antiguedad de 6 meses");
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.empleado_nuevo"));
 		LOGGER.info("[END] validarEmpleadoNuevo");
 	}
 
@@ -228,24 +242,31 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	public void validarRangoFechas(VacacionProgramacion programacion) {
 		LOGGER.info("[BEGIN] validarRangoFechas");
 		if(programacion.getFechaInicio().isAfter(programacion.getFechaFin()))
-			throw new AppException("La fecha de inicio no puede ser mayor a la fecha fin");
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.rango_error"));
 		LOGGER.info("[END] validarRangoFechas");
 	}
 
 	@Override
 	public void obtenerPeriodo(Empleado empleado, VacacionProgramacion programacion) {
 		LOGGER.info("[BEGIN] obtenerPeriodo");
-		List<PeriodoVacacion> periodos = periodoVacacionService.obtenerPeriodosNoCompletados(empleado, programacion);
-		if(periodos.isEmpty())
-			throw new AppException("No tiene perido habilitado");
-		for (PeriodoVacacion periodo : periodos) {
-			if(programacion.getNumeroDias() > Utilitario.calcularDiasPendientesPorRegistrar(periodo)) {
-				throw new AppException("Debe dividir su programación en dos tramos");
+		LocalDate fechaCorte = parametrosConstants.getFechaCorteMeta(LocalDate.now().getYear());
+		VacacionMeta meta = vacacionMetaService.obtenerVacacionPorAnio(fechaCorte.getYear() + 1, empleado.getId());
+		PeriodoVacacion periodoSeleccionado = null;
+		if(meta.getDiasVencidos() > 0) {
+			periodoSeleccionado = meta.getPeriodoVencido();
+			if(meta.getDiasVencidos() < programacion.getNumeroDias())
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.programacion_dividir", new String[] { meta.getDiasVencidos() + "", periodoSeleccionado.getDescripcion() }));
+		} else {
+			if(meta.getDiasTruncos() > 0) {
+				periodoSeleccionado = meta.getPeriodoTrunco();
+				if(meta.getDiasTruncos() < programacion.getNumeroDias())
+					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.programacion_dividir", new String[] { meta.getDiasTruncos() + "", periodoSeleccionado.getDescripcion() }));
 			} else {
-				programacion.setPeriodo(periodo);
-				break;
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.no_dias_gozar"));
 			}
 		}
+		programacion.setPeriodo(periodoSeleccionado);
+		programacion.setNumeroPeriodo((long)periodoSeleccionado.getNumero());
 		LOGGER.info("[END] obtenerPeriodo");
 	}
 
@@ -256,7 +277,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.REGISTRADO);
 		List<VacacionProgramacion> promacionesGeneradas = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.GENERADO);
 		List<VacacionProgramacion> promacionesAprobadas = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.APROBADO);
-		List<VacacionProgramacion> promacionesGozando = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.GOZADO);
+		List<VacacionProgramacion> promacionesGozando = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.GOZANDO);
 		List<VacacionProgramacion> promacionesGozadas = vacacionProgramacionService.listarPorPeriodoYEstado(programacion.getPeriodo(), EstadoVacacion.GOZADO);
 		programaciones.addAll(programacionesRegistradas);
 		programaciones.addAll(promacionesGeneradas);
@@ -269,32 +290,35 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		int contadorDomingos = 0;
 		for (VacacionProgramacion vacacionProgramacion : programaciones) {
 			if(Utilitario.fechaEntrePeriodo(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin(), programacion.getFechaInicio())) {
-				throw new AppException("La fecha de inicio se encuentra comperendida dentro de otro tramo");
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fecha_inicio_encontrada"));
 			}
 			if(Utilitario.fechaEntrePeriodo(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin(), programacion.getFechaFin())) {
-				throw new AppException("La fecha fin se encuentra comprendida dentro de otro tramo");
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fecha_fin_encontrada"));
 			}
-			diasAcumuladosVacaciones += Utilitario.obtenerDiferenciaDias(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin());
-			contadorSabados += Utilitario.obtenerCantidadSabados(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin());
-			contadorDomingos += Utilitario.obtenerCantidadDomingos(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin());
+			diasAcumuladosVacaciones += vacacionProgramacion.getNumeroDias();
+			contadorSabados += vacacionProgramacion.getNumeroSabados();
+			contadorDomingos += vacacionProgramacion.getNumeroDomingos();
 		}
-		int diasProgramacion = Utilitario.obtenerDiferenciaDias(programacion.getFechaInicio(), programacion.getFechaFin());
+		int diasProgramacion = programacion.getNumeroDias();
 		if(diasAcumuladosVacaciones == 0 && diasProgramacion < 7) {
-			throw new AppException("Debe tener 7 dias como mínimo");
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()}));
 		}
 		if(diasAcumuladosVacaciones == 7 && diasProgramacion < 8) {
-			throw new AppException("Debe tener 8 dias como mínimo");
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()}));
 		}
 		if(diasAcumuladosVacaciones == 8 && diasProgramacion < 7) {
-			throw new AppException("Debe tener 7 dias como mínimo");
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()}));
 		}
-		contadorSabados += Utilitario.obtenerCantidadSabados(programacion.getFechaInicio(), programacion.getFechaFin());
-		if(contadorSabados > 4) {
-			throw new AppException("No debe haber más de 4 sábados");
-		}
-		contadorDomingos += Utilitario.obtenerCantidadDomingos(programacion.getFechaInicio(), programacion.getFechaFin());
-		if(contadorDomingos > 4) {
-			throw new AppException("No debe haber más de 4 domingos");
+		double diasPendientePorRegistrar = Utilitario.calcularDiasPendientesPorRegistrar(programacion.getPeriodo());
+		if(programacion.getNumeroDias() == diasPendientePorRegistrar ) {
+			contadorSabados += Utilitario.obtenerCantidadSabados(programacion.getFechaInicio(), programacion.getFechaFin());
+			if(contadorSabados != 4) {
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regularoria.cuatro_sabados.error", new String[] { programacion.getPeriodo().getDescripcion()}));
+			}
+			contadorDomingos += Utilitario.obtenerCantidadDomingos(programacion.getFechaInicio(), programacion.getFechaFin());
+			if(contadorDomingos != 4) {
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regularoria.cuatro_domingos.error", new String[] { programacion.getPeriodo().getDescripcion()}));
+			}
 		}
 		LOGGER.info("[END] validarTramoVacaciones");
 	}
@@ -335,5 +359,20 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[END] actualizarPeriodo");
 		
 	}
+
+	@Override
+	public void actualizarPeriodo(Empleado empleado, long idPeriodo, String usuarioOperacion) {
+		LOGGER.info("[BEGIN] actualizarPeriodo {}", idPeriodo);
+		periodoVacacionService.actualizarPeriodo(empleado, idPeriodo, usuarioOperacion);
+		LOGGER.info("[END] actualizarPeriodo");
+	}
+
+	@Override
+	public void validarPoliticaBolsa(VacacionProgramacion programacion) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
 	
 }

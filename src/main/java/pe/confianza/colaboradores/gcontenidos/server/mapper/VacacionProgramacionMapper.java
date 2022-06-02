@@ -12,6 +12,8 @@ public class VacacionProgramacionMapper {
 		destination.setFechaInicio(source.getFechaInicio());
 		destination.setFechaFin(source.getFechaFin());
 		destination.setNumeroDias(Utilitario.obtenerDiferenciaDias(source.getFechaInicio(), source.getFechaFin()));
+		destination.setNumeroSabados(Utilitario.obtenerCantidadSabados(source.getFechaInicio(), source.getFechaFin()));
+		destination.setNumeroDomingos(Utilitario.obtenerCantidadDomingos(source.getFechaInicio(), source.getFechaFin()));
 		return destination;
 	}
 	

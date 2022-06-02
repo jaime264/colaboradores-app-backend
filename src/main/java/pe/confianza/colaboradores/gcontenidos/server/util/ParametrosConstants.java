@@ -1,6 +1,8 @@
 package pe.confianza.colaboradores.gcontenidos.server.util;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,8 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 public class ParametrosConstants {
 
 	private static Logger logger = LoggerFactory.getLogger(ParametrosConstants.class);
+	
+	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	
 	@Autowired
 	private ParametrosDao parametrosDao;
@@ -50,7 +54,7 @@ public class ParametrosConstants {
 		if(valorBuscado.isEmpty()) {
 			Parametro parametro = ParametroMapper.convert(nuevoParametro);
 			parametro.setUsuarioCrea(nuevoParametro.getUsuarioOperacion());
-			parametro.setFechaCrea(LocalDate.now());
+			parametro.setFechaCrea(LocalDateTime.now());
 			parametro.setEstado(1);
 			parametro = parametrosDao.save(parametro);
 			listParams.add(parametro);
@@ -81,10 +85,35 @@ public class ParametrosConstants {
 	public List<Parametro> findAll() {
 		return listParams;
 	}
+	
+	public LocalDate getFechaInicioRegistroProgramacion(int anio) {
+		if(FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES != null) {
+			return LocalDate.parse(FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES + "/" + anio, formatter);
+		}
+		throw new AppException("No existe el parámetro de fecha inicio de registro de programación");
+	}
+	
+	public LocalDate getFechaFinRegistroProgramacion(int anio) {
+		if(FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES != null) {
+			return LocalDate.parse(FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES + "/" + anio, formatter);
+		}
+		throw new AppException("No existe el parámetro de fecha fin de registro de programación");
+	}
+	
+	public LocalDate getFechaCorteMeta(int anio) {
+		if(FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES != null) {
+			return LocalDate.parse(FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES + "/" + anio, formatter).plusDays(-1);
+		}
+		throw new AppException("No existe el parámetro de fecha inicio de registro de programación");
+	}
+	
+	
 
 	// Parametros Vacaciones
 	public String FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES = null;
 	public String FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES = null;
+	
+	
 
 	@PostConstruct
 	protected void initialize() {

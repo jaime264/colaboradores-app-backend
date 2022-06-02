@@ -27,6 +27,8 @@ public interface ProgramacionVacacionNegocio {
 	
 	void validarFechaRegistro(LocalDate fechaInicioVacacion);
 	
+	void validarPeriodoRegistro(LocalDate fechaEvaluar);
+	
 	void validarEmpleadoNuevo(VacacionProgramacion programacion, Empleado empleado);
 	
 	void validarRangoFechas(VacacionProgramacion programacion);
@@ -38,6 +40,10 @@ public interface ProgramacionVacacionNegocio {
 	void obtenerOrden(VacacionProgramacion programacion, String usuarioModifica);
 	
 	void actualizarPeriodo(Empleado empleado, String usuarioOperacion);
+	
+	void actualizarPeriodo(Empleado empleado, long idPeriodo, String usuarioOperacion);
+	
+	void validarPoliticaBolsa(VacacionProgramacion programacion);
 	
 
 }

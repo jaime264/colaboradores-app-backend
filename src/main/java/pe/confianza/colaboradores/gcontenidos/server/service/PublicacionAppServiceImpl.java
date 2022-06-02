@@ -56,7 +56,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		try {
 
 			publicacion.setFecha(LocalDateTime.now());
-			publicacion.setFechaCrea(LocalDate.now());
+			publicacion.setFechaCrea(LocalDateTime.now());
 			publicacion.setActivo(true);
 			publicacion.setUsuarioCrea(publicacion.getIdUsuario().toString());
 
@@ -66,7 +66,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 				pub.getImagenes().forEach(e -> {
 					Imagen imagen = new Imagen();
 					imagen.setPublicacion(pub);
-					imagen.setFechaCrea(LocalDate.now());
+					imagen.setFechaCrea(LocalDateTime.now());
 					imagen.setUrl(e.getUrl());
 					imagen.setActivo(true);
 					imagen.setUsuarioCrea(pub.getUsuarioCrea());
@@ -77,7 +77,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 				pub.getVideos().forEach(e -> {
 					Video video = new Video();
 					video.setPublicacion(pub);
-					video.setFechaCrea(LocalDate.now());
+					video.setFechaCrea(LocalDateTime.now());
 					video.setUrl(e.getUrl());
 					video.setActivo(true);
 					video.setUsuarioCrea(pub.getUsuarioCrea());
@@ -106,7 +106,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 				pub.get().setDescripcion(publicacion.getDescripcion());
 				pub.get().setFechaFin(publicacion.getFechaFin());
 				pub.get().setFechaInicio(publicacion.getFechaInicio());
-				pub.get().setFechaModifica(LocalDate.now());
+				pub.get().setFechaModifica(LocalDateTime.now());
 				pub.get().setFlagReacion(publicacion.getFlagReacion());
 				pub.get().setFlagAprobacion(publicacion.getFlagAprobacion());
 				pub.get().setMenu(publicacion.getMenu());
@@ -203,7 +203,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 				pub.get().setCategoria(publicacion.getCategoria());
 				pub.get().setMenu(publicacion.getMenu());
 				pub.get().setSubmenu(publicacion.getSubmenu());
-				pub.get().setFechaModifica(LocalDate.now());
+				pub.get().setFechaModifica(LocalDateTime.now());
 				pub.get().setFlagReacion(publicacion.getFlagReacion());
 				pub.get().setFlagAprobacion(publicacion.getFlagAprobacion());
 				pub.get().setReacciones(publicacion.getReacciones());
@@ -277,7 +277,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 				if (img.getId() == null) {
 					Imagen imagen = new Imagen();
 					imagen.setPublicacion(publicacion);
-					imagen.setFechaCrea(LocalDate.now());
+					imagen.setFechaCrea(LocalDateTime.now());
 					imagen.setUrl(img.getUrl());
 					imagen.setActivo(true);
 					imagen.setUsuarioCrea(publicacion.getUsuarioModifica());
@@ -287,7 +287,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 					if (ig.isPresent()) {
 						ig.get().setPublicacion(publicacion);
-						ig.get().setFechaModifica(LocalDate.now());
+						ig.get().setFechaModifica(LocalDateTime.now());
 						ig.get().setUsuarioModifica(publicacion.getUsuarioModifica());
 						ig.get().setUrl(img.getUrl());
 						ig.get().setActivo(true);
@@ -325,7 +325,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 				if (vdo.getId() == null) {
 					Video video = new Video();
 					video.setPublicacion(publicacion);
-					video.setFechaCrea(LocalDate.now());
+					video.setFechaCrea(LocalDateTime.now());
 					video.setUrl(vdo.getUrl());
 					video.setActivo(true);
 					video.setUsuarioCrea(publicacion.getUsuarioModifica());
@@ -335,7 +335,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 					if (vo.isPresent()) {
 						vo.get().setPublicacion(publicacion);
-						vo.get().setFechaModifica(LocalDate.now());
+						vo.get().setFechaModifica(LocalDateTime.now());
 						vo.get().setUsuarioModifica(publicacion.getUsuarioModifica());
 						vo.get().setUrl(vdo.getUrl());
 						vo.get().setActivo(true);

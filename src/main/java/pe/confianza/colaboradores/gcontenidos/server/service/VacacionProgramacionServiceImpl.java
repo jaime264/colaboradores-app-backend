@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,14 +48,14 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	@Override
 	public VacacionProgramacion registrar(VacacionProgramacion programacion, String usuarioOperacion) {
 		programacion.setUsuarioCrea(usuarioOperacion);
-		programacion.setFechaCrea(LocalDate.now());
+		programacion.setFechaCrea(LocalDateTime.now());
 		return vacacionProgramacionDao.save(programacion);
 	}
 
 	@Override
 	public VacacionProgramacion actualizar(VacacionProgramacion programacion, String usuarioOperacion) {
 		programacion.setUsuarioModifica(usuarioOperacion);
-		programacion.setFechaModifica(LocalDate.now());
+		programacion.setFechaModifica(LocalDateTime.now());
 		return vacacionProgramacionDao.save(programacion);
 	}
 

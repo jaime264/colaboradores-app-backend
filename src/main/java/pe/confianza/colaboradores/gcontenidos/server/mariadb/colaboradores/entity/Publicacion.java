@@ -23,7 +23,7 @@ public class Publicacion extends EntidadAuditoria {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	@Column(nullable = true)
+	@Column(nullable = true, columnDefinition = "TEXT")
 	private String Descripcion;
 
 	@Column(nullable = true)

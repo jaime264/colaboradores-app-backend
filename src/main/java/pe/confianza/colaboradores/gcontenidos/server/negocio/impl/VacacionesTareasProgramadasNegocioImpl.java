@@ -12,13 +12,15 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.negocio.VacacionesTareasProgramadasNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 import pe.confianza.colaboradores.gcontenidos.server.service.PeriodoVacacionService;
+import pe.confianza.colaboradores.gcontenidos.server.service.VacacionMetaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
+import pe.confianza.colaboradores.gcontenidos.server.util.ParametrosConstants;
 
 
 @Service
-public class VacacionesTareasProgramadasNegociompl implements VacacionesTareasProgramadasNegocio {
+public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasProgramadasNegocio {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(VacacionesTareasProgramadasNegociompl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(VacacionesTareasProgramadasNegocioImpl.class);
 	
 	@Autowired
 	private PeriodoVacacionService periodoVacacionService;
@@ -28,6 +30,12 @@ public class VacacionesTareasProgramadasNegociompl implements VacacionesTareasPr
 	
 	@Autowired
 	private VacacionProgramacionService vacacionProgramacionService;
+	
+	@Autowired
+	private ParametrosConstants parametrosConstants;
+	
+	@Autowired
+	private VacacionMetaService vacacionMetaService;
 
 	@Override
 	public void actualizarEstadoProgramaciones() {
@@ -45,5 +53,21 @@ public class VacacionesTareasProgramadasNegociompl implements VacacionesTareasPr
 		}
 		LOGGER.info("[END] actualizarPeridos " + LocalDate.now());
 	}
+
+	@Override
+	public void consolidarMetasAnuales() {
+		LOGGER.info("[BEGIN] consolidarMetasAnuales " + LocalDate.now());
+		LocalDate fechaActual = LocalDate.now();
+		LocalDate fechaCorte = parametrosConstants.getFechaCorteMeta(fechaActual.getYear());
+		if(fechaActual.isAfter(fechaCorte)) {
+			List<Empleado> lstEmpleado = empleadoService.listar();
+			lstEmpleado.forEach(e -> {
+				vacacionMetaService.consolidarMetaAnual(e, fechaCorte.getYear() + 1, "TAREA_PROGRAMADA");
+			});
+		}
+		LOGGER.info("[END] consolidarMetasAnuales " + LocalDate.now());
+	}
+
+
 
 }

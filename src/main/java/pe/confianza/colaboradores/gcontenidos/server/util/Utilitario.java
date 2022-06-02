@@ -16,6 +16,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.context.MessageSource;
+
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 
@@ -197,19 +199,43 @@ public class Utilitario {
 	public static double calcularDerechoVacaciones(LocalDate fechaIngreso, LocalDate fechaCorte) {
 		double derecho = 0;
 		final double diasPorMes = 2.5;
-		LocalDate fechaInicioPeriodo = fechaIngreso.plusYears(fechaCorte.getYear() - fechaIngreso.getYear() - 1);
-		int diferenciaMeses = fechaCorte.getMonthValue() - fechaInicioPeriodo.getMonthValue();
-		diferenciaMeses = diferenciaMeses > 0 ? diferenciaMeses : ( diferenciaMeses + 12 );
-		for(int i = 1; i <= diferenciaMeses; i++) {
-			LocalDate mesPeriodo = fechaInicioPeriodo.plusMonths(i);
-			if(mesPeriodo.isBefore(fechaCorte)) {
+		LocalDate[] periodoTrunco = rangoPeriodoTrunco(fechaIngreso);
+		LocalDate fechaFinPeriodoMensual = periodoTrunco[0];
+		int diferenciaDias = 0;
+		while (fechaFinPeriodoMensual.isBefore(fechaCorte)) {
+			fechaFinPeriodoMensual = fechaFinPeriodoMensual.plusMonths(1);
+			if(fechaFinPeriodoMensual.isBefore(fechaCorte) || fechaFinPeriodoMensual.equals(fechaCorte)) {
 				derecho += diasPorMes;
 			} else {
-				derecho += obtenerDiferenciaDias(fechaCorte, mesPeriodo)  * diasPorMes / 30;
-			}
+				diferenciaDias = obtenerDiferenciaDias(fechaCorte, fechaFinPeriodoMensual.plusMonths(-1));
+				derecho += diferenciaDias  * diasPorMes / 30;
+			}	
 		}
-		
 		return derecho;
+	}
+	
+	public static LocalDate[] rangoPeriodoVencido(LocalDate fechaIngreso) {
+		LocalDate fechaActual = LocalDate.now();
+		if(fechaIngreso.getYear() < fechaActual.getYear()) {
+			LocalDate[] periodoVencido = rangoPeriodoTrunco(fechaIngreso);
+			periodoVencido[0] = periodoVencido[0].plusYears(-1);
+			periodoVencido[1] = periodoVencido[1].plusYears(-1);
+			return periodoVencido;
+		}
+		return null;
+		
+	}
+	
+	public static LocalDate[] rangoPeriodoTrunco(LocalDate fechaIngreso) {
+		LocalDate[] periodoTrunco = new LocalDate[2];
+		LocalDate fechaActual = LocalDate.now();
+		LocalDate fechaInicioPeriodoTrunco = fechaIngreso.plusYears(fechaActual.getYear() - fechaIngreso.getYear());
+		if(fechaInicioPeriodoTrunco.isAfter(fechaActual))
+			fechaInicioPeriodoTrunco = fechaInicioPeriodoTrunco.plusYears(-1);
+		LocalDate fechaFinPeriodoTrunco = fechaInicioPeriodoTrunco.plusYears(1).plusDays(-1);
+		periodoTrunco[0] = fechaInicioPeriodoTrunco;
+		periodoTrunco[1] = fechaFinPeriodoTrunco;
+		return periodoTrunco;
 	}
 	
 	/**
@@ -243,6 +269,15 @@ public class Utilitario {
 				periodo.getDiasAprobadosGozar() +
 				periodo.getDiasRegistradosGozar()
 				);
+	}
+	
+	public static String obtenerMensaje(MessageSource source, String codigo, String ...valores) {
+		valores = valores == null ? new String[] {} : valores;
+		try {
+			return source.getMessage(codigo, valores, Constantes.LOCALE_PER);
+		} catch (Exception e) {
+			return "Mensaje no encontrado";
+		}
 	}
 	
 	private static Calendar getCalendarWithoutTime(Date date) {
