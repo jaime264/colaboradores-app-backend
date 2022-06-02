@@ -7,6 +7,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Comentario;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Publicacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Reaccion;
 
 public interface PublicacionAppService {
 
@@ -24,6 +25,6 @@ public interface PublicacionAppService {
 	
 	public ResponseStatus updateAprobacion(Publicacion publicacion);
 	
-	public ResponseStatus updateReaccion(Publicacion publicacion);
+	public ResponseStatus updateReaccion(Reaccion reaccion);
 
 }

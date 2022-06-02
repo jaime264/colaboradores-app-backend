@@ -14,5 +14,7 @@ public interface EmpleadoService {
 	public Empleado buscarPorUsuarioBT(String usuarioBT);
 	
 	public List<EmplVacPerRes> listEmpleadoByprogramacion(Long codigo);
+	
+	public List<Empleado> findfechaNacimientoDeHoy();
 
 }

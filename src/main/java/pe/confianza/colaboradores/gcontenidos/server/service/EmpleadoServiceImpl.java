@@ -1,6 +1,10 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +44,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
 	@Autowired
 	private EmpleadoApi empleadoApi;
-	
+
 	@Autowired
 	private PeriodoVacacionService periodoVacacionService;
 
@@ -49,13 +53,14 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		LOGGER.info("[BEGIN] actualizarInformacionEmpleado");
 		EmpleadoRes empleadoSpring = empleadoApi.getPerfil(usuarioBT);
 		LOGGER.info("Empleado: " + empleadoSpring.toString());
-		if(!usuarioBT.trim().equalsIgnoreCase(empleadoSpring.getUsuarioBT().trim()))
+		if (!usuarioBT.trim().equalsIgnoreCase(empleadoSpring.getUsuarioBT().trim()))
 			return null;
 		Optional<Puesto> optPuesto = puestoDao.findOneByCodigo(empleadoSpring.getIdCargo());
 		Optional<Agencia> optAgencia = agenciaDao.findOneByCodigo(empleadoSpring.getIdSucursal().trim());
 		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(empleadoSpring.getUsuarioBT().trim());
-		Empleado empleado = EmpleadoMapper.convert(empleadoSpring);;
-		if(optEmpleado.isPresent())
+		Empleado empleado = EmpleadoMapper.convert(empleadoSpring);
+		;
+		if (optEmpleado.isPresent())
 			empleado.setId(optEmpleado.get().getId());
 		empleado.setPuesto(optPuesto.isPresent() ? optPuesto.get() : null);
 		empleado.setAgencia(optAgencia.isPresent() ? optAgencia.get() : null);
@@ -68,15 +73,15 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
 	@Override
 	public List<EmplVacPerRes> listEmpleadoByprogramacion(Long codigo) {
-		
+
 		List<EmplVacPerRes> listEmp = new ArrayList<EmplVacPerRes>();
 		List<VacacionPeriodo> listVp = new ArrayList<VacacionPeriodo>();
-		
+
 		List<Empleado> emsByJefe = empleadoDao.findByCodigoJefe(codigo);
-		
-		if(!CollectionUtils.isEmpty(emsByJefe)) {
-			
-			for(Empleado e: emsByJefe) {
+
+		if (!CollectionUtils.isEmpty(emsByJefe)) {
+
+			for (Empleado e : emsByJefe) {
 				EmplVacPerRes emp = new EmplVacPerRes();
 				emp.setNombres(e.getNombres());
 				emp.setApellidoPaterno(e.getApellidoPaterno());
@@ -84,38 +89,35 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 				emp.setIdEmpleado(e.getId());
 				emp.setPuesto(e.getPuesto().getDescripcion());
 				emp.setUsuarioBt(e.getUsuarioBT());
-				
+
 				List<VacacionProgramacion> lVp = empleadoDao.findPeriodosByEmpleado(e.getId());
-				
-				for(VacacionProgramacion v : lVp) {
+
+				for (VacacionProgramacion v : lVp) {
 					VacacionPeriodo vp = new VacacionPeriodo();
 					vp.setIdProgramacion(v.getId());
 					vp.setFechaInicio(v.getFechaInicio());
 					vp.setFechaFin(v.getFechaFin());
 					vp.setIdEstado(vp.getIdEstado());
 					vp.setPeriodo(v.getPeriodo().getDescripcion());
-					
+
 					listVp.add(vp);
 				}
-				if(!lVp.isEmpty()) {
+				if (!lVp.isEmpty()) {
 					emp.setVacacionPeriodo(listVp);
 				}
-				
+
 				listEmp.add(emp);
 			}
-			
+
 		}
-				
+
 		return listEmp;
 	}
-	
-	
 
 	public Empleado listEmpleadoById(Long id) {
 
 		return empleadoDao.findById(id).get();
 	}
-
 
 	@Override
 	public List<Empleado> listar() {
@@ -125,9 +127,28 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	@Override
 	public Empleado buscarPorUsuarioBT(String usuarioBT) {
 		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(usuarioBT.trim());
-		if(!optEmpleado.isPresent())
+		if (!optEmpleado.isPresent())
 			return null;
 		return optEmpleado.get();
+	}
+
+	@Override
+	public List<Empleado> findfechaNacimientoDeHoy() {
+		List<Empleado> listEmp = new ArrayList<>();
+
+		Instant instant = Instant.now();
+		ZonedDateTime limaQuitoTime = instant.atZone(ZoneId.of("-05:00"));
+
+		int mes = limaQuitoTime.getMonthValue();
+		int dia = limaQuitoTime.getDayOfMonth();
+
+		try {
+			listEmp = empleadoDao.findfechaNacimientoDeHoy(mes, dia);
+		} catch (Exception e) {
+			e.getMessage();
+		}
+
+		return listEmp;
 	}
 
 }

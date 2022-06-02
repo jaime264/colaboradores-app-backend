@@ -61,7 +61,7 @@ public class ComentarioServiceImpl implements ComentarioService {
 			com.setFlagReaccion(true);
 			com.setIdUsuario(comentario.getIdUsuario());
 			com.setReacciones(0);
-			com.setUsuarioCrea(comentario.getIdUsuario());
+			com.setUsuarioCrea(comentario.getIdUsuario().toString());
 			
 			Optional<Publicacion> pb  = publicacionAppDao.findById(comentario.getPublicacionId());
 			

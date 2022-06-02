@@ -1,7 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -14,10 +13,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import org.springframework.data.annotation.Transient;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 
 @Entity
@@ -64,11 +63,34 @@ public class Comentario extends EntidadAuditoria  {
 	private List<Video> videos;
 
 	@Column(nullable = true)
-	private String idUsuario;
+	private Long idUsuario;
 	
 	@Transient
 	private long publicacionId;
+
+	@JsonInclude
+	@Transient
+	private String sexo;
 	
+	@JsonInclude
+	@Transient
+	private String nombre;	
+
+	public String getSexo() {
+		return sexo;
+	}
+
+	public void setSexo(String sexo) {
+		this.sexo = sexo;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
 	public long getPublicacionId() {
 		return publicacionId;
@@ -158,11 +180,11 @@ public class Comentario extends EntidadAuditoria  {
 		this.videos = videos;
 	}
 
-	public String getIdUsuario() {
+	public Long getIdUsuario() {
 		return idUsuario;
 	}
 
-	public void setIdUsuario(String idUsuario) {
+	public void setIdUsuario(Long idUsuario) {
 		this.idUsuario = idUsuario;
 	}
 

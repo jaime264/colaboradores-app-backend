@@ -23,5 +23,9 @@ public interface EmpleadoDao extends JpaRepository<Empleado, Long>{
 
 	@Query("SELECT vp FROM VacacionProgramacion vp inner join vp.periodo pv inner join pv.empleado e where e.id = ?1")
 	public List<VacacionProgramacion> findPeriodosByEmpleado(Long idEmpleado);
+	
+	@Query(value = "Select * from empleado e where MONTH(e.fecha_nacimiento) = ?1 and DAY (e.fecha_nacimiento) = ?2", nativeQuery = true)
+	public List<Empleado> findfechaNacimientoDeHoy(int mes, int dia);
+
 
 }
