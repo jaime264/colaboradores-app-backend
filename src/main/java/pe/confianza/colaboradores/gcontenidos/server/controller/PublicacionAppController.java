@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Publicacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Reaccion;
 import pe.confianza.colaboradores.gcontenidos.server.service.PublicacionAppService;
 
 @RestController
@@ -70,9 +71,9 @@ private static Logger logger = LoggerFactory.getLogger(PublicacionController.cla
 	}
 	
 	@PostMapping("/publicacionApp/update/reaccion")
-	public ResponseEntity<?> updateReaccion(@RequestBody Publicacion publicacion) {
+	public ResponseEntity<?> updateReaccion(@RequestBody Reaccion reaccion) {
 		
-		ResponseStatus response = publicacionAppService.updateReaccion(publicacion);
+		ResponseStatus response = publicacionAppService.updateReaccion(reaccion);
 
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
@@ -82,6 +83,14 @@ private static Logger logger = LoggerFactory.getLogger(PublicacionController.cla
 	public ResponseEntity<?> deletePost(Long idPublicacion) {
 		
 		ResponseStatus response = publicacionAppService.delete(idPublicacion);
+
+		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
+	}
+	
+	@PostMapping("/publicacionApp/delete/reaccion/id")
+	public ResponseEntity<?> deleteReaccion(Long idReaccion) {
+		
+		ResponseStatus response = publicacionAppService.deleteReaccion(idReaccion);
 
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}

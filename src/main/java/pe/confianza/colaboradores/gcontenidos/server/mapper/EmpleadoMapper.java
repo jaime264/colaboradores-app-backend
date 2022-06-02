@@ -6,7 +6,7 @@ import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 public class EmpleadoMapper {
 	
-	public static Empleado convert(final pe.confianza.colaboradores.gcontenidos.server.bean.Empleado source) {
+	public static Empleado convert(final pe.confianza.colaboradores.gcontenidos.server.bean.RequestEmpleado source) {
 		Empleado destination = new Empleado();
 		destination.setCodigo(source.getIdEmpleado());
 		destination.setNombres(source.getNombres() != null ? source.getNombres().trim() : null);

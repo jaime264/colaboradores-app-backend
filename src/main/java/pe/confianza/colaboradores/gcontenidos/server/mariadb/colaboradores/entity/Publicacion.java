@@ -11,6 +11,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 @Entity
 @Table(name = "publicacionApp")
@@ -46,7 +49,8 @@ public class Publicacion extends EntidadAuditoria {
 
 	private Boolean flagReacion;
 
-	private Integer reacciones;
+	@OneToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
+	private List<Reaccion> reacciones;
 
 	@Column(nullable = true)
 	private String observacion;
@@ -60,13 +64,46 @@ public class Publicacion extends EntidadAuditoria {
 	@OneToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
 	private List<Imagen> imagenes;
 
-	private String idUsuario;
+	private Long idUsuario;
 
 	@Column(nullable = true)
 	private Boolean activo;
 
 	@Column(nullable = true)
 	private Boolean flagPermanente;
+	
+	@JsonInclude
+	@Transient
+	private String sexo;
+	
+	@JsonInclude
+	@Transient
+	private String nombre;
+	
+
+	public String getSexo() {
+		return sexo;
+	}
+
+	public void setSexo(String sexo) {
+		this.sexo = sexo;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public List<Reaccion> getReacciones() {
+		return reacciones;
+	}
+
+	public void setReacciones(List<Reaccion> reacciones) {
+		this.reacciones = reacciones;
+	}
 
 	public Boolean getFlagPermanente() {
 		return flagPermanente;
@@ -156,14 +193,6 @@ public class Publicacion extends EntidadAuditoria {
 		this.flagReacion = flagReacion;
 	}
 
-	public Integer getReacciones() {
-		return reacciones;
-	}
-
-	public void setReacciones(Integer reacciones) {
-		this.reacciones = reacciones;
-	}
-
 	public String getObservacion() {
 		return observacion;
 	}
@@ -196,11 +225,11 @@ public class Publicacion extends EntidadAuditoria {
 		this.imagenes = imagenes;
 	}
 
-	public String getIdUsuario() {
+	public Long getIdUsuario() {
 		return idUsuario;
 	}
 
-	public void setIdUsuario(String idUsuario) {
+	public void setIdUsuario(Long idUsuario) {
 		this.idUsuario = idUsuario;
 	}
 

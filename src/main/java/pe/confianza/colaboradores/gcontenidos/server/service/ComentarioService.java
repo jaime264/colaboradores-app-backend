@@ -4,6 +4,7 @@ import java.util.List;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Comentario;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.OcultarComentario;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Publicacion;
 
 public interface ComentarioService {
@@ -19,5 +20,9 @@ public interface ComentarioService {
 	public ResponseStatus update(Comentario comentario);
 	
 	public ResponseStatus delete(Long idComentario);
+	
+	public ResponseStatus updateOcultarComentario(OcultarComentario ocultarComentario);
+	
+	public ResponseStatus deleteOcultarComentario(Long idOcultarComentario);
 
 }

@@ -1,7 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -14,10 +13,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import org.springframework.data.annotation.Transient;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 
 @Entity
@@ -37,22 +36,7 @@ public class Comentario extends EntidadAuditoria  {
 	private String descripcion;
 	
 	@Column(nullable = true)
-	private Boolean flAprobacion;
-	
-	@Column(nullable = true)
-	private LocalDate fecha;
-	
-	@Column(nullable = true)
-	private LocalDate fechaInicio;
-	
-	@Column(nullable = true)
-	private LocalDate fechaFin;
-	
-	@Column(nullable = true)
-	private Boolean flagReaccion;
-	
-	@Column(nullable = true)
-	private Integer reacciones;
+	private Boolean flagAprobacion;
 	
 	@Column(nullable = true)
 	private Boolean activo;
@@ -62,13 +46,55 @@ public class Comentario extends EntidadAuditoria  {
 	
 	@OneToMany(mappedBy = "comentario", fetch = FetchType.LAZY)
 	private List<Video> videos;
+	
+	@OneToMany(mappedBy = "comentario", fetch = FetchType.LAZY)
+	private List<OcultarComentario> comentariosOcultos;
 
 	@Column(nullable = true)
-	private String idUsuario;
+	private Long idUsuario;
 	
 	@Transient
 	private long publicacionId;
+
+	@JsonInclude
+	@Transient
+	private String sexo;
 	
+	@JsonInclude
+	@Transient
+	private String nombre;	
+
+	public List<OcultarComentario> getComentariosOcultos() {
+		return comentariosOcultos;
+	}
+
+	public void setComentariosOcultos(List<OcultarComentario> comentariosOcultos) {
+		this.comentariosOcultos = comentariosOcultos;
+	}
+
+	public Boolean getFlagAprobacion() {
+		return flagAprobacion;
+	}
+
+	public void setFlagAprobacion(Boolean flagAprobacion) {
+		this.flagAprobacion = flagAprobacion;
+	}
+
+	public String getSexo() {
+		return sexo;
+	}
+
+	public void setSexo(String sexo) {
+		this.sexo = sexo;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
 	public long getPublicacionId() {
 		return publicacionId;
@@ -76,14 +102,6 @@ public class Comentario extends EntidadAuditoria  {
 
 	public void setPublicacionId(long publicacionId) {
 		this.publicacionId = publicacionId;
-	}
-
-	public Boolean getFlagReaccion() {
-		return flagReaccion;
-	}
-
-	public void setFlagReaccion(Boolean flagReaccion) {
-		this.flagReaccion = flagReaccion;
 	}
 
 	public long getId() {
@@ -102,46 +120,6 @@ public class Comentario extends EntidadAuditoria  {
 		this.descripcion = descripcion;
 	}
 
-	public Boolean getFlAprobacion() {
-		return flAprobacion;
-	}
-
-	public void setFlAprobacion(Boolean flAprobacion) {
-		this.flAprobacion = flAprobacion;
-	}
-
-	public LocalDate getFecha() {
-		return fecha;
-	}
-
-	public void setFecha(LocalDate fecha) {
-		this.fecha = fecha;
-	}
-
-	public LocalDate getFechaInicio() {
-		return fechaInicio;
-	}
-
-	public void setFechaInicio(LocalDate fechaInicio) {
-		this.fechaInicio = fechaInicio;
-	}
-
-	public LocalDate getFechaFin() {
-		return fechaFin;
-	}
-
-	public void setFechaFin(LocalDate fechaFin) {
-		this.fechaFin = fechaFin;
-	}
-
-	public Integer getReacciones() {
-		return reacciones;
-	}
-
-	public void setReacciones(Integer reacciones) {
-		this.reacciones = reacciones;
-	}
-
 	public List<Imagen> getImagenes() {
 		return imagenes;
 	}
@@ -158,11 +136,11 @@ public class Comentario extends EntidadAuditoria  {
 		this.videos = videos;
 	}
 
-	public String getIdUsuario() {
+	public Long getIdUsuario() {
 		return idUsuario;
 	}
 
-	public void setIdUsuario(String idUsuario) {
+	public void setIdUsuario(Long idUsuario) {
 		this.idUsuario = idUsuario;
 	}
 

@@ -3,7 +3,6 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +10,16 @@ import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ComentarioDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ImagenDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PublicacionAppDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ReaccionPubDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VideoDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Comentario;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Imagen;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Publicacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Reaccion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Video;
 
 @Service
@@ -33,6 +37,12 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 	@Autowired
 	ComentarioDao comentarioDao;
 
+	@Autowired
+	ReaccionPubDao reaccionDao;
+
+	@Autowired
+	EmpleadoDao empleadoDao;
+
 	@Override
 	public List<Publicacion> list() {
 		return publicacionAppDao.findAll();
@@ -41,13 +51,14 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 	@Override
 	public ResponseStatus add(Publicacion publicacion) {
-
+		
 		ResponseStatus status = new ResponseStatus();
 		try {
 
 			publicacion.setFecha(LocalDateTime.now());
 			publicacion.setFechaCrea(LocalDateTime.now());
 			publicacion.setActivo(true);
+			publicacion.setUsuarioCrea(publicacion.getIdUsuario().toString());
 
 			Publicacion pub = publicacionAppDao.save(publicacion);
 
@@ -128,10 +139,18 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 		Optional<Publicacion> pub = publicacionAppDao.findById(idPublicacion);
 
-		if (pub.isPresent()) {
-			pub.get().setActivo(false);
-			publicacionAppDao.save(pub.get());
+		try {
+			if (pub.isPresent()) {
+				pub.get().setActivo(false);
+				publicacionAppDao.save(pub.get());
+			}
+			status.setCodeStatus(200);
+			status.setMsgStatus("Publicacion eliminada");
+		} catch (Exception e) {
+			status.setCodeStatus(500);
+			status.setMsgStatus(e.getMessage());
 		}
+		
 
 		status.setCodeStatus(200);
 
@@ -157,7 +176,26 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 	@Override
 	public List<Publicacion> listByActivo() {
 
-		return publicacionAppDao.listByActivo(true);
+		List<Publicacion> listP = publicacionAppDao.listByActivo(true);
+
+		for (Publicacion p : listP) {
+
+			Optional<Empleado> emp = empleadoDao.findById(p.getIdUsuario());
+
+			p.setNombre(emp.get().getNombres() + " " + emp.get().getApellidoPaterno() + " "
+					+ emp.get().getApellidoMaterno());
+			p.setSexo(emp.get().getSexo());
+
+			for (Comentario c : p.getComentarios()) {
+				Optional<Empleado> cm = empleadoDao.findById(c.getIdUsuario());
+				c.setNombre(emp.get().getNombres() + " " + emp.get().getApellidoPaterno() + " "
+						+ emp.get().getApellidoMaterno());
+				c.setSexo(emp.get().getSexo());
+			}
+
+		}
+
+		return listP;
 	}
 
 	@Override
@@ -169,7 +207,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		if (pub.isPresent()) {
 
 			if (pub.get().getActivo()) {
-				
+
 				pub.get().setCategoria(publicacion.getCategoria());
 				pub.get().setMenu(publicacion.getMenu());
 				pub.get().setSubmenu(publicacion.getSubmenu());
@@ -196,20 +234,25 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 		return null;
 	}
-	
+
 	@Override
-	public ResponseStatus updateReaccion(Publicacion publicacion) {
+	public ResponseStatus updateReaccion(Reaccion reaccion) {
 		ResponseStatus status = new ResponseStatus();
 
-		Optional<Publicacion> pub = publicacionAppDao.findById(publicacion.getId());
+		Optional<Publicacion> pub = publicacionAppDao.findById(reaccion.getPublicacionId());
 
 		if (pub.isPresent()) {
 
 			if (pub.get().getActivo()) {
-				
-				pub.get().setReacciones(publicacion.getReacciones());
 
-				publicacionAppDao.save(pub.get());
+				Reaccion reac = new Reaccion();
+				reac.setPublicacion(pub.get());
+				reac.setFechaCrea(LocalDateTime.now());
+				reac.setIdUsuario(reaccion.getIdUsuario());
+				reac.setUsuarioCrea(reaccion.getIdUsuario());
+
+				reaccionDao.save(reac);
+
 				status.setCodeStatus(200);
 				status.setMsgStatus("Publicación actualizada");
 			} else {
@@ -222,8 +265,26 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			status.setMsgStatus("No existe la publicación");
 		}
 
-		return null;
+		return status;
 	}
+	
+	@Override
+	public ResponseStatus deleteReaccion(Long idReaccion) {
+		ResponseStatus status = new ResponseStatus();
+
+		try {
+			reaccionDao.deleteById(idReaccion);
+			status.setCodeStatus(200);
+			status.setMsgStatus("reaccion eliminada");
+		} catch (Exception e) {
+			status.setCodeStatus(200);
+			status.setMsgStatus(e.getMessage());
+		}
+		
+		return status;
+	}
+	
+	
 
 	public void guardarImg(Publicacion publicacion, Optional<Publicacion> pub) {
 
@@ -319,5 +380,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			}
 		}
 	}
+
+	
 
 }
