@@ -12,11 +12,14 @@ import org.springframework.stereotype.Service;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ComentarioDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ImagenDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.OcultarComentarioDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PublicacionAppDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VideoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Comentario;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Imagen;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.OcultarComentario;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Publicacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Reaccion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Video;
 
 @Service
@@ -33,6 +36,9 @@ public class ComentarioServiceImpl implements ComentarioService {
 	
 	@Autowired
 	PublicacionAppDao publicacionAppDao;
+	
+	@Autowired
+	OcultarComentarioDao ocultarComentarioDao;
 
 	@Override
 	public List<Comentario> list() {
@@ -54,14 +60,9 @@ public class ComentarioServiceImpl implements ComentarioService {
 			
 			com.setActivo(true);
 			com.setDescripcion(comentario.getDescripcion());
-			com.setFecha(LocalDate.now());
 			com.setFechaCrea(LocalDateTime.now());
-			com.setFechaFin(null);
-			com.setFechaInicio(null);
-			com.setFlAprobacion(true);
-			com.setFlagReaccion(true);
+			com.setFlagAprobacion(true);
 			com.setIdUsuario(comentario.getIdUsuario());
-			com.setReacciones(0);
 			com.setUsuarioCrea(comentario.getIdUsuario().toString());
 			
 			Optional<Publicacion> pb  = publicacionAppDao.findById(comentario.getPublicacionId());
@@ -92,8 +93,10 @@ public class ComentarioServiceImpl implements ComentarioService {
 			}
 
 			status.setCodeStatus(200);
+			status.setMsgStatus("Comentario agregado");
 		} catch (Exception e2) {
 			status.setCodeStatus(500);
+			status.setMsgStatus(e2.getMessage());
 		}
 
 		return status;
@@ -108,12 +111,9 @@ public class ComentarioServiceImpl implements ComentarioService {
 			if (cm.get().getActivo()) {
 
 				cm.get().setDescripcion(comentario.getDescripcion());
-				cm.get().setFechaFin(comentario.getFechaFin());
 				cm.get().setFechaModifica(LocalDateTime.now());
-				cm.get().setFlAprobacion(comentario.getFlAprobacion());
-				cm.get().setFlagReaccion(comentario.getFlagReaccion());
+				cm.get().setFlagAprobacion(comentario.getFlagAprobacion());
 				cm.get().setPublicacion(comentario.getPublicacion());
-				cm.get().setReacciones(comentario.getReacciones());
 				cm.get().setUsuarioModifica(comentario.getUsuarioModifica());
 
 				comentarioDao.save(cm.get());
@@ -155,17 +155,20 @@ public class ComentarioServiceImpl implements ComentarioService {
 	@Override
 	public ResponseStatus delete(Long idComentario) {
 		ResponseStatus status = new ResponseStatus();
-		comentarioDao.deleteById(idComentario);
 
 		Optional<Comentario> cm = comentarioDao.findById(idComentario);
-
-		if (cm.isPresent()) {
-			cm.get().setActivo(false);
-			comentarioDao.save(cm.get());
+		try {
+			if (cm.isPresent()) {
+				cm.get().setActivo(false);
+				comentarioDao.save(cm.get());
+			}
+			status.setCodeStatus(200);
+			status.setMsgStatus("Comentario Eliminado");
+		} catch (Exception e) {
+			status.setCodeStatus(500);
+			status.setMsgStatus(e.getMessage());
 		}
-
-		status.setCodeStatus(200);
-
+		
 		return status;
 
 	}
@@ -174,6 +177,57 @@ public class ComentarioServiceImpl implements ComentarioService {
 	public List<Comentario> listByActivo() {
 		return comentarioDao.listByActivo(true);
 		// return null;
+	}
+
+	@Override
+	public ResponseStatus updateOcultarComentario(OcultarComentario ocultarComentario) {
+		// TODO Auto-generated method stub
+		
+		ResponseStatus status = new ResponseStatus();
+
+		Optional<Comentario> com = comentarioDao.findById(ocultarComentario.getComentarioId());
+
+		if (com.isPresent()) {
+
+			if (com.get().getActivo()) {
+
+				OcultarComentario oc = new OcultarComentario();
+				oc.setComentario(com.get());
+				oc.setFechaCrea(LocalDateTime.now());
+				oc.setIdUsuario(ocultarComentario.getIdUsuario());
+				oc.setUsuarioCrea(ocultarComentario.getIdUsuario());
+
+				ocultarComentarioDao.save(oc);
+
+				status.setCodeStatus(200);
+				status.setMsgStatus("Comentario actualizad");
+			} else {
+				status.setCodeStatus(200);
+				status.setMsgStatus("No existe el comentario");
+			}
+
+		} else {
+			status.setCodeStatus(200);
+			status.setMsgStatus("No existe la comentario");
+		}
+
+		return status;
+	}
+
+	@Override
+	public ResponseStatus deleteOcultarComentario(Long idOcultarComentario) {
+		ResponseStatus status = new ResponseStatus();
+
+		try {
+			ocultarComentarioDao.deleteById(idOcultarComentario);
+			status.setCodeStatus(200);
+			status.setMsgStatus("Ocultar comentario eliminado");
+		} catch (Exception e) {
+			status.setCodeStatus(500);
+			status.setMsgStatus(e.getMessage());
+		}
+		// TODO Auto-generated method stub
+		return status;
 	}
 
 }

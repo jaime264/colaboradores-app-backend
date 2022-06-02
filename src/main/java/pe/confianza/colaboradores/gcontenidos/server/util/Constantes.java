@@ -43,4 +43,10 @@ public class Constantes {
 		public static final String INACTIVO = "I";
 	}
 	
+	public class estadoPublicacion{		
+		public final Integer RECHAZADO = 0;
+		public final Integer ACEPTADO = 1;
+		public final Integer OBSERVADO = 2;
+	}
+	
 }

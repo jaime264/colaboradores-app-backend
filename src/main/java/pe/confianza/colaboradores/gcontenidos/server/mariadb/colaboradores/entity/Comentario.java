@@ -36,22 +36,7 @@ public class Comentario extends EntidadAuditoria  {
 	private String descripcion;
 	
 	@Column(nullable = true)
-	private Boolean flAprobacion;
-	
-	@Column(nullable = true)
-	private LocalDate fecha;
-	
-	@Column(nullable = true)
-	private LocalDate fechaInicio;
-	
-	@Column(nullable = true)
-	private LocalDate fechaFin;
-	
-	@Column(nullable = true)
-	private Boolean flagReaccion;
-	
-	@Column(nullable = true)
-	private Integer reacciones;
+	private Boolean flagAprobacion;
 	
 	@Column(nullable = true)
 	private Boolean activo;
@@ -61,6 +46,9 @@ public class Comentario extends EntidadAuditoria  {
 	
 	@OneToMany(mappedBy = "comentario", fetch = FetchType.LAZY)
 	private List<Video> videos;
+	
+	@OneToMany(mappedBy = "comentario", fetch = FetchType.LAZY)
+	private List<OcultarComentario> comentariosOcultos;
 
 	@Column(nullable = true)
 	private Long idUsuario;
@@ -75,6 +63,22 @@ public class Comentario extends EntidadAuditoria  {
 	@JsonInclude
 	@Transient
 	private String nombre;	
+
+	public List<OcultarComentario> getComentariosOcultos() {
+		return comentariosOcultos;
+	}
+
+	public void setComentariosOcultos(List<OcultarComentario> comentariosOcultos) {
+		this.comentariosOcultos = comentariosOcultos;
+	}
+
+	public Boolean getFlagAprobacion() {
+		return flagAprobacion;
+	}
+
+	public void setFlagAprobacion(Boolean flagAprobacion) {
+		this.flagAprobacion = flagAprobacion;
+	}
 
 	public String getSexo() {
 		return sexo;
@@ -100,14 +104,6 @@ public class Comentario extends EntidadAuditoria  {
 		this.publicacionId = publicacionId;
 	}
 
-	public Boolean getFlagReaccion() {
-		return flagReaccion;
-	}
-
-	public void setFlagReaccion(Boolean flagReaccion) {
-		this.flagReaccion = flagReaccion;
-	}
-
 	public long getId() {
 		return id;
 	}
@@ -122,46 +118,6 @@ public class Comentario extends EntidadAuditoria  {
 
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
-	}
-
-	public Boolean getFlAprobacion() {
-		return flAprobacion;
-	}
-
-	public void setFlAprobacion(Boolean flAprobacion) {
-		this.flAprobacion = flAprobacion;
-	}
-
-	public LocalDate getFecha() {
-		return fecha;
-	}
-
-	public void setFecha(LocalDate fecha) {
-		this.fecha = fecha;
-	}
-
-	public LocalDate getFechaInicio() {
-		return fechaInicio;
-	}
-
-	public void setFechaInicio(LocalDate fechaInicio) {
-		this.fechaInicio = fechaInicio;
-	}
-
-	public LocalDate getFechaFin() {
-		return fechaFin;
-	}
-
-	public void setFechaFin(LocalDate fechaFin) {
-		this.fechaFin = fechaFin;
-	}
-
-	public Integer getReacciones() {
-		return reacciones;
-	}
-
-	public void setReacciones(Integer reacciones) {
-		this.reacciones = reacciones;
 	}
 
 	public List<Imagen> getImagenes() {

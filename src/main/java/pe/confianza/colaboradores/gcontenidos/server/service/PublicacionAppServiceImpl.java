@@ -51,7 +51,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 	@Override
 	public ResponseStatus add(Publicacion publicacion) {
-
+		
 		ResponseStatus status = new ResponseStatus();
 		try {
 
@@ -139,10 +139,18 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 		Optional<Publicacion> pub = publicacionAppDao.findById(idPublicacion);
 
-		if (pub.isPresent()) {
-			pub.get().setActivo(false);
-			publicacionAppDao.save(pub.get());
+		try {
+			if (pub.isPresent()) {
+				pub.get().setActivo(false);
+				publicacionAppDao.save(pub.get());
+			}
+			status.setCodeStatus(200);
+			status.setMsgStatus("Publicacion eliminada");
+		} catch (Exception e) {
+			status.setCodeStatus(500);
+			status.setMsgStatus(e.getMessage());
 		}
+		
 
 		status.setCodeStatus(200);
 
@@ -239,7 +247,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 				Reaccion reac = new Reaccion();
 				reac.setPublicacion(pub.get());
-				reac.setFechaCrea(LocalDate.now());
+				reac.setFechaCrea(LocalDateTime.now());
 				reac.setIdUsuario(reaccion.getIdUsuario());
 				reac.setUsuarioCrea(reaccion.getIdUsuario());
 
@@ -259,6 +267,24 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 		return status;
 	}
+	
+	@Override
+	public ResponseStatus deleteReaccion(Long idReaccion) {
+		ResponseStatus status = new ResponseStatus();
+
+		try {
+			reaccionDao.deleteById(idReaccion);
+			status.setCodeStatus(200);
+			status.setMsgStatus("reaccion eliminada");
+		} catch (Exception e) {
+			status.setCodeStatus(200);
+			status.setMsgStatus(e.getMessage());
+		}
+		
+		return status;
+	}
+	
+	
 
 	public void guardarImg(Publicacion publicacion, Optional<Publicacion> pub) {
 
@@ -354,5 +380,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			}
 		}
 	}
+
+	
 
 }

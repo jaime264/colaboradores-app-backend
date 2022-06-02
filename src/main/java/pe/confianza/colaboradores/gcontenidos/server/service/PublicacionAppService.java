@@ -27,4 +27,5 @@ public interface PublicacionAppService {
 	
 	public ResponseStatus updateReaccion(Reaccion reaccion);
 
+	public ResponseStatus deleteReaccion(Long idReaccion);
 }

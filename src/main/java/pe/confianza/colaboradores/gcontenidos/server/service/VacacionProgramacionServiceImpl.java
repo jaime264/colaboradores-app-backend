@@ -1,6 +1,5 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,10 +118,13 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	@Transactional
 	public void aprobarVacacionPeriodos(List<VacacionPeriodo> vacacionPeriodos) {
 		// TODO Auto-generated method stub
-
-		vacacionPeriodos.forEach(e -> {
-			vacacionProgramacionDao.aprobarVacacionByPeriodo(e.getIdEstado(), e.getIdProgramacion());
-		});
+		try {
+			vacacionPeriodos.forEach(e -> {
+				vacacionProgramacionDao.aprobarVacacionByPeriodo(e.getIdEstado(), e.getIdProgramacion());
+			});
+		} catch (Exception e2) {
+			logger.info(e2.getMessage());
+		}
 
 	}
 

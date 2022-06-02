@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Comentario;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.OcultarComentario;
 import pe.confianza.colaboradores.gcontenidos.server.service.ComentarioService;
 
 @RestController
@@ -66,6 +67,22 @@ public class ComentarioController {
 		
 		ResponseStatus response = comentarioService.delete(idComentario);
 		
+		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
+	}
+	
+	@PostMapping("/comentario/ocultar")
+	public ResponseEntity<?> updateComentarioOcultar(@RequestBody OcultarComentario ocultarComentario) {
+		
+		ResponseStatus response = comentarioService.updateOcultarComentario(ocultarComentario);
+
+		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
+	}
+	
+	@PostMapping("/comentario/delete-ocultar")
+	public ResponseEntity<?> deleteComentarioOcultar(Long idOcultarComentario) {
+		
+		ResponseStatus response = comentarioService.deleteOcultarComentario(idOcultarComentario);
+
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
 }
