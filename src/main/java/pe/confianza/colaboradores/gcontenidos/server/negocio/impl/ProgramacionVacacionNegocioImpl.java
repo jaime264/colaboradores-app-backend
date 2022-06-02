@@ -77,6 +77,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		obtenerPeriodo(empleado, vacacionProgramacion);
 		validarTramoVacaciones(vacacionProgramacion);
 		obtenerOrden(vacacionProgramacion, usuarioOperacion);
+		validarPoliticaBolsa(vacacionProgramacion);
 		
 		vacacionProgramacion = vacacionProgramacionService.registrar(vacacionProgramacion, usuarioOperacion);
 		actualizarPeriodo(empleado,vacacionProgramacion.getPeriodo().getId(),  usuarioOperacion);
@@ -369,8 +370,44 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 
 	@Override
 	public void validarPoliticaBolsa(VacacionProgramacion programacion) {
-		// TODO Auto-generated method stub
+		LOGGER.info("[BEGIN] validarPoliticaBolsa");
+		Empleado empleado = programacion.getPeriodo().getEmpleado();
+		switch (empleado.getPuesto().getClasificacion().trim()) {
+		case "ST": //STAF
+			validarPoliticaBolsa(programacion);
+			break;
+		case "CO": //COMERCIAL
+			validarPoliticaBolsa(programacion);
+			break;
+		default:
+			break;
+		}
+		LOGGER.info("[END] validarPoliticaBolsa");
 		
+	}
+
+	@Override
+	public void validarPoliticaBolsaStaf(VacacionProgramacion programacion) {
+		LOGGER.info("[BEGIN] validarPoliticaBolsa");
+		Empleado empleado = programacion.getPeriodo().getEmpleado();
+		
+		LOGGER.info("[END] validarPoliticaBolsaStaf");
+	}
+
+	@Override
+	public void validarPoliticaBolsaComercial(VacacionProgramacion programacion) {
+		LOGGER.info("[BEGIN] validarPoliticaBolsaComercial");
+		Empleado empleado = programacion.getPeriodo().getEmpleado();
+		
+		LOGGER.info("[END] validarPoliticaBolsaComercial");
+	}
+
+	@Override
+	public void validarPoliticaBolsaRecuperaciones(VacacionProgramacion programacion) {
+		LOGGER.info("[BEGIN] validarPoliticaBolsaRecuperaciones");
+		Empleado empleado = programacion.getPeriodo().getEmpleado();
+		
+		LOGGER.info("[END] validarPoliticaBolsaRecuperaciones");
 	}
 	
 	

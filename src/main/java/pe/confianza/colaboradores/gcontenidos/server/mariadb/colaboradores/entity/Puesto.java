@@ -47,6 +47,9 @@ public class Puesto {
 	
 	@Column(columnDefinition = "TIMESTAMP" )
 	private LocalDateTime fechaActualizacion;
+	
+	@Column(nullable = true)
+	private String clasificacion;
 
 	public long getId() {
 		return id;
@@ -126,6 +129,14 @@ public class Puesto {
 
 	public void setCodigoPuestoSuperior(Long codigoPuestoSuperior) {
 		this.codigoPuestoSuperior = codigoPuestoSuperior;
+	}
+
+	public String getClasificacion() {
+		return clasificacion;
+	}
+
+	public void setClasificacion(String clasificacion) {
+		this.clasificacion = clasificacion;
 	}	
 	
 	
