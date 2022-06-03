@@ -3,6 +3,7 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,8 +65,8 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 		meta.setDiasVencidos(0);
 		List<PeriodoVacacion> periodos = periodoVacacionService.consultar(empleado);
 		LocalDate[] limitePeriodoVencido = Utilitario.rangoPeriodoVencido(empleado.getFechaIngreso());
-		LocalDate[] limitePeriodoTrunco = Utilitario.rangoPeriodoTrunco(empleado.getFechaIngreso());
 		if(limitePeriodoVencido != null) {
+			LOGGER.info("Limite periodo vencido {}", Arrays.toString(limitePeriodoVencido));
 			Optional<PeriodoVacacion> optVencido = periodos.stream().filter(p -> p.getAnio() == limitePeriodoVencido[0].getYear()).findFirst();
 			if(optVencido.isPresent()) {
 				PeriodoVacacion periodo = optVencido.get();
@@ -77,7 +78,9 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 				meta.setDiasVencidos(diasVencidos);
 			}
 		}
+		LocalDate[] limitePeriodoTrunco = Utilitario.rangoPeriodoTrunco(empleado.getFechaIngreso());
 		if(limitePeriodoTrunco != null) {
+			LOGGER.info("Limite periodo trunco {}", Arrays.toString(limitePeriodoTrunco));
 			Optional<PeriodoVacacion> optTrunco = periodos.stream().filter(p -> p.getAnio() == limitePeriodoTrunco[0].getYear()).findFirst();
 			if(optTrunco.isPresent()) {
 				PeriodoVacacion periodo = optTrunco.get();
@@ -86,7 +89,7 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 			}
 		}
 		meta.setMeta(Utilitario.calcularMetaVacaciones(empleado.getFechaIngreso(), limitePeriodoVencido == null ? 0 : meta.getDiasVencidos()));
-		meta = vacacionMetaDao.save(meta);
+		meta = vacacionMetaDao.saveAndFlush(meta);
 		LOGGER.info("[END] consolidarMetaAnual");
 		return meta;
 	}

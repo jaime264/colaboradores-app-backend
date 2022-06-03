@@ -14,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PeriodoVacacionDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VacacionProgramacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 @Service
@@ -26,6 +28,9 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 	
 	@Autowired
 	private PeriodoVacacionDao periodoVacacionDao;
+	
+	@Autowired
+	private VacacionProgramacionDao vacacionProgramacionDao;
 
 	@Override
 	public void actualizarPeriodos(Empleado empleado, String usuarioOperacion) {
@@ -43,21 +48,44 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 			agregarNuevoPeriodo(empleado, anioPeriodoTrunco, numero + 1, usuarioOperacion.trim());
 		}
 		periodos = periodoVacacionDao.findByIdEmpleado(empleado.getId());
-		periodos.forEach(p -> {
-			actualizarPeriodo(empleado, p.getId(), usuarioOperacion.trim());
-		});
+		List<Long> idPeriodos = periodos.stream().map(p -> p.getId()).collect(Collectors.toList());
+		for (Long id : idPeriodos) {
+			consolidarResumenDias(id, usuarioOperacion);
+			actualizarPeriodo(empleado, id, usuarioOperacion);
+		}
 		LOGGER.info("[END] actualizarPeriodos");
+	}
+	
+	@Override
+	public void consolidarResumenDias(long idPeriodo, String usuarioOperacion) {
+		LOGGER.info("[BEGIN] consolidarResumenDias {}", idPeriodo);
+		Optional<PeriodoVacacion> optPeriodo = periodoVacacionDao.findById(idPeriodo);
+		if(optPeriodo.isPresent()) {
+			double diasRegistrados = vacacionProgramacionDao.obtenerSumaDiasPorIdPeriodoYEstado(idPeriodo, EstadoVacacion.REGISTRADO.id);
+			double diasGenerados = vacacionProgramacionDao.obtenerSumaDiasPorIdPeriodoYEstado(idPeriodo, EstadoVacacion.GENERADO.id);
+			double diasAprobados = vacacionProgramacionDao.obtenerSumaDiasPorIdPeriodoYEstado(idPeriodo, EstadoVacacion.APROBADO.id);
+			double diasGozados = vacacionProgramacionDao.obtenerSumaDiasPorIdPeriodoYEstado(idPeriodo, EstadoVacacion.GOZADO.id);
+			PeriodoVacacion periodo = optPeriodo.get();
+			periodo.setDiasRegistradosGozar(diasRegistrados);
+			periodo.setDiasGeneradosGozar(diasGenerados);
+			periodo.setDiasAprobadosGozar(diasAprobados);
+			periodo.setDiasGozados(diasGozados);
+			periodo.setUsuarioModifica(usuarioOperacion.trim());
+			periodo.setFechaModifica(LocalDateTime.now());
+			periodoVacacionDao.saveAndFlush(periodo);
+		}
+		LOGGER.info("[END] consolidarResumenDias");
 	}
 	
 	@Override
 	public void actualizarPeriodo(Empleado empleado, long idPeriodo, String usuarioOperacion) {
 		LOGGER.info("[BEGIN] actualizarPeriodo {}", idPeriodo);
-		periodoVacacionDao.actualizarDias(idPeriodo);
 		LocalDate fechaIngreso = empleado.getFechaIngreso();
 		LocalDate fechaActual = LocalDate.now();
 		Optional<PeriodoVacacion> optPeriodo = periodoVacacionDao.findById(idPeriodo);
 		if(!optPeriodo.isPresent())
 			return;
+		
 		PeriodoVacacion periodo = optPeriodo.get();
 		periodo.setCodigoEmpleado(empleado.getCodigo());
 		
@@ -81,7 +109,7 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 		}
 		periodo.setUsuarioModifica(usuarioOperacion.trim());
 		periodo.setFechaModifica(LocalDateTime.now());
-		periodoVacacionDao.save(periodo);
+		periodoVacacionDao.saveAndFlush(periodo);
 		LOGGER.info("[BEGIN] actualizarPeriodo");
 	}
 
@@ -108,7 +136,7 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 		periodo.setFechaInicioPeriodo(empleado.getFechaIngreso().plusYears(anio - empleado.getFechaIngreso().getYear()));
 		periodo.setFechaFinPeriodo(empleado.getFechaIngreso().plusYears(anio - empleado.getFechaIngreso().getYear() + 1).plusDays(-1));
 		periodo.setFechaLimiteIndemnizacion(empleado.getFechaIngreso().plusYears(anio - empleado.getFechaIngreso().getYear() + 2).plusDays(-1));
-		periodo = periodoVacacionDao.save(periodo);
+		periodo = periodoVacacionDao.saveAndFlush(periodo);
 		LOGGER.info("[END] agregarNuevoPeriodo");
 	}
 	

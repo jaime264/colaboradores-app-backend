@@ -2,7 +2,6 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -50,7 +49,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
 	@Override
 	public Empleado actualizarInformacionEmpleado(String usuarioBT) {
-		LOGGER.info("[BEGIN] actualizarInformacionEmpleado");
+		LOGGER.info("[BEGIN] actualizarInformacionEmpleado {}", usuarioBT);
 		EmpleadoRes empleadoSpring = empleadoApi.getPerfil(usuarioBT);
 		LOGGER.info("Empleado: " + empleadoSpring.toString());
 		if (!usuarioBT.trim().equalsIgnoreCase(empleadoSpring.getUsuarioBT().trim()))
@@ -59,7 +58,6 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		Optional<Agencia> optAgencia = agenciaDao.findOneByCodigo(empleadoSpring.getIdSucursal().trim());
 		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(empleadoSpring.getUsuarioBT().trim());
 		Empleado empleado = EmpleadoMapper.convert(empleadoSpring);
-		;
 		if (optEmpleado.isPresent())
 			empleado.setId(optEmpleado.get().getId());
 		empleado.setPuesto(optPuesto.isPresent() ? optPuesto.get() : null);
@@ -126,10 +124,13 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
 	@Override
 	public Empleado buscarPorUsuarioBT(String usuarioBT) {
+		LOGGER.info("[BEGIN] buscarPorUsuarioBT {}", usuarioBT);
 		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(usuarioBT.trim());
-		if (!optEmpleado.isPresent())
-			return null;
-		return optEmpleado.get();
+		if (!optEmpleado.isPresent()) {
+			return actualizarInformacionEmpleado(usuarioBT);
+		} else {
+			return optEmpleado.get();
+		}
 	}
 
 	@Override

@@ -8,10 +8,18 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "vacacion_periodo")
+@NamedStoredProcedureQuery(name = "PeriodoVacacion.consolidarResumenDias",
+	procedureName = "proc_vacacion_periodo_actualizar_dias", parameters = {
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "periodoId", type = Long.class)
+	}
+		)
 public class PeriodoVacacion extends EntidadAuditoria{
 	
 	@Id

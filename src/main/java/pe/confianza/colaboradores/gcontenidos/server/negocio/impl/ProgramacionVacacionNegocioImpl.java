@@ -33,6 +33,7 @@ import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 import pe.confianza.colaboradores.gcontenidos.server.service.PeriodoVacacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionMetaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
+import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.ParametrosConstants;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
@@ -65,7 +66,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	public ResponseProgramacionVacacion registro(RequestProgramacionVacacion programacion) {
 		LOGGER.info("[BEGIN] registro: {} - {} - {}", new Object[] {programacion.getUsuarioBT(), programacion.getFechaInicio(), programacion.getFechaFin()});
 		validarFechaRegistro(programacion.getFechaInicio());
-		Empleado empleado = empleadoService.actualizarInformacionEmpleado(programacion.getUsuarioBT().trim());
+		Empleado empleado = empleadoService.buscarPorUsuarioBT(programacion.getUsuarioBT().trim());
 		if(empleado == null)
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", new String[] { programacion.getUsuarioBT()}));
 		String usuarioOperacion = programacion.getUsuarioOperacion().trim();
@@ -77,13 +78,17 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		obtenerPeriodo(empleado, vacacionProgramacion);
 		validarTramoVacaciones(vacacionProgramacion);
 		obtenerOrden(vacacionProgramacion, usuarioOperacion);
-		validarPoliticaBolsa(vacacionProgramacion);
+		//validarPoliticaBolsa(vacacionProgramacion);
 		
-		vacacionProgramacion = vacacionProgramacionService.registrar(vacacionProgramacion, usuarioOperacion);
-		actualizarPeriodo(empleado,vacacionProgramacion.getPeriodo().getId(),  usuarioOperacion);
-		vacacionMetaService.consolidarMetaAnual(empleado, LocalDate.now().getYear() + 1, programacion.getUsuarioOperacion());
+		VacacionProgramacion programacionRegistrada = vacacionProgramacionService.registrar(vacacionProgramacion, usuarioOperacion);
+		long idPeriodo = programacionRegistrada.getPeriodo().getId();
+		long idProgramacion = programacionRegistrada.getId();
+		programacionRegistrada = null;
+		actualizarPeriodo(empleado, idPeriodo,  usuarioOperacion);
+		consolidarMetaAnual(empleado, LocalDate.now().getYear() + 1, usuarioOperacion);
+		programacionRegistrada = vacacionProgramacionService.buscarPorId(idProgramacion);
 		LOGGER.info("[END] registroProgramacion");
-		return VacacionProgramacionMapper.convert(vacacionProgramacion);
+		return VacacionProgramacionMapper.convert(programacionRegistrada);
 	}
 	
 	@Override
@@ -102,7 +107,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		long idPeriodo = programacion.getPeriodo().getId();
 		vacacionProgramacionService.eliminar(cancelacion.getIdProgramacion());
 		actualizarPeriodo(empleado, idPeriodo,  cancelacion.getUsuarioOperacion());
-		vacacionMetaService.consolidarMetaAnual(empleado, ahora.getYear() + 1, cancelacion.getUsuarioOperacion().trim());
+		consolidarMetaAnual(empleado, ahora.getYear() + 1, cancelacion.getUsuarioOperacion().trim());
 		LOGGER.info("[END] cancelar");
 	}
 	
@@ -122,7 +127,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			response.add(VacacionProgramacionMapper.convert(programacion));
 		}
 		actualizarPeriodo(empleado, request.getUsuarioOperacion());
-		vacacionMetaService.consolidarMetaAnual(empleado, ahora.getYear() + 1, request.getUsuarioOperacion());
+		consolidarMetaAnual(empleado, ahora.getYear() + 1, request.getUsuarioOperacion());
 		LOGGER.info("[END] generar");
 		return response;
 	}
@@ -212,7 +217,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LocalDate ahora = LocalDate.now();
 		if(fechaInicioVacacion.isBefore(ahora))
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fecha_inicio_error"));
-		validarPeriodoRegistro(fechaInicioVacacion);
+		validarPeriodoRegistro(ahora);
 		LOGGER.info("[END] validarFechaRegistro");
 		
 	}
@@ -364,24 +369,24 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	@Override
 	public void actualizarPeriodo(Empleado empleado, long idPeriodo, String usuarioOperacion) {
 		LOGGER.info("[BEGIN] actualizarPeriodo {}", idPeriodo);
+		periodoVacacionService.consolidarResumenDias(idPeriodo, usuarioOperacion);
 		periodoVacacionService.actualizarPeriodo(empleado, idPeriodo, usuarioOperacion);
 		LOGGER.info("[END] actualizarPeriodo");
+	}
+	
+	@Override
+	public void consolidarMetaAnual(Empleado empleado, int anioMeta, String usuarioOperacion) {
+		LOGGER.info("[BEGIN] consolidarMetaAnual {} - {}", new Object[] {empleado.getUsuarioBT(), anioMeta});
+		vacacionMetaService.consolidarMetaAnual(empleado, anioMeta, usuarioOperacion);
+		LOGGER.info("[END] consolidarMetaAnual");
 	}
 
 	@Override
 	public void validarPoliticaBolsa(VacacionProgramacion programacion) {
 		LOGGER.info("[BEGIN] validarPoliticaBolsa");
 		Empleado empleado = programacion.getPeriodo().getEmpleado();
-		switch (empleado.getPuesto().getClasificacion().trim()) {
-		case "ST": //STAF
-			validarPoliticaBolsa(programacion);
-			break;
-		case "CO": //COMERCIAL
-			validarPoliticaBolsa(programacion);
-			break;
-		default:
-			break;
-		}
+		if(empleado.getPuesto().getClasificacion().equalsIgnoreCase("CO"))
+			validarPoliticaBolsaComercial(programacion);
 		LOGGER.info("[END] validarPoliticaBolsa");
 		
 	}
@@ -398,6 +403,9 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	public void validarPoliticaBolsaComercial(VacacionProgramacion programacion) {
 		LOGGER.info("[BEGIN] validarPoliticaBolsaComercial");
 		Empleado empleado = programacion.getPeriodo().getEmpleado();
+		if(empleado.getPuesto().getDescripcion().contains(Constantes.ASESOR_NEGOCIO_INDIVIDUAL)) {
+			
+		}
 		
 		LOGGER.info("[END] validarPoliticaBolsaComercial");
 	}

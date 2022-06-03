@@ -48,14 +48,14 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	public VacacionProgramacion registrar(VacacionProgramacion programacion, String usuarioOperacion) {
 		programacion.setUsuarioCrea(usuarioOperacion);
 		programacion.setFechaCrea(LocalDateTime.now());
-		return vacacionProgramacionDao.save(programacion);
+		return vacacionProgramacionDao.saveAndFlush(programacion);
 	}
 
 	@Override
 	public VacacionProgramacion actualizar(VacacionProgramacion programacion, String usuarioOperacion) {
 		programacion.setUsuarioModifica(usuarioOperacion);
 		programacion.setFechaModifica(LocalDateTime.now());
-		return vacacionProgramacionDao.save(programacion);
+		return vacacionProgramacionDao.saveAndFlush(programacion);
 	}
 
 	@Override
@@ -147,6 +147,14 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		lstProgramacion = lstProgramacion == null ? new ArrayList<>() : lstProgramacion;
 		logger.info("[END] listarPorPeriodo");
 		return lstProgramacion;
+	}
+
+	@Override
+	public int obtenerSumaDiasPorPeriodoYEstado(long idPeriodo, EstadoVacacion estado) {
+		logger.info("[BEGIN] obtenerSumaDiasPorPeriodoYEstado {} - {}", new Object[] {idPeriodo, EstadoVacacion.REGISTRADO});
+		int diasPorPeriodoEstado = vacacionProgramacionDao.obtenerSumaDiasPorIdPeriodoYEstado(idPeriodo, estado.id);
+		logger.info("[BEGIN] obtenerSumaDiasPorPeriodoYEstado");
+		return diasPorPeriodoEstado;
 	}
 
 }

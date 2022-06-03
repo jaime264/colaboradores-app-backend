@@ -19,6 +19,19 @@ public class Constantes {
 	public static final Locale LOCALE_PER = new Locale("es", "PE");
 	
 	public final static String TIME_ZONE = "America/Bogota";
+	
+	public final static String ASESOR_NEGOCIO_INDIVIDUAL = "ASESOR DE NEGOCIO INCLUSIVO INDIVIDUAL";
+	public final static String ASESOR_NEGOCIO_GRUPAL = "ASESOR DE NEGOCIO INCLUSIVO GRUPAL";
+	public final static String GERENTE_CORREDOR = "GERENTE DE CORREDOR";
+	public final static String ADMINISTRADOR_NEGOCIO = "ADMINISTRADOR DE NEGOCIO";
+	
+	public final static String ASESOR_SERVICIO = "ASESOR DE SERVICIO";
+	public final static String SUPERVISOR_OFICINA = "SUPERVISOR DE OFICINA";
+	public final static String ASESOR_PLATAFORMA = "ASESOR DE PLATAFORMA";
+	
+	public final static String ANALISTA_COBRANZA = "ANALISTA DE COBRANZA";
+	public final static String ANALISTA_RECUPERACIONES = "ANALISTA DE RECUPERACIONES";
+	public final static String RESPONSABLE_DEPARTAMENTO = "RESPONSABLE DE DEPARTAMENTO";
 
 	public class POSICION_EXCEL {
 		public static final int POSICION_CABECERA = 0;

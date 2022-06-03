@@ -30,7 +30,7 @@ public class VacacionesTareas {
 	@Scheduled(cron = "${vacaciones.programacion.actualizacion_periodos}")
 	public void actualizarPeridos() {
 		LOGGER.info("[BEGIN] actualizarEstadoProgramaciones " + LocalDate.now());
-		vacacionesTareasProgramadasService.actualizarPeridos();
+		vacacionesTareasProgramadasService.actualizarPeriodos();
 		LOGGER.info("[END] actualizarEstadoProgramaciones " + LocalDate.now());
 	}
 	

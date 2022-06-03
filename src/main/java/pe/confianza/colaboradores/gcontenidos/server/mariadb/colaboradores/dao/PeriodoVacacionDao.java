@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
@@ -18,8 +19,7 @@ public interface PeriodoVacacionDao extends JpaRepository<PeriodoVacacion, Long>
 	List<PeriodoVacacion> findByIdEmpleado(long idEmpleado);
 	
 	@Modifying
-	@Procedure(procedureName =  "proc_vacacion_periodo_actualizar_dias")
-	void actualizarDias(long idPeriodo);
-	
+	@Procedure(name = "PeriodoVacacion.consolidarResumenDias")
+	void actualizarDias(@Param("periodoId") long periodoId);	
 	
 }

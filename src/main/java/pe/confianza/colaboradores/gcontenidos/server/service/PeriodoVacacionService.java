@@ -10,6 +10,8 @@ public interface PeriodoVacacionService {
 	
 	void actualizarPeriodos(Empleado empleado, String usuarioOPeracion);
 	
+	void consolidarResumenDias(long idPeriodo, String usuarioOPeracion);
+	
 	void actualizarPeriodo(Empleado empleado, long idPeriodo, String usuarioOperacion);
 	
 	void agregarNuevoPeriodo(Empleado empleado, int anio, int numero, String usuarioOperacion);

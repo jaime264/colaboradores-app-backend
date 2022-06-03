@@ -45,7 +45,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 	}
 
 	@Override
-	public void actualizarPeridos() {
+	public void actualizarPeriodos() {
 		LOGGER.info("[BEGIN] actualizarPeridos " + LocalDate.now());
 		List<Empleado> lstEmpleado = empleadoService.listar();
 		for (Empleado empleado : lstEmpleado) {

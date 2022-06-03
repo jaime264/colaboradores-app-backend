@@ -35,4 +35,6 @@ public interface VacacionProgramacionService {
 	
 	List<VacacionProgramacion> listarPorPeriodo(long idPeriodo);
 	
+	int obtenerSumaDiasPorPeriodoYEstado(long idPeriodo, EstadoVacacion estado);
+	
 }

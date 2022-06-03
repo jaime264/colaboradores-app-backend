@@ -47,4 +47,7 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	
 	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.id = ?1 order by vp.orden desc")
 	List<VacacionProgramacion> findByIdPeriodo(long idPeriodo);
+	
+	@Query(value = "SELECT (CASE WHEN SUM(numero_dias) IS NULL THEN 0 ELSE SUM(numero_dias) END) FROM vacacion_programacion WHERE id_periodo = ?1 AND id_estado = ?2", nativeQuery = true)
+	int obtenerSumaDiasPorIdPeriodoYEstado(long idPeriodo, int idEstado);
 }
