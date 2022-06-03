@@ -1,5 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
@@ -37,4 +38,13 @@ public interface VacacionProgramacionService {
 	
 	int obtenerSumaDiasPorPeriodoYEstado(long idPeriodo, EstadoVacacion estado);
 	
+	long contarProgramacionPorUnidadNegocioEmpleado(Long idEmpleado, LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
+	
+	long contarProgramacionPorCorredorEmpleadoPuesto(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
+	
+	long contarProgramacionPorTerritorioEmpleadoPuesto(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
+	
+	long contarProgramacionPorEmpleadoPuesto(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
+	
+	long contarProgramacionPorEmpleadoAgencia(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
 }

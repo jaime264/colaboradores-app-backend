@@ -9,6 +9,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.Id;
@@ -17,6 +21,47 @@ import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 
 @Entity
 @Table(name = "vacacion_programacion")
+@NamedStoredProcedureQueries({
+	@NamedStoredProcedureQuery(name = "VacacionProgramacion.programacionContarPorUnidadNegocio",
+			procedureName = "proc_vacacion_programacion_unidad_negocio", parameters = {
+					@StoredProcedureParameter(mode = ParameterMode.IN, name = "idEmplado", type = Long.class),
+					@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaInicioProgramacion", type = String.class),
+					@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaFinProgramacion", type = String.class),
+					@StoredProcedureParameter(mode = ParameterMode.OUT, name = "cantidad", type = Long.class)
+			}),
+	@NamedStoredProcedureQuery(name = "VacacionProgramacion.programacionContarPorCorredorYPuesto",
+	procedureName = "proc_vacacion_programacion_corredor_puesto", parameters = {
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "idEmplado", type = Long.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "descripcionPuesto", type = String.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaInicioProgramacion", type = String.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaFinProgramacion", type = String.class),
+			@StoredProcedureParameter(mode = ParameterMode.OUT, name = "cantidad", type = Long.class)
+	}),
+	@NamedStoredProcedureQuery(name = "VacacionProgramacion.programacionContarPorTerrirotioYPuesto",
+	procedureName = "proc_vacacion_programacion_territorio_puesto", parameters = {
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "idEmplado", type = Long.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "descripcionPuesto", type = String.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaInicioProgramacion", type = String.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaFinProgramacion", type = String.class),
+			@StoredProcedureParameter(mode = ParameterMode.OUT, name = "cantidad", type = Long.class)
+	}),
+	@NamedStoredProcedureQuery(name = "VacacionProgramacion.programacionContarPorPuesto",
+	procedureName = "proc_vacacion_programacion_puesto", parameters = {
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "idEmplado", type = Long.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "descripcionPuesto", type = String.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaInicioProgramacion", type = String.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaFinProgramacion", type = String.class),
+			@StoredProcedureParameter(mode = ParameterMode.OUT, name = "cantidad", type = Long.class)
+	}),
+	@NamedStoredProcedureQuery(name = "VacacionProgramacion.programacionContarPorAgencia",
+	procedureName = "proc_vacacion_programacion_agencia_puesto", parameters = {
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "idEmplado", type = Long.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "descripcionPuesto", type = String.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaInicioProgramacion", type = String.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaFinProgramacion", type = String.class),
+			@StoredProcedureParameter(mode = ParameterMode.OUT, name = "cantidad", type = Long.class)
+	})
+})
 public class VacacionProgramacion extends EntidadAuditoria implements Serializable{
 	
 	private static final long serialVersionUID = 1L;

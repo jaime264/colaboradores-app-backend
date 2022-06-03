@@ -47,7 +47,7 @@ public interface ProgramacionVacacionNegocio {
 	
 	void validarPoliticaBolsa(VacacionProgramacion programacion);
 	
-	void validarPoliticaBolsaStaf(VacacionProgramacion programacion);
+	void validarPoliticaBolsaOperaciones(VacacionProgramacion programacion);
 	
 	void validarPoliticaBolsaComercial(VacacionProgramacion programacion);
 	

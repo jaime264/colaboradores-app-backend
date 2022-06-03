@@ -31,7 +31,7 @@ public class Constantes {
 	
 	public final static String ANALISTA_COBRANZA = "ANALISTA DE COBRANZA";
 	public final static String ANALISTA_RECUPERACIONES = "ANALISTA DE RECUPERACIONES";
-	public final static String RESPONSABLE_DEPARTAMENTO = "RESPONSABLE DE DEPARTAMENTO";
+	public final static String RESPONSABLE_DEPARTAMENTO_COBRANZA = "RESPONSABLE DE DEPARTAMENTO DE COBRANZA";
 
 	public class POSICION_EXCEL {
 		public static final int POSICION_CABECERA = 0;

@@ -26,6 +26,9 @@ public interface EmpleadoDao extends JpaRepository<Empleado, Long>{
 	
 	@Query(value = "Select * from empleado e where MONTH(e.fecha_nacimiento) = ?1 and DAY (e.fecha_nacimiento) = ?2", nativeQuery = true)
 	public List<Empleado> findfechaNacimientoDeHoy(int mes, int dia);
+	
+	@Query(value = "SELECT COUNT(*) FROM empleado where codigo_unidad_negocio = ?1", nativeQuery = true)
+	int obtenerCantidadEmpleadosPorUnidadNegocio(long unidadNegocio);
 
 
 }

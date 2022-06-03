@@ -16,5 +16,7 @@ public interface EmpleadoService {
 	List<EmplVacPerRes> listEmpleadoByprogramacion(Long codigo);
 	
 	List<Empleado> findfechaNacimientoDeHoy();
+	
+	int obtenerCantidadEmpleadosPorUnidadNegocio(long codigoUnidadNegocio);
 
 }

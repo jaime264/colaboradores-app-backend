@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -24,13 +25,17 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseResumenVacacio
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.VacacionProgramacionMapper;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Agencia;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Corredor;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.UnidadNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionMeta;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 import pe.confianza.colaboradores.gcontenidos.server.service.PeriodoVacacionService;
+import pe.confianza.colaboradores.gcontenidos.server.service.UnidadNegocioService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionMetaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
@@ -58,6 +63,9 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	
 	@Autowired
 	private VacacionMetaService vacacionMetaService;
+	
+	@Autowired
+	private UnidadNegocioService unidadNegocioService;
 	
 	@Autowired
 	private MessageSource messageSource;
@@ -387,26 +395,75 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		Empleado empleado = programacion.getPeriodo().getEmpleado();
 		if(empleado.getPuesto().getClasificacion().equalsIgnoreCase("CO"))
 			validarPoliticaBolsaComercial(programacion);
+		if(empleado.getPuesto().getClasificacion().equalsIgnoreCase("ST")) {
+			validarPoliticaBolsaOperaciones(programacion);
+			validarPoliticaBolsaRecuperaciones(programacion);
+		}
 		LOGGER.info("[END] validarPoliticaBolsa");
 		
 	}
 
 	@Override
-	public void validarPoliticaBolsaStaf(VacacionProgramacion programacion) {
-		LOGGER.info("[BEGIN] validarPoliticaBolsa");
+	public void validarPoliticaBolsaOperaciones(VacacionProgramacion programacion) {
+		LOGGER.info("[BEGIN] validarPoliticaBolsaOperaciones");
 		Empleado empleado = programacion.getPeriodo().getEmpleado();
-		
-		LOGGER.info("[END] validarPoliticaBolsaStaf");
+		String puesto = empleado.getPuesto().getDescripcion().trim();
+		Agencia agencia = empleado.getAgencia();
+		int limite = 1;
+		if(puesto.contains(Constantes.ASESOR_SERVICIO) || puesto.contains(Constantes.ASESOR_PLATAFORMA) || puesto.contains(Constantes.SUPERVISOR_OFICINA)) {
+			long cantidadProgramacionesAsesorServicio = vacacionProgramacionService.contarProgramacionPorEmpleadoAgencia(empleado.getId(), Constantes.ASESOR_SERVICIO, programacion.getFechaInicio(), programacion.getFechaFin());
+			long cantidadProgramacionesAsesorPlataforma = vacacionProgramacionService.contarProgramacionPorEmpleadoAgencia(empleado.getId(), Constantes.ASESOR_PLATAFORMA, programacion.getFechaInicio(), programacion.getFechaFin());
+			long cantidadProgramacionesSupervidorOficina = vacacionProgramacionService.contarProgramacionPorEmpleadoAgencia(empleado.getId(), Constantes.SUPERVISOR_OFICINA, programacion.getFechaInicio(), programacion.getFechaFin());
+			long cantidadProgramaciones  = cantidadProgramacionesAsesorServicio + cantidadProgramacionesAsesorPlataforma + cantidadProgramacionesSupervidorOficina;
+			cantidadProgramaciones++;
+			if(cantidadProgramaciones > limite)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.bolsa.operaciones.agencia.limite_error", limite +"")) ;
+		}
+		if(puesto.contains(Constantes.ASESOR_PLATAFORMA)) {
+					
+		}
+		if(puesto.contains(Constantes.SUPERVISOR_OFICINA)) {
+			
+		}
+		LOGGER.info("[END] validarPoliticaBolsaOperaciones");
 	}
 
 	@Override
 	public void validarPoliticaBolsaComercial(VacacionProgramacion programacion) {
 		LOGGER.info("[BEGIN] validarPoliticaBolsaComercial");
 		Empleado empleado = programacion.getPeriodo().getEmpleado();
-		if(empleado.getPuesto().getDescripcion().contains(Constantes.ASESOR_NEGOCIO_INDIVIDUAL)) {
-			
+		String puesto = empleado.getPuesto().getDescripcion().trim();
+		if(puesto.contains(Constantes.ASESOR_NEGOCIO_INDIVIDUAL)) {
+			if(empleado.getCodigoUnidadNegocio() == null)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.sin_unidad_negocio", empleado.getUsuarioBT()));
+			UnidadNegocio unidadNegocio = unidadNegocioService.obtenerUnidadNegocioPorCodigo(empleado.getCodigoUnidadNegocio());
+			if(unidadNegocio == null)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.unidad_negocio_error", empleado.getCodigoUnidadNegocio() + ""));
+			int totalEmpleados = empleadoService.obtenerCantidadEmpleadosPorUnidadNegocio(empleado.getCodigoUnidadNegocio());
+			double limite = totalEmpleados * 0.12;
+			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorUnidadNegocioEmpleado(empleado.getId(), programacion.getFechaInicio(), programacion.getFechaFin());
+			cantidadProgramaciones ++;
+			if(cantidadProgramaciones > limite)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.bolsa.comercial.asesor_negocio_individual.limite_error", 12 +"")) ;
 		}
-		
+		if(puesto.contains(Constantes.ASESOR_NEGOCIO_GRUPAL)) {
+			if(programacion.getFechaInicio().getMonthValue() == 12 || programacion.getFechaFin().getMonthValue() == 12)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.bolsa.comercial.asesor_negocio_grupal.diciembre_error"));
+		}
+		if(puesto.contains(Constantes.ADMINISTRADOR_NEGOCIO)) {
+			int limite = 1;
+			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorCorredorEmpleadoPuesto(empleado.getId(), Constantes.ADMINISTRADOR_NEGOCIO, programacion.getFechaInicio(), programacion.getFechaFin());
+			cantidadProgramaciones ++;
+			if(cantidadProgramaciones > limite)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.bolsa.comercial.administrador_negocio.limite_error")) ;
+		}
+		if(puesto.contains(Constantes.GERENTE_CORREDOR)) {
+			int limite = 1;
+			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorTerritorioEmpleadoPuesto(empleado.getId(), Constantes.GERENTE_CORREDOR, programacion.getFechaInicio(), programacion.getFechaFin());
+			cantidadProgramaciones ++;
+			if(cantidadProgramaciones > limite)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.bolsa.comercial.administrador_negocio.limite_error")) ;
+		}
 		LOGGER.info("[END] validarPoliticaBolsaComercial");
 	}
 
@@ -414,7 +471,28 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	public void validarPoliticaBolsaRecuperaciones(VacacionProgramacion programacion) {
 		LOGGER.info("[BEGIN] validarPoliticaBolsaRecuperaciones");
 		Empleado empleado = programacion.getPeriodo().getEmpleado();
-		
+		String puesto = empleado.getPuesto().getDescripcion().trim();
+		if(puesto.contains(Constantes.ANALISTA_COBRANZA)) {
+			int limite = 1;
+			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorCorredorEmpleadoPuesto(empleado.getId(), Constantes.ANALISTA_COBRANZA, programacion.getFechaInicio(), programacion.getFechaFin());
+			cantidadProgramaciones ++;
+			if(cantidadProgramaciones > limite)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.bolsa.recuperaciones.analista_cobranza.limite_error")) ;
+		}
+		if(puesto.contains(Constantes.ANALISTA_RECUPERACIONES)) {
+			int limite = 1;
+			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorTerritorioEmpleadoPuesto(empleado.getId(), Constantes.ANALISTA_RECUPERACIONES, programacion.getFechaInicio(), programacion.getFechaFin());
+			cantidadProgramaciones ++;
+			if(cantidadProgramaciones > limite)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.bolsa.recuperaciones.analista_recuperaciones.limite_error")) ;
+		}
+		if(puesto.contains(Constantes.RESPONSABLE_DEPARTAMENTO_COBRANZA)) {
+			int limite = 1;
+			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorTerritorioEmpleadoPuesto(empleado.getId(), Constantes.RESPONSABLE_DEPARTAMENTO_COBRANZA, programacion.getFechaInicio(), programacion.getFechaFin());
+			cantidadProgramaciones ++;
+			if(cantidadProgramaciones > limite)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.bolsa.recuperaciones.analista_recuperaciones.limite_error")) ;
+		}
 		LOGGER.info("[END] validarPoliticaBolsaRecuperaciones");
 	}
 	

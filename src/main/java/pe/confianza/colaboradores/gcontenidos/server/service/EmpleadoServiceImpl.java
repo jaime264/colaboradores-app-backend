@@ -152,4 +152,9 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		return listEmp;
 	}
 
+	@Override
+	public int obtenerCantidadEmpleadosPorUnidadNegocio(long codigoUnidadNegocio) {
+		return empleadoDao.obtenerCantidadEmpleadosPorUnidadNegocio(codigoUnidadNegocio);
+	}
+
 }
