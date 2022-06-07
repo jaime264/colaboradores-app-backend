@@ -218,6 +218,11 @@ public class PeriodoVacacion extends EntidadAuditoria{
 		this.fechaLimiteIndemnizacion = fechaLimiteIndemnizacion;
 	}
 
+	@Override
+	public String toString() {
+		return "PeriodoVacacion [id=" + id + ", anio=" + anio + ", codigoEmpleado=" + codigoEmpleado + "]";
+	}
+
 	
 	
 	

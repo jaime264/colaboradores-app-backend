@@ -11,4 +11,6 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 public interface AgenciaDao extends JpaRepository<Agencia, Long> {
 
 	Optional<Agencia> findOneByCodigo(String codigo);
+	
+	
 }

@@ -18,6 +18,7 @@ import javax.persistence.Transient;
 import javax.persistence.Id;
 
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 @Entity
 @Table(name = "vacacion_programacion")
@@ -206,6 +207,19 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 	public void setNumeroDomingos(int numeroDomingos) {
 		this.numeroDomingos = numeroDomingos;
 	}
+	
+	public void calcularDias() {
+		this.numeroDias = Utilitario.obtenerDiferenciaDias(this.fechaInicio, this.fechaFin);
+		this.numeroSabados = Utilitario.obtenerCantidadSabados(this.fechaInicio, this.fechaFin);
+		this.numeroDomingos = Utilitario.obtenerCantidadDomingos(this.fechaInicio, this.fechaFin);
+	}
+
+	@Override
+	public String toString() {
+		return "VacacionProgramacion [id=" + id + ", fechaInicio=" + fechaInicio + ", fechaFin=" + fechaFin
+				+ ", numeroDias=" + numeroDias + ", idEstado=" + idEstado + ", periodo=" + periodo + "]";
+	}
+	
 	
 	
 }

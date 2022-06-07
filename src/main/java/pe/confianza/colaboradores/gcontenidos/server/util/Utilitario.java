@@ -280,6 +280,15 @@ public class Utilitario {
 		}
 	}
 	
+	public static LocalDate agregarDias(LocalDate fecha, int numeroDias) {
+		return fecha.plusDays(numeroDias - 1);
+	}
+	
+	public static LocalDate quitarDias(LocalDate fecha, int numeroDias) {
+		numeroDias = (numeroDias - 1) * -1;
+		return fecha.plusDays(numeroDias);
+	}
+	
 	private static Calendar getCalendarWithoutTime(Date date) {
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTime(date);

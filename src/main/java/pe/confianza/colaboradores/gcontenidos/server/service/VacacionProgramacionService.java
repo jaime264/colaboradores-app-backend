@@ -12,6 +12,8 @@ public interface VacacionProgramacionService {
 	
 	List<VacacionProgramacion> listarPorPeriodoYEstado(PeriodoVacacion periodo, EstadoVacacion estado);
 	
+	List<VacacionProgramacion> registrar(List<VacacionProgramacion> programaciones, String usuarioOperacion);
+	
 	VacacionProgramacion registrar(VacacionProgramacion programacion, String usuarioOperacion);
 	
 	VacacionProgramacion actualizar(VacacionProgramacion programacion, String usuarioOperacion);

@@ -45,6 +45,15 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		logger.info("[END] listarPorPeriodoYEstado");
 		return programaciones;
 	}
+	
+	@Override
+	public List<VacacionProgramacion> registrar(List<VacacionProgramacion> programaciones, String usuarioOperacion) {
+		programaciones.forEach(programacion -> {
+			programacion.setUsuarioCrea(usuarioOperacion);
+			programacion.setFechaCrea(LocalDateTime.now());
+		});
+		return vacacionProgramacionDao.saveAll(programaciones);
+	}
 
 	@Override
 	public VacacionProgramacion registrar(VacacionProgramacion programacion, String usuarioOperacion) {

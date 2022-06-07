@@ -46,7 +46,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 		ResponseStatus response = new ResponseStatus();
 		response.setMsgStatus(ex.getMessage());
 		response.setCodeStatus(Constantes.COD_ERR);
-		log.info("ERROR INTERNAL_SERVER_ERROR: {}", ex.getMessage());
+		log.error("ERROR INTERNAL_SERVER_ERROR {}", ex.getMessage(), ex);
 		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
