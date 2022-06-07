@@ -1,6 +1,8 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,19 +45,28 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		logger.info("[END] listarPorPeriodoYEstado");
 		return programaciones;
 	}
+	
+	@Override
+	public List<VacacionProgramacion> registrar(List<VacacionProgramacion> programaciones, String usuarioOperacion) {
+		programaciones.forEach(programacion -> {
+			programacion.setUsuarioCrea(usuarioOperacion);
+			programacion.setFechaCrea(LocalDateTime.now());
+		});
+		return vacacionProgramacionDao.saveAll(programaciones);
+	}
 
 	@Override
 	public VacacionProgramacion registrar(VacacionProgramacion programacion, String usuarioOperacion) {
 		programacion.setUsuarioCrea(usuarioOperacion);
 		programacion.setFechaCrea(LocalDateTime.now());
-		return vacacionProgramacionDao.save(programacion);
+		return vacacionProgramacionDao.saveAndFlush(programacion);
 	}
 
 	@Override
 	public VacacionProgramacion actualizar(VacacionProgramacion programacion, String usuarioOperacion) {
 		programacion.setUsuarioModifica(usuarioOperacion);
 		programacion.setFechaModifica(LocalDateTime.now());
-		return vacacionProgramacionDao.save(programacion);
+		return vacacionProgramacionDao.saveAndFlush(programacion);
 	}
 
 	@Override
@@ -147,6 +158,64 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		lstProgramacion = lstProgramacion == null ? new ArrayList<>() : lstProgramacion;
 		logger.info("[END] listarPorPeriodo");
 		return lstProgramacion;
+	}
+
+	@Override
+	public int obtenerSumaDiasPorPeriodoYEstado(long idPeriodo, EstadoVacacion estado) {
+		logger.info("[BEGIN] obtenerSumaDiasPorPeriodoYEstado {} - {}", new Object[] {idPeriodo, EstadoVacacion.REGISTRADO});
+		int diasPorPeriodoEstado = vacacionProgramacionDao.obtenerSumaDiasPorIdPeriodoYEstado(idPeriodo, estado.id);
+		logger.info("[BEGIN] obtenerSumaDiasPorPeriodoYEstado");
+		return diasPorPeriodoEstado;
+	}
+
+	@Override
+	public long contarProgramacionPorUnidadNegocioEmpleado(Long idEmpleado, LocalDate fechaIncioProgramacion,
+			LocalDate fechaFinProgramacion) {
+		logger.info("[BEGIN] contarProgramacionPorUnidadNegocioEmpleado {}", idEmpleado);
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		String strFechaInicio = fechaIncioProgramacion.format(formatter);
+		String strFechaFin = fechaFinProgramacion.format(formatter);
+		return vacacionProgramacionDao.contarProgramacionPorUnidadNegocioEmpleado(idEmpleado, strFechaInicio, strFechaFin);
+	}
+
+	@Override
+	public long contarProgramacionPorCorredorEmpleadoPuesto(long idEmpleado, String descripcionPuesto,
+			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion) {
+		logger.info("[BEGIN] contarProgramacionPorCorredorEmpleadoPuesto {} - {}", new Object[] {idEmpleado, descripcionPuesto});
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		String strFechaInicio = fechaIncioProgramacion.format(formatter);
+		String strFechaFin = fechaFinProgramacion.format(formatter);
+		return vacacionProgramacionDao.contarProgramacionPorCorredorEmpleadoPuesto(idEmpleado, descripcionPuesto, strFechaInicio, strFechaFin);
+	}
+
+	@Override
+	public long contarProgramacionPorTerritorioEmpleadoPuesto(long idEmpleado, String descripcionPuesto,
+			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion) {
+		logger.info("[BEGIN] contarProgramacionPorTerritorioEmpleadoPuesto {} - {}", new Object[] {idEmpleado, descripcionPuesto});
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		String strFechaInicio = fechaIncioProgramacion.format(formatter);
+		String strFechaFin = fechaFinProgramacion.format(formatter);
+		return vacacionProgramacionDao.contarProgramacionPorTerritorioEmpleadoPuesto(idEmpleado, descripcionPuesto, strFechaInicio, strFechaFin);
+	}
+
+	@Override
+	public long contarProgramacionPorEmpleadoPuesto(long idEmpleado, String descripcionPuesto,
+			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion) {
+		logger.info("[BEGIN] contarProgramacionPorEmpleadoPuesto {} - {}", new Object[] {idEmpleado, descripcionPuesto});
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		String strFechaInicio = fechaIncioProgramacion.format(formatter);
+		String strFechaFin = fechaFinProgramacion.format(formatter);
+		return vacacionProgramacionDao.contarProgramacionPorEmpleadoPuesto(idEmpleado, descripcionPuesto, strFechaInicio, strFechaFin);
+	}
+
+	@Override
+	public long contarProgramacionPorEmpleadoAgencia(long idEmpleado, String descripcionPuesto,
+			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion) {
+		logger.info("[BEGIN] contarProgramacionPorEmpleadoAgencia {} - {}", new Object[] {idEmpleado, descripcionPuesto});
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		String strFechaInicio = fechaIncioProgramacion.format(formatter);
+		String strFechaFin = fechaFinProgramacion.format(formatter);
+		return vacacionProgramacionDao.contarProgramacionPorEmpleadoAgencia(idEmpleado, descripcionPuesto, strFechaInicio, strFechaFin);
 	}
 
 }

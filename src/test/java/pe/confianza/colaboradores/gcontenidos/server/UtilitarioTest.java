@@ -70,5 +70,23 @@ public class UtilitarioTest {
 		System.out.println("Periodo Trunco: " +Arrays.toString(periodoTrunco));
 		System.out.println("Periodo Vencido: " + Arrays.toString(periodoVencido));
 	}
+	
+	@Test
+	public void addDays() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		int diasAgregar = 8;
+		LocalDate fechaIngreso = LocalDate.parse("01/01/2018", formatter);
+		LocalDate fechaAdd = Utilitario.agregarDias(fechaIngreso, diasAgregar);
+		assertEquals(diasAgregar, Utilitario.obtenerDiferenciaDias(fechaIngreso, fechaAdd));
+	}
+	
+	@Test
+	public void lessDays() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		int diasQuitar = 8;
+		LocalDate fechaIngreso = LocalDate.parse("08/01/2018", formatter);
+		LocalDate fechaLess = Utilitario.quitarDias(fechaIngreso, diasQuitar);
+		assertEquals(diasQuitar, Utilitario.obtenerDiferenciaDias(fechaLess, fechaIngreso));
+	}
 
 }

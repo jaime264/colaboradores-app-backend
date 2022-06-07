@@ -7,14 +7,16 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 
 public interface EmpleadoService {
 	
-	public Empleado actualizarInformacionEmpleado(String usuarioBT);
+	Empleado actualizarInformacionEmpleado(String usuarioBT);
 	
-	public List<Empleado> listar();
+	List<Empleado> listar();
 	
-	public Empleado buscarPorUsuarioBT(String usuarioBT);
+	Empleado buscarPorUsuarioBT(String usuarioBT);
 	
-	public List<EmplVacPerRes> listEmpleadoByprogramacion(Long codigo);
+	List<EmplVacPerRes> listEmpleadoByprogramacion(Long codigo);
 	
-	public List<Empleado> findfechaNacimientoDeHoy();
+	List<Empleado> findfechaNacimientoDeHoy();
+	
+	int obtenerCantidadEmpleadosPorUnidadNegocio(long codigoUnidadNegocio);
 
 }

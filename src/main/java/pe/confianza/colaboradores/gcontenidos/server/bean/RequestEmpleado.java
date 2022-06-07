@@ -162,4 +162,11 @@ public class RequestEmpleado implements Serializable{
 		this.logAuditoria = logAuditoria;
 	}
 
+	@Override
+	public String toString() {
+		return "RequestEmpleado [idEmpleado=" + idEmpleado + ", usuarioBT=" + usuarioBT + "]";
+	}
+	
+	
+
 }

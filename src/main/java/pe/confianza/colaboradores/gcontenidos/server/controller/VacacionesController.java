@@ -106,11 +106,11 @@ public class VacacionesController {
 		String jsonData = gson.toJson(programacionRequest);
 		ResponseStatus responseStatus = new ResponseStatus();
 		try {
-			ResponseProgramacionVacacion programacion = programacionVacacionNegocio.registro(programacionRequest);
+			List<ResponseProgramacionVacacion> programaciones = programacionVacacionNegocio.registro(programacionRequest);
 			auditoriaService.createAuditoria("002", "006", Constantes.COD_OK, Constantes.OK, BsonDocument.parse(jsonData));
 			responseStatus.setCodeStatus(Constantes.COD_OK);
 			responseStatus.setMsgStatus(Constantes.OK);
-			responseStatus.setResultObj(programacion);
+			responseStatus.setResultObj(programaciones);
 			return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 		} catch (Exception e) {
 			auditoriaService.createAuditoria("002", "006", Constantes.COD_ERR, "Error al registrar programación de vacaciones: " + e.getMessage(), BsonDocument.parse(jsonData));

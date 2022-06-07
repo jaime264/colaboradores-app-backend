@@ -26,7 +26,7 @@ public class EmpleadoApi {
 	private String urlEmpleado;
 	
 	public EmpleadoRes getPerfil(String usuarioBT) {
-		logger.info("[BEGIN] getPerfil {}", new Object[] {usuarioBT});
+		logger.info("[BEGIN] getPerfil {}", usuarioBT);
 		Map<String, String> requestBody = new HashMap<>();
 		requestBody.put("usuarioBT", usuarioBT.trim());
 		RestTemplate rt = new RestTemplate();

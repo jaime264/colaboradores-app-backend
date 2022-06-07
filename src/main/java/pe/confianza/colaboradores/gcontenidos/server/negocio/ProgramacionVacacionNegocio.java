@@ -15,7 +15,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 
 public interface ProgramacionVacacionNegocio {
 
-	ResponseProgramacionVacacion registro(RequestProgramacionVacacion programacion);
+	List<ResponseProgramacionVacacion> registro(RequestProgramacionVacacion programacion);
 	
 	void cancelar(RequestCancelarProgramacionVacacion cancelacion);
 	
@@ -33,7 +33,7 @@ public interface ProgramacionVacacionNegocio {
 	
 	void validarRangoFechas(VacacionProgramacion programacion);
 	
-	void obtenerPeriodo(Empleado empleado, VacacionProgramacion programacion);
+	List<VacacionProgramacion> obtenerPeriodo(Empleado empleado, VacacionProgramacion programacion);
 	
 	void validarTramoVacaciones(VacacionProgramacion programacion);
 	
@@ -43,7 +43,15 @@ public interface ProgramacionVacacionNegocio {
 	
 	void actualizarPeriodo(Empleado empleado, long idPeriodo, String usuarioOperacion);
 	
+	void consolidarMetaAnual(Empleado empleado, int anioMeta, String usuarioOperacion);
+	
 	void validarPoliticaBolsa(VacacionProgramacion programacion);
+	
+	void validarPoliticaBolsaOperaciones(VacacionProgramacion programacion);
+	
+	void validarPoliticaBolsaComercial(VacacionProgramacion programacion);
+	
+	void validarPoliticaBolsaRecuperaciones(VacacionProgramacion programacion);
 	
 
 }

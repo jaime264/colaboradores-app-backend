@@ -20,6 +20,12 @@ public class ResponseResumenVacacion {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
 	private LocalDate fechaFinLabores;
 	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
+	private LocalDate fechaInicioRegistroProgramacion;
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
+	private LocalDate fechaFinRegistroProgramacion;
+	
 	private ResponseResumenPeriodoVacacion periodoVencido;
 	
 	private ResponseResumenPeriodoVacacion periodoTrunco;
@@ -33,6 +39,8 @@ public class ResponseResumenVacacion {
 	private String cargo;
 	
 	private double meta;
+	
+	private int anio;
 
 	public LocalDate getFechaConsulta() {
 		return fechaConsulta;
@@ -121,6 +129,32 @@ public class ResponseResumenVacacion {
 	public void setFechaCorte(LocalDate fechaCorte) {
 		this.fechaCorte = fechaCorte;
 	}
+
+	public LocalDate getFechaInicioRegistroProgramacion() {
+		return fechaInicioRegistroProgramacion;
+	}
+
+	public void setFechaInicioRegistroProgramacion(LocalDate fechaInicioRegistroProgramacion) {
+		this.fechaInicioRegistroProgramacion = fechaInicioRegistroProgramacion;
+	}
+
+	public LocalDate getFechaFinRegistroProgramacion() {
+		return fechaFinRegistroProgramacion;
+	}
+
+	public void setFechaFinRegistroProgramacion(LocalDate fechaFinRegistroProgramacion) {
+		this.fechaFinRegistroProgramacion = fechaFinRegistroProgramacion;
+	}
+
+	public int getAnio() {
+		return anio;
+	}
+
+	public void setAnio(int anio) {
+		this.anio = anio;
+	}
+	
+	
 	
 
 }
