@@ -58,7 +58,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			publicacion.setFecha(LocalDateTime.now());
 			publicacion.setFechaCrea(LocalDateTime.now());
 			publicacion.setActivo(true);
-			publicacion.setUsuarioCrea(publicacion.getIdUsuario().toString());
+			publicacion.setUsuarioCrea(publicacion.getUsuarioCrea());
 
 			Publicacion pub = publicacionAppDao.save(publicacion);
 
@@ -180,17 +180,17 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 		for (Publicacion p : listP) {
 
-			Optional<Empleado> emp = empleadoDao.findById(p.getIdUsuario());
+			List<Empleado> emp = empleadoDao.findByCodigo(p.getIdUsuario());
 
-			p.setNombre(emp.get().getNombres() + " " + emp.get().getApellidoPaterno() + " "
-					+ emp.get().getApellidoMaterno());
-			p.setSexo(emp.get().getSexo());
+			p.setNombre(emp.get(0).getNombres() + " " + emp.get(0).getApellidoPaterno() + " "
+					+ emp.get(0).getApellidoMaterno());
+			p.setSexo(emp.get(0).getSexo());
 
 			for (Comentario c : p.getComentarios()) {
 				Optional<Empleado> cm = empleadoDao.findById(c.getIdUsuario());
-				c.setNombre(emp.get().getNombres() + " " + emp.get().getApellidoPaterno() + " "
-						+ emp.get().getApellidoMaterno());
-				c.setSexo(emp.get().getSexo());
+				c.setNombre(emp.get(0).getNombres() + " " + emp.get().getApellidoPaterno() + " "
+						+ emp.get(0).getApellidoMaterno());
+				c.setSexo(emp.get(0).getSexo());
 			}
 
 		}
