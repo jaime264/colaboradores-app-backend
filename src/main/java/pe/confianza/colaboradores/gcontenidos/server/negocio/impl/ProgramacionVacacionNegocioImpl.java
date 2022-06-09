@@ -456,10 +456,8 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			if(cantidadProgramaciones > limite)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.bolsa.operaciones.agencia.limite_error", limite +"")) ;
 		}
-		if(puesto.contains(Constantes.ASESOR_PLATAFORMA)) {
-					
-		}
-		if(puesto.contains(Constantes.SUPERVISOR_OFICINA)) {
+		Agencia agencia = empleado.getAgencia();
+		if(agencia.getDescripcion().contains("EOB")) { //AGENCIA TAMBO - TAMBO_PLUS
 			
 		}
 		LOGGER.info("[END] validarPoliticaBolsaOperaciones");

@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -26,6 +27,8 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Puesto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
+import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 
 @Service
 public class EmpleadoServiceImpl implements EmpleadoService {
@@ -46,6 +49,9 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
 	@Autowired
 	private PeriodoVacacionService periodoVacacionService;
+	
+	@Autowired
+	private VacacionMetaService vacacionMetaService;
 
 	@Override
 	public Empleado actualizarInformacionEmpleado(String usuarioBT) {
@@ -62,9 +68,12 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 			empleado.setId(optEmpleado.get().getId());
 		empleado.setPuesto(optPuesto.isPresent() ? optPuesto.get() : null);
 		empleado.setAgencia(optAgencia.isPresent() ? optAgencia.get() : null);
-		empleado.setFechaActualizacion(LocalDateTime.now());
+		empleado.setFechaModifica(LocalDateTime.now());
+		empleado.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
+		empleado.setEstadoMigracion(EstadoMigracion.IMPORTADO.valor);
 		empleado = empleadoDao.save(empleado);
 		periodoVacacionService.actualizarPeriodos(empleado, usuarioBT);
+		vacacionMetaService.consolidarMetaAnual(empleado, LocalDate.now().getYear() + 1 , usuarioBT);
 		LOGGER.info("[END] actualizarInformacionEmpleado");
 		return empleado;
 	}

@@ -1,7 +1,5 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity;
 
-import java.time.LocalDateTime;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "puesto")
-public class Puesto {
+public class Puesto extends EntidadAuditoria{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,9 +42,7 @@ public class Puesto {
 	
 	@Column(nullable = true)
 	private Long codigoPuestoSuperior;
-	
-	@Column(columnDefinition = "TIMESTAMP" )
-	private LocalDateTime fechaActualizacion;
+
 	
 	@Column(nullable = true)
 	private String clasificacion;
@@ -93,14 +89,6 @@ public class Puesto {
 
 	public String getEstado() {
 		return estado;
-	}
-
-	public LocalDateTime getFechaActualizacion() {
-		return fechaActualizacion;
-	}
-
-	public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
 	}
 
 	public void setEstado(String estado) {

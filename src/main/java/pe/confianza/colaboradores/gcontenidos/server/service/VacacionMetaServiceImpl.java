@@ -16,6 +16,8 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.V
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionMeta;
+import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
+import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.util.ParametrosConstants;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
@@ -89,6 +91,8 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 			}
 		}
 		meta.setMeta(Utilitario.calcularMetaVacaciones(empleado.getFechaIngreso(), limitePeriodoVencido == null ? 0 : meta.getDiasVencidos()));
+		meta.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
+		meta.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
 		meta = vacacionMetaDao.saveAndFlush(meta);
 		LOGGER.info("[END] consolidarMetaAnual");
 		return meta;

@@ -207,7 +207,12 @@ public class Utilitario {
 			if(fechaFinPeriodoMensual.isBefore(fechaCorte) || fechaFinPeriodoMensual.equals(fechaCorte)) {
 				derecho += diasPorMes;
 			} else {
-				diferenciaDias = obtenerDiferenciaDias(fechaCorte, fechaFinPeriodoMensual.plusMonths(-1));
+				if(fechaCorte.isBefore(fechaFinPeriodoMensual.plusMonths(-1))) {
+					diferenciaDias = obtenerDiferenciaDias(fechaCorte, fechaFinPeriodoMensual.plusMonths(-1));
+				} else {
+					diferenciaDias = obtenerDiferenciaDias(fechaFinPeriodoMensual.plusMonths(-1), fechaCorte);
+				}
+				System.out.println("diferenciaDias " + diferenciaDias);
 				derecho += diferenciaDias  * diasPorMes / 30;
 			}	
 		}

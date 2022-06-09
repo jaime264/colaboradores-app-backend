@@ -11,7 +11,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 @Repository
 public interface VacacionMetaDao extends JpaRepository<VacacionMeta, Long> {
 	
-	@Query("SELECT vm FROM VacacionMeta vm WHERE vm.anio = ?1 AND vm.empleado.id = ?2")
+	@Query("SELECT vm FROM VacacionMeta vm WHERE vm.anio = ?1 AND vm.empleado.id = ?2 AND vm.estadoRegistro = 'A'")
 	List<VacacionMeta> findByAnioAndIdEmpleado(int anio, long idEmpleado);
 
 }

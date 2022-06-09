@@ -1,7 +1,5 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity;
 
-import java.time.LocalDateTime;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "agencia")
-public class Agencia {
+public class Agencia extends EntidadAuditoria {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,8 +36,6 @@ public class Agencia {
 	@Column(nullable = true)
 	private String codigoCorredor;
 	
-	@Column(columnDefinition = "TIMESTAMP" )
-	private LocalDateTime fechaActualizacion;
 
 	public long getId() {
 		return id;
@@ -79,14 +75,6 @@ public class Agencia {
 
 	public void setCorredor(Corredor corredor) {
 		this.corredor = corredor;
-	}
-
-	public LocalDateTime getFechaActualizacion() {
-		return fechaActualizacion;
-	}
-
-	public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
 	}
 
 	public String getCodigoCorredor() {

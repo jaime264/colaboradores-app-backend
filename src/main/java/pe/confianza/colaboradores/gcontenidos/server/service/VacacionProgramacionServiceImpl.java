@@ -19,6 +19,8 @@ import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundExce
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VacacionProgramacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
+import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 
 @Service
@@ -51,6 +53,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		programaciones.forEach(programacion -> {
 			programacion.setUsuarioCrea(usuarioOperacion);
 			programacion.setFechaCrea(LocalDateTime.now());
+			programacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
+			programacion.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
 		});
 		return vacacionProgramacionDao.saveAll(programaciones);
 	}
@@ -59,6 +63,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	public VacacionProgramacion registrar(VacacionProgramacion programacion, String usuarioOperacion) {
 		programacion.setUsuarioCrea(usuarioOperacion);
 		programacion.setFechaCrea(LocalDateTime.now());
+		programacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
+		programacion.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
 		return vacacionProgramacionDao.saveAndFlush(programacion);
 	}
 

@@ -26,6 +26,12 @@ public class EntidadAuditoria {
 	
 	@Column(nullable = true, columnDefinition = "TIMESTAMP")
 	private LocalDateTime fechaModifica;
+	
+	@Column(nullable = true, length = 1)
+	private String estadoRegistro;
+	
+	@Column(nullable = true, length = 1)
+	private String estadoMigracion;
 
 
 	public String getUsuarioCrea() {
@@ -68,8 +74,24 @@ public class EntidadAuditoria {
 	}
 
 
+	public String getEstadoRegistro() {
+		return estadoRegistro;
+	}
 
-	
+
+	public void setEstadoRegistro(String estadoRegistro) {
+		this.estadoRegistro = estadoRegistro;
+	}
+
+
+	public String getEstadoMigracion() {
+		return estadoMigracion;
+	}
+
+
+	public void setEstadoMigracion(String estadoMigracion) {
+		this.estadoMigracion = estadoMigracion;
+	}
 	
 
 }

@@ -16,16 +16,16 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	
 	//List<VacacionProgramacion> findByEmpleado(Empleado empleado);
 	
-	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.empleado.usuarioBT = ?1")
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.empleado.usuarioBT = ?1 AND vp.estadoRegistro = 'A'")
 	List<VacacionProgramacion> findByUsuarioBT(String usuarioBT);
 	
-	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.empleado.usuarioBT = ?1 AND vp.idEstado = ?2 ")
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.empleado.usuarioBT = ?1 AND vp.idEstado = ?2 AND vp.estadoRegistro = 'A'")
 	List<VacacionProgramacion> findByUsuarioBTAndIdEstado(String usuarioBT, int idEstado);
 	
-	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.empleado.usuarioBT = ?1 AND vp.periodo.descripcion = ?2 ")
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.empleado.usuarioBT = ?1 AND vp.periodo.descripcion = ?2 AND vp.estadoRegistro = 'A'")
 	List<VacacionProgramacion> findByUsuarioBTAndPeriodo(String usuarioBT, String periodo);
 	
-	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.empleado.usuarioBT = ?1 AND vp.periodo.descripcion = ?2 AND vp.idEstado = ?3 ")
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.empleado.usuarioBT = ?1 AND vp.periodo.descripcion = ?2 AND vp.idEstado = ?3 AND vp.estadoRegistro = 'A'")
 	List<VacacionProgramacion> findByUsuarioBTAndPeriodoAndEstado(String usuarioBT, String periodo, int idEstado);
 	
 	/*List<VacacionProgramacion> findVacacionProgramacionByUsuarioBT(String usuarioBt);
@@ -36,7 +36,7 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	
 	List<VacacionProgramacion> findVacacionProgramacionByUsuarioBTAndPeriodoAndIdEstado(String usuarioBt, String periodo, int idEstado);*/
 	
-	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.id = ?1 AND vp.idEstado = ?2 order by vp.orden asc")
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.id = ?1 AND vp.idEstado = ?2 AND vp.estadoRegistro = 'A' order by vp.orden asc")
 	List<VacacionProgramacion> findByPeriodoAndEstado(long idPeriodo, int idEstado);
 	
 	@Procedure(procedureName =  "proc_vacacion_programacion_actualizar_estado")
@@ -46,10 +46,10 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	@Query("update VacacionProgramacion v set v.idEstado = ?1 where v.id = ?2")
 	void aprobarVacacionByPeriodo(int idEstado, Long id);
 	
-	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.id = ?1 order by vp.orden desc")
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.periodo.id = ?1 AND vp.estadoRegistro = 'A' order by vp.orden desc")
 	List<VacacionProgramacion> findByIdPeriodo(long idPeriodo);
 	
-	@Query(value = "SELECT (CASE WHEN SUM(numero_dias) IS NULL THEN 0 ELSE SUM(numero_dias) END) FROM vacacion_programacion WHERE id_periodo = ?1 AND id_estado = ?2", nativeQuery = true)
+	@Query(value = "SELECT (CASE WHEN SUM(numero_dias) IS NULL THEN 0 ELSE SUM(numero_dias) END) FROM vacacion_programacion WHERE id_periodo = ?1 AND id_estado = ?2 AND estado_registro = 'A'", nativeQuery = true)
 	int obtenerSumaDiasPorIdPeriodoYEstado(long idPeriodo, int idEstado);
 	
 	@Procedure(name = "VacacionProgramacion.programacionContarPorUnidadNegocio")

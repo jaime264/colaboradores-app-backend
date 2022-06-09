@@ -13,7 +13,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "corredor")
-public class Corredor {
+public class Corredor extends EntidadAuditoria {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,8 +42,6 @@ public class Corredor {
 	@Column(nullable = true)
 	private Long codigoRepresentante;
 	
-	@Column(columnDefinition = "TIMESTAMP" )
-	private LocalDateTime fechaActualizacion;
 
 	public long getId() {
 		return id;
@@ -93,13 +91,6 @@ public class Corredor {
 		this.representante = representante;
 	}
 
-	public LocalDateTime getFechaActualizacion() {
-		return fechaActualizacion;
-	}
-
-	public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
-	}
 
 	public String getCodigoTerritorio() {
 		return codigoTerritorio;

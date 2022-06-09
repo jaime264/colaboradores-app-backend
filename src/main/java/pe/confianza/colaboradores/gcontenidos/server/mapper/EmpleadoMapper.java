@@ -42,9 +42,10 @@ public class EmpleadoMapper {
 		destination.setFechaFinContrato(Utilitario.obtenerLocalDate(source.getFechaFinContrato()));
 		destination.setCodigoUnidadNegocio(source.getCodigoUnidadNegocio());
 		destination.setCodigoJefeInmediato(source.getCodigoJefeInmediato());
-		destination.setCodigoNIvel1(source.getCodigoNIvel1());
+		destination.setCodigoNivel1(source.getCodigoNivel1());
 		destination.setCodigoNivel2(source.getCodigoNivel2());
 		destination.setBloqueoVacaciones(source.isBloqueoVacaciones());
+		destination.setAceptaTerminosCondiciones(false);
 		return destination;
 	}
 

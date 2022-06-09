@@ -1,7 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +13,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "empleado")
-public class Empleado {
+public class Empleado extends EntidadAuditoria {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,9 +63,6 @@ public class Empleado {
 	@Column(nullable = false)
 	private String usuarioBT;
 	
-	@Column(columnDefinition = "TIMESTAMP" )
-	private LocalDateTime fechaActualizacion;
-	
 	@Column(nullable = true)
 	private Long codigoUnidadNegocio;
 	
@@ -74,13 +70,15 @@ public class Empleado {
 	private Long codigoJefeInmediato;
 	
 	@Column(nullable = true)
-	private Long codigoNIvel1;
+	private Long codigoNivel1;
 	
 	@Column(nullable = true)
 	private Long codigoNivel2;
 	
 	@Column(nullable = true)
 	private boolean bloqueoVacaciones;
+	
+	private boolean aceptaTerminosCondiciones;
 
 	public long getId() {
 		return id;
@@ -202,13 +200,7 @@ public class Empleado {
 		this.usuarioBT = usuarioBT;
 	}
 
-	public LocalDateTime getFechaActualizacion() {
-		return fechaActualizacion;
-	}
 
-	public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
-	}
 
 	public Long getCodigoUnidadNegocio() {
 		return codigoUnidadNegocio;
@@ -226,12 +218,12 @@ public class Empleado {
 		this.codigoJefeInmediato = codigoJefeInmediato;
 	}
 
-	public Long getCodigoNIvel1() {
-		return codigoNIvel1;
+	public Long getCodigoNivel1() {
+		return codigoNivel1;
 	}
 
-	public void setCodigoNIvel1(Long codigoNIvel1) {
-		this.codigoNIvel1 = codigoNIvel1;
+	public void setCodigoNivel1(Long codigoNivel1) {
+		this.codigoNivel1 = codigoNivel1;
 	}
 
 	public Long getCodigoNivel2() {
@@ -250,15 +242,22 @@ public class Empleado {
 		this.bloqueoVacaciones = bloqueoVacaciones;
 	}
 
+	public boolean isAceptaTerminosCondiciones() {
+		return aceptaTerminosCondiciones;
+	}
+
+	public void setAceptaTerminosCondiciones(boolean aceptaTerminosCondiciones) {
+		this.aceptaTerminosCondiciones = aceptaTerminosCondiciones;
+	}
+
 	@Override
 	public String toString() {
 		return "Empleado [id=" + id + ", codigo=" + codigo + ", nombres=" + nombres + ", apellidoPaterno="
 				+ apellidoPaterno + ", apellidoMaterno=" + apellidoMaterno + ", puesto=" + puesto + ", agencia="
 				+ agencia + ", fechaNacimiento=" + fechaNacimiento + ", fechaIngreso=" + fechaIngreso
 				+ ", fechaFinContrato=" + fechaFinContrato + ", email=" + email + ", celular=" + celular
-				+ ", direccion=" + direccion + ", sexo=" + sexo + ", usuarioBT=" + usuarioBT + ", fechaActualizacion="
-				+ fechaActualizacion + ", codigoUnidadNegocio=" + codigoUnidadNegocio + ", codigoJefeInmediato="
-				+ codigoJefeInmediato + ", codigoNIvel1=" + codigoNIvel1 + ", codigoNivel2=" + codigoNivel2
+				+ ", direccion=" + direccion + ", sexo=" + sexo + ", usuarioBT=" + usuarioBT + ", codigoUnidadNegocio=" + codigoUnidadNegocio + ", codigoJefeInmediato="
+				+ codigoJefeInmediato + ", codigoNivel1=" + codigoNivel1 + ", codigoNivel2=" + codigoNivel2
 				+ ", bloqueoVacaciones=" + bloqueoVacaciones + "]";
 	}
 

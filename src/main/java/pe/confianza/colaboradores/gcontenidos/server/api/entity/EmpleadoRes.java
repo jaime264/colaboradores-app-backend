@@ -26,7 +26,7 @@ public class EmpleadoRes {
 	private Long fechaFinContrato;
 	private Long codigoUnidadNegocio;
 	private Long codigoJefeInmediato;
-	private Long codigoNIvel1;
+	private Long codigoNivel1;
 	private Long codigoNivel2;
 	private boolean bloqueoVacaciones;
 	public Long getIdEmpleado() {
@@ -149,11 +149,12 @@ public class EmpleadoRes {
 	public void setCodigoJefeInmediato(Long codigoJefeInmediato) {
 		this.codigoJefeInmediato = codigoJefeInmediato;
 	}
-	public Long getCodigoNIvel1() {
-		return codigoNIvel1;
+	
+	public Long getCodigoNivel1() {
+		return codigoNivel1;
 	}
-	public void setCodigoNIvel1(Long codigoNIvel1) {
-		this.codigoNIvel1 = codigoNIvel1;
+	public void setCodigoNivel1(Long codigoNivel1) {
+		this.codigoNivel1 = codigoNivel1;
 	}
 	public Long getCodigoNivel2() {
 		return codigoNivel2;
@@ -176,7 +177,7 @@ public class EmpleadoRes {
 				+ ", usuarioBT=" + usuarioBT + ", ultimaPublicacion=" + ultimaPublicacion + ", logAuditoria="
 				+ logAuditoria + ", fechaFinContrato=" + fechaFinContrato + ", codigoUnidadNegocio="
 				+ codigoUnidadNegocio + ", codigoJefeInmediato=" + codigoJefeInmediato + ", codigoNIvel1="
-				+ codigoNIvel1 + ", codigoNivel2=" + codigoNivel2 + ", bloqueoVacaciones=" + bloqueoVacaciones + "]";
+				+ codigoNivel1 + ", codigoNivel2=" + codigoNivel2 + ", bloqueoVacaciones=" + bloqueoVacaciones + "]";
 	}
 	
 	
