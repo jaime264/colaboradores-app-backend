@@ -1,6 +1,5 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -51,7 +50,7 @@ public class Comentario extends EntidadAuditoria  {
 	private List<OcultarComentario> comentariosOcultos;
 
 	@Column(nullable = true)
-	private Long idUsuario;
+	private String usuarioBt;
 	
 	@Transient
 	private long publicacionId;
@@ -132,18 +131,6 @@ public class Comentario extends EntidadAuditoria  {
 		return videos;
 	}
 
-	public void setVideos(List<Video> videos) {
-		this.videos = videos;
-	}
-
-	public Long getIdUsuario() {
-		return idUsuario;
-	}
-
-	public void setIdUsuario(Long idUsuario) {
-		this.idUsuario = idUsuario;
-	}
-
 	public Publicacion getPublicacion() {
 		return publicacion;
 	}
@@ -159,6 +146,19 @@ public class Comentario extends EntidadAuditoria  {
 	public void setActivo(Boolean activo) {
 		this.activo = activo;
 	}
+
+	public String getUsuarioBt() {
+		return usuarioBt;
+	}
+
+	public void setUsuarioBt(String usuarioBt) {
+		this.usuarioBt = usuarioBt;
+	}
+
+	public void setVideos(List<Video> videos) {
+		this.videos = videos;
+	}
+	
 	
 	
 }

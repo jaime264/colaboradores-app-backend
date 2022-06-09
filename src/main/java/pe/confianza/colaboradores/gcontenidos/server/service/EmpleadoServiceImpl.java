@@ -127,7 +127,13 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		LOGGER.info("[BEGIN] buscarPorUsuarioBT {}", usuarioBT);
 		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(usuarioBT.trim());
 		if (!optEmpleado.isPresent()) {
-			return actualizarInformacionEmpleado(usuarioBT);
+			try {
+				return actualizarInformacionEmpleado(usuarioBT);
+			} catch (Exception e) {
+				Empleado em = new Empleado();
+				return em;
+			}
+			
 		} else {
 			return optEmpleado.get();
 		}
@@ -155,6 +161,20 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	@Override
 	public int obtenerCantidadEmpleadosPorUnidadNegocio(long codigoUnidadNegocio) {
 		return empleadoDao.obtenerCantidadEmpleadosPorUnidadNegocio(codigoUnidadNegocio);
+	}
+
+	@Override
+	public Empleado buscarPorCodigo(Long codigo) {
+		// TODO Auto-generated method stub
+			List<Empleado> emp = new ArrayList<>();
+		try {
+			emp = empleadoDao.findByCodigo(codigo);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return emp.get(0);
 	}
 
 }

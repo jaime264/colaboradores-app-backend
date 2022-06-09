@@ -1,6 +1,5 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +18,6 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Imagen;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.OcultarComentario;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Publicacion;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Reaccion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Video;
 
 @Service
@@ -62,8 +60,8 @@ public class ComentarioServiceImpl implements ComentarioService {
 			com.setDescripcion(comentario.getDescripcion());
 			com.setFechaCrea(LocalDateTime.now());
 			com.setFlagAprobacion(true);
-			com.setIdUsuario(comentario.getIdUsuario());
-			com.setUsuarioCrea(comentario.getIdUsuario().toString());
+			com.setUsuarioBt(comentario.getUsuarioBt());
+			com.setUsuarioCrea(comentario.getUsuarioCrea());
 			
 			Optional<Publicacion> pb  = publicacionAppDao.findById(comentario.getPublicacionId());
 			

@@ -1,14 +1,12 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmpleadoRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.spring.EmpleadoApi;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ComentarioDao;
@@ -44,9 +42,12 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 	@Autowired
 	EmpleadoDao empleadoDao;
-	
+
 	@Autowired
 	EmpleadoApi empleadoApi;
+
+	@Autowired
+	EmpleadoService empleadoService;
 
 	@Override
 	public List<Publicacion> list() {
@@ -56,7 +57,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 	@Override
 	public ResponseStatus add(Publicacion publicacion) {
-		
+
 		ResponseStatus status = new ResponseStatus();
 		try {
 
@@ -154,7 +155,6 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			status.setCodeStatus(500);
 			status.setMsgStatus(e.getMessage());
 		}
-		
 
 		status.setCodeStatus(200);
 
@@ -183,36 +183,17 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		List<Publicacion> listP = publicacionAppDao.listByActivo(true);
 
 		for (Publicacion p : listP) {
+			Empleado emp = empleadoService.buscarPorUsuarioBT(p.getUsuarioBt());
 
-			Optional<Empleado> emp = empleadoDao.findOneByUsuarioBT(p.getUsuarioBt());
-			
-			if(emp.isPresent()) {
-				p.setNombre(emp.get().getNombres() + " " + emp.get().getApellidoPaterno() + " "
-						+ emp.get().getApellidoMaterno());
-				p.setSexo(emp.get().getSexo());
+			p.setNombre(emp.getNombres() + " " + emp.getApellidoPaterno() + " " + emp.getApellidoMaterno());
+			p.setSexo(emp.getSexo());
 
-				for (Comentario c : p.getComentarios()) {
-					Optional<Empleado> cm = empleadoDao.findById(c.getIdUsuario());
-					
-					if(cm.isPresent()) {
-						c.setNombre(emp.get().getNombres() + " " + emp.get().getApellidoPaterno() + " "
-								+ emp.get().getApellidoMaterno());
-						c.setSexo(emp.get().getSexo());
-					}else {
-						EmpleadoRes empRes = empleadoApi.getPerfil(p.getUsuarioBt());
-						c.setNombre(empRes.getNombres() + " " + empRes.getApePaterno() + " "
-								+ empRes.getApeMaterno());
-						c.setSexo(empRes.getSexo());
-					}
-					
-				}
-			}else {
-				EmpleadoRes empRes = empleadoApi.getPerfil(p.getUsuarioBt());
-				p.setNombre(empRes.getNombres() + " " + empRes.getApePaterno() + " "
-						+ empRes.getApeMaterno());
-				p.setSexo(empRes.getSexo());
+			for (Comentario c : p.getComentarios()) {
+				Empleado emC = empleadoService.buscarPorUsuarioBT(c.getUsuarioBt());
+
+				c.setNombre(emC.getNombres() + " " + emC.getApellidoPaterno() + " " + emC.getApellidoMaterno());
+				c.setSexo(emC.getSexo());
 			}
-
 		}
 
 		return listP;
@@ -287,7 +268,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 		return status;
 	}
-	
+
 	@Override
 	public ResponseStatus deleteReaccion(Long idReaccion) {
 		ResponseStatus status = new ResponseStatus();
@@ -300,11 +281,9 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			status.setCodeStatus(200);
 			status.setMsgStatus(e.getMessage());
 		}
-		
+
 		return status;
 	}
-	
-	
 
 	public void guardarImg(Publicacion publicacion, Optional<Publicacion> pub) {
 
@@ -400,7 +379,5 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			}
 		}
 	}
-
-	
 
 }
