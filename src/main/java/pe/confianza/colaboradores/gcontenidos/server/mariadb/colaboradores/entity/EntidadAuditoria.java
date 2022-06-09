@@ -19,7 +19,6 @@ public class EntidadAuditoria {
 	@Column(nullable = false, columnDefinition = "TIMESTAMP")
 	private LocalDateTime fechaCrea;
 	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = Constantes.TIME_ZONE)
 	@Column(nullable = true)
 	private String usuarioModifica;
 	

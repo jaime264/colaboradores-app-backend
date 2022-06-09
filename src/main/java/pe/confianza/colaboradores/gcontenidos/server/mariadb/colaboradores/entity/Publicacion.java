@@ -64,7 +64,8 @@ public class Publicacion extends EntidadAuditoria {
 	@OneToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
 	private List<Imagen> imagenes;
 
-	private Long idUsuario;
+	@Column(nullable = true)
+	private String usuarioBt;
 
 	@Column(nullable = true)
 	private Boolean activo;
@@ -80,6 +81,14 @@ public class Publicacion extends EntidadAuditoria {
 	@Transient
 	private String nombre;
 	
+
+	public String getUsuarioBt() {
+		return usuarioBt;
+	}
+
+	public void setUsuarioBt(String usuarioBt) {
+		this.usuarioBt = usuarioBt;
+	}
 
 	public String getSexo() {
 		return sexo;
@@ -223,14 +232,6 @@ public class Publicacion extends EntidadAuditoria {
 
 	public void setImagenes(List<Imagen> imagenes) {
 		this.imagenes = imagenes;
-	}
-
-	public Long getIdUsuario() {
-		return idUsuario;
-	}
-
-	public void setIdUsuario(Long idUsuario) {
-		this.idUsuario = idUsuario;
 	}
 
 	public Boolean getActivo() {

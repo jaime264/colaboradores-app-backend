@@ -1,13 +1,15 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmpleadoRes;
+import pe.confianza.colaboradores.gcontenidos.server.api.spring.EmpleadoApi;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ComentarioDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
@@ -42,6 +44,9 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 	@Autowired
 	EmpleadoDao empleadoDao;
+	
+	@Autowired
+	EmpleadoApi empleadoApi;
 
 	@Override
 	public List<Publicacion> list() {
@@ -58,7 +63,6 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			publicacion.setFecha(LocalDateTime.now());
 			publicacion.setFechaCrea(LocalDateTime.now());
 			publicacion.setActivo(true);
-			publicacion.setUsuarioCrea(publicacion.getUsuarioCrea());
 
 			Publicacion pub = publicacionAppDao.save(publicacion);
 
@@ -180,17 +184,33 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 		for (Publicacion p : listP) {
 
-			List<Empleado> emp = empleadoDao.findByCodigo(p.getIdUsuario());
+			Optional<Empleado> emp = empleadoDao.findOneByUsuarioBT(p.getUsuarioBt());
+			
+			if(emp.isPresent()) {
+				p.setNombre(emp.get().getNombres() + " " + emp.get().getApellidoPaterno() + " "
+						+ emp.get().getApellidoMaterno());
+				p.setSexo(emp.get().getSexo());
 
-			p.setNombre(emp.get(0).getNombres() + " " + emp.get(0).getApellidoPaterno() + " "
-					+ emp.get(0).getApellidoMaterno());
-			p.setSexo(emp.get(0).getSexo());
-
-			for (Comentario c : p.getComentarios()) {
-				Optional<Empleado> cm = empleadoDao.findById(c.getIdUsuario());
-				c.setNombre(emp.get(0).getNombres() + " " + emp.get().getApellidoPaterno() + " "
-						+ emp.get(0).getApellidoMaterno());
-				c.setSexo(emp.get(0).getSexo());
+				for (Comentario c : p.getComentarios()) {
+					Optional<Empleado> cm = empleadoDao.findById(c.getIdUsuario());
+					
+					if(cm.isPresent()) {
+						c.setNombre(emp.get().getNombres() + " " + emp.get().getApellidoPaterno() + " "
+								+ emp.get().getApellidoMaterno());
+						c.setSexo(emp.get().getSexo());
+					}else {
+						EmpleadoRes empRes = empleadoApi.getPerfil(p.getUsuarioBt());
+						c.setNombre(empRes.getNombres() + " " + empRes.getApePaterno() + " "
+								+ empRes.getApeMaterno());
+						c.setSexo(empRes.getSexo());
+					}
+					
+				}
+			}else {
+				EmpleadoRes empRes = empleadoApi.getPerfil(p.getUsuarioBt());
+				p.setNombre(empRes.getNombres() + " " + empRes.getApePaterno() + " "
+						+ empRes.getApeMaterno());
+				p.setSexo(empRes.getSexo());
 			}
 
 		}
