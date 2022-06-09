@@ -131,5 +131,23 @@ public class EmpleadoController {
 		logger.info("Lista empleado: " + listEmpleado.toString());
 		return new ResponseEntity<List<Empleado>>(listEmpleado, HttpStatus.OK);
 	}
+	
+	@PostMapping("/empleado/get/codigo")
+	public ResponseEntity<?> getEmpleadoByCodigo(Long codigo) throws IOException {
+
+		Empleado empleado = empleadoService.buscarPorCodigo(codigo);
+
+		logger.info("empleado: " + empleado.toString());
+		return new ResponseEntity<Empleado>(empleado, HttpStatus.OK);
+	}
+	
+	@PostMapping("/empleado/get/usuario")
+	public ResponseEntity<?> getEmpleadoByUsuarioBt(String usuariobt) throws IOException {
+
+		Empleado empleado = empleadoService.buscarPorUsuarioBT(usuariobt);
+
+		logger.info("empleado: " + empleado.toString());
+		return new ResponseEntity<Empleado>(empleado, HttpStatus.OK);
+	}
 
 }
