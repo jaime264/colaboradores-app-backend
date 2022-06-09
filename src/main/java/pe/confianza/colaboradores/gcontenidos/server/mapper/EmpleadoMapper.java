@@ -2,6 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.mapper;
 
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmpleadoRes;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 public class EmpleadoMapper {
@@ -45,7 +46,6 @@ public class EmpleadoMapper {
 		destination.setCodigoNivel1(source.getCodigoNivel1());
 		destination.setCodigoNivel2(source.getCodigoNivel2());
 		destination.setBloqueoVacaciones(source.isBloqueoVacaciones());
-		destination.setAceptaTerminosCondiciones(false);
 		return destination;
 	}
 

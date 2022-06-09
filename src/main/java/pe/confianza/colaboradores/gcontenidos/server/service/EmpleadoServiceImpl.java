@@ -64,8 +64,10 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		Optional<Agencia> optAgencia = agenciaDao.findOneByCodigo(empleadoSpring.getIdSucursal().trim());
 		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(empleadoSpring.getUsuarioBT().trim());
 		Empleado empleado = EmpleadoMapper.convert(empleadoSpring);
-		if (optEmpleado.isPresent())
+		if (optEmpleado.isPresent()) {
 			empleado.setId(optEmpleado.get().getId());
+			empleado.setAceptaTerminosCondiciones(optEmpleado.get().isAceptaTerminosCondiciones());
+		}
 		empleado.setPuesto(optPuesto.isPresent() ? optPuesto.get() : null);
 		empleado.setAgencia(optAgencia.isPresent() ? optAgencia.get() : null);
 		empleado.setFechaModifica(LocalDateTime.now());
