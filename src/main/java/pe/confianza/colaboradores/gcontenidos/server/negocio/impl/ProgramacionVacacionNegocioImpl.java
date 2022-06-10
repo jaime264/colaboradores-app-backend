@@ -39,6 +39,7 @@ import pe.confianza.colaboradores.gcontenidos.server.service.UnidadNegocioServic
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionMetaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
+import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.ParametrosConstants;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
@@ -78,6 +79,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		Empleado empleado = empleadoService.buscarPorUsuarioBT(programacion.getUsuarioBT().trim());
 		if(empleado == null)
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", new String[] { programacion.getUsuarioBT()}));
+		validarEmpleado(empleado);
 		String usuarioOperacion = programacion.getUsuarioOperacion().trim();
 		VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(programacion);
 		vacacionProgramacion.setEstado(EstadoVacacion.REGISTRADO);
@@ -252,6 +254,16 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		if(fechaEvaluar.isAfter(fechaFinRegistroProgramacion))
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fin_programacion_despues", fechaFinRegistroProgramacion+ ""));
 		LOGGER.info("[END] validarPeriodoRegistro");
+	}
+	
+	@Override
+	public void validarEmpleado(Empleado empleado) {
+		LOGGER.info("[BEGIN] validarEmpleado");
+		if(!EstadoRegistro.ACTIVO.valor.equals(empleado.getEstadoRegistro()))
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "emplado.inactivo", empleado.getUsuarioBT()));
+		if(empleado.isBloqueoVacaciones())
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloqueo_vacaciones", empleado.getUsuarioBT()));
+		LOGGER.info("[END] validarEmpleado");
 	}
 
 	@Override

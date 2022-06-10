@@ -29,6 +29,8 @@ public interface ProgramacionVacacionNegocio {
 	
 	void validarPeriodoRegistro(LocalDate fechaEvaluar);
 	
+	void validarEmpleado(Empleado empleado);
+	
 	void validarEmpleadoNuevo(VacacionProgramacion programacion, Empleado empleado);
 	
 	void validarRangoFechas(VacacionProgramacion programacion);
