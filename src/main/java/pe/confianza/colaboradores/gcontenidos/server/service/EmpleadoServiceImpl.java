@@ -67,6 +67,8 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		if (optEmpleado.isPresent()) {
 			empleado.setId(optEmpleado.get().getId());
 			empleado.setAceptaTerminosCondiciones(optEmpleado.get().isAceptaTerminosCondiciones());
+		} else {
+			empleado.setAceptaTerminosCondiciones(false);
 		}
 		empleado.setPuesto(optPuesto.isPresent() ? optPuesto.get() : null);
 		empleado.setAgencia(optAgencia.isPresent() ? optAgencia.get() : null);

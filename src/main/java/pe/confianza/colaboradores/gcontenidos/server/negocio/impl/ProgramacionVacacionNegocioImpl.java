@@ -355,6 +355,12 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		if(diasAcumuladosVacaciones == 0 && diasProgramacion < 7) {
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()}));
 		}
+		if(diasAcumuladosVacaciones == 0 && diasProgramacion > 8 && diasProgramacion < 15) {
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()}));
+		}
+		if(diasAcumuladosVacaciones == 0 && diasProgramacion > 15) {
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()}));
+		}
 		if(diasAcumuladosVacaciones == 7 && diasProgramacion < 8) {
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()}));
 		}
