@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -19,6 +20,7 @@ import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmplVacPerRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmpleadoRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.api.spring.EmpleadoApi;
+import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.EmpleadoMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.AgenciaDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
@@ -29,6 +31,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
+import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 @Service
 public class EmpleadoServiceImpl implements EmpleadoService {
@@ -52,6 +55,9 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	
 	@Autowired
 	private VacacionMetaService vacacionMetaService;
+	
+	@Autowired
+	private MessageSource messageSource;
 
 	@Override
 	public Empleado actualizarInformacionEmpleado(String usuarioBT) {
@@ -188,6 +194,39 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		}
 		
 		return emp.get(0);
+	}
+
+	@Override
+	public void aceptarTerminosCondiciones(String usuarioBT) {
+		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(usuarioBT.trim());
+		if(optEmpleado.isPresent()) {
+			Empleado empleado = optEmpleado.get();
+			if(!empleado.getEstadoRegistro().equals(EstadoRegistro.ACTIVO.valor))
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "emplado.inactivo", usuarioBT));
+			if(empleado.getEstadoMigracion().equals(EstadoMigracion.EXPORTADO.valor) || empleado.getEstadoMigracion().equals(EstadoMigracion.EXPORTADO.valor))
+				empleado.setEstadoMigracion(EstadoMigracion.MODIFICADO.valor);
+			empleado.setAceptaTerminosCondiciones(true);
+			empleado.setFechaAceptacionTc(LocalDateTime.now());
+			empleado.setFechaModifica(LocalDateTime.now());
+			empleado.setUsuarioModifica(usuarioBT);
+			empleadoDao.save(empleado);
+		} else {
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", usuarioBT));
+		}
+		
+	}
+
+	@Override
+	public boolean consultarTerminosCondiciones(String usuarioBT) {
+		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(usuarioBT.trim());
+		if(optEmpleado.isPresent()) {
+			Empleado empleado = optEmpleado.get();
+			if(!empleado.getEstadoRegistro().equals(EstadoRegistro.ACTIVO.valor))
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "emplado.inactivo", usuarioBT));
+			return empleado.isAceptaTerminosCondiciones();
+		} else {
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", usuarioBT));
+		}
 	}
 
 }

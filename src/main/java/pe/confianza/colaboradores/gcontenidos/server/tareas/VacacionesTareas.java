@@ -41,4 +41,10 @@ public class VacacionesTareas {
 		LOGGER.info("[END] calcularMetaAnual " + LocalDate.now());
 	}
 	
+	public void notificarHabilitacionRegistroProgramacion() {
+		vacacionesTareasProgramadasService.notificarHabilitacionRegistroProgramacion();
+	}
+	
+	
+	
 }

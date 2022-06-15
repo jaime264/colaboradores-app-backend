@@ -95,11 +95,12 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		});
 		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.registrar(programaciones, usuarioOperacion);
 		List<Long> idsProgRegistradas = programacionesRegistradas.stream().map(prog -> prog.getId()).collect(Collectors.toList());
+		Integer totalDiasRegistrados = programacionesRegistradas.stream().mapToInt(VacacionProgramacion::getNumeroDias).sum();
 		List<Long> idsPeriodosModificados = programacionesRegistradas.stream().map(prog -> prog.getPeriodo().getId()).distinct().collect(Collectors.toList());
 		idsPeriodosModificados.forEach(periodoId -> {
 			actualizarPeriodo(empleado, periodoId,  usuarioOperacion);
-			consolidarMetaAnual(empleado, LocalDate.now().getYear() + 1, usuarioOperacion);
 		});
+		actualizarMeta(empleado, LocalDate.now().getYear() + 1, totalDiasRegistrados, usuarioOperacion);
 		programacionesRegistradas = new ArrayList<>();
 		for (Long idProgramacion : idsProgRegistradas) {
 			programacionesRegistradas.add(vacacionProgramacionService.buscarPorId(idProgramacion));
@@ -124,9 +125,9 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		if(programacion.getIdEstado() != EstadoVacacion.REGISTRADO.id)
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.cancelar.estado_error", new String[] {EstadoVacacion.REGISTRADO.descripcion}));
 		long idPeriodo = programacion.getPeriodo().getId();
-		vacacionProgramacionService.eliminar(cancelacion.getIdProgramacion());
+		vacacionProgramacionService.eliminar(cancelacion.getIdProgramacion(), cancelacion.getUsuarioOperacion());
 		actualizarPeriodo(empleado, idPeriodo,  cancelacion.getUsuarioOperacion());
-		consolidarMetaAnual(empleado, ahora.getYear() + 1, cancelacion.getUsuarioOperacion().trim());
+		actualizarMeta(empleado, ahora.getYear() + 1, programacion.getNumeroDias() * -1, cancelacion.getUsuarioOperacion().trim());
 		LOGGER.info("[END] cancelar");
 	}
 	
@@ -146,7 +147,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			response.add(VacacionProgramacionMapper.convert(programacion));
 		}
 		actualizarPeriodo(empleado, request.getUsuarioOperacion());
-		consolidarMetaAnual(empleado, ahora.getYear() + 1, request.getUsuarioOperacion());
+		actualizarMeta(empleado, ahora.getYear() + 1, 0, request.getUsuarioOperacion());
 		LOGGER.info("[END] generar");
 		return response;
 	}
@@ -208,7 +209,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			periodoVencido = new ResponseResumenPeriodoVacacion();
 			periodoVencido.setDescripcion(periodo.getDescripcion());
 			periodoVencido.setDias((int)meta.getDiasVencidos());
-			periodoVencido.setFechaLimite(periodo.getFechaFinPeriodo());
+			periodoVencido.setFechaLimite(periodo.getFechaLimiteIndemnizacion());
 			periodoVencido.setUltimoTramo(ultimaProgramacion == null ? 0  : ultimaProgramacion.getOrden());
 		}
 		
@@ -218,7 +219,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			periodoTrunco = new ResponseResumenPeriodoVacacion();
 			periodoTrunco.setDescripcion(periodo.getDescripcion());
 			periodoTrunco.setDias((int)meta.getDiasTruncos());
-			periodoTrunco.setFechaLimite(periodo.getFechaFinPeriodo());
+			periodoTrunco.setFechaLimite(periodo.getFechaLimiteIndemnizacion());
 			periodoTrunco.setUltimoTramo(ultimaProgramacion == null ? 0  : ultimaProgramacion.getOrden());
 		}
 			
@@ -228,6 +229,11 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		response.setFechaInicioRegistroProgramacion(parametrosConstants.getFechaInicioRegistroProgramacion(fechaConsulta.getYear()));
 		response.setFechaFinRegistroProgramacion(parametrosConstants.getFechaFinRegistroProgramacion(fechaConsulta.getYear()));
 		response.setAnio(meta.getAnio());
+		if(meta.getMeta() < 1.0) {
+			response.setSolicitar(true);
+		} else {
+			response.setSolicitar(false);
+		}
 		LOGGER.info("[BEGIN] consultar");
 		return response;
 	}
@@ -308,6 +314,8 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 				programacionParteI.setPeriodo(meta.getPeriodoVencido());
 				programacionParteI.setNumeroPeriodo((long)meta.getPeriodoVencido().getNumero());
 			}
+			if(!meta.getPeriodoVencido().programacionDentroPeriodoGoce(programacionParteI))
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fuera_limite_goce", meta.getPeriodoVencido().getDescripcion()));
 			LOGGER.info("programacionParteI: " + programacionParteI.toString());
 			programaciones.add(programacionParteI);
 		}
@@ -326,6 +334,8 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 				} else {
 					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.no_dias_gozar"));
 				}
+				if(!meta.getPeriodoTrunco().programacionDentroPeriodoGoce(programacionParteII))
+					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fuera_limite_goce", meta.getPeriodoVencido().getDescripcion()));
 				LOGGER.info("programacionParteII: " + programacionParteII.toString());
 				programaciones.add(programacionParteII);
 			}
@@ -439,10 +449,10 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	}
 	
 	@Override
-	public void consolidarMetaAnual(Empleado empleado, int anioMeta, String usuarioOperacion) {
-		LOGGER.info("[BEGIN] consolidarMetaAnual {} - {}", new Object[] {empleado.getUsuarioBT(), anioMeta});
-		vacacionMetaService.consolidarMetaAnual(empleado, anioMeta, usuarioOperacion);
-		LOGGER.info("[END] consolidarMetaAnual");
+	public void actualizarMeta(Empleado empleado, int anioMeta, int diasActualizar,  String usuarioOperacion) {
+		LOGGER.info("[BEGIN] actualizarMeta {} - {}", new Object[] {empleado.getUsuarioBT(), anioMeta});
+		vacacionMetaService.actualizarMeta(empleado, anioMeta, diasActualizar, usuarioOperacion);
+		LOGGER.info("[END] actualizarMeta");
 	}
 
 	@Override

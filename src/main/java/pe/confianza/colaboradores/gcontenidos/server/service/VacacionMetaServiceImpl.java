@@ -90,11 +90,22 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 				meta.setDiasTruncos(periodo.getDerecho() - periodo.getDiasGozados() - periodo.getDiasRegistradosGozar() - periodo.getDiasGeneradosGozar() - periodo.getDiasAprobadosGozar());
 			}
 		}
-		meta.setMeta(Utilitario.calcularMetaVacaciones(empleado.getFechaIngreso(), limitePeriodoVencido == null ? 0 : meta.getDiasVencidos()));
+		meta.setMetaInicial(Utilitario.calcularMetaVacaciones(empleado.getFechaIngreso(), limitePeriodoVencido == null ? 0 : meta.getDiasVencidos()));
+		meta.setMeta(meta.getMetaInicial());		
 		meta.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
 		meta.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
 		meta = vacacionMetaDao.saveAndFlush(meta);
 		LOGGER.info("[END] consolidarMetaAnual");
+		return meta;
+	}
+	
+	@Override
+	public VacacionMeta actualizarMeta(Empleado empleado, int anio, int diasActualizar, String usuarioOperacion) {
+		LOGGER.info("[BEGIN] actualizarMeta {} - {}" , new Object[] {empleado.getUsuarioBT(), anio});	
+		VacacionMeta meta = obtenerVacacionPorAnio(anio, empleado.getId());
+		meta.setMeta(meta.getMetaInicial() - diasActualizar);
+		meta = vacacionMetaDao.saveAndFlush(meta);
+		LOGGER.info("[END] actualizarMeta");
 		return meta;
 	}
 

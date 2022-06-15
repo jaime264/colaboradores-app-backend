@@ -45,7 +45,7 @@ public interface ProgramacionVacacionNegocio {
 	
 	void actualizarPeriodo(Empleado empleado, long idPeriodo, String usuarioOperacion);
 	
-	void consolidarMetaAnual(Empleado empleado, int anioMeta, String usuarioOperacion);
+	void actualizarMeta(Empleado empleado, int anioMeta, int diasActualizar, String usuarioOperacion);
 	
 	void validarPoliticaBolsa(VacacionProgramacion programacion);
 	

@@ -76,11 +76,15 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	}
 
 	@Override
-	public void eliminar(long idProgramacion) {
+	public void eliminar(long idProgramacion, String usuarioOperacion) {
 		Optional<VacacionProgramacion> optProgramacion = vacacionProgramacionDao.findById(idProgramacion);
 		if (!optProgramacion.isPresent())
 			throw new ModelNotFoundException("No existe la programación con id " + idProgramacion);
-		vacacionProgramacionDao.delete(optProgramacion.get());
+		VacacionProgramacion progamacion = optProgramacion.get();
+		progamacion.setEstadoRegistro(EstadoRegistro.INACTIVO.valor);
+		if(EstadoMigracion.IMPORTADO.valor.equals(progamacion.getEstadoMigracion()))
+			progamacion.setEstadoMigracion(EstadoMigracion.MODIFICADO.valor);
+		actualizar(progamacion, usuarioOperacion);
 	}
 
 	@Override

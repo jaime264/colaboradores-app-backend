@@ -55,7 +55,7 @@ public class ParametrosConstants {
 			Parametro parametro = ParametroMapper.convert(nuevoParametro);
 			parametro.setUsuarioCrea(nuevoParametro.getUsuarioOperacion());
 			parametro.setFechaCrea(LocalDateTime.now());
-			parametro.setEstado(1);
+			parametro.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
 			parametro = parametrosDao.save(parametro);
 			listParams.add(parametro);
 			loadParametros();
@@ -107,11 +107,18 @@ public class ParametrosConstants {
 		throw new AppException("No existe el parámetro de fecha inicio de registro de programación");
 	}
 	
+	public Integer getHoraEnvioNotificacionVacaciones() {
+		if(HORA_ENVIO_NOTIFICACIONES_VACACIONES != null ) {
+			return Integer.parseInt(HORA_ENVIO_NOTIFICACIONES_VACACIONES);
+		} 
+		throw new AppException("No existe el parámetro de hora de envio de notificaciones");
+	}
 	
 
 	// Parametros Vacaciones
 	public String FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES = null;
 	public String FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES = null;
+	public String HORA_ENVIO_NOTIFICACIONES_VACACIONES = null;
 	
 	
 
@@ -127,6 +134,7 @@ public class ParametrosConstants {
 	private void loadParametros() {
 		FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES = populateParametro("FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES");
 		FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES = populateParametro("FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES");
+		HORA_ENVIO_NOTIFICACIONES_VACACIONES = populateParametro("HORA_ENVIO_NOTIFICACIONES_VACACIONES");
 	}
 
 }

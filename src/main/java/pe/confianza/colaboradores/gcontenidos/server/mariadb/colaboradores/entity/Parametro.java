@@ -23,7 +23,6 @@ public class Parametro extends EntidadAuditoria implements Serializable {
 	private String codigo;
 	private String valor;
 	private String descripcion;
-	private Integer estado;
 
 	public Long getId() {
 		return id;
@@ -47,16 +46,6 @@ public class Parametro extends EntidadAuditoria implements Serializable {
 
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
-	}
-
-
-
-	public Integer getEstado() {
-		return estado;
-	}
-
-	public void setEstado(Integer estado) {
-		this.estado = estado;
 	}
 
 	public String getCodigo() {

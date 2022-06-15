@@ -33,6 +33,8 @@ public class VacacionMeta extends EntidadAuditoria implements Serializable {
 	@JoinColumn(nullable = true, name = "idPeriodoVencido")
 	private PeriodoVacacion periodoVencido;
 	
+	private double metaInicial;
+	
 	private double meta;
 	
 	private double diasVencidos;
@@ -114,6 +116,16 @@ public class VacacionMeta extends EntidadAuditoria implements Serializable {
 	public void setFechaCorte(LocalDate fechaCorte) {
 		this.fechaCorte = fechaCorte;
 	}
+
+	public double getMetaInicial() {
+		return metaInicial;
+	}
+
+	public void setMetaInicial(double metaInicial) {
+		this.metaInicial = metaInicial;
+	}
+
+
 	
 	
 	

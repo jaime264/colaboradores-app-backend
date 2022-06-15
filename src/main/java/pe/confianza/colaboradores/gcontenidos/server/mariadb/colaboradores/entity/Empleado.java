@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -79,6 +80,8 @@ public class Empleado extends EntidadAuditoria {
 	private boolean bloqueoVacaciones;
 	
 	private boolean aceptaTerminosCondiciones;
+	
+	private LocalDateTime fechaAceptacionTc;
 
 	public long getId() {
 		return id;
@@ -248,6 +251,16 @@ public class Empleado extends EntidadAuditoria {
 
 	public void setAceptaTerminosCondiciones(boolean aceptaTerminosCondiciones) {
 		this.aceptaTerminosCondiciones = aceptaTerminosCondiciones;
+	}
+	
+	
+
+	public LocalDateTime getFechaAceptacionTc() {
+		return fechaAceptacionTc;
+	}
+
+	public void setFechaAceptacionTc(LocalDateTime fechaAceptacionTc) {
+		this.fechaAceptacionTc = fechaAceptacionTc;
 	}
 
 	@Override

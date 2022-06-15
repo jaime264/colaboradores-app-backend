@@ -222,6 +222,18 @@ public class PeriodoVacacion extends EntidadAuditoria{
 	public String toString() {
 		return "PeriodoVacacion [id=" + id + ", anio=" + anio + ", codigoEmpleado=" + codigoEmpleado + "]";
 	}
+	
+	public boolean programacionDentroPeriodoGoce(VacacionProgramacion programacion) {
+		LocalDate fechaInicioPeriodo = this.fechaInicioPeriodo.minusDays(1);
+		LocalDate fechaMaximaGoce = this.fechaLimiteIndemnizacion.plusDays(1);
+		boolean respuesta = true;;
+		if(fechaInicioPeriodo.isAfter(programacion.getFechaInicio()))
+			respuesta = false;
+		if(fechaMaximaGoce.isBefore(programacion.getFechaFin()))
+			respuesta = false;
+		return respuesta;
+		
+	}
 
 	
 	

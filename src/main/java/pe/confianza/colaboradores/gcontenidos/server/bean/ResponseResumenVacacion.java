@@ -41,6 +41,8 @@ public class ResponseResumenVacacion {
 	private double meta;
 	
 	private int anio;
+	
+	private boolean solicitar;
 
 	public LocalDate getFechaConsulta() {
 		return fechaConsulta;
@@ -152,6 +154,14 @@ public class ResponseResumenVacacion {
 
 	public void setAnio(int anio) {
 		this.anio = anio;
+	}
+
+	public boolean isSolicitar() {
+		return solicitar;
+	}
+
+	public void setSolicitar(boolean solicitar) {
+		this.solicitar = solicitar;
 	}
 	
 	

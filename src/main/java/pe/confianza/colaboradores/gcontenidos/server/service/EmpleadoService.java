@@ -20,5 +20,9 @@ public interface EmpleadoService {
 	List<Empleado> findfechaNacimientoDeHoy();
 	
 	int obtenerCantidadEmpleadosPorUnidadNegocio(long codigoUnidadNegocio);
+	
+	void aceptarTerminosCondiciones(String usuarioBT);
+	
+	boolean consultarTerminosCondiciones(String usuarioBT);
 
 }

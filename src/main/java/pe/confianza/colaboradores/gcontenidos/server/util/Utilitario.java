@@ -265,6 +265,8 @@ public class Utilitario {
 	
 	public static double calcularMetaVacaciones(LocalDate fechaIngreso, double diasVencidos) {
 		int mesIngreso = fechaIngreso.getMonthValue();
+		if(mesIngreso == 1 || mesIngreso == 2)
+			return diasVencidos;
 		return diasVencidos + MetaVacacion.cantidadDias(mesIngreso);
 	}
 	

@@ -20,7 +20,7 @@ public interface VacacionProgramacionService {
 	
 	VacacionProgramacion buscarPorId(long idProgramacion);
 	
-	void eliminar(long idProgramacion);
+	void eliminar(long idProgramacion, String usuarioOperacion);
 	
 	List<VacacionProgramacion> buscarPorUsuarioBTYPeriodo(String usuarioBT, String periodo);
 	

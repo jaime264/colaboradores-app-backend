@@ -112,9 +112,12 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 				periodo.setDiasPendientesGozar(periodo.getDerecho() - periodo.getDiasGozados());
 			}
 		}
-		if(EstadoMigracion.IMPORTADO.valor.equals(periodo.getEstadoMigracion())) {
+		if(EstadoMigracion.IMPORTADO.valor.equals(periodo.getEstadoMigracion()) || EstadoMigracion.EXPORTADO.valor.equals(periodo.getEstadoMigracion())) {
 			periodo.setEstadoMigracion(EstadoMigracion.MODIFICADO.valor);
 		}
+		periodo.setFechaInicioPeriodo(empleado.getFechaIngreso().plusYears(periodo.getAnio() - empleado.getFechaIngreso().getYear()));
+		periodo.setFechaFinPeriodo(empleado.getFechaIngreso().plusYears(periodo.getAnio() - empleado.getFechaIngreso().getYear() + 1).plusDays(-1));
+		periodo.setFechaLimiteIndemnizacion(empleado.getFechaIngreso().plusYears(periodo.getAnio() - empleado.getFechaIngreso().getYear() + 2).plusDays(-1));
 		periodo.setUsuarioModifica(usuarioOperacion.trim());
 		periodo.setFechaModifica(LocalDateTime.now());
 		periodoVacacionDao.saveAndFlush(periodo);
