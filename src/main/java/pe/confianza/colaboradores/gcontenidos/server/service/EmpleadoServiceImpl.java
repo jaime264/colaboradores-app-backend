@@ -20,6 +20,7 @@ import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmplVacPerRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmpleadoRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.api.spring.EmpleadoApi;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseTerminosCondiciones;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.EmpleadoMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.AgenciaDao;
@@ -197,7 +198,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	}
 
 	@Override
-	public void aceptarTerminosCondiciones(String usuarioBT) {
+	public ResponseTerminosCondiciones aceptarTerminosCondiciones(String usuarioBT) {
 		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(usuarioBT.trim());
 		if(optEmpleado.isPresent()) {
 			Empleado empleado = optEmpleado.get();
@@ -209,7 +210,11 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 			empleado.setFechaAceptacionTc(LocalDateTime.now());
 			empleado.setFechaModifica(LocalDateTime.now());
 			empleado.setUsuarioModifica(usuarioBT);
-			empleadoDao.save(empleado);
+			empleado = empleadoDao.save(empleado);
+			ResponseTerminosCondiciones response = new ResponseTerminosCondiciones();
+			response.setAcepta(empleado.isAceptaTerminosCondiciones());
+			response.setFechaAceptacion(empleado.getFechaAceptacionTc());
+			return response;
 		} else {
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", usuarioBT));
 		}
@@ -217,13 +222,16 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	}
 
 	@Override
-	public boolean consultarTerminosCondiciones(String usuarioBT) {
+	public ResponseTerminosCondiciones consultarTerminosCondiciones(String usuarioBT) {
 		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(usuarioBT.trim());
 		if(optEmpleado.isPresent()) {
 			Empleado empleado = optEmpleado.get();
 			if(!empleado.getEstadoRegistro().equals(EstadoRegistro.ACTIVO.valor))
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "emplado.inactivo", usuarioBT));
-			return empleado.isAceptaTerminosCondiciones();
+			ResponseTerminosCondiciones response = new ResponseTerminosCondiciones();
+			response.setAcepta(empleado.isAceptaTerminosCondiciones());
+			response.setFechaAceptacion(empleado.getFechaAceptacionTc());
+			return response;
 		} else {
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", usuarioBT));
 		}

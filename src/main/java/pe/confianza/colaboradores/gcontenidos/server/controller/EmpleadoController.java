@@ -35,8 +35,10 @@ import com.google.gson.reflect.TypeToken;
 
 import io.swagger.annotations.ApiOperation;
 import pe.confianza.colaboradores.gcontenidos.server.bean.InstruccionAcademica;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAuditoria;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestEmpleado;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseTerminosCondiciones;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
@@ -158,15 +160,15 @@ public class EmpleadoController {
 		return new ResponseEntity<Empleado>(empleado, HttpStatus.OK);
 	}
 	
-	@ApiOperation(notes = "Empleado acepta los terminos y conficiones", value = "url proxy /aceptartc/${usuarioBT}")
-	@PutMapping("empelados/aceptartc/{usuarioBT}")
-	public ResponseEntity<ResponseStatus> aceptarTerminosCondiciones(@PathVariable("usuarioBT") String usuarioBT) {
+	@ApiOperation(notes = "Empleado acepta los terminos y conficiones", value = "url proxy /empleado/aceptartc")
+	@PostMapping("empelado/aceptatc")
+	public ResponseEntity<ResponseStatus> aceptarTerminosCondiciones(@RequestBody RequestAuditoria request) {
 		ResponseStatus responseStatus = new ResponseStatus();
 		try {
-			empleadoService.aceptarTerminosCondiciones(usuarioBT);
+			ResponseTerminosCondiciones body = empleadoService.aceptarTerminosCondiciones(request.getUsuarioOperacion());
 			responseStatus.setCodeStatus(Constantes.COD_OK);
 			responseStatus.setMsgStatus(Constantes.OK);
-			responseStatus.setResultObj(true);
+			responseStatus.setResultObj(body);
 			return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -176,15 +178,15 @@ public class EmpleadoController {
 		}
 	}
 	
-	@ApiOperation(notes = "Empleado consulta los terminos y conficiones", value = "url proxy /aceptartc/${usuarioBT}")
-	@GetMapping("empelados/aceptartc/{usuarioBT}")
-	public ResponseEntity<ResponseStatus> consultarTerminosCondiciones(@PathVariable("usuarioBT") String usuarioBT) {
+	@ApiOperation(notes = "Empleado consulta los terminos y conficiones", value = "url proxy /empleado/consultatc")
+	@PostMapping("empelado/consultatc")
+	public ResponseEntity<ResponseStatus> consultarTerminosCondiciones(@RequestBody RequestAuditoria request) {
 		ResponseStatus responseStatus = new ResponseStatus();
 		try {
-			boolean acepta = empleadoService.consultarTerminosCondiciones(usuarioBT);
+			ResponseTerminosCondiciones body = empleadoService.consultarTerminosCondiciones(request.getUsuarioOperacion());
 			responseStatus.setCodeStatus(Constantes.COD_OK);
 			responseStatus.setMsgStatus(Constantes.OK);
-			responseStatus.setResultObj(acepta);
+			responseStatus.setResultObj(body);
 			return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 		} catch (Exception e) {
 			responseStatus.setCodeStatus(Constantes.COD_ERR);
