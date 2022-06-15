@@ -95,12 +95,14 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		});
 		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.registrar(programaciones, usuarioOperacion);
 		List<Long> idsProgRegistradas = programacionesRegistradas.stream().map(prog -> prog.getId()).collect(Collectors.toList());
-		Integer totalDiasRegistrados = programacionesRegistradas.stream().mapToInt(VacacionProgramacion::getNumeroDias).sum();
 		List<Long> idsPeriodosModificados = programacionesRegistradas.stream().map(prog -> prog.getPeriodo().getId()).distinct().collect(Collectors.toList());
 		idsPeriodosModificados.forEach(periodoId -> {
 			actualizarPeriodo(empleado, periodoId,  usuarioOperacion);
 		});
-		actualizarMeta(empleado, LocalDate.now().getYear() + 1, totalDiasRegistrados, usuarioOperacion);
+		programacionesRegistradas.forEach(p -> {
+			actualizarMeta(LocalDate.now().getYear() + 1, p, false, usuarioOperacion);
+		});
+		
 		programacionesRegistradas = new ArrayList<>();
 		for (Long idProgramacion : idsProgRegistradas) {
 			programacionesRegistradas.add(vacacionProgramacionService.buscarPorId(idProgramacion));
@@ -127,7 +129,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		long idPeriodo = programacion.getPeriodo().getId();
 		vacacionProgramacionService.eliminar(cancelacion.getIdProgramacion(), cancelacion.getUsuarioOperacion());
 		actualizarPeriodo(empleado, idPeriodo,  cancelacion.getUsuarioOperacion());
-		actualizarMeta(empleado, ahora.getYear() + 1, programacion.getNumeroDias() * -1, cancelacion.getUsuarioOperacion().trim());
+		actualizarMeta(ahora.getYear() + 1, programacion, true, cancelacion.getUsuarioOperacion().trim());
 		LOGGER.info("[END] cancelar");
 	}
 	
@@ -147,7 +149,8 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			response.add(VacacionProgramacionMapper.convert(programacion));
 		}
 		actualizarPeriodo(empleado, request.getUsuarioOperacion());
-		actualizarMeta(empleado, ahora.getYear() + 1, 0, request.getUsuarioOperacion());
+		consolidarMetaAnual(empleado, ahora.getYear() + 1, request.getUsuarioOperacion());
+		//actualizarMeta(empleado, ahora.getYear() + 1, 0, request.getUsuarioOperacion());
 		LOGGER.info("[END] generar");
 		return response;
 	}
@@ -383,10 +386,10 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		if(diasAcumuladosVacaciones == 0 && diasProgramacion > 15) {
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()}));
 		}
-		if(diasAcumuladosVacaciones == 7 && diasProgramacion < 8) {
+		if(diasAcumuladosVacaciones == 7 && diasProgramacion != 8) {
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()}));
 		}
-		if(diasAcumuladosVacaciones == 8 && diasProgramacion < 7) {
+		if(diasAcumuladosVacaciones == 8 && diasProgramacion != 7) {
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()}));
 		}
 		double diasPendientePorRegistrar = Utilitario.calcularDiasPendientesPorRegistrar(programacion.getPeriodo());
@@ -449,10 +452,18 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	}
 	
 	@Override
-	public void actualizarMeta(Empleado empleado, int anioMeta, int diasActualizar,  String usuarioOperacion) {
-		LOGGER.info("[BEGIN] actualizarMeta {} - {}", new Object[] {empleado.getUsuarioBT(), anioMeta});
-		vacacionMetaService.actualizarMeta(empleado, anioMeta, diasActualizar, usuarioOperacion);
+	public void actualizarMeta(int anio, VacacionProgramacion programacion,  boolean cancelarProgramcion,  String usuarioOperacion) {
+		LOGGER.info("[BEGIN] actualizarMeta {} - {}", new Object[] {programacion.getPeriodo().getEmpleado().getUsuarioBT(), anio});
+		vacacionMetaService.actualizarMeta(anio, programacion, cancelarProgramcion, usuarioOperacion);
 		LOGGER.info("[END] actualizarMeta");
+	}
+	
+	@Override
+	public void consolidarMetaAnual(Empleado empleado, int anio, String usuarioOperacion) {
+		LOGGER.info("[BEGIN] consolidarMetaAnual {} - {}", new Object[] {empleado.getUsuarioBT(), anio});
+		vacacionMetaService.consolidarMetaAnual(empleado, anio, usuarioOperacion);
+		LOGGER.info("[END] consolidarMetaAnual");
+		
 	}
 
 	@Override
@@ -557,8 +568,6 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.bolsa.recuperaciones.analista_recuperaciones.limite_error")) ;
 		}
 		LOGGER.info("[END] validarPoliticaBolsaRecuperaciones");
-	}
-	
-	
+	}	
 	
 }

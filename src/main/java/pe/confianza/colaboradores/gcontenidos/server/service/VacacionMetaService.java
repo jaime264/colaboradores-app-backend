@@ -3,6 +3,7 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionMeta;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 
 public interface VacacionMetaService {
 	
@@ -31,7 +32,7 @@ public interface VacacionMetaService {
 	 * @param usuarioOperacion
 	 * @return
 	 */
-	VacacionMeta actualizarMeta(Empleado empleado, int anio, int diasActualizar,
+	VacacionMeta actualizarMeta(int anio, VacacionProgramacion programacion, boolean cancelarProgramcion,
 			String usuarioOperacion);
 	
 
