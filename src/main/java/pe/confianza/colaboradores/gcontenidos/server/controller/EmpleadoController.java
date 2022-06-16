@@ -160,7 +160,7 @@ public class EmpleadoController {
 		return new ResponseEntity<Empleado>(empleado, HttpStatus.OK);
 	}
 	
-	@ApiOperation(notes = "Empleado acepta los terminos y conficiones", value = "url proxy /empleado/aceptartc")
+	@ApiOperation(notes = "Empleado acepta los terminos y conficiones", value = "url proxy /empleadoaceptartc")
 	@PostMapping("empelado/aceptatc")
 	public ResponseEntity<ResponseStatus> aceptarTerminosCondiciones(@RequestBody RequestAuditoria request) {
 		ResponseStatus responseStatus = new ResponseStatus();
@@ -178,7 +178,7 @@ public class EmpleadoController {
 		}
 	}
 	
-	@ApiOperation(notes = "Empleado consulta los terminos y conficiones", value = "url proxy /empleado/consultatc")
+	@ApiOperation(notes = "Empleado consulta los terminos y conficiones", value = "url proxy /empleadoconsultatc")
 	@PostMapping("empelado/consultatc")
 	public ResponseEntity<ResponseStatus> consultarTerminosCondiciones(@RequestBody RequestAuditoria request) {
 		ResponseStatus responseStatus = new ResponseStatus();

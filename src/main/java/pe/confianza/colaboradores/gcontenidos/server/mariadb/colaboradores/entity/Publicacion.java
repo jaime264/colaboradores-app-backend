@@ -81,6 +81,9 @@ public class Publicacion extends EntidadAuditoria {
 	@Transient
 	private String nombre;
 	
+	@Column(nullable = true)
+	private Boolean gestorContenido;
+	
 
 	public String getUsuarioBt() {
 		return usuarioBt;
@@ -241,5 +244,15 @@ public class Publicacion extends EntidadAuditoria {
 	public void setActivo(Boolean activo) {
 		this.activo = activo;
 	}
+
+	public Boolean getGestorContenido() {
+		return gestorContenido;
+	}
+
+	public void setGestorContenido(Boolean gestorContenido) {
+		this.gestorContenido = gestorContenido;
+	}
+	
+	
 
 }

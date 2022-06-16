@@ -105,9 +105,9 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 		LOGGER.info("[BEGIN] actualizarMeta {} - {}" , new Object[] {programacion.getPeriodo().getEmpleado().getUsuarioBT(), anio});	
 		VacacionMeta meta = obtenerVacacionPorAnio(anio, programacion.getPeriodo().getEmpleado().getId());
 		if(cancelarProgramcion) {
-			meta.setMeta(meta.getMetaInicial() + programacion.getNumeroDias());
+			meta.setMeta(meta.getMeta() + programacion.getNumeroDias());
 		} else {
-			meta.setMeta(meta.getMetaInicial() - programacion.getNumeroDias());
+			meta.setMeta(meta.getMeta() - programacion.getNumeroDias());
 		}
 		if(meta.getPeriodoVencido().getId() == programacion.getPeriodo().getId()) {
 			if(cancelarProgramcion) {

@@ -202,6 +202,10 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		response.setFechaInicioLabores(empleado.getFechaIngreso());
 		response.setFechaFinLabores(empleado.getFechaFinContrato());
 		response.setCargo(empleado.getPuesto().getDescripcion().trim());
+		response.setMeta(meta.getMeta() < 1.0 ? 0.0 : (int)meta.getMeta());
+		response.setFechaInicioRegistroProgramacion(parametrosConstants.getFechaInicioRegistroProgramacion(fechaConsulta.getYear()));
+		response.setFechaFinRegistroProgramacion(parametrosConstants.getFechaFinRegistroProgramacion(fechaConsulta.getYear()));
+		response.setAnio(meta.getAnio());
 		
 		ResponseResumenPeriodoVacacion periodoTrunco = null;
 		ResponseResumenPeriodoVacacion periodoVencido = null;
@@ -215,7 +219,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			periodoVencido.setFechaLimite(periodo.getFechaLimiteIndemnizacion());
 			periodoVencido.setUltimoTramo(ultimaProgramacion == null ? 0  : ultimaProgramacion.getOrden());
 		}
-		
+
 		if(meta.getPeriodoTrunco() != null) {
 			PeriodoVacacion periodo = meta.getPeriodoTrunco();
 			VacacionProgramacion ultimaProgramacion = vacacionProgramacionService.obtenerUltimaProgramacion(periodo.getId());
@@ -228,11 +232,8 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			
 		response.setPeriodoTrunco(periodoTrunco);
 		response.setPeriodoVencido(periodoVencido);
-		response.setMeta(meta.getMeta());
-		response.setFechaInicioRegistroProgramacion(parametrosConstants.getFechaInicioRegistroProgramacion(fechaConsulta.getYear()));
-		response.setFechaFinRegistroProgramacion(parametrosConstants.getFechaFinRegistroProgramacion(fechaConsulta.getYear()));
-		response.setAnio(meta.getAnio());
-		if(meta.getMeta() < 1.0) {
+		
+		if(response.getMeta() == 0.0) {
 			response.setSolicitar(true);
 		} else {
 			response.setSolicitar(false);
