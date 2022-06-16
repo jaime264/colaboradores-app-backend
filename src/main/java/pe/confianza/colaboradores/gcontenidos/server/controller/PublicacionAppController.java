@@ -2,6 +2,8 @@ package pe.confianza.colaboradores.gcontenidos.server.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestPublicacionGestorContenido;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Reaccion;
@@ -93,6 +96,11 @@ private static Logger logger = LoggerFactory.getLogger(PublicacionController.cla
 		ResponseStatus response = publicacionAppService.deleteReaccion(idReaccion);
 
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
+	}
+	
+	@PostMapping("/publicacionApp/gestorcontenido")
+	public ResponseEntity<ResponseStatus> registroPublicacionGestorContenido(@RequestBody @Valid RequestPublicacionGestorContenido request) {
+		return new ResponseEntity<>(publicacionAppService.registro(request), HttpStatus.OK);
 	}
 
 }

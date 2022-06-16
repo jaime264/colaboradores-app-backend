@@ -4,23 +4,35 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.api.spring.EmpleadoApi;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestPublicacionGestorContenido;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
+import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
+import pe.confianza.colaboradores.gcontenidos.server.mapper.PublicacionMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ComentarioDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ImagenDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.NotificacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PublicacionAppDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ReaccionPubDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.UsuarioPublicacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VideoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Comentario;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Imagen;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Notificacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Reaccion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.UsuarioPublicacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Video;
+import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
+import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
+import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 
 @Service
 public class PublicacionAppServiceImpl implements PublicacionAppService {
@@ -48,6 +60,12 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 	@Autowired
 	EmpleadoService empleadoService;
+	
+	@Autowired
+	private UsuarioPublicacionDao usuarioPublicacionDao;
+	
+	@Autowired
+	private NotificacionDao notificacionDao;
 
 	@Override
 	public List<Publicacion> list() {
@@ -59,42 +77,12 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 	public ResponseStatus add(Publicacion publicacion) {
 
 		ResponseStatus status = new ResponseStatus();
-		try {
-
-			publicacion.setFecha(LocalDateTime.now());
-			publicacion.setFechaCrea(LocalDateTime.now());
-			publicacion.setActivo(true);
-
-			Publicacion pub = publicacionAppDao.save(publicacion);
-
-			if (pub.getImagenes() != null) {
-				pub.getImagenes().forEach(e -> {
-					Imagen imagen = new Imagen();
-					imagen.setPublicacion(pub);
-					imagen.setFechaCrea(LocalDateTime.now());
-					imagen.setUrl(e.getUrl());
-					imagen.setActivo(true);
-					imagen.setUsuarioCrea(pub.getUsuarioCrea());
-					imagenDao.save(imagen);
-				});
-			}
-			if (pub.getVideos() != null) {
-				pub.getVideos().forEach(e -> {
-					Video video = new Video();
-					video.setPublicacion(pub);
-					video.setFechaCrea(LocalDateTime.now());
-					video.setUrl(e.getUrl());
-					video.setActivo(true);
-					video.setUsuarioCrea(pub.getUsuarioCrea());
-					videoDao.save(video);
-				});
-			}
-
+		Publicacion pub = guardar(publicacion);
+		if(pub != null) {
 			status.setCodeStatus(200);
-		} catch (Exception e) {
+		} else {
 			status.setCodeStatus(500);
 		}
-
 		return status;
 	}
 
@@ -379,5 +367,90 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			}
 		}
 	}
+
+	@Transactional
+	@Override
+	public ResponseStatus registro(RequestPublicacionGestorContenido request) {
+		Publicacion publicacion = PublicacionMapper.convert(request);
+		final Publicacion pub = guardar(publicacion);
+		if(publicacion == null)
+			throw new AppException("Ocurrió un error al registrar publicción");
+		try {
+			request.getUsuarios().forEach(u -> {
+				Empleado empelado = empleadoService.buscarPorUsuarioBT(u);
+				if(empelado.getId() != null) {
+					UsuarioPublicacion usuarioPublicacion = new UsuarioPublicacion();
+					usuarioPublicacion.setEmpleado(empelado);
+					usuarioPublicacion.setPublicacion(pub);
+					usuarioPublicacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
+					usuarioPublicacion.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
+					usuarioPublicacion.setUsuarioCrea(pub.getUsuarioBt());
+					usuarioPublicacion.setFechaCrea(LocalDateTime.now());
+					usuarioPublicacionDao.save(usuarioPublicacion);
+					
+					Notificacion notificacion = new Notificacion();
+					notificacion.setData("{id: " + pub.getId() +"}");
+					notificacion.setDescripcion(pub.getDescripcion());
+					notificacion.setEmpleado(empelado);
+					notificacion.setEnviado(false);
+					notificacion.setTitulo(pub.getDescripcion());
+					notificacion.setVisto(false);
+					notificacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
+					notificacion.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
+					notificacion.setUsuarioCrea(pub.getUsuarioCrea());
+					notificacion.setFechaCrea(LocalDateTime.now());
+					notificacionDao.save(notificacion);
+				}
+			});
+		} catch (Exception e) {
+			throw new AppException("Ocurrió un error al registrar publicación", e);
+		}
+		ResponseStatus response = new ResponseStatus();
+		response.setCodeStatus(Constantes.COD_OK);
+		response.setMsgStatus(Constantes.OK);
+		response.setResultObj(pub);
+		return response;
+	}
+	
+	private Publicacion guardar(Publicacion publicacion) {
+		try {
+			publicacion.setFecha(LocalDateTime.now());
+			publicacion.setFechaCrea(LocalDateTime.now());
+			publicacion.setActivo(true);
+			publicacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
+
+			Publicacion pub = publicacionAppDao.save(publicacion);
+
+			if (pub.getImagenes() != null) {
+				pub.getImagenes().forEach(e -> {
+					Imagen imagen = new Imagen();
+					imagen.setPublicacion(pub);
+					imagen.setFechaCrea(LocalDateTime.now());
+					imagen.setUrl(e.getUrl());
+					imagen.setActivo(true);
+					imagen.setUsuarioCrea(pub.getUsuarioCrea());
+					imagen.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
+					imagenDao.save(imagen);
+				});
+			}
+			if (pub.getVideos() != null) {
+				pub.getVideos().forEach(e -> {
+					Video video = new Video();
+					video.setPublicacion(pub);
+					video.setFechaCrea(LocalDateTime.now());
+					video.setUrl(e.getUrl());
+					video.setActivo(true);
+					video.setUsuarioCrea(pub.getUsuarioCrea());
+					video.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
+					videoDao.save(video);
+				});
+			}
+			return pub;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+
 
 }

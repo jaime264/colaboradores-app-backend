@@ -1,11 +1,9 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.util.List;
-import java.util.Optional;
 
-import pe.confianza.colaboradores.gcontenidos.server.bean.ParamsReaccion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestPublicacionGestorContenido;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Comentario;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Reaccion;
 
@@ -28,4 +26,6 @@ public interface PublicacionAppService {
 	public ResponseStatus updateReaccion(Reaccion reaccion);
 
 	public ResponseStatus deleteReaccion(Long idReaccion);
+	
+	ResponseStatus registro(RequestPublicacionGestorContenido request);
 }
