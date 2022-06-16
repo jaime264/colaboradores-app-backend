@@ -13,7 +13,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 
 @Entity
 @Table(name = "publicacionApp")
@@ -41,9 +44,11 @@ public class Publicacion extends EntidadAuditoria {
 	@Column(columnDefinition = "TIMESTAMP")
 	private LocalDateTime fecha;
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA_HORA, timezone = "America/Bogota")
 	@Column(columnDefinition = "TIMESTAMP")
 	private LocalDateTime fechaInicio;
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA_HORA, timezone = "America/Bogota")
 	@Column(columnDefinition = "TIMESTAMP")
 	private LocalDateTime fechaFin;
 
