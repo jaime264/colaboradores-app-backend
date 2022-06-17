@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.C
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ImagenDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.NotificacionDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.NotificacionTipoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PublicacionAppDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ReaccionPubDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.UsuarioPublicacionDao;
@@ -26,6 +29,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Imagen;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Notificacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.NotificacionTipo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Publicacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Reaccion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.UsuarioPublicacion;
@@ -33,9 +37,12 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
+import pe.confianza.colaboradores.gcontenidos.server.util.TipoNotificacion;
 
 @Service
 public class PublicacionAppServiceImpl implements PublicacionAppService {
+	
+	private static Logger logger = LoggerFactory.getLogger(PublicacionAppServiceImpl.class);
 
 	@Autowired
 	PublicacionAppDao publicacionAppDao;
@@ -66,6 +73,9 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 	
 	@Autowired
 	private NotificacionDao notificacionDao;
+	
+	@Autowired
+	private NotificacionTipoDao notificacionTipoDao;
 
 	@Override
 	public List<Publicacion> list() {
@@ -371,12 +381,17 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 	@Transactional
 	@Override
 	public ResponseStatus registro(RequestPublicacionGestorContenido request) {
+		logger.info("[BEGIN] registro");
 		Publicacion publicacion = PublicacionMapper.convert(request);
 		final Publicacion pub = guardar(publicacion);
-		if(publicacion == null)
+		if(pub == null)
 			throw new AppException("Ocurrió un error al registrar publicción");
+		Optional<NotificacionTipo> tipoNot = notificacionTipoDao.findOneByCodigo(TipoNotificacion.PUBLICACION_GESTOR_CONTENIDO.valor);
+		if(!tipoNot.isPresent())
+			throw new AppException("No se encontró el tipo de notificacion");
 		try {
 			request.getUsuarios().forEach(u -> {
+				logger.info("Buscar empleado {}" , u);
 				Empleado empelado = empleadoService.buscarPorUsuarioBT(u);
 				if(empelado.getId() != null) {
 					UsuarioPublicacion usuarioPublicacion = new UsuarioPublicacion();
@@ -389,7 +404,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 					usuarioPublicacionDao.save(usuarioPublicacion);
 					
 					Notificacion notificacion = new Notificacion();
-					notificacion.setData("{id: " + pub.getId() +"}");
+					notificacion.setData(pub.getId() + "");
 					notificacion.setDescripcion(pub.getDescripcion());
 					notificacion.setEmpleado(empelado);
 					notificacion.setEnviado(false);
@@ -399,20 +414,24 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 					notificacion.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
 					notificacion.setUsuarioCrea(pub.getUsuarioCrea());
 					notificacion.setFechaCrea(LocalDateTime.now());
+					notificacion.setTipo(tipoNot.get());
 					notificacionDao.save(notificacion);
 				}
 			});
 		} catch (Exception e) {
-			throw new AppException("Ocurrió un error al registrar publicación", e);
+			logger.error("[ERROR] registro", e);
+			throw new AppException("Ocurrió un error al registrar usuario y notificación", e);
 		}
 		ResponseStatus response = new ResponseStatus();
 		response.setCodeStatus(Constantes.COD_OK);
 		response.setMsgStatus(Constantes.OK);
 		response.setResultObj(pub);
+		logger.info("[END] registro");
 		return response;
 	}
 	
 	private Publicacion guardar(Publicacion publicacion) {
+		logger.info("[BEGIN] guardar");
 		try {
 			publicacion.setFecha(LocalDateTime.now());
 			publicacion.setFechaCrea(LocalDateTime.now());
@@ -445,8 +464,10 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 					videoDao.save(video);
 				});
 			}
+			logger.info("[END] guardar");
 			return pub;
 		} catch (Exception e) {
+			logger.error("[ERROR] guardar", e);
 			return null;
 		}
 	}

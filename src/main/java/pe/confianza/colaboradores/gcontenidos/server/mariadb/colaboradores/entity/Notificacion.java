@@ -35,6 +35,10 @@ public class Notificacion extends EntidadAuditoria {
 	
 	@Column(nullable = false)
 	private boolean enviado;
+	
+	@ManyToOne
+	@JoinColumn(nullable = true, name = "idTipo")
+	private NotificacionTipo tipo;
 
 	public Long getId() {
 		return id;
@@ -92,8 +96,13 @@ public class Notificacion extends EntidadAuditoria {
 		this.enviado = enviado;
 	}
 
-	
-	
+	public NotificacionTipo getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(NotificacionTipo tipo) {
+		this.tipo = tipo;
+	}
 	
 	
 	
