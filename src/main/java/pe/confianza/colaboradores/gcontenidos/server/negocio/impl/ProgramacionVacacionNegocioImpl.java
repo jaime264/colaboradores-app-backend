@@ -394,6 +394,11 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		if(diasAcumuladosVacaciones == 8 && diasProgramacion != 7) {
 			mensajeError = Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()});
 		}
+		if(diasAcumuladosVacaciones < 15 && diasProgramacion < 7)
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error", new String[] {}));
+		if(!mensajeError.equals(""))
+			throw new AppException(mensajeError);
+			
 		double diasPendientePorRegistrar = Utilitario.calcularDiasPendientesPorRegistrar(programacion.getPeriodo());
 		if(programacion.getNumeroDias() == diasPendientePorRegistrar ) {
 			contadorSabados += Utilitario.obtenerCantidadSabados(programacion.getFechaInicio(), programacion.getFechaFin());
@@ -404,13 +409,6 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			if(contadorDomingos < 4) {
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regularoria.cuatro_domingos.error", new String[] { programacion.getPeriodo().getDescripcion()}));
 			}
-		}
-		if(!mensajeError.equals("")) {
-			if(diasProgramacion < 7) {
-				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error", new String[] {}));
-			} else {
-				throw new AppException(mensajeError);
-			}				
 		}
 		LOGGER.info("[END] validarTramoVacaciones");
 	}
