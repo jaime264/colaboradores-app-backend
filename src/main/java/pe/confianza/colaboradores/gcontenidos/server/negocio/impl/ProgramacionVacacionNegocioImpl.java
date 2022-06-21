@@ -397,20 +397,20 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		double diasPendientePorRegistrar = Utilitario.calcularDiasPendientesPorRegistrar(programacion.getPeriodo());
 		if(programacion.getNumeroDias() == diasPendientePorRegistrar ) {
 			contadorSabados += Utilitario.obtenerCantidadSabados(programacion.getFechaInicio(), programacion.getFechaFin());
-			if(contadorSabados != 4) {
+			if(contadorSabados < 4) {
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regularoria.cuatro_sabados.error", new String[] { programacion.getPeriodo().getDescripcion()}));
 			}
 			contadorDomingos += Utilitario.obtenerCantidadDomingos(programacion.getFechaInicio(), programacion.getFechaFin());
-			if(contadorDomingos != 4) {
+			if(contadorDomingos < 4) {
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regularoria.cuatro_domingos.error", new String[] { programacion.getPeriodo().getDescripcion()}));
 			}
 		}
 		if(!mensajeError.equals("")) {
 			if(diasProgramacion < 7) {
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error", new String[] {}));
-			}
-			if(diasAcumuladosVacaciones < 15)
+			} else {
 				throw new AppException(mensajeError);
+			}				
 		}
 		LOGGER.info("[END] validarTramoVacaciones");
 	}
