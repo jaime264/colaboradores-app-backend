@@ -396,8 +396,8 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		}
 		if(diasAcumuladosVacaciones < 15 && diasProgramacion < 7)
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error", new String[] {}));
-		if(!mensajeError.equals(""))
-			throw new AppException(mensajeError);
+		/*if(!mensajeError.equals(""))
+			throw new AppException(mensajeError);*/
 			
 		double diasPendientePorRegistrar = Utilitario.calcularDiasPendientesPorRegistrar(programacion.getPeriodo());
 		if(programacion.getNumeroDias() == diasPendientePorRegistrar ) {
