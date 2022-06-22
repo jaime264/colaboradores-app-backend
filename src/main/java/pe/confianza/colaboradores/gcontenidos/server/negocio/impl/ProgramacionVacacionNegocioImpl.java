@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCancelarProgramacionVacacion;
@@ -502,6 +501,14 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 					"vacaciones.politica.regulatoria.primera_mitad.error",
 					new String[] { programacion.getPeriodo().getDescripcion() });
 		}
+		
+		if((diasAcumuladosVacaciones + diasProgramacion) < 15 && diasProgramacion < 7)
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error", new String[] {}));
+		if((diasAcumuladosVacaciones + diasProgramacion) >= 15 && diasProgramacion < 7)
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error", new String[] {}));
+		/*if(!mensajeError.equals(""))
+			throw new AppException(mensajeError);*/
+			
 		double diasPendientePorRegistrar = Utilitario.calcularDiasPendientesPorRegistrar(programacion.getPeriodo());
 		if (programacion.getNumeroDias() == diasPendientePorRegistrar) {
 			contadorSabados += Utilitario.obtenerCantidadSabados(programacion.getFechaInicio(),
@@ -519,6 +526,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 						new String[] { programacion.getPeriodo().getDescripcion() }));
 			}
 		}
+
 		if (!mensajeError.equals("")) {
 			if (diasProgramacion < 7) {
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error",
@@ -527,6 +535,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 				throw new AppException(mensajeError);
 			}
 		}
+
 		LOGGER.info("[END] validarTramoVacaciones");
 	}
 

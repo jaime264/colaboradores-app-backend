@@ -25,8 +25,8 @@ public class UtilitarioTest {
 	@Test
 	public void calcualrDerecho1() {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		LocalDate fechaIngreso = LocalDate.parse("09/11/1999", formatter);
-		LocalDate fechaCorte = LocalDate.parse("30/04/2022", formatter);
+		LocalDate fechaIngreso = LocalDate.parse("05/09/2012", formatter);
+		LocalDate fechaCorte = LocalDate.parse("31/05/2022", formatter);
 		System.out.println(fechaIngreso + " " + fechaCorte);
 		double derecho = Utilitario.calcularDerechoVacaciones(fechaIngreso, fechaCorte);
 		System.out.println(derecho);

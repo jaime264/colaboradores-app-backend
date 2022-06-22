@@ -87,8 +87,9 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 			Optional<PeriodoVacacion> optTrunco = periodos.stream().filter(p -> p.getAnio() == limitePeriodoTrunco[0].getYear()).findFirst();
 			if(optTrunco.isPresent()) {
 				PeriodoVacacion periodo = optTrunco.get();
+				double derechoPeriodo = Utilitario.calcularDerechoVacaciones(fechaIngreso, fechaCorte);
 				meta.setPeriodoTrunco(periodo);
-				meta.setDiasTruncos(periodo.getDerecho() - periodo.getDiasGozados() - periodo.getDiasRegistradosGozar() - periodo.getDiasGeneradosGozar() - periodo.getDiasAprobadosGozar());
+				meta.setDiasTruncos(derechoPeriodo - periodo.getDiasGozados() - periodo.getDiasRegistradosGozar() - periodo.getDiasGeneradosGozar() - periodo.getDiasAprobadosGozar());
 			}
 		}
 		meta.setMetaInicial(Utilitario.calcularMetaVacaciones(empleado.getFechaIngreso(), limitePeriodoVencido == null ? 0 : meta.getDiasVencidos()));

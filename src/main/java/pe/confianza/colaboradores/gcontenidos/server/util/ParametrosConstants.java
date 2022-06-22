@@ -102,7 +102,7 @@ public class ParametrosConstants {
 	
 	public LocalDate getFechaCorteMeta(int anio) {
 		if(FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES != null) {
-			return LocalDate.parse(FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES + "/" + anio, formatter).plusDays(-1);
+			return LocalDate.parse(FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES + "/" + anio, formatter).minusDays(1);
 		}
 		throw new AppException("No existe el parámetro de fecha inicio de registro de programación");
 	}
