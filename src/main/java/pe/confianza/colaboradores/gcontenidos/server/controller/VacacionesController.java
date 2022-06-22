@@ -31,11 +31,14 @@ import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCancelarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGenerarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarVacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionEmpleado;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramacionAprobador;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestResumenVacaciones;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseResumenVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Vacacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
@@ -205,10 +208,10 @@ public class VacacionesController {
 	}
 	
 	@PostMapping("/vacaciones/programacion-empleado")
-	public ResponseEntity<?> listEmpleadoByprogramacion(Long codigo) throws IOException {
+	public ResponseEntity<?> listEmpleadoByprogramacion(@Valid @RequestBody RequestProgramacionEmpleado reqPrograEmp) throws IOException {
 		
-		logger.info("Empleado: " + codigo.toString());
-		List<EmplVacPerRes> em = empleadoService.listEmpleadoByprogramacion(codigo);
+		logger.info("Empleado: " + reqPrograEmp.toString());
+		List<EmplVacPerRes> em = vacacionProgramacionService.listEmpleadoByprogramacion(reqPrograEmp);
 		
 		return new ResponseEntity<List<EmplVacPerRes>>(em, HttpStatus.OK);
 	}
@@ -221,5 +224,14 @@ public class VacacionesController {
 		vacacionProgramacionService.aprobarVacacionPeriodos(vacacionPeriodos);
 		
 		return new ResponseEntity<Object>(HttpStatus.OK);
+	}
+	
+	@PostMapping("/vacaciones/reprogramacion-aprobador")
+	public ResponseEntity<?> reprogramacionAprobador(@RequestBody RequestReprogramacionAprobador reqAprobador) throws IOException {
+		
+		logger.info("VacacionPeriodo: " + reqAprobador.toString());
+		VacacionProgramacion vacpro = programacionVacacionNegocio.reprogramacionAprobador(reqAprobador);
+		
+		return new ResponseEntity<VacacionProgramacion>(vacpro, HttpStatus.OK);
 	}
 }

@@ -3,7 +3,9 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmplVacPerRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionEmpleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
@@ -49,4 +51,7 @@ public interface VacacionProgramacionService {
 	long contarProgramacionPorEmpleadoPuesto(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
 	
 	long contarProgramacionPorEmpleadoAgencia(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
+	
+	List<EmplVacPerRes> listEmpleadoByprogramacion(RequestProgramacionEmpleado reqPrograEmp);
+	
 }

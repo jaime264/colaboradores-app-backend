@@ -20,7 +20,6 @@ public class FirebaseCloudMessagingClient {
 		boolean executed = false;
 		try {
 			
-
 			MulticastMessage message = MulticastMessage.builder()
 					.setWebpushConfig(WebpushConfig.builder()
 				            .setNotification(new WebpushNotification(
