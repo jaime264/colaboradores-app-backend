@@ -15,9 +15,7 @@ public interface EmpleadoService {
 	Empleado buscarPorUsuarioBT(String usuarioBT);
 	
 	Empleado buscarPorCodigo(Long codigo);
-	
-	List<EmplVacPerRes> listEmpleadoByprogramacion(Long codigo);
-	
+		
 	List<Empleado> findfechaNacimientoDeHoy();
 	
 	int obtenerCantidadEmpleadosPorUnidadNegocio(long codigoUnidadNegocio);

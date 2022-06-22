@@ -13,10 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmplVacPerRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionEmpleado;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VacacionProgramacionDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
@@ -30,6 +35,9 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	@Autowired
 	private VacacionProgramacionDao vacacionProgramacionDao;
+	
+	@Autowired
+	private EmpleadoDao empleadoDao;
 
 	@Override
 	public void actualizarEstadoProgramaciones() {
@@ -227,5 +235,43 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		String strFechaFin = fechaFinProgramacion.format(formatter);
 		return vacacionProgramacionDao.contarProgramacionPorEmpleadoAgencia(idEmpleado, descripcionPuesto, strFechaInicio, strFechaFin);
 	}
+
+	@Override
+	public List<EmplVacPerRes> listEmpleadoByprogramacion(RequestProgramacionEmpleado reqPrograEmp) {
+		List<EmplVacPerRes> listEmp = new ArrayList<EmplVacPerRes>();
+		
+		Optional<Empleado> emJefe = empleadoDao.findOneByUsuarioBT(reqPrograEmp.getUsuarioBt());
+
+		List<Empleado> emsByJefe = empleadoDao.findByCodigoJefe(emJefe.get().getCodigo());
+
+		if (!CollectionUtils.isEmpty(emsByJefe)) {
+			for (Empleado e : emsByJefe) {
+
+				List<VacacionProgramacion> lVp = empleadoDao.findPeriodosByEmpleado(e.getId());
+				for (VacacionProgramacion v : lVp) {
+
+					EmplVacPerRes emp = new EmplVacPerRes();
+					emp.setNombres(e.getNombres());
+					emp.setApellidoPaterno(e.getApellidoPaterno());
+					emp.setApellidoMaterno(e.getApellidoMaterno());
+					emp.setIdEmpleado(e.getId());
+					emp.setPuesto(e.getPuesto().getDescripcion());
+					emp.setUsuarioBt(e.getUsuarioBT());
+
+					VacacionPeriodo vp = new VacacionPeriodo();
+					emp.setIdProgramacion(v.getId());
+					emp.setFechaInicio(v.getFechaInicio());
+					emp.setFechaFin(v.getFechaFin());
+					emp.setIdEstado(v.getIdEstado());
+					emp.setPeriodo(v.getPeriodo().getDescripcion());
+
+					listEmp.add(emp);
+				}
+			}
+		}
+		return listEmp;
+	}
+	
+	
 
 }

@@ -53,10 +53,10 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
 	@Autowired
 	private PeriodoVacacionService periodoVacacionService;
-	
+
 	@Autowired
 	private VacacionMetaService vacacionMetaService;
-	
+
 	@Autowired
 	private MessageSource messageSource;
 
@@ -84,53 +84,11 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		empleado.setEstadoMigracion(EstadoMigracion.IMPORTADO.valor);
 		empleado = empleadoDao.save(empleado);
 		periodoVacacionService.actualizarPeriodos(empleado, usuarioBT);
-		vacacionMetaService.consolidarMetaAnual(empleado, LocalDate.now().getYear() + 1 , usuarioBT);
+		vacacionMetaService.consolidarMetaAnual(empleado, LocalDate.now().getYear() + 1, usuarioBT);
 		LOGGER.info("[END] actualizarInformacionEmpleado");
 		return empleado;
 	}
 
-	@Override
-	public List<EmplVacPerRes> listEmpleadoByprogramacion(Long codigo) {
-
-		List<EmplVacPerRes> listEmp = new ArrayList<EmplVacPerRes>();
-		List<VacacionPeriodo> listVp = new ArrayList<VacacionPeriodo>();
-
-		List<Empleado> emsByJefe = empleadoDao.findByCodigoJefe(codigo);
-
-		if (!CollectionUtils.isEmpty(emsByJefe)) {
-
-			for (Empleado e : emsByJefe) {
-				EmplVacPerRes emp = new EmplVacPerRes();
-				emp.setNombres(e.getNombres());
-				emp.setApellidoPaterno(e.getApellidoPaterno());
-				emp.setApellidoMaterno(e.getApellidoMaterno());
-				emp.setIdEmpleado(e.getId());
-				emp.setPuesto(e.getPuesto().getDescripcion());
-				emp.setUsuarioBt(e.getUsuarioBT());
-
-				List<VacacionProgramacion> lVp = empleadoDao.findPeriodosByEmpleado(e.getId());
-
-				for (VacacionProgramacion v : lVp) {
-					VacacionPeriodo vp = new VacacionPeriodo();
-					vp.setIdProgramacion(v.getId());
-					vp.setFechaInicio(v.getFechaInicio());
-					vp.setFechaFin(v.getFechaFin());
-					vp.setIdEstado(vp.getIdEstado());
-					vp.setPeriodo(v.getPeriodo().getDescripcion());
-
-					listVp.add(vp);
-				}
-				if (!lVp.isEmpty()) {
-					emp.setVacacionPeriodo(listVp);
-				}
-
-				listEmp.add(emp);
-			}
-
-		}
-
-		return listEmp;
-	}
 
 	public Empleado listEmpleadoById(Long id) {
 
@@ -153,7 +111,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 				Empleado em = new Empleado();
 				return em;
 			}
-			
+
 		} else {
 			return optEmpleado.get();
 		}
@@ -186,25 +144,26 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	@Override
 	public Empleado buscarPorCodigo(Long codigo) {
 		// TODO Auto-generated method stub
-			List<Empleado> emp = new ArrayList<>();
+		List<Empleado> emp = new ArrayList<>();
 		try {
 			emp = empleadoDao.findByCodigo(codigo);
 
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		
+
 		return emp.get(0);
 	}
 
 	@Override
 	public ResponseTerminosCondiciones aceptarTerminosCondiciones(String usuarioBT) {
 		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(usuarioBT.trim());
-		if(optEmpleado.isPresent()) {
+		if (optEmpleado.isPresent()) {
 			Empleado empleado = optEmpleado.get();
-			if(!empleado.getEstadoRegistro().equals(EstadoRegistro.ACTIVO.valor))
+			if (!empleado.getEstadoRegistro().equals(EstadoRegistro.ACTIVO.valor))
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "emplado.inactivo", usuarioBT));
-			if(empleado.getEstadoMigracion().equals(EstadoMigracion.EXPORTADO.valor) || empleado.getEstadoMigracion().equals(EstadoMigracion.EXPORTADO.valor))
+			if (empleado.getEstadoMigracion().equals(EstadoMigracion.EXPORTADO.valor)
+					|| empleado.getEstadoMigracion().equals(EstadoMigracion.EXPORTADO.valor))
 				empleado.setEstadoMigracion(EstadoMigracion.MODIFICADO.valor);
 			empleado.setAceptaTerminosCondiciones(true);
 			empleado.setFechaAceptacionTc(LocalDateTime.now());
@@ -218,15 +177,15 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		} else {
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", usuarioBT));
 		}
-		
+
 	}
 
 	@Override
 	public ResponseTerminosCondiciones consultarTerminosCondiciones(String usuarioBT) {
 		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(usuarioBT.trim());
-		if(optEmpleado.isPresent()) {
+		if (optEmpleado.isPresent()) {
 			Empleado empleado = optEmpleado.get();
-			if(!empleado.getEstadoRegistro().equals(EstadoRegistro.ACTIVO.valor))
+			if (!empleado.getEstadoRegistro().equals(EstadoRegistro.ACTIVO.valor))
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "emplado.inactivo", usuarioBT));
 			ResponseTerminosCondiciones response = new ResponseTerminosCondiciones();
 			response.setAcepta(empleado.isAceptaTerminosCondiciones());

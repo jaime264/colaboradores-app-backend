@@ -7,6 +7,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCancelarProgram
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGenerarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarVacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramacionAprobador;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestResumenVacaciones;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseResumenVacacion;
@@ -57,5 +58,6 @@ public interface ProgramacionVacacionNegocio {
 	
 	void validarPoliticaBolsaRecuperaciones(VacacionProgramacion programacion);
 	
+	VacacionProgramacion reprogramacionAprobador(RequestReprogramacionAprobador reqAprobador);
 
 }

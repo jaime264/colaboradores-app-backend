@@ -99,9 +99,21 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 	
 	private int numeroDomingos;
 	
+	private Integer numeroReprogramaciones;
+	
 	@Transient
 	private EstadoVacacion estado;
 	
+	
+	
+	public Integer getNumeroReprogramaciones() {
+		return numeroReprogramaciones;
+	}
+
+	public void setNumeroReprogramaciones(Integer numeroReprogramaciones) {
+		this.numeroReprogramaciones = numeroReprogramaciones;
+	}
+
 	public EstadoVacacion getEstado() {
 		return EstadoVacacion.getEstado(this.idEstado);
 	}
