@@ -202,7 +202,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		response.setFechaInicioLabores(empleado.getFechaIngreso());
 		response.setFechaFinLabores(empleado.getFechaFinContrato());
 		response.setCargo(empleado.getPuesto().getDescripcion().trim());
-		response.setMeta(meta.getMeta() < 1.0 ? 0.0 : (int)meta.getMeta());
+		response.setMeta(meta.getMeta() < 1.0 ? 0.0 : Utilitario.redondearMeta(meta.getMeta()));
 		response.setFechaInicioRegistroProgramacion(parametrosConstants.getFechaInicioRegistroProgramacion(fechaConsulta.getYear()));
 		response.setFechaFinRegistroProgramacion(parametrosConstants.getFechaFinRegistroProgramacion(fechaConsulta.getYear()));
 		response.setAnio(meta.getAnio());
@@ -215,7 +215,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			VacacionProgramacion ultimaProgramacion = vacacionProgramacionService.obtenerUltimaProgramacion(periodo.getId());
 			periodoVencido = new ResponseResumenPeriodoVacacion();
 			periodoVencido.setDescripcion(periodo.getDescripcion());
-			periodoVencido.setDias((int)meta.getDiasVencidos());
+			periodoVencido.setDias(Utilitario.redondearMeta(meta.getDiasVencidos()));
 			periodoVencido.setFechaLimite(periodo.getFechaLimiteIndemnizacion());
 			periodoVencido.setUltimoTramo(ultimaProgramacion == null ? 0  : ultimaProgramacion.getOrden());
 		}
@@ -225,7 +225,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			VacacionProgramacion ultimaProgramacion = vacacionProgramacionService.obtenerUltimaProgramacion(periodo.getId());
 			periodoTrunco = new ResponseResumenPeriodoVacacion();
 			periodoTrunco.setDescripcion(periodo.getDescripcion());
-			periodoTrunco.setDias((int)meta.getDiasTruncos());
+			periodoTrunco.setDias(Utilitario.redondearMeta(meta.getDiasTruncos()));
 			periodoTrunco.setFechaLimite(periodo.getFechaLimiteIndemnizacion());
 			periodoTrunco.setUltimoTramo(ultimaProgramacion == null ? 0  : ultimaProgramacion.getOrden());
 		}
@@ -300,8 +300,8 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		List<VacacionProgramacion> programaciones = new ArrayList<>();
 		LocalDate fechaCorte = parametrosConstants.getFechaCorteMeta(LocalDate.now().getYear());
 		VacacionMeta meta = vacacionMetaService.obtenerVacacionPorAnio(fechaCorte.getYear() + 1, empleado.getId());
-		int diasVencidos = (int)meta.getDiasVencidos();
-		int diasTruncos = (int) meta.getDiasTruncos();
+		int diasVencidos = (int) Utilitario.redondearMeta(meta.getDiasVencidos());
+		int diasTruncos = (int) Utilitario.redondearMeta(meta.getDiasTruncos());
 		int diasVacaciones = diasVencidos + diasTruncos;
 		int diasPorRegistrar = programacion.getNumeroDias();
 		if(diasPorRegistrar > diasVacaciones) {
@@ -394,11 +394,13 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		if(diasAcumuladosVacaciones == 8 && diasProgramacion != 7) {
 			mensajeError = Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()});
 		}
+		if(diasAcumuladosVacaciones < 15) {
+			if((diasAcumuladosVacaciones + diasProgramacion) <= 15 && diasProgramacion < 7)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error", new String[] {}));
+			if((diasAcumuladosVacaciones + diasProgramacion) < 15 && diasProgramacion < 7)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error", new String[] {}));
+		}
 		
-		if((diasAcumuladosVacaciones + diasProgramacion) < 15 && diasProgramacion < 7)
-			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error", new String[] {}));
-		if((diasAcumuladosVacaciones + diasProgramacion) >= 15 && diasProgramacion < 7)
-			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error", new String[] {}));
 		/*if(!mensajeError.equals(""))
 			throw new AppException(mensajeError);*/
 			

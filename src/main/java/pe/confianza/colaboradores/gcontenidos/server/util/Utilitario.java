@@ -200,21 +200,18 @@ public class Utilitario {
 		double derecho = 0;
 		final double diasPorMes = 2.5;
 		LocalDate[] periodoTrunco = rangoPeriodoTrunco(fechaIngreso);
-		LocalDate fechaFinPeriodoMensual = periodoTrunco[0];
+		LocalDate fechaInicioPeriodoMensual = periodoTrunco[0];
+		LocalDate fechaFinPeriodoMensual = periodoTrunco[0].plusMonths(1).minusDays(1);
 		int diferenciaDias = 0;
 		while (fechaFinPeriodoMensual.isBefore(fechaCorte)) {
-			fechaFinPeriodoMensual = fechaFinPeriodoMensual.plusMonths(1);
+			fechaFinPeriodoMensual = fechaInicioPeriodoMensual.plusMonths(1).minusDays(1);
 			if(fechaFinPeriodoMensual.isBefore(fechaCorte) || fechaFinPeriodoMensual.equals(fechaCorte)) {
 				derecho += diasPorMes;
 			} else {
-				if(fechaCorte.isBefore(fechaFinPeriodoMensual.plusMonths(-1))) {
-					diferenciaDias = obtenerDiferenciaDias(fechaCorte, fechaFinPeriodoMensual.plusMonths(-1));
-				} else {
-					diferenciaDias = obtenerDiferenciaDias(fechaFinPeriodoMensual.plusMonths(-1), fechaCorte);
-				}
-				System.out.println("diferenciaDias " + diferenciaDias);
+				diferenciaDias = obtenerDiferenciaDias(fechaInicioPeriodoMensual, fechaCorte);
 				derecho += diferenciaDias  * diasPorMes / 30;
-			}	
+			}
+			fechaInicioPeriodoMensual = fechaInicioPeriodoMensual.plusMonths(1);
 		}
 		return derecho;
 	}
@@ -292,6 +289,14 @@ public class Utilitario {
 	public static LocalDate quitarDias(LocalDate fecha, int numeroDias) {
 		numeroDias = (numeroDias - 1) * -1;
 		return fecha.plusDays(numeroDias);
+	}
+	
+	public static double redondearMeta(double valor) {
+		int intPart = (int) valor;
+		if(Math.abs(valor - intPart) > 0.5) {
+			return intPart + 1;
+		}
+		return intPart;
 	}
 	
 	private static Calendar getCalendarWithoutTime(Date date) {
