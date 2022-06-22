@@ -394,7 +394,10 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		if(diasAcumuladosVacaciones == 8 && diasProgramacion != 7) {
 			mensajeError = Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regulatoria.primera_mitad.error", new String[] {programacion.getPeriodo().getDescripcion()});
 		}
-		if(diasAcumuladosVacaciones < 15 && diasProgramacion < 7)
+		
+		if((diasAcumuladosVacaciones + diasProgramacion) < 15 && diasProgramacion < 7)
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error", new String[] {}));
+		if((diasAcumuladosVacaciones + diasProgramacion) >= 15 && diasProgramacion < 7)
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error", new String[] {}));
 		/*if(!mensajeError.equals(""))
 			throw new AppException(mensajeError);*/
