@@ -485,7 +485,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		if(diasAcumuladosVacaciones < 15) {
 			if((diasAcumuladosVacaciones + diasProgramacion) <= 15 && diasProgramacion < 7)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error", new String[] {}));
-			if((diasAcumuladosVacaciones + diasProgramacion) < 15 && diasProgramacion < 7)
+			if((diasAcumuladosVacaciones + diasProgramacion) > 15 && diasProgramacion < 7)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error", new String[] {}));
 		}
 		
