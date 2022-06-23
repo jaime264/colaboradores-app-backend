@@ -506,15 +506,6 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			}
 		}
 
-		if (!mensajeError.equals("")) {
-			if (diasProgramacion < 7) {
-				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error",
-						new String[] {}));
-			} else {
-				throw new AppException(mensajeError);
-			}
-		}
-
 		LOGGER.info("[END] validarTramoVacaciones");
 	}
 
