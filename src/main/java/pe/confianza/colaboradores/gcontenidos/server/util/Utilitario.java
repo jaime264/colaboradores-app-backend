@@ -273,6 +273,14 @@ public class Utilitario {
 				);
 	}
 	
+	public static double calcularDiasPendientesPorRegistrarEnRegistroProgramacion(PeriodoVacacion periodo) {
+		return 30 - (
+				periodo.getDiasGozados() +
+				periodo.getDiasAprobadosGozar() +
+				periodo.getDiasRegistradosGozar()
+				);
+	}
+	
 	public static String obtenerMensaje(MessageSource source, String codigo, String ...valores) {
 		valores = valores == null ? new String[] {} : valores;
 		try {
