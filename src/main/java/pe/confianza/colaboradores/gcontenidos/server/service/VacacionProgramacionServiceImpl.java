@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -17,6 +18,7 @@ import org.springframework.util.CollectionUtils;
 
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmplVacPerRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFiltroVacacionesAprobacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionEmpleado;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
@@ -35,7 +37,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	@Autowired
 	private VacacionProgramacionDao vacacionProgramacionDao;
-	
+
 	@Autowired
 	private EmpleadoDao empleadoDao;
 
@@ -55,7 +57,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		logger.info("[END] listarPorPeriodoYEstado");
 		return programaciones;
 	}
-	
+
 	@Override
 	public List<VacacionProgramacion> registrar(List<VacacionProgramacion> programaciones, String usuarioOperacion) {
 		programaciones.forEach(programacion -> {
@@ -90,7 +92,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 			throw new ModelNotFoundException("No existe la programación con id " + idProgramacion);
 		VacacionProgramacion progamacion = optProgramacion.get();
 		progamacion.setEstadoRegistro(EstadoRegistro.INACTIVO.valor);
-		if(EstadoMigracion.IMPORTADO.valor.equals(progamacion.getEstadoMigracion()))
+		if (EstadoMigracion.IMPORTADO.valor.equals(progamacion.getEstadoMigracion()))
 			progamacion.setEstadoMigracion(EstadoMigracion.MODIFICADO.valor);
 		actualizar(progamacion, usuarioOperacion);
 	}
@@ -161,9 +163,9 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	public VacacionProgramacion obtenerUltimaProgramacion(long idPeriodo) {
 		logger.info("[BEGIN] obtenerUltimaProgramacion");
 		List<VacacionProgramacion> lstProgramacion = vacacionProgramacionDao.findByIdPeriodo(idPeriodo);
-		if(lstProgramacion == null)
+		if (lstProgramacion == null)
 			return null;
-		if(lstProgramacion.isEmpty())
+		if (lstProgramacion.isEmpty())
 			return null;
 		logger.info("[END] obtenerUltimaProgramacion");
 		return lstProgramacion.get(0);
@@ -180,7 +182,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	@Override
 	public int obtenerSumaDiasPorPeriodoYEstado(long idPeriodo, EstadoVacacion estado) {
-		logger.info("[BEGIN] obtenerSumaDiasPorPeriodoYEstado {} - {}", new Object[] {idPeriodo, EstadoVacacion.REGISTRADO});
+		logger.info("[BEGIN] obtenerSumaDiasPorPeriodoYEstado {} - {}",
+				new Object[] { idPeriodo, EstadoVacacion.REGISTRADO });
 		int diasPorPeriodoEstado = vacacionProgramacionDao.obtenerSumaDiasPorIdPeriodoYEstado(idPeriodo, estado.id);
 		logger.info("[BEGIN] obtenerSumaDiasPorPeriodoYEstado");
 		return diasPorPeriodoEstado;
@@ -193,53 +196,63 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String strFechaInicio = fechaIncioProgramacion.format(formatter);
 		String strFechaFin = fechaFinProgramacion.format(formatter);
-		return vacacionProgramacionDao.contarProgramacionPorUnidadNegocioEmpleado(idEmpleado, strFechaInicio, strFechaFin);
+		return vacacionProgramacionDao.contarProgramacionPorUnidadNegocioEmpleado(idEmpleado, strFechaInicio,
+				strFechaFin);
 	}
 
 	@Override
 	public long contarProgramacionPorCorredorEmpleadoPuesto(long idEmpleado, String descripcionPuesto,
 			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion) {
-		logger.info("[BEGIN] contarProgramacionPorCorredorEmpleadoPuesto {} - {}", new Object[] {idEmpleado, descripcionPuesto});
+		logger.info("[BEGIN] contarProgramacionPorCorredorEmpleadoPuesto {} - {}",
+				new Object[] { idEmpleado, descripcionPuesto });
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String strFechaInicio = fechaIncioProgramacion.format(formatter);
 		String strFechaFin = fechaFinProgramacion.format(formatter);
-		return vacacionProgramacionDao.contarProgramacionPorCorredorEmpleadoPuesto(idEmpleado, descripcionPuesto, strFechaInicio, strFechaFin);
+		return vacacionProgramacionDao.contarProgramacionPorCorredorEmpleadoPuesto(idEmpleado, descripcionPuesto,
+				strFechaInicio, strFechaFin);
 	}
 
 	@Override
 	public long contarProgramacionPorTerritorioEmpleadoPuesto(long idEmpleado, String descripcionPuesto,
 			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion) {
-		logger.info("[BEGIN] contarProgramacionPorTerritorioEmpleadoPuesto {} - {}", new Object[] {idEmpleado, descripcionPuesto});
+		logger.info("[BEGIN] contarProgramacionPorTerritorioEmpleadoPuesto {} - {}",
+				new Object[] { idEmpleado, descripcionPuesto });
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String strFechaInicio = fechaIncioProgramacion.format(formatter);
 		String strFechaFin = fechaFinProgramacion.format(formatter);
-		return vacacionProgramacionDao.contarProgramacionPorTerritorioEmpleadoPuesto(idEmpleado, descripcionPuesto, strFechaInicio, strFechaFin);
+		return vacacionProgramacionDao.contarProgramacionPorTerritorioEmpleadoPuesto(idEmpleado, descripcionPuesto,
+				strFechaInicio, strFechaFin);
 	}
 
 	@Override
 	public long contarProgramacionPorEmpleadoPuesto(long idEmpleado, String descripcionPuesto,
 			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion) {
-		logger.info("[BEGIN] contarProgramacionPorEmpleadoPuesto {} - {}", new Object[] {idEmpleado, descripcionPuesto});
+		logger.info("[BEGIN] contarProgramacionPorEmpleadoPuesto {} - {}",
+				new Object[] { idEmpleado, descripcionPuesto });
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String strFechaInicio = fechaIncioProgramacion.format(formatter);
 		String strFechaFin = fechaFinProgramacion.format(formatter);
-		return vacacionProgramacionDao.contarProgramacionPorEmpleadoPuesto(idEmpleado, descripcionPuesto, strFechaInicio, strFechaFin);
+		return vacacionProgramacionDao.contarProgramacionPorEmpleadoPuesto(idEmpleado, descripcionPuesto,
+				strFechaInicio, strFechaFin);
 	}
 
 	@Override
 	public long contarProgramacionPorEmpleadoAgencia(long idEmpleado, String descripcionPuesto,
 			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion) {
-		logger.info("[BEGIN] contarProgramacionPorEmpleadoAgencia {} - {}", new Object[] {idEmpleado, descripcionPuesto});
+		logger.info("[BEGIN] contarProgramacionPorEmpleadoAgencia {} - {}",
+				new Object[] { idEmpleado, descripcionPuesto });
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String strFechaInicio = fechaIncioProgramacion.format(formatter);
 		String strFechaFin = fechaFinProgramacion.format(formatter);
-		return vacacionProgramacionDao.contarProgramacionPorEmpleadoAgencia(idEmpleado, descripcionPuesto, strFechaInicio, strFechaFin);
+		return vacacionProgramacionDao.contarProgramacionPorEmpleadoAgencia(idEmpleado, descripcionPuesto,
+				strFechaInicio, strFechaFin);
 	}
 
 	@Override
 	public List<EmplVacPerRes> listEmpleadoByprogramacion(RequestProgramacionEmpleado reqPrograEmp) {
+
 		List<EmplVacPerRes> listEmp = new ArrayList<EmplVacPerRes>();
-		
+
 		Optional<Empleado> emJefe = empleadoDao.findOneByUsuarioBT(reqPrograEmp.getUsuarioBt());
 
 		List<Empleado> emsByJefe = empleadoDao.findByCodigoJefe(emJefe.get().getCodigo());
@@ -271,7 +284,34 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		}
 		return listEmp;
 	}
-	
-	
+
+	@Override
+	public List<Map<String, String>> listFilstrosVacacionAprobacion(RequestFiltroVacacionesAprobacion reqFiltros) {
+		// TODO Auto-generated method stub
+		List<Map<String, String>> datos = new ArrayList<>();
+		switch (reqFiltros.getFiltro().toUpperCase()) {
+		case "NOMBRE":
+			datos = empleadoDao.findNombreByCodigoN1(reqFiltros.getCodigo());
+			break;
+		case "CARGO":
+			datos = empleadoDao.findPuestoByCodigoN1(reqFiltros.getCodigo());
+			break;
+		case "AGENCIA":
+			datos = empleadoDao.findAgenciaByCodigoN1(reqFiltros.getCodigo());
+			break;
+		case "TERRITORIO":
+			datos = empleadoDao.findTerritorioByCodigoN1(reqFiltros.getCodigo());
+			break;
+		case "CORREDOR":
+			datos = empleadoDao.findCorredorByCodigoN1(reqFiltros.getCodigo());
+			break;
+		case "AREA":
+			datos = empleadoDao.findAreaByCodigoN1(reqFiltros.getCodigo());
+			break;
+		default:
+			break;
+		}
+		return datos;
+	}
 
 }
