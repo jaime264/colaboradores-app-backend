@@ -88,6 +88,9 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 			if(optTrunco.isPresent()) {
 				PeriodoVacacion periodo = optTrunco.get();
 				double derechoPeriodo = Utilitario.calcularDerechoVacaciones(fechaIngreso, fechaCorte);
+				if(limitePeriodoVencido == null && fechaIngreso.getMonthValue() >= fechaCorte.getMonthValue()) {
+					derechoPeriodo = 30; // Empleado ingreso después del corte del año pasado
+				}
 				meta.setPeriodoTrunco(periodo);
 				meta.setDiasTruncos(derechoPeriodo - periodo.getDiasGozados() - periodo.getDiasRegistradosGozar() - periodo.getDiasGeneradosGozar() - periodo.getDiasAprobadosGozar());
 			}

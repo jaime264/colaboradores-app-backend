@@ -491,16 +491,21 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		
 		/*if(!mensajeError.equals(""))
 			throw new AppException(mensajeError);*/
-			
+		
 		double diasPendientePorRegistrar = Utilitario.calcularDiasPendientesPorRegistrar(programacion.getPeriodo());
-		if (programacion.getNumeroDias() == diasPendientePorRegistrar) {
-			contadorSabados += Utilitario.obtenerCantidadSabados(programacion.getFechaInicio(),
-					programacion.getFechaFin());
-			if (contadorSabados < 4) {
-				throw new AppException(
-						Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regularoria.cuatro_sabados.error", new String[] { programacion.getPeriodo().getDescripcion() }));
-			}
+		if (programacion.getNumeroDias() <= diasPendientePorRegistrar) {
+			contadorSabados += Utilitario.obtenerCantidadSabados(programacion.getFechaInicio(), programacion.getFechaFin());
 			contadorDomingos += Utilitario.obtenerCantidadDomingos(programacion.getFechaInicio(), programacion.getFechaFin());
+			double diasPendientesPorRegistrarFuturos = diasPendientePorRegistrar - programacion.getNumeroDias();
+			int sabadosPendientes = 4 - contadorSabados;
+			int domingoPendientes = 4 - contadorDomingos;
+			if(diasPendientesPorRegistrarFuturos < (sabadosPendientes + domingoPendientes)) {
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regularoria.cuatro_sabados.error", new String[] { programacion.getPeriodo().getDescripcion() }));
+			}
+			if (contadorSabados < 4) {
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regularoria.cuatro_sabados.error", new String[] { programacion.getPeriodo().getDescripcion() }));
+			}
+			
 			if (contadorDomingos < 4) {
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.regularoria.cuatro_domingos.error", new String[] { programacion.getPeriodo().getDescripcion() }));
 			}
