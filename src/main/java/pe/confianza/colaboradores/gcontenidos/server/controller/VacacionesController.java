@@ -2,6 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -29,6 +30,7 @@ import net.sf.jasperreports.engine.JRException;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmplVacPerRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCancelarProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFiltroVacacionesAprobacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGenerarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarVacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionEmpleado;
@@ -229,9 +231,19 @@ public class VacacionesController {
 	@PostMapping("/vacaciones/reprogramacion-aprobador")
 	public ResponseEntity<?> reprogramacionAprobador(@RequestBody RequestReprogramacionAprobador reqAprobador) throws IOException {
 		
-		logger.info("VacacionPeriodo: " + reqAprobador.toString());
+		logger.info("RequestReprogramacionAprobador: " + reqAprobador.toString());
 		VacacionProgramacion vacpro = programacionVacacionNegocio.reprogramacionAprobador(reqAprobador);
 		
 		return new ResponseEntity<VacacionProgramacion>(vacpro, HttpStatus.OK);
+	}
+	
+	@PostMapping("/vacaciones/obtener-filtros")
+	public ResponseEntity<?> getFitrosVacAprobador(@RequestBody RequestFiltroVacacionesAprobacion reqFiltros) throws IOException {
+		
+		logger.info("RequestFiltroVacacionesAprobacion: " + reqFiltros.toString());
+		
+		List<Map<String, String>> vacpro = vacacionProgramacionService.listFilstrosVacacionAprobacion(reqFiltros);
+		
+		return new ResponseEntity<List<Map<String, String>>>(vacpro, HttpStatus.OK);
 	}
 }
