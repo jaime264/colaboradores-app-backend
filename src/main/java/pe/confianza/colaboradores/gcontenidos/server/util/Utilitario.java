@@ -183,9 +183,7 @@ public class Utilitario {
 	 * @return
 	 */
 	public static boolean fechaEntrePeriodo(LocalDate fechaInicio, LocalDate fechaFin, LocalDate fecha) {
-		long fechaMilliseconds = fecha.atStartOfDay(ZoneId.of(Constantes.TIME_ZONE)).toInstant().toEpochMilli();
-		if(fechaInicio.atStartOfDay(ZoneId.of(Constantes.TIME_ZONE)).toInstant().toEpochMilli() <= fechaMilliseconds &&
-				fechaFin.atStartOfDay(ZoneId.of(Constantes.TIME_ZONE)).toInstant().toEpochMilli() >= fechaMilliseconds	)
+		if(fechaInicio.minusDays(1).isBefore(fecha) && fechaFin.plusDays(1).isAfter(fecha))
 			return true;
 		return false;
 	}

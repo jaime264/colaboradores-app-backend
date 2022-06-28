@@ -38,6 +38,8 @@ public interface ProgramacionVacacionNegocio {
 	
 	List<VacacionProgramacion> obtenerPeriodo(Empleado empleado, VacacionProgramacion programacion);
 	
+	void validarPoliticasRegulatorias(VacacionProgramacion programacion, String usuarioModifica);
+	
 	void validarTramoVacaciones(VacacionProgramacion programacion);
 	
 	void obtenerOrden(VacacionProgramacion programacion, String usuarioModifica);

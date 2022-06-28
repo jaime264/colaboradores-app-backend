@@ -14,11 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmplVacPerRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmpleadoRes;
-import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.api.spring.EmpleadoApi;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseTerminosCondiciones;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
@@ -29,7 +26,6 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.P
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Agencia;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Puesto;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
@@ -137,8 +133,8 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	}
 
 	@Override
-	public int obtenerCantidadEmpleadosPorUnidadNegocio(long codigoUnidadNegocio) {
-		return empleadoDao.obtenerCantidadEmpleadosPorUnidadNegocio(codigoUnidadNegocio);
+	public int obtenerCantidadEmpleadosPorPuestoYUnidadNegocio(long codigoUnidadNegocio, String descripcionPuesto) {
+		return empleadoDao.obtenerCantidadEmpleadosPorPuestoYPorUnidadNegocio(codigoUnidadNegocio, descripcionPuesto + "%");
 	}
 
 	@Override

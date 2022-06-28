@@ -100,7 +100,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			prog.setEstado(EstadoVacacion.REGISTRADO);
 			validarTramoVacaciones(prog);
 			obtenerOrden(prog, usuarioOperacion);
-			// validarPoliticaBolsa(prog);
+			validarPoliticaBolsa(prog);
 		});
 		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.registrar(programaciones,
 				usuarioOperacion);
@@ -513,6 +513,12 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 
 		LOGGER.info("[END] validarTramoVacaciones");
 	}
+	
+	@Override
+	public void validarPoliticasRegulatorias(VacacionProgramacion programacion, String usuarioModifica) {
+		LOGGER.info("[BEGIN] validarPoliticasRegulatorias");		
+		LOGGER.info("[END] validarPoliticasRegulatorias");
+	}
 
 	@Override
 	public void obtenerOrden(VacacionProgramacion programacion, String usuarioModifica) {
@@ -628,29 +634,23 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] validarPoliticaBolsaComercial");
 		Empleado empleado = programacion.getPeriodo().getEmpleado();
 		String puesto = empleado.getPuesto().getDescripcion().trim();
-		if (puesto.contains(Constantes.ASESOR_NEGOCIO_INDIVIDUAL)) {
+		if (puesto.contains(Constantes.ASESOR_NEGOCIO)) {
 			if (empleado.getCodigoUnidadNegocio() == null)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,
 						"vacaciones.validacion.sin_unidad_negocio", empleado.getUsuarioBT()));
-			UnidadNegocio unidadNegocio = unidadNegocioService
-					.obtenerUnidadNegocioPorCodigo(empleado.getCodigoUnidadNegocio());
+			UnidadNegocio unidadNegocio = unidadNegocioService.obtenerUnidadNegocioPorCodigo(empleado.getCodigoUnidadNegocio());
 			if (unidadNegocio == null)
-				throw new AppException(Utilitario.obtenerMensaje(messageSource,
-						"vacaciones.validacion.unidad_negocio_error", empleado.getCodigoUnidadNegocio() + ""));
-			int totalEmpleados = empleadoService
-					.obtenerCantidadEmpleadosPorUnidadNegocio(empleado.getCodigoUnidadNegocio());
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.validacion.unidad_negocio_error", empleado.getCodigoUnidadNegocio() + ""));
+			int totalEmpleados = empleadoService.obtenerCantidadEmpleadosPorPuestoYUnidadNegocio(empleado.getCodigoUnidadNegocio(), Constantes.ASESOR_NEGOCIO);
 			double limite = totalEmpleados * 0.12;
-			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorUnidadNegocioEmpleado(
-					empleado.getId(), programacion.getFechaInicio(), programacion.getFechaFin());
+			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorUnidadNegocioEmpleado(empleado.getId(), Constantes.ASESOR_NEGOCIO, programacion.getFechaInicio(), programacion.getFechaFin());
 			cantidadProgramaciones++;
 			if (cantidadProgramaciones > limite)
-				throw new AppException(Utilitario.obtenerMensaje(messageSource,
-						"vacaciones.politica.bolsa.comercial.asesor_negocio_individual.limite_error", 12 + ""));
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.bolsa.comercial.asesor_negocio_individual.limite_error", 12 + ""));
 		}
 		if (puesto.contains(Constantes.ASESOR_NEGOCIO_GRUPAL)) {
 			if (programacion.getFechaInicio().getMonthValue() == 12 || programacion.getFechaFin().getMonthValue() == 12)
-				throw new AppException(Utilitario.obtenerMensaje(messageSource,
-						"vacaciones.politica.bolsa.comercial.asesor_negocio_grupal.diciembre_error"));
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.bolsa.comercial.asesor_negocio_grupal.diciembre_error"));
 		}
 		if (puesto.contains(Constantes.ADMINISTRADOR_NEGOCIO)) {
 			int limite = 1;
@@ -659,8 +659,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 					programacion.getFechaFin());
 			cantidadProgramaciones++;
 			if (cantidadProgramaciones > limite)
-				throw new AppException(Utilitario.obtenerMensaje(messageSource,
-						"vacaciones.politica.bolsa.comercial.administrador_negocio.limite_error"));
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.bolsa.comercial.administrador_negocio.limite_error"));
 		}
 		if (puesto.contains(Constantes.GERENTE_CORREDOR)) {
 			int limite = 1;
@@ -669,8 +668,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 					programacion.getFechaFin());
 			cantidadProgramaciones++;
 			if (cantidadProgramaciones > limite)
-				throw new AppException(Utilitario.obtenerMensaje(messageSource,
-						"vacaciones.politica.bolsa.comercial.administrador_negocio.limite_error"));
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.bolsa.comercial.administrador_negocio.limite_error"));
 		}
 		LOGGER.info("[END] validarPoliticaBolsaComercial");
 	}

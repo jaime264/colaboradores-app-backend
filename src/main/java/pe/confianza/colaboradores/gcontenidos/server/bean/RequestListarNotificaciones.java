@@ -1,6 +1,8 @@
-package pe.confianza.colaboradores.gcontenidos.server;
+package pe.confianza.colaboradores.gcontenidos.server.bean;
 
-public class RequestListarNotificaciones {
+import pe.confianza.colaboradores.gcontenidos.server.RequestPaginacion;
+
+public class RequestListarNotificaciones extends RequestPaginacion {
 	
 	private String usuarioBT;
 	private String codigoTipoNotificacion;

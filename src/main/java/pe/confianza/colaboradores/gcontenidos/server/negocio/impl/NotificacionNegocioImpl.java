@@ -5,9 +5,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import pe.confianza.colaboradores.gcontenidos.server.RequestListarNotificaciones;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarNotificaciones;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestNotificacionVista;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseNotificacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseTipoNotificacion;
@@ -39,24 +40,24 @@ public class NotificacionNegocioImpl implements NotificacionNegocio {
 	}
 
 	@Override
-	public List<ResponseNotificacion> listarPorTipo(RequestListarNotificaciones request) {
+	public Page<ResponseNotificacion> listarPorTipo(RequestListarNotificaciones request) {
 		Optional<NotificacionTipo> optTipo = notificacionService.obtener(request.getCodigoTipoNotificacion());
 		if(!optTipo.isPresent())
 			throw new AppException("No existe el tipo de notificacion " + request.getCodigoTipoNotificacion());
 		Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioBT());
 		if(empleado.getId() == null) 
 			throw new AppException("No existe el empleado " + request.getUsuarioBT());
-		return notificacionService.consultar(empleado, optTipo.get())
-				.stream().map(n -> {
-					ResponseNotificacion response = new ResponseNotificacion();
-					response.setId(n.getId());
-					response.setDescripcion(n.getDescripcion());
-					response.setTitulo(n.getTitulo());
-					response.setFecha(n.getFechaCrea());
-					response.setInformacionAdicional(n.getData());
-					response.setVisto(n.isVisto());
-					return response;
-				}).collect(Collectors.toList());
+		Page<Notificacion> pgNotificaciones = notificacionService.consultar(empleado, optTipo.get(), request.getNumeroPagina(), request.getTamanioPagina());
+		return pgNotificaciones.map(n -> {
+			ResponseNotificacion response = new ResponseNotificacion();
+			response.setId(n.getId());
+			response.setDescripcion(n.getDescripcion());
+			response.setTitulo(n.getTitulo());
+			response.setFecha(n.getFechaCrea());
+			response.setInformacionAdicional(n.getData());
+			response.setVisto(n.isVisto());
+			return response;
+		});
 	}
 
 	@Override
