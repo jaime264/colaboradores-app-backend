@@ -44,7 +44,6 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Vacacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
-import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
@@ -67,9 +66,6 @@ public class VacacionesController {
 	
 	@Autowired
 	private VacacionProgramacionService vacacionProgramacionService;
-	
-	@Autowired
-	private EmpleadoService empleadoService;
 	
 	@SuppressWarnings("resource")
 	@PostMapping("/vacaciones/upload/{fechaCorte}")
