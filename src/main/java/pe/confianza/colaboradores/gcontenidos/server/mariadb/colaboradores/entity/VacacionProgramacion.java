@@ -25,14 +25,15 @@ import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 @NamedStoredProcedureQueries({
 	@NamedStoredProcedureQuery(name = "VacacionProgramacion.programacionContarPorUnidadNegocio",
 			procedureName = "proc_vacacion_programacion_unidad_negocio", parameters = {
-					@StoredProcedureParameter(mode = ParameterMode.IN, name = "idEmplado", type = Long.class),
+					@StoredProcedureParameter(mode = ParameterMode.IN, name = "idEmpleado", type = Long.class),
+					@StoredProcedureParameter(mode = ParameterMode.IN, name = "descripcionPuesto", type = String.class),
 					@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaInicioProgramacion", type = String.class),
 					@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaFinProgramacion", type = String.class),
 					@StoredProcedureParameter(mode = ParameterMode.OUT, name = "cantidad", type = Long.class)
 			}),
 	@NamedStoredProcedureQuery(name = "VacacionProgramacion.programacionContarPorCorredorYPuesto",
 	procedureName = "proc_vacacion_programacion_corredor_puesto", parameters = {
-			@StoredProcedureParameter(mode = ParameterMode.IN, name = "idEmplado", type = Long.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "idEmpleado", type = Long.class),
 			@StoredProcedureParameter(mode = ParameterMode.IN, name = "descripcionPuesto", type = String.class),
 			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaInicioProgramacion", type = String.class),
 			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaFinProgramacion", type = String.class),
@@ -40,7 +41,7 @@ import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 	}),
 	@NamedStoredProcedureQuery(name = "VacacionProgramacion.programacionContarPorTerrirotioYPuesto",
 	procedureName = "proc_vacacion_programacion_territorio_puesto", parameters = {
-			@StoredProcedureParameter(mode = ParameterMode.IN, name = "idEmplado", type = Long.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "idEmpleado", type = Long.class),
 			@StoredProcedureParameter(mode = ParameterMode.IN, name = "descripcionPuesto", type = String.class),
 			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaInicioProgramacion", type = String.class),
 			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaFinProgramacion", type = String.class),
@@ -48,7 +49,7 @@ import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 	}),
 	@NamedStoredProcedureQuery(name = "VacacionProgramacion.programacionContarPorPuesto",
 	procedureName = "proc_vacacion_programacion_puesto", parameters = {
-			@StoredProcedureParameter(mode = ParameterMode.IN, name = "idEmplado", type = Long.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "idEmpleado", type = Long.class),
 			@StoredProcedureParameter(mode = ParameterMode.IN, name = "descripcionPuesto", type = String.class),
 			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaInicioProgramacion", type = String.class),
 			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaFinProgramacion", type = String.class),
@@ -56,7 +57,7 @@ import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 	}),
 	@NamedStoredProcedureQuery(name = "VacacionProgramacion.programacionContarPorAgencia",
 	procedureName = "proc_vacacion_programacion_agencia_puesto", parameters = {
-			@StoredProcedureParameter(mode = ParameterMode.IN, name = "idEmplado", type = Long.class),
+			@StoredProcedureParameter(mode = ParameterMode.IN, name = "idEmpleado", type = Long.class),
 			@StoredProcedureParameter(mode = ParameterMode.IN, name = "descripcionPuesto", type = String.class),
 			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaInicioProgramacion", type = String.class),
 			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaFinProgramacion", type = String.class),
@@ -99,9 +100,21 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 	
 	private int numeroDomingos;
 	
+	private Integer numeroReprogramaciones;
+	
 	@Transient
 	private EstadoVacacion estado;
 	
+	
+	
+	public Integer getNumeroReprogramaciones() {
+		return numeroReprogramaciones;
+	}
+
+	public void setNumeroReprogramaciones(Integer numeroReprogramaciones) {
+		this.numeroReprogramaciones = numeroReprogramaciones;
+	}
+
 	public EstadoVacacion getEstado() {
 		return EstadoVacacion.getEstado(this.idEstado);
 	}

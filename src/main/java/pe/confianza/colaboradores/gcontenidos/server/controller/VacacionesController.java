@@ -2,6 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -29,17 +30,20 @@ import net.sf.jasperreports.engine.JRException;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmplVacPerRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCancelarProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFiltroVacacionesAprobacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGenerarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarVacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionEmpleado;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramacionAprobador;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestResumenVacaciones;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseResumenVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Vacacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
-import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
@@ -62,9 +66,6 @@ public class VacacionesController {
 	
 	@Autowired
 	private VacacionProgramacionService vacacionProgramacionService;
-	
-	@Autowired
-	private EmpleadoService empleadoService;
 	
 	@SuppressWarnings("resource")
 	@PostMapping("/vacaciones/upload/{fechaCorte}")
@@ -205,10 +206,10 @@ public class VacacionesController {
 	}
 	
 	@PostMapping("/vacaciones/programacion-empleado")
-	public ResponseEntity<?> listEmpleadoByprogramacion(Long codigo) throws IOException {
+	public ResponseEntity<?> listEmpleadoByprogramacion(@Valid @RequestBody RequestProgramacionEmpleado reqPrograEmp) throws IOException {
 		
-		logger.info("Empleado: " + codigo.toString());
-		List<EmplVacPerRes> em = empleadoService.listEmpleadoByprogramacion(codigo);
+		logger.info("Empleado: " + reqPrograEmp.toString());
+		List<EmplVacPerRes> em = vacacionProgramacionService.listEmpleadoByprogramacion(reqPrograEmp);
 		
 		return new ResponseEntity<List<EmplVacPerRes>>(em, HttpStatus.OK);
 	}
@@ -221,5 +222,24 @@ public class VacacionesController {
 		vacacionProgramacionService.aprobarVacacionPeriodos(vacacionPeriodos);
 		
 		return new ResponseEntity<Object>(HttpStatus.OK);
+	}
+	
+	@PostMapping("/vacaciones/reprogramacion-aprobador")
+	public ResponseEntity<?> reprogramacionAprobador(@RequestBody RequestReprogramacionAprobador reqAprobador) throws IOException {
+		
+		logger.info("RequestReprogramacionAprobador: " + reqAprobador.toString());
+		VacacionProgramacion vacpro = programacionVacacionNegocio.reprogramacionAprobador(reqAprobador);
+		
+		return new ResponseEntity<VacacionProgramacion>(vacpro, HttpStatus.OK);
+	}
+	
+	@PostMapping("/vacaciones/obtener-filtros")
+	public ResponseEntity<?> getFitrosVacAprobador(@RequestBody RequestFiltroVacacionesAprobacion reqFiltros) throws IOException {
+		
+		logger.info("RequestFiltroVacacionesAprobacion: " + reqFiltros.toString());
+		
+		List<Map<String, String>> vacpro = vacacionProgramacionService.listFilstrosVacacionAprobacion(reqFiltros);
+		
+		return new ResponseEntity<List<Map<String, String>>>(vacpro, HttpStatus.OK);
 	}
 }

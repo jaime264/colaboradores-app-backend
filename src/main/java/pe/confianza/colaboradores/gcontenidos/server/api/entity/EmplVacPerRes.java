@@ -1,6 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.api.entity;
 
-import java.util.List;
+import java.time.LocalDate;
 
 public class EmplVacPerRes {
 
@@ -10,62 +10,79 @@ public class EmplVacPerRes {
 	private String puesto;
 	private Long idEmpleado;
 	private String usuarioBt;
-	private List<VacacionPeriodo> vacacionPeriodo;
-
+	private Long idProgramacion;
+	private String periodo;
+	private LocalDate fechaInicio;
+	private LocalDate fechaFin;
+	private Integer idEstado;
+	
 	public String getNombres() {
 		return nombres;
 	}
-
 	public void setNombres(String nombres) {
 		this.nombres = nombres;
 	}
-
 	public String getApellidoPaterno() {
 		return apellidoPaterno;
 	}
-
 	public void setApellidoPaterno(String apellidoPaterno) {
 		this.apellidoPaterno = apellidoPaterno;
 	}
-
 	public String getApellidoMaterno() {
 		return apellidoMaterno;
 	}
-
 	public void setApellidoMaterno(String apellidoMaterno) {
 		this.apellidoMaterno = apellidoMaterno;
 	}
-
 	public String getPuesto() {
 		return puesto;
 	}
-
 	public void setPuesto(String puesto) {
 		this.puesto = puesto;
 	}
-
 	public Long getIdEmpleado() {
 		return idEmpleado;
 	}
-
 	public void setIdEmpleado(Long idEmpleado) {
 		this.idEmpleado = idEmpleado;
 	}
-
 	public String getUsuarioBt() {
 		return usuarioBt;
 	}
-
 	public void setUsuarioBt(String usuarioBt) {
 		this.usuarioBt = usuarioBt;
 	}
-
-	public List<VacacionPeriodo> getVacacionPeriodo() {
-		return vacacionPeriodo;
+	public Long getIdProgramacion() {
+		return idProgramacion;
+	}
+	public void setIdProgramacion(Long idProgramacion) {
+		this.idProgramacion = idProgramacion;
+	}
+	public String getPeriodo() {
+		return periodo;
+	}
+	public void setPeriodo(String periodo) {
+		this.periodo = periodo;
+	}
+	public LocalDate getFechaInicio() {
+		return fechaInicio;
+	}
+	public void setFechaInicio(LocalDate fechaInicio) {
+		this.fechaInicio = fechaInicio;
+	}
+	public LocalDate getFechaFin() {
+		return fechaFin;
+	}
+	public void setFechaFin(LocalDate fechaFin) {
+		this.fechaFin = fechaFin;
+	}
+	public Integer getIdEstado() {
+		return idEstado;
+	}
+	public void setIdEstado(Integer idEstado) {
+		this.idEstado = idEstado;
 	}
 
-	public void setVacacionPeriodo(List<VacacionPeriodo> vacacionPeriodo) {
-		this.vacacionPeriodo = vacacionPeriodo;
-	}
+	
 
 }

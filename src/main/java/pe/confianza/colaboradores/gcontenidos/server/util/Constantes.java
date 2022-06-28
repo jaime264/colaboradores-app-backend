@@ -20,6 +20,7 @@ public class Constantes {
 	
 	public final static String TIME_ZONE = "America/Bogota";
 	
+	public final static String ASESOR_NEGOCIO = "ASESOR DE NEGOCIO";
 	public final static String ASESOR_NEGOCIO_INDIVIDUAL = "ASESOR DE NEGOCIO INCLUSIVO INDIVIDUAL";
 	public final static String ASESOR_NEGOCIO_GRUPAL = "ASESOR DE NEGOCIO INCLUSIVO GRUPAL";
 	public final static String GERENTE_CORREDOR = "GERENTE DE CORREDOR";
