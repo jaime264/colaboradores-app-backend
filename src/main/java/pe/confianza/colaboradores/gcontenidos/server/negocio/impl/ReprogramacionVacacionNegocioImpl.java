@@ -17,6 +17,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mapper.VacacionProgramacion
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ReprogramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
+import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 @Service
@@ -39,8 +40,8 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 		try {
 			List<ResponseProgramacionVacacionReprogramar> programaciones = vacacionProgramacionService.listarProgramacionesPorAnio(cargaParametros.getAnioPresente(), request.getUsuarioBT())
 					.stream().map(p -> {
-						ResponseProgramacionVacacionReprogramar prog = (ResponseProgramacionVacacionReprogramar) VacacionProgramacionMapper.convert(p);
-						if(prog.getFechaFin().getMonthValue() == LocalDate.now().getMonthValue()) {
+						ResponseProgramacionVacacionReprogramar prog = VacacionProgramacionMapper.convertReprogramacion(p);
+						if(prog.getFechaFin().getMonthValue() == LocalDate.now().getMonthValue() && prog.getIdEstado() == EstadoVacacion.APROBADO.id) {
 							prog.setReprogramar(true);
 						} else {
 							prog.setReprogramar(false);
