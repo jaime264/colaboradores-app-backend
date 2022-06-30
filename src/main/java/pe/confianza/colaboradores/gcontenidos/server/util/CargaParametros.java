@@ -129,7 +129,7 @@ public class CargaParametros {
 	public LocalDate getFechaInicioReprogramacion() {
 		if(DIA_INICIO_REPROGRAMACION != null) {
 			LocalDate fechaActual = LocalDate.now();
-			return LocalDate.parse(DIA_INICIO_REPROGRAMACION + "/" + fechaActual.getMonthValue() + "/" + fechaActual.getYear(), formatter);
+			return LocalDate.parse(DIA_INICIO_REPROGRAMACION + "/" + (fechaActual.getMonthValue() < 10 ? "0" + fechaActual.getMonthValue() : fechaActual.getMonthValue()) + "/" + fechaActual.getYear(), formatter);
 		}
 		throw new AppException("No existe el parámetro de inicio de reprogramación");
 	}
@@ -137,7 +137,7 @@ public class CargaParametros {
 	public LocalDate getFechaFinReprogramacion() {
 		if(DIA_FIN_REPROGRAMACION != null){
 			LocalDate fechaActual = LocalDate.now();
-			return LocalDate.parse(DIA_FIN_REPROGRAMACION + "/" + fechaActual.getMonthValue() + "/" + fechaActual.getYear(), formatter);
+			return LocalDate.parse(DIA_FIN_REPROGRAMACION + "/" + (fechaActual.getMonthValue() < 10 ? "0" + fechaActual.getMonthValue() : fechaActual.getMonthValue()) + "/" + fechaActual.getYear(), formatter);
 		}
 		throw new AppException("No existe el parámetro de inicio de reprogramacion");
 	}

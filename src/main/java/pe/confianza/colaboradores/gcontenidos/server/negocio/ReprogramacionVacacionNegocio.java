@@ -6,6 +6,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestConsultaVacacio
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramarVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacionReprogramar;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 
 public interface ReprogramacionVacacionNegocio {
 	
@@ -14,5 +15,9 @@ public interface ReprogramacionVacacionNegocio {
 	List<ResponseProgramacionVacacion> reprogramarTramo(RequestReprogramarVacacion request);
 	
 	void validarPeriodoReprogramacion();
+	
+	void validarPermisoReprogramar(VacacionProgramacion programacion, String usuarioBT);
+	
+	void validarDiasReprogramados(VacacionProgramacion programacion, RequestReprogramarVacacion request);
 
 }

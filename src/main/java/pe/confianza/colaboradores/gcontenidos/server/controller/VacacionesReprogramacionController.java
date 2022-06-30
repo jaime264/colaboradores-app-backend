@@ -37,7 +37,7 @@ public class VacacionesReprogramacionController {
 		ResponseStatus responseStatus = new ResponseStatus();
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);
-		responseStatus.setResultObj(null);
+		responseStatus.setResultObj(reprogramacionService.reprogramarTramo(request));
 		logger.info("[END] reprogramar");
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}

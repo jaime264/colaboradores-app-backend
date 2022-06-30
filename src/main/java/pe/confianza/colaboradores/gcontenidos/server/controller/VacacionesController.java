@@ -1,10 +1,8 @@
 package pe.confianza.colaboradores.gcontenidos.server.controller;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -39,7 +37,6 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionEmp
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramacionAprobador;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestResumenVacaciones;
-import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseEstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseResumenVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
@@ -51,7 +48,6 @@ import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacio
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
-import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 
 @RestController
 @RequestMapping("/api")
