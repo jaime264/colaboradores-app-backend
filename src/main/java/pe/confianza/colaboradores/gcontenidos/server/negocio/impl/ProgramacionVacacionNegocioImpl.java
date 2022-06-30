@@ -79,13 +79,11 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	@Transactional
 	@Override
 	public List<ResponseProgramacionVacacion> registro(RequestProgramacionVacacion programacion) {
-		LOGGER.info("[BEGIN] registro: {} - {} - {}", new Object[] { programacion.getUsuarioBT(),
-				programacion.getFechaInicio(), programacion.getFechaFin() });
+		LOGGER.info("[BEGIN] registro: {} - {} - {}", new Object[] { programacion.getUsuarioBT(), programacion.getFechaInicio(), programacion.getFechaFin() });
 		validarFechaRegistro(programacion.getFechaInicio());
 		Empleado empleado = empleadoService.buscarPorUsuarioBT(programacion.getUsuarioBT().trim());
 		if (empleado == null)
-			throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe",
-					new String[] { programacion.getUsuarioBT() }));
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", programacion.getUsuarioBT()));
 		validarEmpleado(empleado);
 		String usuarioOperacion = programacion.getUsuarioOperacion().trim();
 		VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(programacion);
@@ -102,12 +100,9 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			obtenerOrden(prog, usuarioOperacion);
 			validarPoliticaBolsa(prog);
 		});
-		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.registrar(programaciones,
-				usuarioOperacion);
-		List<Long> idsProgRegistradas = programacionesRegistradas.stream().map(prog -> prog.getId())
-				.collect(Collectors.toList());
-		List<Long> idsPeriodosModificados = programacionesRegistradas.stream().map(prog -> prog.getPeriodo().getId())
-				.distinct().collect(Collectors.toList());
+		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.registrar(programaciones, usuarioOperacion);
+		List<Long> idsProgRegistradas = programacionesRegistradas.stream().map(prog -> prog.getId()).collect(Collectors.toList());
+		List<Long> idsPeriodosModificados = programacionesRegistradas.stream().map(prog -> prog.getPeriodo().getId()).distinct().collect(Collectors.toList());
 		idsPeriodosModificados.forEach(periodoId -> {
 			actualizarPeriodo(empleado, periodoId, usuarioOperacion);
 		});
@@ -547,7 +542,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 				if((diasAcumulados + diasProgramacion) > 15 && diasProgramacion < 7)
 					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error"));
 			}
-			diasAcumulados = vacacionProgramacion.getNumeroDias();
+			diasAcumulados += vacacionProgramacion.getNumeroDias();
 			contadorSabados += vacacionProgramacion.getNumeroSabados();
 			contadorDomingos += vacacionProgramacion.getNumeroDomingos();
 		}
@@ -675,8 +670,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		String puesto = empleado.getPuesto().getDescripcion().trim();
 		if (puesto.contains(Constantes.ASESOR_NEGOCIO)) {
 			if (empleado.getCodigoUnidadNegocio() == null)
-				throw new AppException(Utilitario.obtenerMensaje(messageSource,
-						"vacaciones.validacion.sin_unidad_negocio", empleado.getUsuarioBT()));
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.sin_unidad_negocio", empleado.getUsuarioBT()));
 			UnidadNegocio unidadNegocio = unidadNegocioService.obtenerUnidadNegocioPorCodigo(empleado.getCodigoUnidadNegocio());
 			if (unidadNegocio == null)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.validacion.unidad_negocio_error", empleado.getCodigoUnidadNegocio() + ""));
