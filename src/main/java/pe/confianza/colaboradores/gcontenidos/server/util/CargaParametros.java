@@ -125,6 +125,22 @@ public class CargaParametros {
 		throw new AppException("No existe el parámetro de hora de envio de notificaciones");
 	}
 	
+	public LocalDate getFechaInicioReprogramacion() {
+		if(DIA_INICIO_REPROGRAMACION != null) {
+			LocalDate fechaActual = LocalDate.now();
+			return LocalDate.parse(DIA_INICIO_REPROGRAMACION + "/" + fechaActual.getMonthValue() + "/" + fechaActual.getYear(), formatter);
+		}
+		throw new AppException("No existe el parámetro de inicio de reprogramación");
+	}
+	
+	public LocalDate getFechaFinReprogramacion() {
+		if(DIA_FIN_REPROGRAMACION != null){
+			LocalDate fechaActual = LocalDate.now();
+			return LocalDate.parse(DIA_FIN_REPROGRAMACION + "/" + fechaActual.getMonthValue() + "/" + fechaActual.getYear(), formatter);
+		}
+		throw new AppException("No existe el parámetro de inicio de reprogramacion");
+	}
+	
 	// Parametros genericos
 	public String ANIO_PRESENTE = null;
 	
@@ -133,6 +149,8 @@ public class CargaParametros {
 	public String FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES = null;
 	public String FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES = null;
 	public String HORA_ENVIO_NOTIFICACIONES_VACACIONES = null;
+	public String DIA_INICIO_REPROGRAMACION = null;
+	public String DIA_FIN_REPROGRAMACION = null;
 	
 	
 
@@ -149,6 +167,8 @@ public class CargaParametros {
 		FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES = populateParametro(ParametrosConstantes.Vacaciones.FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES);
 		FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES = populateParametro(ParametrosConstantes.Vacaciones.FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES);
 		HORA_ENVIO_NOTIFICACIONES_VACACIONES = populateParametro(ParametrosConstantes.Vacaciones.HORA_ENVIO_NOTIFICACIONES_VACACIONES);
+		DIA_INICIO_REPROGRAMACION = populateParametro(ParametrosConstantes.Vacaciones.DIA_INICIO_REPROGRAMACION);
+		DIA_FIN_REPROGRAMACION = populateParametro(ParametrosConstantes.Vacaciones.DIA_FIN_REPROGRAMACION);
 		
 		ANIO_PRESENTE = populateParametro(ParametrosConstantes.Genericos.ANIO_PRESENTE);
 		

@@ -11,6 +11,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestConsultaVacacionesReprogramar;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramarVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacionReprogramar;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.VacacionProgramacionMapper;
@@ -33,6 +35,8 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 	
 	@Autowired
 	private MessageSource messageSource;
+	
+
 	
 	@Override
 	public List<ResponseProgramacionVacacionReprogramar> programacionAnual(RequestConsultaVacacionesReprogramar request) {
@@ -58,6 +62,23 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
 		}
 		
+	}
+
+	@Override
+	public List<ResponseProgramacionVacacion> reprogramarTramo(RequestReprogramarVacacion request) {
+		validarPeriodoReprogramacion();
+		return null;
+	}
+
+	@Override
+	public void validarPeriodoReprogramacion() {
+		logger.info("[BEGIN] validarPeriodoReprogramacion");
+		LocalDate fechaActual = LocalDate.now();
+		if(fechaActual.isBefore(cargaParametros.getFechaInicioReprogramacion()))
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.fuera_fecha", new String[] { cargaParametros.DIA_INICIO_REPROGRAMACION, cargaParametros.DIA_FIN_REPROGRAMACION}));
+		if(fechaActual.isAfter(cargaParametros.getFechaFinReprogramacion()))
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.fuera_fecha", new String[] { cargaParametros.DIA_INICIO_REPROGRAMACION, cargaParametros.DIA_FIN_REPROGRAMACION}));
+		logger.info("[END] validarPeriodoReprogramacion");
 	}
 
 }

@@ -1,24 +1,15 @@
 package pe.confianza.colaboradores.gcontenidos.server.bean;
 
-import java.time.LocalDate;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 
 public class RequestReprogramarVacacion extends RequestAuditoria {
 	
 	private long idProgramacion;
 	
-	@NotNull(message = "Ingrese una fecha correcta")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = Constantes.TIME_ZONE)
-	private LocalDate fechaInicio;
-	
-	@NotNull(message = "Ingrese una fecha correcta")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = Constantes.TIME_ZONE)
-	private LocalDate fechaFin;
+	@NotNull(message = "Debe tener mínimo un tramo")
+	private List<RequestReprogramacionTramo> tramos;
 
 	public long getIdProgramacion() {
 		return idProgramacion;
@@ -28,21 +19,15 @@ public class RequestReprogramarVacacion extends RequestAuditoria {
 		this.idProgramacion = idProgramacion;
 	}
 
-	public LocalDate getFechaInicio() {
-		return fechaInicio;
+	public List<RequestReprogramacionTramo> getTramos() {
+		return tramos;
 	}
 
-	public void setFechaInicio(LocalDate fechaInicio) {
-		this.fechaInicio = fechaInicio;
+	public void setTramos(List<RequestReprogramacionTramo> tramos) {
+		this.tramos = tramos;
 	}
-
-	public LocalDate getFechaFin() {
-		return fechaFin;
-	}
-
-	public void setFechaFin(LocalDate fechaFin) {
-		this.fechaFin = fechaFin;
-	}
+	
+	
 	
 	
 
