@@ -1,7 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.negocio.impl;
 
 import java.time.LocalDate;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,6 +57,9 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 					}).collect(Collectors.toList());		
 			logger.info("[END] programacionAnuales");
 			return programaciones;
+		} catch (ModelNotFoundException e) {
+			logger.error("[ERROR] programacionAnual", e);
+			throw new ModelNotFoundException(e.getMessage()); 
 		} catch (AppException e) {
 			logger.error("[ERROR] programacionAnual", e);
 			throw new AppException(e.getMessage(), e);
@@ -70,24 +72,26 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 
 	@Override
 	public List<ResponseProgramacionVacacion> reprogramarTramo(RequestReprogramarVacacion request) {
+		logger.info("[BEGIN] reprogramarTramo");
 		try {
-			validarPeriodoReprogramacion();
 			VacacionProgramacion programacion = vacacionProgramacionService.buscarPorId(request.getIdProgramacion());
 			if(programacion.getEstado().id != EstadoVacacion.APROBADO.id)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.estado_error", cargaParametros.getEstadoProgramacionDescripcion(EstadoVacacion.APROBADO.id)));
 			if(programacion.getFechaFin().getMonthValue() != LocalDate.now().getMonthValue())
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.mes_error"));
+			validarPeriodoReprogramacion();
 			validarPermisoReprogramar(programacion, request.getUsuarioOperacion());
 			validarDiasReprogramados(programacion, request);
+			logger.info("[END] reprogramarTramo");
 			return null;
 		} catch (ModelNotFoundException e) {
-			logger.error("[ERROR] programacionAnual", e);
+			logger.error("[ERROR] reprogramarTramo", e);
 			throw new ModelNotFoundException(e.getMessage()); 
 		} catch (AppException e) {
-			logger.error("[ERROR] programacionAnual", e);
+			logger.error("[ERROR] reprogramarTramo", e);
 			throw new AppException(e.getMessage(), e); 
 		} catch (Exception e) {
-			logger.error("[ERROR] programacionAnual", e);
+			logger.error("[ERROR] reprogramarTramo", e);
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
 		}
 	}
@@ -117,6 +121,8 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 		int diasProgramados = programacion.getNumeroDias();
 		int diasReprogramados = 0;
 		for (RequestReprogramacionTramo tramo : request.getTramos()) {
+			if(tramo.getFechaInicio().isAfter(tramo.getFechaFin()))
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.rango_error"));
 			diasReprogramados += Utilitario.obtenerDiferenciaDias(tramo.getFechaInicio(), tramo.getFechaFin());
 		}
 		if(diasProgramados != diasReprogramados)
