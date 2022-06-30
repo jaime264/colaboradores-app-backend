@@ -1,8 +1,10 @@
 package pe.confianza.colaboradores.gcontenidos.server.controller;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -37,6 +39,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionEmp
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramacionAprobador;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestResumenVacaciones;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseEstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseResumenVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
@@ -46,7 +49,9 @@ import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacio
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionService;
+import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
+import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 
 @RestController
 @RequestMapping("/api")
@@ -66,6 +71,9 @@ public class VacacionesController {
 	
 	@Autowired
 	private VacacionProgramacionService vacacionProgramacionService;
+	
+	@Autowired
+	private CargaParametros cargaParametros;
 	
 	@SuppressWarnings("resource")
 	@PostMapping("/vacaciones/upload/{fechaCorte}")
@@ -241,5 +249,15 @@ public class VacacionesController {
 		List<Map<String, String>> vacpro = vacacionProgramacionService.listFilstrosVacacionAprobacion(reqFiltros);
 		
 		return new ResponseEntity<List<Map<String, String>>>(vacpro, HttpStatus.OK);
+	}
+
+	@ApiOperation(notes = "Lista de estados de programacion de vacaciones", value = "url proxy /vacaciones/programacion-estados")
+	@PostMapping("/vacaciones/programacion-estados")
+	public ResponseEntity<ResponseStatus> estadosVacaciones() {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(cargaParametros.getEstadosProgramacion());
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 }

@@ -36,15 +36,15 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 	@Autowired
 	private MessageSource messageSource;
 	
-
-	
 	@Override
 	public List<ResponseProgramacionVacacionReprogramar> programacionAnual(RequestConsultaVacacionesReprogramar request) {
 		logger.info("[BEGIN] programacionAnuales");
 		try {
 			List<ResponseProgramacionVacacionReprogramar> programaciones = vacacionProgramacionService.listarProgramacionesPorAnio(cargaParametros.getAnioPresente(), request.getUsuarioBT())
-					.stream().map(p -> {
-						ResponseProgramacionVacacionReprogramar prog = VacacionProgramacionMapper.convertReprogramacion(p);
+					.stream()
+					.filter(p -> p.getIdEstado() == EstadoVacacion.APROBADO.id)
+					.map(p -> {
+						ResponseProgramacionVacacionReprogramar prog = VacacionProgramacionMapper.convertReprogramacion(p, cargaParametros);
 						if(prog.getFechaFin().getMonthValue() == LocalDate.now().getMonthValue() && prog.getIdEstado() == EstadoVacacion.APROBADO.id) {
 							prog.setReprogramar(true);
 						} else {

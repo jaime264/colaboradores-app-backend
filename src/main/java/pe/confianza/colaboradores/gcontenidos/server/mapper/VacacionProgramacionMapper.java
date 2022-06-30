@@ -4,6 +4,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVac
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacionReprogramar;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 public class VacacionProgramacionMapper {
@@ -18,14 +19,14 @@ public class VacacionProgramacionMapper {
 		return destination;
 	}
 	
-	public static ResponseProgramacionVacacion convert(final VacacionProgramacion source) {
+	public static ResponseProgramacionVacacion convert(final VacacionProgramacion source, CargaParametros cargaParametros) {
 		ResponseProgramacionVacacion destination = new ResponseProgramacionVacacion();
 		destination.setId(source.getId());
 		destination.setUsuarioBT(source.getPeriodo().getEmpleado().getUsuarioBT());
 		destination.setFechaInicio(source.getFechaInicio());
 		destination.setFechaFin(source.getFechaFin());
 		destination.setIdEstado(source.getEstado().id);
-		destination.setDescripcionEstado(source.getEstado().descripcion);
+		destination.setDescripcionEstado(cargaParametros.getEstadoProgramacionDescripcion(source.getEstado().id));
 		destination.setDias(source.getNumeroDias());
 		destination.setPeriodo(source.getPeriodo().getDescripcion());
 		destination.setOrden(source.getOrden());
@@ -42,14 +43,14 @@ public class VacacionProgramacionMapper {
 		return destination;
 	}
 	
-	public static ResponseProgramacionVacacionReprogramar convertReprogramacion(final VacacionProgramacion source) {
+	public static ResponseProgramacionVacacionReprogramar convertReprogramacion(final VacacionProgramacion source, CargaParametros cargaParametros) {
 		ResponseProgramacionVacacionReprogramar destination = new ResponseProgramacionVacacionReprogramar();
 		destination.setId(source.getId());
 		destination.setUsuarioBT(source.getPeriodo().getEmpleado().getUsuarioBT());
 		destination.setFechaInicio(source.getFechaInicio());
 		destination.setFechaFin(source.getFechaFin());
 		destination.setIdEstado(source.getEstado().id);
-		destination.setDescripcionEstado(source.getEstado().descripcion);
+		destination.setDescripcionEstado(cargaParametros.getEstadoProgramacionDescripcion(source.getEstado().id));
 		destination.setDias(source.getNumeroDias());
 		destination.setPeriodo(source.getPeriodo().getDescripcion());
 		destination.setOrden(source.getOrden());

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseEstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.ParametroMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ParametrosDao;
@@ -139,6 +140,23 @@ public class CargaParametros {
 			return LocalDate.parse(DIA_FIN_REPROGRAMACION + "/" + fechaActual.getMonthValue() + "/" + fechaActual.getYear(), formatter);
 		}
 		throw new AppException("No existe el parámetro de inicio de reprogramacion");
+	}
+	
+	public List<ResponseEstadoVacacion> getEstadosProgramacion() {
+		List<ResponseEstadoVacacion> estados = new ArrayList<>();
+		for (EstadoVacacion estado : EstadoVacacion.values()) {
+			String descripcionEstado = populateParametro(estado.codigoParametro);
+			ResponseEstadoVacacion estadoRes = new ResponseEstadoVacacion();
+			estadoRes.setCodigo(estado.id);
+			estadoRes.setDescripcion(descripcionEstado);
+			estados.add(estadoRes);
+		}
+		return estados;
+	}
+	
+	public String getEstadoProgramacionDescripcion(int idEstadoProgramacion) {
+		EstadoVacacion estado = EstadoVacacion.getEstado(idEstadoProgramacion);
+		return populateParametro(estado.codigoParametro);
 	}
 	
 	// Parametros genericos
