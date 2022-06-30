@@ -11,13 +11,13 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.ParametroMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
-import pe.confianza.colaboradores.gcontenidos.server.util.ParametrosConstants;
+import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 
 @Service
 public class ParametrosServiceImpl implements ParametrosService {
 
 	@Autowired
-	private ParametrosConstants parametrosConstants;
+	private CargaParametros parametrosConstants;
 
 	@Override
 	public List<Parametro> listParams() {

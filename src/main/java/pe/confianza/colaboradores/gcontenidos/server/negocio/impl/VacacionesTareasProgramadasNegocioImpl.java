@@ -18,7 +18,7 @@ import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 import pe.confianza.colaboradores.gcontenidos.server.service.PeriodoVacacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionMetaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
-import pe.confianza.colaboradores.gcontenidos.server.util.ParametrosConstants;
+import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.EmailUtil;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 
@@ -38,7 +38,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 	private VacacionProgramacionService vacacionProgramacionService;
 	
 	@Autowired
-	private ParametrosConstants parametrosConstants;
+	private CargaParametros cargaParametros;
 	
 	@Autowired
 	private VacacionMetaService vacacionMetaService;
@@ -67,7 +67,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 	public void consolidarMetasAnuales() {
 		LOGGER.info("[BEGIN] consolidarMetasAnuales " + LocalDate.now());
 		LocalDate fechaActual = LocalDate.now();
-		LocalDate fechaCorte = parametrosConstants.getFechaCorteMeta(fechaActual.getYear());
+		LocalDate fechaCorte = cargaParametros.getFechaCorteMeta();
 		if(fechaActual.isAfter(fechaCorte)) {
 			List<Empleado> lstEmpleado = empleadoService.listar();
 			lstEmpleado.forEach(e -> {

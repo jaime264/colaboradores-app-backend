@@ -21,9 +21,9 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.P
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
 
 @Component
-public class ParametrosConstants {
+public class CargaParametros {
 
-	private static Logger logger = LoggerFactory.getLogger(ParametrosConstants.class);
+	private static Logger logger = LoggerFactory.getLogger(CargaParametros.class);
 	
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	
@@ -34,7 +34,7 @@ public class ParametrosConstants {
 
 	private void populateParametros() {
 		logger.info("[BEGIN] populateParametros");
-		listParams = parametrosDao.findAll();
+		listParams = parametrosDao.listarActivos();
 		logger.info("[END] populateParametros");
 	}
 
@@ -42,6 +42,7 @@ public class ParametrosConstants {
 		logger.info("[BEGIN] populateParametro " + cod);
 		for (Parametro parametro : listParams) {
 			if (parametro.getCodigo().equals(cod)) {
+				logger.info(cod + " : " + parametro.getValor());
 				return parametro.getValor();
 			}
 		}
@@ -86,23 +87,33 @@ public class ParametrosConstants {
 		return listParams;
 	}
 	
-	public LocalDate getFechaInicioRegistroProgramacion(int anio) {
+	public int getAnioPresente() {
+		if(ANIO_PRESENTE != null)
+			return Integer.parseInt(ANIO_PRESENTE);
+		throw new AppException("No existe el parámetro año presente");
+	}
+	
+	public int getMetaVacacionAnio() {
+		return this.getAnioPresente() + 1;
+	}
+	
+	public LocalDate getFechaInicioRegistroProgramacion() {
 		if(FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES != null) {
-			return LocalDate.parse(FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES + "/" + anio, formatter);
+			return LocalDate.parse(FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES + "/" + this.getAnioPresente(), formatter);
 		}
 		throw new AppException("No existe el parámetro de fecha inicio de registro de programación");
 	}
 	
-	public LocalDate getFechaFinRegistroProgramacion(int anio) {
+	public LocalDate getFechaFinRegistroProgramacion() {
 		if(FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES != null) {
-			return LocalDate.parse(FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES + "/" + anio, formatter);
+			return LocalDate.parse(FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES + "/" + this.getAnioPresente(), formatter);
 		}
 		throw new AppException("No existe el parámetro de fecha fin de registro de programación");
 	}
 	
-	public LocalDate getFechaCorteMeta(int anio) {
+	public LocalDate getFechaCorteMeta() {
 		if(FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES != null) {
-			return LocalDate.parse(FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES + "/" + anio, formatter).minusDays(1);
+			return LocalDate.parse(FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES + "/" + this.getAnioPresente(), formatter).minusDays(1);
 		}
 		throw new AppException("No existe el parámetro de fecha inicio de registro de programación");
 	}
@@ -113,6 +124,9 @@ public class ParametrosConstants {
 		} 
 		throw new AppException("No existe el parámetro de hora de envio de notificaciones");
 	}
+	
+	// Parametros genericos
+	public String ANIO_PRESENTE = null;
 	
 
 	// Parametros Vacaciones
@@ -132,9 +146,12 @@ public class ParametrosConstants {
 	}
 	
 	private void loadParametros() {
-		FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES = populateParametro("FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES");
-		FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES = populateParametro("FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES");
-		HORA_ENVIO_NOTIFICACIONES_VACACIONES = populateParametro("HORA_ENVIO_NOTIFICACIONES_VACACIONES");
+		FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES = populateParametro(ParametrosConstantes.Vacaciones.FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES);
+		FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES = populateParametro(ParametrosConstantes.Vacaciones.FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES);
+		HORA_ENVIO_NOTIFICACIONES_VACACIONES = populateParametro(ParametrosConstantes.Vacaciones.HORA_ENVIO_NOTIFICACIONES_VACACIONES);
+		
+		ANIO_PRESENTE = populateParametro(ParametrosConstantes.Genericos.ANIO_PRESENTE);
+		
 	}
 
 }

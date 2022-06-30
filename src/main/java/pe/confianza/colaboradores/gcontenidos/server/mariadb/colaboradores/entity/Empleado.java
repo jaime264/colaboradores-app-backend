@@ -82,6 +82,12 @@ public class Empleado extends EntidadAuditoria {
 	private boolean aceptaTerminosCondiciones;
 	
 	private LocalDateTime fechaAceptacionTc;
+	
+	private String codigoPerfilSpring;
+	
+	@ManyToOne
+	@JoinColumn(nullable = true, name = "idPerfilSpring")
+	private PerfilSpring perfilSpring;
 
 	public Long getId() {
 		return id;
@@ -261,6 +267,24 @@ public class Empleado extends EntidadAuditoria {
 
 	public void setFechaAceptacionTc(LocalDateTime fechaAceptacionTc) {
 		this.fechaAceptacionTc = fechaAceptacionTc;
+	}
+	
+	
+
+	public String getCodigoPerfilSpring() {
+		return codigoPerfilSpring;
+	}
+
+	public void setCodigoPerfilSpring(String codigoPerfilSpring) {
+		this.codigoPerfilSpring = codigoPerfilSpring;
+	}
+
+	public PerfilSpring getPerfilSpring() {
+		return perfilSpring;
+	}
+
+	public void setPerfilSpring(PerfilSpring perfilSpring) {
+		this.perfilSpring = perfilSpring;
 	}
 
 	@Override

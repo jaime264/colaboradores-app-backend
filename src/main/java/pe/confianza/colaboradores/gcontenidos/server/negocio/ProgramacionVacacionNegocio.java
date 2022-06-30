@@ -38,7 +38,7 @@ public interface ProgramacionVacacionNegocio {
 	
 	List<VacacionProgramacion> obtenerPeriodo(Empleado empleado, VacacionProgramacion programacion);
 	
-	void validarPoliticasRegulatorias(VacacionProgramacion programacion, String usuarioModifica);
+	void validarPoliticasRegulatorias(VacacionProgramacion programacion);
 	
 	void validarTramoVacaciones(VacacionProgramacion programacion);
 	

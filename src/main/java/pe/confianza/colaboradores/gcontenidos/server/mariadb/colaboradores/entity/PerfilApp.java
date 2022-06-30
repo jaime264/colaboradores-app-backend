@@ -7,31 +7,23 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "tipo_parametro")
-public class TipoParametro extends EntidadAuditoria {
+@Table(name = "perfil_app")
+public class PerfilApp extends EntidadAuditoria {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
-	
-	private String descripcion;
-	
+	private Long id;
+
 	private String codigo;
 
-	public long getId() {
+	private String descripcion;
+
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getDescripcion() {
-		return descripcion;
-	}
-
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
 	}
 
 	public String getCodigo() {
@@ -41,8 +33,15 @@ public class TipoParametro extends EntidadAuditoria {
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
 	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
 	
 	
-	
-	
+
 }

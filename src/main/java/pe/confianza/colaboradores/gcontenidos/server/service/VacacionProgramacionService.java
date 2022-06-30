@@ -58,4 +58,6 @@ public interface VacacionProgramacionService {
 	
 	List<Map<String, String>> listFilstrosVacacionAprobacion(RequestFiltroVacacionesAprobacion reqFiltros);
 	
+	List<VacacionProgramacion> listarProgramacionesPorAnio(int anio, String usuarioBT);
+	
 }

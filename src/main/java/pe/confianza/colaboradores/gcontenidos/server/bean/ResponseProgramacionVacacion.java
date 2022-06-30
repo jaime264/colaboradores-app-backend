@@ -26,7 +26,6 @@ public class ResponseProgramacionVacacion {
 	public void setId(long id) {
 		this.id = id;
 	}
-	
 	public String getUsuarioBT() {
 		return usuarioBT;
 	}
@@ -75,7 +74,6 @@ public class ResponseProgramacionVacacion {
 	public void setOrden(int orden) {
 		this.orden = orden;
 	}
-	
 	
 	
 }
