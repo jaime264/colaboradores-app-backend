@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestConsultaVacacionesReprogramar;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramarVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ReprogramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
@@ -29,14 +30,30 @@ public class VacacionesReprogramacionController {
 	@Autowired
 	private ReprogramacionVacacionNegocio reprogramacionService;
 	
-	@ApiOperation(notes = "Lista de programaciones de del año", value = "url proxy /vacaciones/reprogramcion/programacion-anio")
+	@ApiOperation(notes = "Reprogramar un tramo de vacaciones", value = "url proxy /vacaciones/reprogramacion")
+	@PostMapping
+	public ResponseEntity<ResponseStatus> reprogramar(@Valid @RequestBody RequestReprogramarVacacion request) {
+		logger.info("[BEGIN] reprogramar");
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(null);
+		logger.info("[END] reprogramar");
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+	
+	@ApiOperation(notes = "Lista de programaciones de del año", value = "url proxy /vacaciones/reprogramacion/programacion-anio")
 	@PostMapping("/programacion-anio")
 	public ResponseEntity<ResponseStatus> consultarProgramaciones(@Valid @RequestBody RequestConsultaVacacionesReprogramar request) {
+		logger.info("[BEGIN] consultarProgramaciones");
 		ResponseStatus responseStatus = new ResponseStatus();
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);
 		responseStatus.setResultObj(reprogramacionService.programacionAnual(request));
+		logger.info("[END] consultarProgramaciones");
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
+	
+	
 
 }
