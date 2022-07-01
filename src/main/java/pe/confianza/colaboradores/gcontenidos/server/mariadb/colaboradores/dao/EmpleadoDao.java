@@ -22,7 +22,7 @@ public interface EmpleadoDao extends JpaRepository<Empleado, Long> {
 	@Query("SELECT em FROM Empleado em WHERE em.codigoNivel1 = ?1")
 	public List<Empleado> findByCodigoJefe(Long codigoNivel1);
 
-	@Query("SELECT vp FROM VacacionProgramacion vp inner join vp.periodo pv inner join pv.empleado e where e.id = ?1")
+	@Query("SELECT vp FROM VacacionProgramacion vp inner join vp.periodo pv inner join pv.empleado e inner join e.agencia a where e.id = ?1")
 	public List<VacacionProgramacion> findPeriodosByEmpleado(Long idEmpleado);
 
 	@Query(value = "Select * from empleado e where MONTH(e.fecha_nacimiento) = ?1 and DAY (e.fecha_nacimiento) = ?2", nativeQuery = true)

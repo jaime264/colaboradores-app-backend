@@ -21,11 +21,17 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseTerminosCondic
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.EmpleadoMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.AgenciaDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.CorredorDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PuestoDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.TerritorioDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.UnidadOperativaDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Agencia;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Corredor;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Puesto;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Territorio;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.UnidadOperativa;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
@@ -55,6 +61,15 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
 	@Autowired
 	private MessageSource messageSource;
+	
+	@Autowired
+	private CorredorDao corredorDao;
+	
+	@Autowired
+	private TerritorioDao territorioDao;
+	
+	@Autowired
+	private UnidadOperativaDao unidadOperativaDao;
 
 	@Override
 	public Empleado actualizarInformacionEmpleado(String usuarioBT) {
@@ -190,6 +205,28 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		} else {
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", usuarioBT));
 		}
+	}
+
+
+	@Override
+	public Empleado getEmpleadoCorredorTerritorioBt(String usuarioBT) {
+		// TODO Auto-generated method stub
+		Empleado empleado = buscarPorUsuarioBT(usuarioBT);
+				
+		List<Territorio> territorios = new ArrayList<>();
+		
+		List<Corredor> corredores = corredorDao.listCorredor(empleado.getId());
+		List<UnidadOperativa> unidadesOperativas = unidadOperativaDao.listUnidadOperativa(empleado.getId());
+		
+		corredores.stream().forEach(e -> territorios.add(e.getTerritorio()));
+		
+		empleado.setCorredores(corredores);
+		empleado.setUnidadesOperativa(unidadesOperativas);
+		empleado.setTerritorios(territorios);		
+		
+		
+		
+		return empleado;
 	}
 
 }

@@ -1,11 +1,18 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "territorio")
@@ -23,6 +30,11 @@ public class Territorio extends EntidadAuditoria {
 	
 	@Column(nullable = false)
 	private String estado;
+	
+	@OneToMany(mappedBy = "territorio", fetch = FetchType.LAZY)
+	@JsonIgnore
+	@Transient
+	private List<Corredor> corredores;
 
 	public long getId() {
 		return id;

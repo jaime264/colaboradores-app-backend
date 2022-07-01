@@ -2,15 +2,21 @@ package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.enti
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "empleado")
@@ -88,6 +94,45 @@ public class Empleado extends EntidadAuditoria {
 	@ManyToOne
 	@JoinColumn(nullable = true, name = "idPerfilSpring")
 	private PerfilSpring perfilSpring;
+	
+	@OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
+	@JsonIgnore
+	@Transient
+	private List<Corredor> corredores;
+	
+	@OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
+	@JsonIgnore
+	@Transient
+	private List<UnidadOperativa> unidadesOperativa;
+	
+	@JsonIgnore
+	@Transient
+	private List<Territorio> territorios;
+	
+
+	public List<Territorio> getTerritorios() {
+		return territorios;
+	}
+
+	public void setTerritorios(List<Territorio> territorios) {
+		this.territorios = territorios;
+	}
+
+	public List<Corredor> getCorredores() {
+		return corredores;
+	}
+
+	public void setCorredores(List<Corredor> corredores) {
+		this.corredores = corredores;
+	}
+
+	public List<UnidadOperativa> getUnidadesOperativa() {
+		return unidadesOperativa;
+	}
+
+	public void setUnidadesOperativa(List<UnidadOperativa> unidadesOperativa) {
+		this.unidadesOperativa = unidadesOperativa;
+	}
 
 	public Long getId() {
 		return id;
@@ -285,6 +330,10 @@ public class Empleado extends EntidadAuditoria {
 
 	public void setPerfilSpring(PerfilSpring perfilSpring) {
 		this.perfilSpring = perfilSpring;
+	}
+	
+	public String getNombreCompleto() {
+		return this.nombres + " " + this.apellidoPaterno + " " + this.apellidoMaterno;
 	}
 
 	@Override
