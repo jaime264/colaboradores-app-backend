@@ -44,9 +44,9 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Vacacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
-import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionService;
+import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 
 @RestController
@@ -69,7 +69,7 @@ public class VacacionesController {
 	private VacacionProgramacionService vacacionProgramacionService;
 	
 	@Autowired
-	private EmpleadoService empleadoService;
+	private CargaParametros cargaParametros;
 	
 	@SuppressWarnings("resource")
 	@PostMapping("/vacaciones/upload/{fechaCorte}")
@@ -245,5 +245,15 @@ public class VacacionesController {
 		List<Map<String, String>> vacpro = vacacionProgramacionService.listFilstrosVacacionAprobacion(reqFiltros);
 		
 		return new ResponseEntity<List<Map<String, String>>>(vacpro, HttpStatus.OK);
+	}
+
+	@ApiOperation(notes = "Lista de estados de programacion de vacaciones", value = "url proxy /vacaciones/programacion-estados")
+	@PostMapping("/vacaciones/programacion-estados")
+	public ResponseEntity<ResponseStatus> estadosVacaciones() {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(cargaParametros.getEstadosProgramacion());
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 }

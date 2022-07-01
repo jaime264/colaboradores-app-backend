@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.NotificacionDao;
@@ -31,10 +34,9 @@ public class NotificacionServiceImpl implements NotificacionService{
 	}
 
 	@Override
-	public List<Notificacion> consultar(Empleado empleado, NotificacionTipo tipo) {
-		List<Notificacion> lst = notificacionDao.consultar(empleado.getId(), tipo.getId());
-		lst = lst == null ? new ArrayList<>() : lst;
-		return lst;
+	public Page<Notificacion> consultar(Empleado empleado, NotificacionTipo tipo, int numeroPagina, int tamanioPagina) {
+		Pageable paginacion = PageRequest.of(numeroPagina, tamanioPagina);
+		return notificacionDao.consultar(empleado.getId(), tipo.getId(), paginacion);
 	}
 
 	@Override

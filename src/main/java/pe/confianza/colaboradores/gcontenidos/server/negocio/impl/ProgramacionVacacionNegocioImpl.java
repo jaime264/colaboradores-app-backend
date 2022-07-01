@@ -44,7 +44,7 @@ import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacio
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
-import pe.confianza.colaboradores.gcontenidos.server.util.ParametrosConstants;
+import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 @Service
@@ -53,7 +53,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProgramacionVacacionNegocioImpl.class);
 
 	@Autowired
-	private ParametrosConstants parametrosConstants;
+	private CargaParametros parametrosConstants;
 
 	@Autowired
 	private EmpleadoService empleadoService;
@@ -79,13 +79,11 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	@Transactional
 	@Override
 	public List<ResponseProgramacionVacacion> registro(RequestProgramacionVacacion programacion) {
-		LOGGER.info("[BEGIN] registro: {} - {} - {}", new Object[] { programacion.getUsuarioBT(),
-				programacion.getFechaInicio(), programacion.getFechaFin() });
+		LOGGER.info("[BEGIN] registro: {} - {} - {}", new Object[] { programacion.getUsuarioBT(), programacion.getFechaInicio(), programacion.getFechaFin() });
 		validarFechaRegistro(programacion.getFechaInicio());
 		Empleado empleado = empleadoService.buscarPorUsuarioBT(programacion.getUsuarioBT().trim());
 		if (empleado == null)
-			throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe",
-					new String[] { programacion.getUsuarioBT() }));
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", programacion.getUsuarioBT()));
 		validarEmpleado(empleado);
 		String usuarioOperacion = programacion.getUsuarioOperacion().trim();
 		VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(programacion);
@@ -98,21 +96,18 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		List<VacacionProgramacion> programaciones = obtenerPeriodo(empleado, vacacionProgramacion);
 		programaciones.forEach(prog -> {
 			prog.setEstado(EstadoVacacion.REGISTRADO);
-			validarTramoVacaciones(prog);
+			validarPoliticasRegulatorias(prog);
 			obtenerOrden(prog, usuarioOperacion);
-			// validarPoliticaBolsa(prog);
+			validarPoliticaBolsa(prog);
 		});
-		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.registrar(programaciones,
-				usuarioOperacion);
-		List<Long> idsProgRegistradas = programacionesRegistradas.stream().map(prog -> prog.getId())
-				.collect(Collectors.toList());
-		List<Long> idsPeriodosModificados = programacionesRegistradas.stream().map(prog -> prog.getPeriodo().getId())
-				.distinct().collect(Collectors.toList());
+		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.registrar(programaciones, usuarioOperacion);
+		List<Long> idsProgRegistradas = programacionesRegistradas.stream().map(prog -> prog.getId()).collect(Collectors.toList());
+		List<Long> idsPeriodosModificados = programacionesRegistradas.stream().map(prog -> prog.getPeriodo().getId()).distinct().collect(Collectors.toList());
 		idsPeriodosModificados.forEach(periodoId -> {
 			actualizarPeriodo(empleado, periodoId, usuarioOperacion);
 		});
 		programacionesRegistradas.forEach(p -> {
-			actualizarMeta(LocalDate.now().getYear() + 1, p, false, usuarioOperacion);
+			actualizarMeta(parametrosConstants.getMetaVacacionAnio(), p, false, usuarioOperacion);
 		});
 
 		programacionesRegistradas = new ArrayList<>();
@@ -121,7 +116,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		}
 		LOGGER.info("[END] registro");
 		return programacionesRegistradas.stream().map(p -> {
-			return VacacionProgramacionMapper.convert(p);
+			return VacacionProgramacionMapper.convert(p, parametrosConstants);
 		}).collect(Collectors.toList());
 	}
 
@@ -187,15 +182,13 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		validarPeriodoRegistro(ahora);
 		VacacionProgramacion programacion = vacacionProgramacionService.buscarPorId(cancelacion.getIdProgramacion());
 		if (programacion.getPeriodo().getEmpleado().getId() != empleado.getId())
-			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.cancelar.sin_permiso",
-					new String[] { cancelacion.getUsuarioOperacion() }));
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.cancelar.sin_permiso", cancelacion.getUsuarioOperacion()));
 		if (programacion.getIdEstado() != EstadoVacacion.REGISTRADO.id)
-			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.cancelar.estado_error",
-					new String[] { EstadoVacacion.REGISTRADO.descripcion }));
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.cancelar.estado_error", parametrosConstants.getEstadoProgramacionDescripcion(EstadoVacacion.REGISTRADO.id)));
 		long idPeriodo = programacion.getPeriodo().getId();
 		vacacionProgramacionService.eliminar(cancelacion.getIdProgramacion(), cancelacion.getUsuarioOperacion());
 		actualizarPeriodo(empleado, idPeriodo, cancelacion.getUsuarioOperacion());
-		actualizarMeta(ahora.getYear() + 1, programacion, true, cancelacion.getUsuarioOperacion().trim());
+		actualizarMeta(parametrosConstants.getMetaVacacionAnio(), programacion, true, cancelacion.getUsuarioOperacion().trim());
 		LOGGER.info("[END] cancelar");
 	}
 
@@ -204,20 +197,18 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] generar");
 		Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioOperacion().trim());
 		if (empleado == null)
-			throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe",
-					new String[] { request.getUsuarioOperacion() }));
+			throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", request.getUsuarioOperacion()));
 		LocalDate ahora = LocalDate.now();
 		validarPeriodoRegistro(ahora);
-		List<VacacionProgramacion> programacionesGenerar = vacacionProgramacionService
-				.buscarPorUsuarioBTYEstado(request.getUsuarioOperacion().trim(), EstadoVacacion.REGISTRADO);
+		List<VacacionProgramacion> programacionesGenerar = vacacionProgramacionService.buscarPorUsuarioBTYEstado(request.getUsuarioOperacion().trim(), EstadoVacacion.REGISTRADO);
 		List<ResponseProgramacionVacacion> response = new ArrayList<>();
 		for (VacacionProgramacion programacion : programacionesGenerar) {
 			programacion.setEstado(EstadoVacacion.GENERADO);
 			programacion = vacacionProgramacionService.actualizar(programacion, request.getUsuarioOperacion());
-			response.add(VacacionProgramacionMapper.convert(programacion));
+			response.add(VacacionProgramacionMapper.convert(programacion, parametrosConstants));
 		}
 		actualizarPeriodo(empleado, request.getUsuarioOperacion());
-		consolidarMetaAnual(empleado, ahora.getYear() + 1, request.getUsuarioOperacion());
+		consolidarMetaAnual(empleado, parametrosConstants.getMetaVacacionAnio(), request.getUsuarioOperacion());
 		// actualizarMeta(empleado, ahora.getYear() + 1, 0,
 		// request.getUsuarioOperacion());
 		LOGGER.info("[END] generar");
@@ -232,8 +223,8 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			throw new ModelNotFoundException("No existe el usuario " + request.getUsuarioBT());
 		List<VacacionProgramacion> lstProgramacion = new ArrayList<>();
 		EstadoVacacion estadoSeleccionado = null;
-		if (!StringUtils.isEmpty(request.getEstado()))
-			estadoSeleccionado = EstadoVacacion.getEstado(request.getEstado());
+		if (!StringUtils.isEmpty(request.getIdEstado()))
+			estadoSeleccionado = EstadoVacacion.getEstado(request.getIdEstado());
 
 		if (estadoSeleccionado == null && StringUtils.isEmpty(request.getPeriodo()))
 			lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBT(request.getUsuarioBT().trim());
@@ -249,7 +240,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		lstProgramacion.sort(Comparator.comparing(VacacionProgramacion::getFechaInicio));
 		LOGGER.info("[END] consultar");
 		return lstProgramacion.stream().map(p -> {
-			return VacacionProgramacionMapper.convert(p);
+			return VacacionProgramacionMapper.convert(p, parametrosConstants);
 		}).collect(Collectors.toList());
 	}
 
@@ -262,11 +253,11 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 					new String[] { request.getUsuarioBT() }));
 
 		LocalDate fechaConsulta = LocalDate.now();
-		VacacionMeta meta = vacacionMetaService.obtenerVacacionPorAnio(fechaConsulta.getYear() + 1, empleado.getId());
+		VacacionMeta meta = vacacionMetaService.obtenerVacacionPorAnio(parametrosConstants.getMetaVacacionAnio(), empleado.getId());
 		if (meta == null)
 			throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe",
 					new String[] { request.getUsuarioBT() }));
-		LocalDate fechaCorte = parametrosConstants.getFechaCorteMeta(LocalDate.now().getYear() + 1);
+		LocalDate fechaCorte = parametrosConstants.getFechaCorteMeta();
 		ResponseResumenVacacion response = new ResponseResumenVacacion();
 		response.setFechaConsulta(fechaConsulta);
 		response.setFechaCorte(fechaCorte);
@@ -277,8 +268,8 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		response.setFechaFinLabores(empleado.getFechaFinContrato());
 		response.setCargo(empleado.getPuesto().getDescripcion().trim());
 		response.setMeta(meta.getMeta() < 1.0 ? 0.0 : Utilitario.redondearMeta(meta.getMeta()));
-		response.setFechaInicioRegistroProgramacion(parametrosConstants.getFechaInicioRegistroProgramacion(fechaConsulta.getYear()));
-		response.setFechaFinRegistroProgramacion(parametrosConstants.getFechaFinRegistroProgramacion(fechaConsulta.getYear()));
+		response.setFechaInicioRegistroProgramacion(parametrosConstants.getFechaInicioRegistroProgramacion());
+		response.setFechaFinRegistroProgramacion(parametrosConstants.getFechaFinRegistroProgramacion());
 
 		response.setAnio(meta.getAnio());
 
@@ -287,8 +278,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 
 		if (meta.getPeriodoVencido() != null) {
 			PeriodoVacacion periodo = meta.getPeriodoVencido();
-			VacacionProgramacion ultimaProgramacion = vacacionProgramacionService
-					.obtenerUltimaProgramacion(periodo.getId());
+			VacacionProgramacion ultimaProgramacion = vacacionProgramacionService.obtenerUltimaProgramacion(periodo.getId());
 			periodoVencido = new ResponseResumenPeriodoVacacion();
 			periodoVencido.setDescripcion(periodo.getDescripcion());
 			periodoVencido.setDias(Utilitario.redondearMeta(meta.getDiasVencidos()));
@@ -334,10 +324,8 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	@Override
 	public void validarPeriodoRegistro(LocalDate fechaEvaluar) {
 		LOGGER.info("[BEGIN] validarPeriodoRegistro");
-		LocalDate fechaInicioRegistroProgramacion = parametrosConstants
-				.getFechaInicioRegistroProgramacion(fechaEvaluar.getYear());
-		LocalDate fechaFinRegistroProgramacion = parametrosConstants
-				.getFechaFinRegistroProgramacion(fechaEvaluar.getYear());
+		LocalDate fechaInicioRegistroProgramacion = parametrosConstants.getFechaInicioRegistroProgramacion();
+		LocalDate fechaFinRegistroProgramacion = parametrosConstants.getFechaFinRegistroProgramacion();
 		if (fechaEvaluar.isBefore(fechaInicioRegistroProgramacion))
 			throw new AppException(Utilitario.obtenerMensaje(messageSource,
 					"vacaciones.validacion.inicio_programacion_antes", fechaInicioRegistroProgramacion + ""));
@@ -381,7 +369,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	public List<VacacionProgramacion> obtenerPeriodo(Empleado empleado, VacacionProgramacion programacion) {
 		LOGGER.info("[BEGIN] obtenerPeriodo");
 		List<VacacionProgramacion> programaciones = new ArrayList<>();
-		LocalDate fechaCorte = parametrosConstants.getFechaCorteMeta(LocalDate.now().getYear());
+		LocalDate fechaCorte = parametrosConstants.getFechaCorteMeta();
 		VacacionMeta meta = vacacionMetaService.obtenerVacacionPorAnio(fechaCorte.getYear() + 1, empleado.getId());
 		int diasVencidos = (int) Utilitario.redondearMeta(meta.getDiasVencidos());
 		int diasTruncos = (int) Utilitario.redondearMeta(meta.getDiasTruncos());
@@ -492,31 +480,86 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		
 		/*if(!mensajeError.equals(""))
 			throw new AppException(mensajeError);*/
-			
-		double diasPendientePorRegistrar = Utilitario.calcularDiasPendientesPorRegistrar(programacion.getPeriodo());
-		if (programacion.getNumeroDias() == diasPendientePorRegistrar) {
-			contadorSabados += Utilitario.obtenerCantidadSabados(programacion.getFechaInicio(),
-					programacion.getFechaFin());
-			if (contadorSabados < 4) {
-				throw new AppException(
-						Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regularoria.cuatro_sabados.error", new String[] { programacion.getPeriodo().getDescripcion() }));
-			}
+		
+		double diasPendientePorRegistrar = Utilitario.calcularDiasPendientesPorRegistrarEnRegistroProgramacion(programacion.getPeriodo());
+		if (programacion.getNumeroDias() <= diasPendientePorRegistrar) {
+			contadorSabados += Utilitario.obtenerCantidadSabados(programacion.getFechaInicio(), programacion.getFechaFin());
 			contadorDomingos += Utilitario.obtenerCantidadDomingos(programacion.getFechaInicio(), programacion.getFechaFin());
+			double diasPendientesPorRegistrarFuturos = diasPendientePorRegistrar - programacion.getNumeroDias();
+			int sabadosPendientes = contadorSabados >= 4 ? 0 : ( 4 - contadorSabados);
+			int domingoPendientes = contadorDomingos >= 4 ? 0 : ( 4 - contadorDomingos);
+			if(diasPendientesPorRegistrarFuturos < (sabadosPendientes + domingoPendientes)) {
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regularoria.cuatro_sabados.error", new String[] { programacion.getPeriodo().getDescripcion() }));
+			}
+			/*if (contadorSabados < 4) {
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regularoria.cuatro_sabados.error", new String[] { programacion.getPeriodo().getDescripcion() }));
+			}
+			
 			if (contadorDomingos < 4) {
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.regularoria.cuatro_domingos.error", new String[] { programacion.getPeriodo().getDescripcion() }));
-			}
+			}*/
 		}
 
 		LOGGER.info("[END] validarTramoVacaciones");
+	}
+	
+	@Override
+	public void validarPoliticasRegulatorias(VacacionProgramacion programacion) {
+		LOGGER.info("[BEGIN] validarPoliticasRegulatorias");
+		List<VacacionProgramacion> programaciones = vacacionProgramacionService.listarPorPeriodo(programacion.getPeriodo().getId());
+		programaciones = programaciones.stream().filter(p -> p.getIdEstado() != EstadoVacacion.RECHAZADO.id).collect(Collectors.toList());
+		//Verificar que fechas no se crucen
+		for (VacacionProgramacion vacacionProgramacion : programaciones) {
+			if (Utilitario.fechaEntrePeriodo(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin(), programacion.getFechaInicio()))
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fecha_inicio_encontrada"));
+			if (Utilitario.fechaEntrePeriodo(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin(),	programacion.getFechaFin()))
+				throw new AppException(	Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fecha_fin_encontrada"));			
+		}
+		//Ordenar tramos
+		programaciones.add(programacion);
+		Comparator<VacacionProgramacion> odenPorFechas = new Comparator<VacacionProgramacion>() {
+			@Override
+			public int compare(VacacionProgramacion prog1, VacacionProgramacion prog2) {
+				return prog1.getFechaInicio().compareTo(prog2.getFechaInicio());
+			}
+		};
+		programaciones.sort(odenPorFechas);
+		for (int i = 0; i < programaciones.size(); i++) {
+			programaciones.get(i).setOrden(i + 1);
+		}
+		//Validar tramos
+		int contadorSabados = 0;
+		int contadorDomingos = 0;
+		int diasAcumulados = 0;
+		for (VacacionProgramacion vacacionProgramacion : programaciones) {
+			int diasProgramacion = vacacionProgramacion.getNumeroDias();
+			if(diasAcumulados < 15) {
+				if((diasAcumulados + diasProgramacion) <= 15 && diasProgramacion < 7)
+					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error"));
+				if((diasAcumulados + diasProgramacion) > 15 && diasProgramacion < 7)
+					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error"));
+			}
+			diasAcumulados += vacacionProgramacion.getNumeroDias();
+			contadorSabados += vacacionProgramacion.getNumeroSabados();
+			contadorDomingos += vacacionProgramacion.getNumeroDomingos();
+		}
+		//Validar cantidad sabados y domingos
+		double diasPendientePorRegistrar = Utilitario.calcularDiasPendientesPorRegistrarEnRegistroProgramacion(programacion.getPeriodo());
+		if (programacion.getNumeroDias() <= diasPendientePorRegistrar) {
+			double diasPendientesPorRegistrarFuturos = diasPendientePorRegistrar - programacion.getNumeroDias();
+			int sabadosPendientes = contadorSabados >= 4 ? 0 : ( 4 - contadorSabados);
+			int domingoPendientes = contadorDomingos >= 4 ? 0 : ( 4 - contadorDomingos);
+			if(diasPendientesPorRegistrarFuturos < (sabadosPendientes + domingoPendientes))
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regularoria.cuatro_sabados.error", programacion.getPeriodo().getDescripcion()));
+		}
+		LOGGER.info("[END] validarPoliticasRegulatorias");
 	}
 
 	@Override
 	public void obtenerOrden(VacacionProgramacion programacion, String usuarioModifica) {
 		LOGGER.info("[BEGIN] obtenerOrdenProgramacion");
-		List<VacacionProgramacion> programaciones = vacacionProgramacionService
-				.listarPorPeriodo(programacion.getPeriodo().getId());
-		programaciones = programaciones.stream().filter(p -> p.getIdEstado() != EstadoVacacion.RECHAZADO.id)
-				.collect(Collectors.toList());
+		List<VacacionProgramacion> programaciones = vacacionProgramacionService	.listarPorPeriodo(programacion.getPeriodo().getId());
+		programaciones = programaciones.stream().filter(p -> p.getIdEstado() != EstadoVacacion.RECHAZADO.id).collect(Collectors.toList());
 		if (programaciones.isEmpty()) {
 			programacion.setOrden(1);
 		} else {
@@ -594,19 +637,17 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		Empleado empleado = programacion.getPeriodo().getEmpleado();
 		String puesto = empleado.getPuesto().getDescripcion().trim();
 		int limite = 1;
-		if (puesto.contains(Constantes.ASESOR_SERVICIO) || puesto.contains(Constantes.ASESOR_PLATAFORMA)
-				|| puesto.contains(Constantes.SUPERVISOR_OFICINA)) {
-			long cantidadProgramacionesAsesorServicio = vacacionProgramacionService
-					.contarProgramacionPorEmpleadoAgencia(empleado.getId(), Constantes.ASESOR_SERVICIO,
-							programacion.getFechaInicio(), programacion.getFechaFin());
-			long cantidadProgramacionesAsesorPlataforma = vacacionProgramacionService
-					.contarProgramacionPorEmpleadoAgencia(empleado.getId(), Constantes.ASESOR_PLATAFORMA,
-							programacion.getFechaInicio(), programacion.getFechaFin());
-			long cantidadProgramacionesSupervidorOficina = vacacionProgramacionService
-					.contarProgramacionPorEmpleadoAgencia(empleado.getId(), Constantes.SUPERVISOR_OFICINA,
-							programacion.getFechaInicio(), programacion.getFechaFin());
-			long cantidadProgramaciones = cantidadProgramacionesAsesorServicio + cantidadProgramacionesAsesorPlataforma
-					+ cantidadProgramacionesSupervidorOficina;
+		if (puesto.contains(Constantes.ASESOR_SERVICIO) || puesto.contains(Constantes.ASESOR_PLATAFORMA) || puesto.contains(Constantes.SUPERVISOR_OFICINA)) {
+			long cantidadProgramacionesAsesorServicio = vacacionProgramacionService.contarProgramacionPorEmpleadoAgencia(
+					empleado.getId(), Constantes.ASESOR_SERVICIO,
+					programacion.getFechaInicio(), programacion.getFechaFin());
+			long cantidadProgramacionesAsesorPlataforma = vacacionProgramacionService.contarProgramacionPorEmpleadoAgencia(
+					empleado.getId(), Constantes.ASESOR_PLATAFORMA,
+					programacion.getFechaInicio(), programacion.getFechaFin());
+			long cantidadProgramacionesSupervidorOficina = vacacionProgramacionService.contarProgramacionPorEmpleadoAgencia(
+					empleado.getId(), Constantes.SUPERVISOR_OFICINA,
+					programacion.getFechaInicio(), programacion.getFechaFin());
+			long cantidadProgramaciones = cantidadProgramacionesAsesorServicio + cantidadProgramacionesAsesorPlataforma	+ cantidadProgramacionesSupervidorOficina;
 			cantidadProgramaciones++;
 			if (cantidadProgramaciones > limite)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,
@@ -624,29 +665,22 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] validarPoliticaBolsaComercial");
 		Empleado empleado = programacion.getPeriodo().getEmpleado();
 		String puesto = empleado.getPuesto().getDescripcion().trim();
-		if (puesto.contains(Constantes.ASESOR_NEGOCIO_INDIVIDUAL)) {
+		if (puesto.contains(Constantes.ASESOR_NEGOCIO)) {
 			if (empleado.getCodigoUnidadNegocio() == null)
-				throw new AppException(Utilitario.obtenerMensaje(messageSource,
-						"vacaciones.validacion.sin_unidad_negocio", empleado.getUsuarioBT()));
-			UnidadNegocio unidadNegocio = unidadNegocioService
-					.obtenerUnidadNegocioPorCodigo(empleado.getCodigoUnidadNegocio());
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.sin_unidad_negocio", empleado.getUsuarioBT()));
+			UnidadNegocio unidadNegocio = unidadNegocioService.obtenerUnidadNegocioPorCodigo(empleado.getCodigoUnidadNegocio());
 			if (unidadNegocio == null)
-				throw new AppException(Utilitario.obtenerMensaje(messageSource,
-						"vacaciones.validacion.unidad_negocio_error", empleado.getCodigoUnidadNegocio() + ""));
-			int totalEmpleados = empleadoService
-					.obtenerCantidadEmpleadosPorUnidadNegocio(empleado.getCodigoUnidadNegocio());
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.validacion.unidad_negocio_error", empleado.getCodigoUnidadNegocio() + ""));
+			int totalEmpleados = empleadoService.obtenerCantidadEmpleadosPorPuestoYUnidadNegocio(empleado.getCodigoUnidadNegocio(), Constantes.ASESOR_NEGOCIO);
 			double limite = totalEmpleados * 0.12;
-			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorUnidadNegocioEmpleado(
-					empleado.getId(), programacion.getFechaInicio(), programacion.getFechaFin());
+			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorUnidadNegocioEmpleado(empleado.getId(), Constantes.ASESOR_NEGOCIO, programacion.getFechaInicio(), programacion.getFechaFin());
 			cantidadProgramaciones++;
 			if (cantidadProgramaciones > limite)
-				throw new AppException(Utilitario.obtenerMensaje(messageSource,
-						"vacaciones.politica.bolsa.comercial.asesor_negocio_individual.limite_error", 12 + ""));
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.bolsa.comercial.asesor_negocio_individual.limite_error", 12 + ""));
 		}
 		if (puesto.contains(Constantes.ASESOR_NEGOCIO_GRUPAL)) {
 			if (programacion.getFechaInicio().getMonthValue() == 12 || programacion.getFechaFin().getMonthValue() == 12)
-				throw new AppException(Utilitario.obtenerMensaje(messageSource,
-						"vacaciones.politica.bolsa.comercial.asesor_negocio_grupal.diciembre_error"));
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.bolsa.comercial.asesor_negocio_grupal.diciembre_error"));
 		}
 		if (puesto.contains(Constantes.ADMINISTRADOR_NEGOCIO)) {
 			int limite = 1;
@@ -655,8 +689,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 					programacion.getFechaFin());
 			cantidadProgramaciones++;
 			if (cantidadProgramaciones > limite)
-				throw new AppException(Utilitario.obtenerMensaje(messageSource,
-						"vacaciones.politica.bolsa.comercial.administrador_negocio.limite_error"));
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.bolsa.comercial.administrador_negocio.limite_error"));
 		}
 		if (puesto.contains(Constantes.GERENTE_CORREDOR)) {
 			int limite = 1;
@@ -665,8 +698,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 					programacion.getFechaFin());
 			cantidadProgramaciones++;
 			if (cantidadProgramaciones > limite)
-				throw new AppException(Utilitario.obtenerMensaje(messageSource,
-						"vacaciones.politica.bolsa.comercial.administrador_negocio.limite_error"));
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.bolsa.comercial.administrador_negocio.limite_error"));
 		}
 		LOGGER.info("[END] validarPoliticaBolsaComercial");
 	}

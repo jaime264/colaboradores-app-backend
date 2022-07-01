@@ -44,9 +44,9 @@ public interface VacacionProgramacionService {
 	
 	int obtenerSumaDiasPorPeriodoYEstado(long idPeriodo, EstadoVacacion estado);
 	
-	long contarProgramacionPorUnidadNegocioEmpleado(Long idEmpleado, LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
+	long contarProgramacionPorUnidadNegocioEmpleado(Long idEmpleado, String descripcionPuesto, LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
 	
-	long contarProgramacionPorCorredorEmpleadoPuesto(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
+	long contarProgramacionPorCorredorEmpleadoPuesto(long idEmpleado, String descripcionPuesto, LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
 	
 	long contarProgramacionPorTerritorioEmpleadoPuesto(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
 	
@@ -57,5 +57,7 @@ public interface VacacionProgramacionService {
 	List<EmplVacPerRes> listEmpleadoByprogramacion(RequestProgramacionEmpleado reqPrograEmp);
 	
 	List<Map<String, String>> listFilstrosVacacionAprobacion(RequestFiltroVacacionesAprobacion reqFiltros);
+	
+	List<VacacionProgramacion> listarProgramacionesPorAnio(int anio, String usuarioBT);
 	
 }

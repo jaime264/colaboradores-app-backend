@@ -2,19 +2,19 @@ package pe.confianza.colaboradores.gcontenidos.server.util;
 
 public enum EstadoVacacion {
 	
-	REGISTRADO(1, "Registrado"),
-	GENERADO(2, "Generado"),
-	APROBADO(3, "Aprobado"),
-	RECHAZADO(4, "Rechazado"),
-	GOZANDO(5, "Gozando"),
-	GOZADO(6, "Gozado");
+	REGISTRADO(1,  "PARAMVAC006"),
+	GENERADO(2,  "PARAMVAC007"),
+	APROBADO(3,  "PARAMVAC008"),
+	RECHAZADO(4,  "PARAMVAC009"),
+	GOZANDO(5,  "PARAMVAC010"),
+	GOZADO(6,  "PARAMVAC011");
 	
 	public int id;
-	public String descripcion;
+	public String codigoParametro;
 	
-	private EstadoVacacion(int id, String descripcion) {
+	private EstadoVacacion(int id, String codigoParametro) {
 		this.id = id;
-		this.descripcion = descripcion;
+		this.codigoParametro = codigoParametro;
 	}
 	
 	public static EstadoVacacion getEstado(int id) {
@@ -24,15 +24,6 @@ public enum EstadoVacacion {
 			}
 		}
 		return null;
-	}
-	
-	public static EstadoVacacion getEstado(String descripcion) {
-		for (EstadoVacacion estado : EstadoVacacion.values()) {
-			if(estado.descripcion.equalsIgnoreCase(descripcion)) {
-				return estado;
-			}
-		}
-		return null;
-	}
+	}	
 
 }

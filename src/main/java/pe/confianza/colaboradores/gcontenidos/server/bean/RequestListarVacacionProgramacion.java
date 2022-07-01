@@ -9,7 +9,7 @@ public class RequestListarVacacionProgramacion {
 	@Size(min = 1, message = "Debe ingresar un usuario correcto")
 	private String usuarioBT; 
 	
-	private String estado;
+	private Integer idEstado;
 	
 	private String periodo;
 
@@ -21,12 +21,12 @@ public class RequestListarVacacionProgramacion {
 		this.usuarioBT = usuarioBT;
 	}
 
-	public String getEstado() {
-		return estado;
+	public Integer getIdEstado() {
+		return idEstado;
 	}
 
-	public void setEstado(String estado) {
-		this.estado = estado;
+	public void setIdEstado(Integer idEstado) {
+		this.idEstado = idEstado;
 	}
 
 	public String getPeriodo() {
@@ -36,7 +36,5 @@ public class RequestListarVacacionProgramacion {
 	public void setPeriodo(String periodo) {
 		this.periodo = periodo;
 	}
-	
-	
 
 }

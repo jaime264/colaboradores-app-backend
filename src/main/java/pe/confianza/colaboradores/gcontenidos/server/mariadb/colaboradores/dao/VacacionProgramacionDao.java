@@ -1,5 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -53,7 +54,7 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	int obtenerSumaDiasPorIdPeriodoYEstado(long idPeriodo, int idEstado);
 	
 	@Procedure(name = "VacacionProgramacion.programacionContarPorUnidadNegocio")
-	long contarProgramacionPorUnidadNegocioEmpleado(@Param("idEmpleado") long idEmpleado, @Param("strFechaInicioProgramacion") String strFechaInicioProgramacion, @Param("strFechaFinProgramacion") String strFechaFinProgramacion);
+	long contarProgramacionPorUnidadNegocioEmpleado(@Param("idEmpleado") long idEmpleado, @Param("descripcionPuesto") String descripcionPuesto , @Param("strFechaInicioProgramacion") String strFechaInicioProgramacion, @Param("strFechaFinProgramacion") String strFechaFinProgramacion);
 	
 	@Procedure(name = "VacacionProgramacion.programacionContarPorCorredorYPuesto")
 	long contarProgramacionPorCorredorEmpleadoPuesto(@Param("idEmpleado") long idEmpleado, @Param("descripcionPuesto") String descripcionPuesto, @Param("strFechaInicioProgramacion") String strFechaInicioProgramacion, @Param("strFechaFinProgramacion") String strFechaFinProgramacion);
@@ -68,6 +69,7 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	@Procedure(name = "VacacionProgramacion.programacionContarPorAgencia")
 	long contarProgramacionPorEmpleadoAgencia(@Param("idEmpleado") long idEmpleado, @Param("descripcionPuesto") String descripcionPuesto, @Param("strFechaInicioProgramacion") String strFechaInicioProgramacion, @Param("strFechaFinProgramacion") String strFechaFinProgramacion);
 
-
+	@Query("SELECT vp FROM VacacionProgramacion vp where vp.fechaFin >= ?1 AND vp.fechaFin <= ?2 AND vp.periodo.empleado.usuarioBT = ?3 AND vp.estadoRegistro = 'A' order by vp.fechaInicio ASC")
+	List<VacacionProgramacion> findBetweenDates(LocalDate fechaInicio, LocalDate fechaFin, String usuarioBT);
 
 }

@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 
@@ -23,6 +25,10 @@ public class Parametro extends EntidadAuditoria implements Serializable {
 	private String codigo;
 	private String valor;
 	private String descripcion;
+	
+	@ManyToOne
+	@JoinColumn(nullable = true, name = "idTipo")
+	private TipoParametro tipo;
 
 	public Long getId() {
 		return id;
@@ -54,6 +60,14 @@ public class Parametro extends EntidadAuditoria implements Serializable {
 
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
+	}
+
+	public TipoParametro getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(TipoParametro tipo) {
+		this.tipo = tipo;
 	}
 
 

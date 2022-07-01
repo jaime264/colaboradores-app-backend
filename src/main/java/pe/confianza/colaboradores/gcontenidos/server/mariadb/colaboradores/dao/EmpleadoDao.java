@@ -28,8 +28,8 @@ public interface EmpleadoDao extends JpaRepository<Empleado, Long> {
 	@Query(value = "Select * from empleado e where MONTH(e.fecha_nacimiento) = ?1 and DAY (e.fecha_nacimiento) = ?2", nativeQuery = true)
 	public List<Empleado> findfechaNacimientoDeHoy(int mes, int dia);
 
-	@Query(value = "SELECT COUNT(*) FROM empleado where codigo_unidad_negocio = ?1", nativeQuery = true)
-	int obtenerCantidadEmpleadosPorUnidadNegocio(long unidadNegocio);
+	@Query(value = "SELECT COUNT(*) FROM empleado e INNER JOIN puesto p on e.id_puesto = p.id where e.codigo_unidad_negocio = ?1 AND p.descripcion like ?2", nativeQuery = true)
+	int obtenerCantidadEmpleadosPorPuestoYPorUnidadNegocio(long unidadNegocio, String puesto);
 
 	@Query(value = "Select DISTINCT e.id, CONCAT(e.nombres, ' ',e.apellido_paterno,' ', e.apellido_materno) as descripcion from vacacion_programacion vp "
 			+ "inner join vacacion_periodo vp2 on vp.id_periodo = vp2.id inner join empleado e on vp2.id_empleado = vp2.id_empleado where "

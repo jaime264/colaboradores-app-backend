@@ -183,9 +183,7 @@ public class Utilitario {
 	 * @return
 	 */
 	public static boolean fechaEntrePeriodo(LocalDate fechaInicio, LocalDate fechaFin, LocalDate fecha) {
-		long fechaMilliseconds = fecha.atStartOfDay(ZoneId.of(Constantes.TIME_ZONE)).toInstant().toEpochMilli();
-		if(fechaInicio.atStartOfDay(ZoneId.of(Constantes.TIME_ZONE)).toInstant().toEpochMilli() <= fechaMilliseconds &&
-				fechaFin.atStartOfDay(ZoneId.of(Constantes.TIME_ZONE)).toInstant().toEpochMilli() >= fechaMilliseconds	)
+		if(fechaInicio.minusDays(1).isBefore(fecha) && fechaFin.plusDays(1).isAfter(fecha))
 			return true;
 		return false;
 	}
@@ -267,6 +265,14 @@ public class Utilitario {
 	
 	public static double calcularDiasPendientesPorRegistrar(PeriodoVacacion periodo) {
 		return periodo.getDerecho() - (
+				periodo.getDiasGozados() +
+				periodo.getDiasAprobadosGozar() +
+				periodo.getDiasRegistradosGozar()
+				);
+	}
+	
+	public static double calcularDiasPendientesPorRegistrarEnRegistroProgramacion(PeriodoVacacion periodo) {
+		return 30 - (
 				periodo.getDiasGozados() +
 				periodo.getDiasAprobadosGozar() +
 				periodo.getDiasRegistradosGozar()

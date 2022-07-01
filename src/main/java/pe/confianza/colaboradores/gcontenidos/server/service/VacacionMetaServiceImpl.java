@@ -19,7 +19,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
-import pe.confianza.colaboradores.gcontenidos.server.util.ParametrosConstants;
+import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 @Service
@@ -34,7 +34,7 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 	private PeriodoVacacionService periodoVacacionService;
 	
 	@Autowired
-	private ParametrosConstants parametrosConstants;
+	private CargaParametros cargaParametros;
 	
 	@Override
 	public VacacionMeta obtenerVacacionPorAnio(int anio, long idEmpleado) {
@@ -50,7 +50,7 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 	@Override
 	public VacacionMeta consolidarMetaAnual(Empleado empleado, int anio, String usuarioOperacion) {
 		LOGGER.info("[BEGIN] consolidarMetaAnual {} - {}" , new Object[] {empleado.getUsuarioBT(), anio});
-		LocalDate fechaCorte = parametrosConstants.getFechaCorteMeta(anio - 1);
+		LocalDate fechaCorte = cargaParametros.getFechaCorteMeta();
 		LocalDate fechaIngreso = empleado.getFechaIngreso();
 		VacacionMeta meta = obtenerVacacionPorAnio(anio, empleado.getId());
 		if(meta != null) {
@@ -88,6 +88,9 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 			if(optTrunco.isPresent()) {
 				PeriodoVacacion periodo = optTrunco.get();
 				double derechoPeriodo = Utilitario.calcularDerechoVacaciones(fechaIngreso, fechaCorte);
+				if(limitePeriodoVencido == null && fechaIngreso.getMonthValue() >= fechaCorte.getMonthValue()) {
+					derechoPeriodo = 30; // Empleado ingreso después del corte del año pasado
+				}
 				meta.setPeriodoTrunco(periodo);
 				meta.setDiasTruncos(derechoPeriodo - periodo.getDiasGozados() - periodo.getDiasRegistradosGozar() - periodo.getDiasGeneradosGozar() - periodo.getDiasAprobadosGozar());
 			}

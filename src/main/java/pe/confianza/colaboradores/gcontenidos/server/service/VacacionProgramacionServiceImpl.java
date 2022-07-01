@@ -192,14 +192,13 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	}
 
 	@Override
-	public long contarProgramacionPorUnidadNegocioEmpleado(Long idEmpleado, LocalDate fechaIncioProgramacion,
+	public long contarProgramacionPorUnidadNegocioEmpleado(Long idEmpleado, String descripcionPuesto, LocalDate fechaIncioProgramacion,
 			LocalDate fechaFinProgramacion) {
 		logger.info("[BEGIN] contarProgramacionPorUnidadNegocioEmpleado {}", idEmpleado);
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String strFechaInicio = fechaIncioProgramacion.format(formatter);
 		String strFechaFin = fechaFinProgramacion.format(formatter);
-		return vacacionProgramacionDao.contarProgramacionPorUnidadNegocioEmpleado(idEmpleado, strFechaInicio,
-				strFechaFin);
+		return vacacionProgramacionDao.contarProgramacionPorUnidadNegocioEmpleado(idEmpleado, descripcionPuesto, strFechaInicio, strFechaFin);
 	}
 
 	@Override
@@ -361,6 +360,18 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 			break;
 		}
 		return datos;
+	}
+
+	@Override
+	public List<VacacionProgramacion> listarProgramacionesPorAnio(int anio, String usuarioBT) {
+		logger.info("[BEGIN] listarProgramacionesPorAnio {}", anio );
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		LocalDate fechaInicio = LocalDate.parse("01/01/" + anio, formatter);
+		LocalDate fechaFin = LocalDate.parse("31/12/" + anio, formatter);
+		List<VacacionProgramacion> programaciones = vacacionProgramacionDao.findBetweenDates(fechaInicio, fechaFin, usuarioBT);
+		programaciones = programaciones == null ? new ArrayList<>() : programaciones;
+		logger.info("[END] listarProgramacionesPorAnio" );
+		return programaciones;
 	}
 
 }
