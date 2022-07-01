@@ -104,7 +104,10 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 	
 	@Transient
 	private EstadoVacacion estado;	
+
+	private Long idProgramacionOriginal;
 	
+	private boolean vacacionesAdelantadas;
 	
 	public Integer getNumeroReprogramaciones() {
 		return numeroReprogramaciones;
@@ -220,6 +223,22 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 		this.numeroDomingos = numeroDomingos;
 	}
 	
+	public Long getIdProgramacionOriginal() {
+		return idProgramacionOriginal;
+	}
+
+	public void setIdProgramacionOriginal(Long idProgramacionOriginal) {
+		this.idProgramacionOriginal = idProgramacionOriginal;
+	}
+
+	public boolean isVacacionesAdelantadas() {
+		return vacacionesAdelantadas;
+	}
+
+	public void setVacacionesAdelantadas(boolean vacacionesAdelantadas) {
+		this.vacacionesAdelantadas = vacacionesAdelantadas;
+	}
+
 	public void calcularDias() {
 		this.numeroDias = Utilitario.obtenerDiferenciaDias(this.fechaInicio, this.fechaFin);
 		this.numeroSabados = Utilitario.obtenerCantidadSabados(this.fechaInicio, this.fechaFin);

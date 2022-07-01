@@ -16,6 +16,8 @@ public class ParametrosConstantes {
 		public static final String DIA_INICIO_REPROGRAMACION = "PARAMVAC004";
 		public static final String DIA_FIN_REPROGRAMACION = "PARAMVAC005";
 		public static final String[] ESTADOS_PROGRAMACION;
+		public static final String DIAS_MAXIMO_VACACIONES_ADELANTADAS = "PARAMVAC012";
+		public static final String MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS = "PARAMVAC013";
 		
 		static {
 			ESTADOS_PROGRAMACION = new String[] {"PARAMVAC006", "PARAMVAC007", "PARAMVAC008", "PARAMVAC009", "PARAMVAC010", "PARAMVAC011" };

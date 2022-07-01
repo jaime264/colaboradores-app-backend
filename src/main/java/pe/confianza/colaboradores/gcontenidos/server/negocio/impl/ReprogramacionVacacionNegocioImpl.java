@@ -11,6 +11,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestConsultaVacacionesReprogramar;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramacionTramo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramarVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
@@ -18,8 +19,10 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVa
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.VacacionProgramacionMapper;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ReprogramacionVacacionNegocio;
+import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
@@ -35,6 +38,9 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 	
 	@Autowired
 	private CargaParametros cargaParametros;
+	
+	@Autowired
+	private EmpleadoService empleadoService;
 	
 	@Autowired
 	private MessageSource messageSource;
@@ -69,6 +75,33 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 		}
 		
 	}
+	
+	@Override
+	public ResponseProgramacionVacacion vacacionesAdelantadas(RequestProgramacionVacacion request) {
+		logger.info("[BEGIN] vacacionesAdelantadas");
+		try {
+			Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioBT().trim());
+			if (empleado == null)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", request.getUsuarioBT()));
+			VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(request);
+			vacacionProgramacion.setEstado(EstadoVacacion.REGISTRADO);
+			vacacionProgramacion.setVacacionesAdelantadas(false);
+			validarEmpleadoNuevo(vacacionProgramacion, empleado);
+			if(vacacionProgramacion.getNumeroDias() > cargaParametros.getDiasMaximoVacacionesAdelantadas())
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.vacaciones_adelantadas.limite_error", cargaParametros.getDiasMaximoVacacionesAdelantadas() + ""));
+			logger.info("[END] vacacionesAdelantadas");
+			return null;
+		} catch (ModelNotFoundException e) {
+			logger.error("[ERROR] programacionAnual", e);
+			throw new ModelNotFoundException(e.getMessage()); 
+		} catch (AppException e) {
+			logger.error("[ERROR] programacionAnual", e);
+			throw new AppException(e.getMessage(), e);
+		} catch (Exception e) {
+			logger.error("[ERROR] programacionAnual", e);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
+		}
+	}
 
 	@Override
 	public List<ResponseProgramacionVacacion> reprogramarTramo(RequestReprogramarVacacion request) {
@@ -83,6 +116,7 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 			validarPermisoReprogramar(programacion, request.getUsuarioOperacion());
 			validarDiasReprogramados(programacion, request);
 			logger.info("[END] reprogramarTramo");
+			
 			return null;
 		} catch (ModelNotFoundException e) {
 			logger.error("[ERROR] reprogramarTramo", e);
@@ -118,6 +152,7 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 
 	@Override
 	public void validarDiasReprogramados(VacacionProgramacion programacion,	RequestReprogramarVacacion request) {
+		logger.info("[BEGIN] validarDiasReprogramados");
 		int diasProgramados = programacion.getNumeroDias();
 		int diasReprogramados = 0;
 		for (RequestReprogramacionTramo tramo : request.getTramos()) {
@@ -127,7 +162,16 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 		}
 		if(diasProgramados != diasReprogramados)
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.dias_error"));
-		
+		logger.info("[END] validarDiasReprogramados");
+	}
+
+	@Override
+	public void validarEmpleadoNuevo(VacacionProgramacion programacion, Empleado empleado) {
+		logger.info("[BEGIN] validarEmpleadoNuevo");
+		LocalDate fechaParaPedirVacacion = empleado.getFechaIngreso().plusMonths(cargaParametros.getMesesAntiguedadVacacionesAdelantadas());
+		if (programacion.getFechaInicio().isBefore(fechaParaPedirVacacion))
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.empleado_nuevo"));
+		logger.info("[END] validarEmpleadoNuevo");
 	}
 
 }

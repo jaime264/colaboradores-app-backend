@@ -350,7 +350,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	@Override
 	public void validarEmpleadoNuevo(VacacionProgramacion programacion, Empleado empleado) {
 		LOGGER.info("[BEGIN] validarEmpleadoNuevo");
-		LocalDate fechaParaPedirVacacion = empleado.getFechaIngreso().plusMonths(6);
+		LocalDate fechaParaPedirVacacion = empleado.getFechaIngreso().plusMonths(parametrosConstants.getMesesAntiguedadVacacionesAdelantadas());
 		LOGGER.info("Empleado -> fecha ingreso: {}", new Object[] { fechaParaPedirVacacion });
 		if (programacion.getFechaInicio().isBefore(fechaParaPedirVacacion))
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.empleado_nuevo"));
