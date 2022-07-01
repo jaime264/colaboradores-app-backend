@@ -97,8 +97,8 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		programaciones.forEach(prog -> {
 			prog.setEstado(EstadoVacacion.REGISTRADO);
 			validarPoliticasRegulatorias(prog);
-			obtenerOrden(prog, usuarioOperacion);
 			validarPoliticaBolsa(prog);
+			obtenerOrden(prog, usuarioOperacion);
 		});
 		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.registrar(programaciones, usuarioOperacion);
 		List<Long> idsProgRegistradas = programacionesRegistradas.stream().map(prog -> prog.getId()).collect(Collectors.toList());
@@ -156,7 +156,6 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 						.setNumeroReprogramaciones(vacacionProgramacion.get().getNumeroReprogramaciones() == null ? 1
 								: vacacionProgramacion.get().getNumeroReprogramaciones() + 1);
 				vacacionPro.get().setUsuarioModifica(reqAprob.getUsuarioBt());
-				vacacionPro.get().setIdEstado(2);
 				vacacionProgramacionDao.save(vacacionPro.get());
 
 				return vacacionPro.get();
@@ -655,7 +654,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		}
 		Agencia agencia = empleado.getAgencia();
 		if (agencia.getDescripcion().contains("EOB")) { // AGENCIA TAMBO - TAMBO_PLUS
-
+			
 		}
 		LOGGER.info("[END] validarPoliticaBolsaOperaciones");
 	}

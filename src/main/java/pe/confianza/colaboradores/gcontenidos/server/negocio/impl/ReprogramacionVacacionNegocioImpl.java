@@ -54,7 +54,7 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 					.filter(p -> p.getIdEstado() == EstadoVacacion.APROBADO.id)
 					.map(p -> {
 						ResponseProgramacionVacacionReprogramar prog = VacacionProgramacionMapper.convertReprogramacion(p, cargaParametros);
-						if(prog.getFechaFin().getMonthValue() == LocalDate.now().getMonthValue() && prog.getIdEstado() == EstadoVacacion.APROBADO.id) {
+						if(prog.getFechaFin().getMonthValue() == (LocalDate.now().getMonthValue() + 1) && prog.getIdEstado() == EstadoVacacion.APROBADO.id) {
 							prog.setReprogramar(true);
 						} else {
 							prog.setReprogramar(false);
