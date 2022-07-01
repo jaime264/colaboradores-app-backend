@@ -159,6 +159,18 @@ public class CargaParametros {
 		return populateParametro(estado.codigoParametro);
 	}
 	
+	public int getDiasMaximoVacacionesAdelantadas() {
+		if(DIAS_MAXIMO_VACACIONES_ADELANTADAS != null)
+			return Integer.parseInt(DIAS_MAXIMO_VACACIONES_ADELANTADAS);
+		throw new AppException("No existe el parámetro de días máximo de vacaciones adelantadas");
+	}
+	
+	public int getMesesAntiguedadVacacionesAdelantadas() {
+		if(MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS != null)
+			return Integer.parseInt(MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS);
+		throw new AppException("No existe el parámetro de meses de antiguedad para vacaciones adelantadas");
+	}
+	
 	// Parametros genericos
 	public String ANIO_PRESENTE = null;
 	
@@ -169,7 +181,8 @@ public class CargaParametros {
 	public String HORA_ENVIO_NOTIFICACIONES_VACACIONES = null;
 	public String DIA_INICIO_REPROGRAMACION = null;
 	public String DIA_FIN_REPROGRAMACION = null;
-	
+	public String DIAS_MAXIMO_VACACIONES_ADELANTADAS = null;
+	public String MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS = null;
 	
 
 	@PostConstruct
@@ -187,6 +200,8 @@ public class CargaParametros {
 		HORA_ENVIO_NOTIFICACIONES_VACACIONES = populateParametro(ParametrosConstantes.Vacaciones.HORA_ENVIO_NOTIFICACIONES_VACACIONES);
 		DIA_INICIO_REPROGRAMACION = populateParametro(ParametrosConstantes.Vacaciones.DIA_INICIO_REPROGRAMACION);
 		DIA_FIN_REPROGRAMACION = populateParametro(ParametrosConstantes.Vacaciones.DIA_FIN_REPROGRAMACION);
+		DIAS_MAXIMO_VACACIONES_ADELANTADAS = populateParametro(ParametrosConstantes.Vacaciones.DIAS_MAXIMO_VACACIONES_ADELANTADAS);
+		MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS = populateParametro(ParametrosConstantes.Vacaciones.MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS);
 		
 		ANIO_PRESENTE = populateParametro(ParametrosConstantes.Genericos.ANIO_PRESENTE);
 		

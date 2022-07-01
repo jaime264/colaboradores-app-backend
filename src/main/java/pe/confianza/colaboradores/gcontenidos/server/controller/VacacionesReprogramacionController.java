@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestConsultaVacacionesReprogramar;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramarVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ReprogramacionVacacionNegocio;
@@ -51,6 +52,18 @@ public class VacacionesReprogramacionController {
 		responseStatus.setMsgStatus(Constantes.OK);
 		responseStatus.setResultObj(reprogramacionService.programacionAnual(request));
 		logger.info("[END] consultarProgramaciones");
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+	
+	@ApiOperation(notes = "Registrar vacaciones adelantadas", value = "url proxy /vacaciones/reprogramacion/registrar-adelantadas")
+	@PostMapping("/registrar-adelantadas")
+	public ResponseEntity<ResponseStatus> vacacionesAdelantadas(@Valid @RequestBody RequestProgramacionVacacion request) {
+		logger.info("[BEGIN] vacacionesAdelantadas");
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(reprogramacionService.vacacionesAdelantadas(request));
+		logger.info("[END] vacacionesAdelantadas");
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	

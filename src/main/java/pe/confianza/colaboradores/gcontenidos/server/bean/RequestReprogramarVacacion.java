@@ -26,9 +26,4 @@ public class RequestReprogramarVacacion extends RequestAuditoria {
 	public void setTramos(List<RequestReprogramacionTramo> tramos) {
 		this.tramos = tramos;
 	}
-	
-	
-	
-	
-
 }

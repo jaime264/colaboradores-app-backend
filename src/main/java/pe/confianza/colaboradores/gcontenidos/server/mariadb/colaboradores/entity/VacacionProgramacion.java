@@ -104,6 +104,8 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 	
 	private Long idProgramacionOriginal;
 	
+	private boolean vacacionesAdelantadas;
+	
 	@Transient
 	private EstadoVacacion estado;
 	
@@ -227,6 +229,14 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 
 	public void setIdProgramacionOriginal(Long idProgramacionOriginal) {
 		this.idProgramacionOriginal = idProgramacionOriginal;
+	}
+
+	public boolean isVacacionesAdelantadas() {
+		return vacacionesAdelantadas;
+	}
+
+	public void setVacacionesAdelantadas(boolean vacacionesAdelantadas) {
+		this.vacacionesAdelantadas = vacacionesAdelantadas;
 	}
 
 	public void calcularDias() {

@@ -18,6 +18,7 @@ public class VacacionProgramacionMapper {
 		destination.setNumeroDomingos(Utilitario.obtenerCantidadDomingos(source.getFechaInicio(), source.getFechaFin()));
 		destination.setNumeroReprogramaciones(0);
 		destination.setIdProgramacionOriginal(null);
+		destination.setVacacionesAdelantadas(false);
 		return destination;
 	}
 	
