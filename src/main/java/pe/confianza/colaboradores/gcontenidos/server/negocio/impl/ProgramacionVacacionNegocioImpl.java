@@ -161,6 +161,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 						.setNumeroReprogramaciones(vacacionProgramacion.get().getNumeroReprogramaciones() == null ? 1
 								: vacacionProgramacion.get().getNumeroReprogramaciones() + 1);
 				vacacionPro.get().setUsuarioModifica(reqAprob.getUsuarioBt());
+				vacacionPro.get().setIdEstado(2);
 				vacacionProgramacionDao.save(vacacionPro.get());
 
 				return vacacionPro.get();

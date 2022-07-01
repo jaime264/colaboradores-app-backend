@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -92,6 +93,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 			throw new ModelNotFoundException("No existe la programación con id " + idProgramacion);
 		VacacionProgramacion progamacion = optProgramacion.get();
 		progamacion.setEstadoRegistro(EstadoRegistro.INACTIVO.valor);
+		progamacion.setIdEstado(4);
 		if (EstadoMigracion.IMPORTADO.valor.equals(progamacion.getEstadoMigracion()))
 			progamacion.setEstadoMigracion(EstadoMigracion.MODIFICADO.valor);
 		actualizar(progamacion, usuarioOperacion);
@@ -251,6 +253,49 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	@Override
 	public List<EmplVacPerRes> listEmpleadoByprogramacion(RequestProgramacionEmpleado reqPrograEmp) {
 
+		List<EmplVacPerRes> listEmpByProgramacion = listEmpleadoProgramacionFilter(reqPrograEmp);
+
+		List<EmplVacPerRes> listEmp = new ArrayList<>();
+
+		switch (reqPrograEmp.getTipoFiltro().toUpperCase().trim()) {
+		case "NOMBRE":
+			listEmp = listEmpByProgramacion.stream().filter(e -> reqPrograEmp.getFiltro().contains(e.getNombres()))
+					.collect(Collectors.toList());
+			break;
+		case "CARGO":
+			listEmp = listEmpByProgramacion.stream().filter(e -> reqPrograEmp.getFiltro().contains(e.getPuesto()))
+					.collect(Collectors.toList());
+			break;
+		case "AGENCIA":
+			listEmp = listEmpByProgramacion.stream().filter(e -> reqPrograEmp.getFiltro().contains(e.getAgencia()))
+					.collect(Collectors.toList());
+			break;
+		case "TERRITORIO":
+			listEmp = listEmpByProgramacion.stream().filter(e -> reqPrograEmp.getFiltro().contains(e.getTerritorio()))
+					.collect(Collectors.toList());
+			break;
+		case "CORREDOR":
+			listEmp = listEmpByProgramacion.stream().filter(e -> reqPrograEmp.getFiltro().contains(e.getCorredor()))
+					.collect(Collectors.toList());
+			break;
+		case "AREA":
+			listEmp = listEmpByProgramacion.stream().filter(e -> reqPrograEmp.getFiltro().contains(e.getArea()))
+					.collect(Collectors.toList());
+			break;
+		case "TRAMO":
+			listEmp = listEmpByProgramacion.stream().filter(e -> reqPrograEmp.getFiltro().contains(e.getArea()))
+					.collect(Collectors.toList());
+			break;
+		default:
+			listEmp = listEmpByProgramacion;
+			break;
+		}
+
+		return listEmp;
+	}
+
+	private List<EmplVacPerRes> listEmpleadoProgramacionFilter(RequestProgramacionEmpleado reqPrograEmp) {
+
 		List<EmplVacPerRes> listEmp = new ArrayList<EmplVacPerRes>();
 
 		Optional<Empleado> emJefe = empleadoDao.findOneByUsuarioBT(reqPrograEmp.getUsuarioBt());
@@ -262,7 +307,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 				List<VacacionProgramacion> lVp = empleadoDao.findPeriodosByEmpleado(e.getId());
 				for (VacacionProgramacion v : lVp) {
-
+					
 					EmplVacPerRes emp = new EmplVacPerRes();
 					emp.setNombres(e.getNombres());
 					emp.setApellidoPaterno(e.getApellidoPaterno());
@@ -277,7 +322,11 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 					emp.setFechaFin(v.getFechaFin());
 					emp.setIdEstado(v.getIdEstado());
 					emp.setPeriodo(v.getPeriodo().getDescripcion());
-
+					emp.setAgencia(null);
+					emp.setTerritorio(null);
+					emp.setCorredor(null);
+					emp.setArea(null);
+					
 					listEmp.add(emp);
 				}
 			}
@@ -289,7 +338,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	public List<Map<String, String>> listFilstrosVacacionAprobacion(RequestFiltroVacacionesAprobacion reqFiltros) {
 		// TODO Auto-generated method stub
 		List<Map<String, String>> datos = new ArrayList<>();
-		switch (reqFiltros.getFiltro().toUpperCase()) {
+		switch (reqFiltros.getFiltro().toUpperCase().trim()) {
 		case "NOMBRE":
 			datos = empleadoDao.findNombreByCodigoN1(reqFiltros.getCodigo());
 			break;

@@ -2,6 +2,8 @@ package pe.confianza.colaboradores.gcontenidos.server.api.entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class EmplVacPerRes {
 
 	private String nombres;
@@ -16,6 +18,40 @@ public class EmplVacPerRes {
 	private LocalDate fechaFin;
 	private Integer idEstado;
 	
+	@JsonIgnore
+	private String agencia;
+	@JsonIgnore
+	private String territorio;
+	@JsonIgnore
+	private String corredor;
+	@JsonIgnore
+	private String area;
+
+	
+	public String getAgencia() {
+		return agencia;
+	}
+	public void setAgencia(String agencia) {
+		this.agencia = agencia;
+	}
+	public String getTerritorio() {
+		return territorio;
+	}
+	public void setTerritorio(String territorio) {
+		this.territorio = territorio;
+	}
+	public String getCorredor() {
+		return corredor;
+	}
+	public void setCorredor(String corredor) {
+		this.corredor = corredor;
+	}
+	public String getArea() {
+		return area;
+	}
+	public void setArea(String area) {
+		this.area = area;
+	}
 	public String getNombres() {
 		return nombres;
 	}

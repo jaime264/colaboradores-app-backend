@@ -102,8 +102,7 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 	private Integer numeroReprogramaciones;
 	
 	@Transient
-	private EstadoVacacion estado;
-	
+	private EstadoVacacion estado;	
 	
 	
 	public Integer getNumeroReprogramaciones() {

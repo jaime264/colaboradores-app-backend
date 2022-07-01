@@ -1,8 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.bean;
 
 import java.time.LocalDate;
-
-import javax.validation.constraints.Null;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -14,7 +13,7 @@ public class RequestProgramacionEmpleado {
 
 	private String tipoFiltro;
 
-	private String[] filtro;
+	private List<String> filtro;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
 	private LocalDate fechaInicio;
@@ -38,11 +37,11 @@ public class RequestProgramacionEmpleado {
 		this.tipoFiltro = tipoFiltro;
 	}
 
-	public String[] getFiltro() {
+	public List<String> getFiltro() {
 		return filtro;
 	}
 
-	public void setFiltro(String[] filtro) {
+	public void setFiltro(List<String> filtro) {
 		this.filtro = filtro;
 	}
 
