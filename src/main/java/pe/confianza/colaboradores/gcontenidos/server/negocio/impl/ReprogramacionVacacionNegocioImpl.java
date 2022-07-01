@@ -1,8 +1,12 @@
 package pe.confianza.colaboradores.gcontenidos.server.negocio.impl;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +23,17 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVa
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.VacacionProgramacionMapper;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Agencia;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.UnidadNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ReprogramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
+import pe.confianza.colaboradores.gcontenidos.server.service.UnidadNegocioService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
+import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
@@ -43,6 +52,12 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 	private EmpleadoService empleadoService;
 	
 	@Autowired
+	private ProgramacionVacacionNegocio programacionVacacionNegocio;
+	
+	@Autowired
+	private UnidadNegocioService unidadNegocioService;
+	
+	@Autowired
 	private MessageSource messageSource;
 	
 	@Override
@@ -54,13 +69,13 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 					.filter(p -> p.getIdEstado() == EstadoVacacion.APROBADO.id)
 					.map(p -> {
 						ResponseProgramacionVacacionReprogramar prog = VacacionProgramacionMapper.convertReprogramacion(p, cargaParametros);
-						if(prog.getFechaFin().getMonthValue() == LocalDate.now().getMonthValue() && prog.getIdEstado() == EstadoVacacion.APROBADO.id) {
+						if(prog.getFechaFin().getMonthValue() == (LocalDate.now().getMonthValue() + 1) && prog.getIdEstado() == EstadoVacacion.APROBADO.id) {
 							prog.setReprogramar(true);
 						} else {
 							prog.setReprogramar(false);
 						}
 						return prog;
-					}).collect(Collectors.toList());		
+					}).collect(Collectors.toList());
 			logger.info("[END] programacionAnuales");
 			return programaciones;
 		} catch (ModelNotFoundException e) {
@@ -103,6 +118,7 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 		}
 	}
 
+	@Transactional
 	@Override
 	public List<ResponseProgramacionVacacion> reprogramarTramo(RequestReprogramarVacacion request) {
 		logger.info("[BEGIN] reprogramarTramo");
@@ -115,8 +131,22 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 			validarPeriodoReprogramacion();
 			validarPermisoReprogramar(programacion, request.getUsuarioOperacion());
 			validarDiasReprogramados(programacion, request);
-			logger.info("[END] reprogramarTramo");
+			String usuarioOperacion = request.getUsuarioOperacion().trim();
+			List<VacacionProgramacion> programaciones = request.getTramos().stream().map(t -> {
+				VacacionProgramacion prog = VacacionProgramacionMapper.convert(t, programacion);
+				prog.setIdEstado(EstadoVacacion.REGISTRADO.id);
+				prog.setPeriodo(programacion.getPeriodo());
+				prog.setNumeroPeriodo((long)programacion.getPeriodo().getNumero());
+				prog.calcularDias();
+				return prog;
+			}).collect(Collectors.toList());
+			programaciones.forEach(prog -> {
+				validarPoliticasRegulatorias(prog, programacion);
+				programacionVacacionNegocio.validarPoliticaBolsa(prog);
+				obtenerOrden(prog, programacion, usuarioOperacion);
+			});
 			
+			logger.info("[END] reprogramarTramo");
 			return null;
 		} catch (ModelNotFoundException e) {
 			logger.error("[ERROR] reprogramarTramo", e);
@@ -158,6 +188,8 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 		for (RequestReprogramacionTramo tramo : request.getTramos()) {
 			if(tramo.getFechaInicio().isAfter(tramo.getFechaFin()))
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.rango_error"));
+			if(programacion.getPeriodo().programacionDentroPeriodoGoce(tramo.getFechaInicio(), tramo.getFechaFin()))
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.validacion.fuera_limite_goce", programacion.getPeriodo().getDescripcion()));
 			diasReprogramados += Utilitario.obtenerDiferenciaDias(tramo.getFechaInicio(), tramo.getFechaFin());
 		}
 		if(diasProgramados != diasReprogramados)
@@ -173,5 +205,216 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.empleado_nuevo"));
 		logger.info("[END] validarEmpleadoNuevo");
 	}
+
+	@Override
+	public void validarPoliticasRegulatorias(VacacionProgramacion nuevaProgramacion, VacacionProgramacion programacionOriginal) {
+		logger.info("[BEGIN] validarPoliticasRegulatorias");
+		List<VacacionProgramacion> programaciones = vacacionProgramacionService.listarPorPeriodo(programacionOriginal.getPeriodo().getId());
+		programaciones = programaciones.stream().filter(p -> p.getIdEstado() != EstadoVacacion.RECHAZADO.id).collect(Collectors.toList());
+		programaciones = programaciones.stream().filter(p -> p.getId() != programacionOriginal.getId()).collect(Collectors.toList());
+		//Verificar que fechas no se crucen
+		for (VacacionProgramacion vacacionProgramacion : programaciones) {
+			if (Utilitario.fechaEntrePeriodo(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin(), nuevaProgramacion.getFechaInicio()))
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fecha_inicio_encontrada"));
+			if (Utilitario.fechaEntrePeriodo(vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin(),	nuevaProgramacion.getFechaFin()))
+				throw new AppException(	Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fecha_fin_encontrada"));			
+		}
+		//Ordenar tramos
+		programaciones.add(nuevaProgramacion);
+		Comparator<VacacionProgramacion> odenPorFechas = new Comparator<VacacionProgramacion>() {
+			@Override
+			public int compare(VacacionProgramacion prog1, VacacionProgramacion prog2) {
+				return prog1.getFechaInicio().compareTo(prog2.getFechaInicio());
+			}
+		};
+		programaciones.sort(odenPorFechas);
+		for (int i = 0; i < programaciones.size(); i++) {
+			programaciones.get(i).setOrden(i + 1);
+		}
+		//Validar tramos
+		int contadorSabados = 0;
+		int contadorDomingos = 0;
+		int diasAcumulados = 0;
+		for (VacacionProgramacion vacacionProgramacion : programaciones) {
+			int diasProgramacion = vacacionProgramacion.getNumeroDias();
+			if(diasAcumulados < 15) {
+				if((diasAcumulados + diasProgramacion) <= 15 && diasProgramacion < 7)
+					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error"));
+				if((diasAcumulados + diasProgramacion) > 15 && diasProgramacion < 7)
+					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error"));
+			}
+			diasAcumulados += vacacionProgramacion.getNumeroDias();
+			contadorSabados += vacacionProgramacion.getNumeroSabados();
+			contadorDomingos += vacacionProgramacion.getNumeroDomingos();
+		}
+		//Validar cantidad sabados y domingos
+		double diasPendientePorRegistrar = Utilitario.calcularDiasPendientesPorRegistrarEnRegistroProgramacion(nuevaProgramacion.getPeriodo());
+		if (nuevaProgramacion.getNumeroDias() <= diasPendientePorRegistrar) {
+			double diasPendientesPorRegistrarFuturos = diasPendientePorRegistrar - nuevaProgramacion.getNumeroDias();
+			int sabadosPendientes = contadorSabados >= 4 ? 0 : ( 4 - contadorSabados);
+			int domingoPendientes = contadorDomingos >= 4 ? 0 : ( 4 - contadorDomingos);
+			if(diasPendientesPorRegistrarFuturos < (sabadosPendientes + domingoPendientes))
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.regularoria.cuatro_sabados.error", nuevaProgramacion.getPeriodo().getDescripcion()));
+		}
+		logger.info("[END] validarPoliticasRegulatorias");
+	}
+
+	@Override
+	public void obtenerOrden(VacacionProgramacion nuevaProgramacion, VacacionProgramacion programacionOriginal, String usuarioModifica) {
+		logger.info("[BEGIN] obtenerOrdenProgramacion");
+		List<VacacionProgramacion> programaciones = vacacionProgramacionService	.listarPorPeriodo(programacionOriginal.getPeriodo().getId());
+		programaciones = programaciones.stream().filter(p -> p.getIdEstado() != EstadoVacacion.RECHAZADO.id).collect(Collectors.toList());
+		programaciones = programaciones.stream().filter(p -> p.getId() != programacionOriginal.getId()).collect(Collectors.toList());
+		if (programaciones.isEmpty()) {
+			nuevaProgramacion.setOrden(1);
+		} else {
+			Comparator<VacacionProgramacion> odenPorFechas = new Comparator<VacacionProgramacion>() {
+				@Override
+				public int compare(VacacionProgramacion prog1, VacacionProgramacion prog2) {
+					return prog1.getFechaInicio().compareTo(prog2.getFechaInicio());
+				}
+			};
+			programaciones.add(nuevaProgramacion);
+			programaciones.sort(odenPorFechas);
+			for (int i = 0; i < programaciones.size(); i++) {
+				programaciones.get(i).setCodigoEmpleado(programacionOriginal.getPeriodo().getEmpleado().getCodigo());
+				programaciones.get(i).setOrden(i + 1);
+				if (programaciones.get(i).getId() != null) {
+					vacacionProgramacionService.actualizar(programaciones.get(i), usuarioModifica);
+				} else {
+					nuevaProgramacion = programaciones.get(i);
+				}
+			}
+		}
+		logger.info("[END] obtenerOrdenProgramacion");
+		
+	}
+
+	@Override
+	public void validarPoliticaBolsa(VacacionProgramacion nuevaProgramacion, VacacionProgramacion programacionOriginal) {
+		logger.info("[BEGIN] validarPoliticaBolsa");
+		Empleado empleado = programacionOriginal.getPeriodo().getEmpleado();
+		if (empleado.getPuesto().getClasificacion().equalsIgnoreCase("CO"))
+			validarPoliticaBolsaComercial(nuevaProgramacion, programacionOriginal);
+		if (empleado.getPuesto().getClasificacion().equalsIgnoreCase("ST")) {
+			validarPoliticaBolsaOperaciones(nuevaProgramacion, programacionOriginal);
+			validarPoliticaBolsaRecuperaciones(nuevaProgramacion, programacionOriginal);
+		}
+		logger.info("[BEGIN] validarPoliticaBolsa");
+		
+	}
+
+	@Override
+	public void validarPoliticaBolsaComercial(VacacionProgramacion nuevaProgramacion, VacacionProgramacion programacionOriginal) {
+		logger.info("[BEGIN] validarPoliticaBolsaComercial");
+		Empleado empleado = programacionOriginal.getPeriodo().getEmpleado();
+		String puesto = empleado.getPuesto().getDescripcion().trim();
+		if (puesto.contains(Constantes.ASESOR_NEGOCIO)) {
+			if (empleado.getCodigoUnidadNegocio() == null)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.sin_unidad_negocio", empleado.getUsuarioBT()));
+			UnidadNegocio unidadNegocio = unidadNegocioService.obtenerUnidadNegocioPorCodigo(empleado.getCodigoUnidadNegocio());
+			if (unidadNegocio == null)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.validacion.unidad_negocio_error", empleado.getCodigoUnidadNegocio() + ""));
+			int totalEmpleados = empleadoService.obtenerCantidadEmpleadosPorPuestoYUnidadNegocio(empleado.getCodigoUnidadNegocio(), Constantes.ASESOR_NEGOCIO);
+			double limite = totalEmpleados * 0.12;
+			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorUnidadNegocioEmpleado(empleado.getId(), Constantes.ASESOR_NEGOCIO, nuevaProgramacion.getFechaInicio(), nuevaProgramacion.getFechaFin(), programacionOriginal.getId());
+			cantidadProgramaciones++;
+			if (cantidadProgramaciones > limite)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.bolsa.comercial.asesor_negocio_individual.limite_error", 12 + ""));
+		}
+		if (puesto.contains(Constantes.ASESOR_NEGOCIO_GRUPAL)) {
+			if (nuevaProgramacion.getFechaInicio().getMonthValue() == 12 || nuevaProgramacion.getFechaFin().getMonthValue() == 12)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.bolsa.comercial.asesor_negocio_grupal.diciembre_error"));
+		}
+		if (puesto.contains(Constantes.ADMINISTRADOR_NEGOCIO)) {
+			int limite = 1;
+			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorCorredorEmpleadoPuesto(
+					empleado.getId(), Constantes.ADMINISTRADOR_NEGOCIO, nuevaProgramacion.getFechaInicio(),
+					nuevaProgramacion.getFechaFin(), programacionOriginal.getIdProgramacionOriginal());
+			cantidadProgramaciones++;
+			if (cantidadProgramaciones > limite)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.bolsa.comercial.administrador_negocio.limite_error"));
+		}
+		if (puesto.contains(Constantes.GERENTE_CORREDOR)) {
+			int limite = 1;
+			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorTerritorioEmpleadoPuesto(
+					empleado.getId(), Constantes.GERENTE_CORREDOR, nuevaProgramacion.getFechaInicio(),
+					nuevaProgramacion.getFechaFin(), programacionOriginal.getId());
+			cantidadProgramaciones++;
+			if (cantidadProgramaciones > limite)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.bolsa.comercial.administrador_negocio.limite_error"));
+		}
+		logger.info("[END] validarPoliticaBolsaComercial");
+		
+	}
+
+	@Override
+	public void validarPoliticaBolsaRecuperaciones(VacacionProgramacion nuevaProgramacion, VacacionProgramacion programacionOriginal) {
+		logger.info("[BEGIN] validarPoliticaBolsaRecuperaciones");
+		Empleado empleado = programacionOriginal.getPeriodo().getEmpleado();
+		String puesto = empleado.getPuesto().getDescripcion().trim();
+		if (puesto.contains(Constantes.ANALISTA_COBRANZA)) {
+			int limite = 1;
+			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorCorredorEmpleadoPuesto(
+					empleado.getId(), Constantes.ANALISTA_COBRANZA, nuevaProgramacion.getFechaInicio(),
+					nuevaProgramacion.getFechaFin(), programacionOriginal.getId());
+			cantidadProgramaciones++;
+			if (cantidadProgramaciones > limite)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,
+						"vacaciones.politica.bolsa.recuperaciones.analista_cobranza.limite_error"));
+		}
+		if (puesto.contains(Constantes.ANALISTA_RECUPERACIONES)) {
+			int limite = 1;
+			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorTerritorioEmpleadoPuesto(
+					empleado.getId(), Constantes.ANALISTA_RECUPERACIONES, nuevaProgramacion.getFechaInicio(),
+					nuevaProgramacion.getFechaFin(), programacionOriginal.getId());
+			cantidadProgramaciones++;
+			if (cantidadProgramaciones > limite)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,
+						"vacaciones.politica.bolsa.recuperaciones.analista_recuperaciones.limite_error"));
+		}
+		if (puesto.contains(Constantes.RESPONSABLE_DEPARTAMENTO_COBRANZA)) {
+			int limite = 1;
+			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorTerritorioEmpleadoPuesto(
+					empleado.getId(), Constantes.RESPONSABLE_DEPARTAMENTO_COBRANZA, nuevaProgramacion.getFechaInicio(),
+					nuevaProgramacion.getFechaFin(), programacionOriginal.getId());
+			cantidadProgramaciones++;
+			if (cantidadProgramaciones > limite)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,
+						"vacaciones.politica.bolsa.recuperaciones.analista_recuperaciones.limite_error"));
+		}
+		logger.info("[END] validarPoliticaBolsaRecuperaciones");
+	}
+
+	@Override
+	public void validarPoliticaBolsaOperaciones(VacacionProgramacion nuevaProgramacion,	VacacionProgramacion programacionOriginal) {
+		logger.info("[BEGIN] validarPoliticaBolsaOperaciones");
+		Empleado empleado = programacionOriginal.getPeriodo().getEmpleado();
+		String puesto = empleado.getPuesto().getDescripcion().trim();
+		int limite = 1;
+		if (puesto.contains(Constantes.ASESOR_SERVICIO) || puesto.contains(Constantes.ASESOR_PLATAFORMA) || puesto.contains(Constantes.SUPERVISOR_OFICINA)) {
+			long cantidadProgramacionesAsesorServicio = vacacionProgramacionService.contarProgramacionPorEmpleadoAgencia(
+					empleado.getId(), Constantes.ASESOR_SERVICIO,
+					nuevaProgramacion.getFechaInicio(), nuevaProgramacion.getFechaFin(), programacionOriginal.getId());
+			long cantidadProgramacionesAsesorPlataforma = vacacionProgramacionService.contarProgramacionPorEmpleadoAgencia(
+					empleado.getId(), Constantes.ASESOR_PLATAFORMA,
+					nuevaProgramacion.getFechaInicio(), nuevaProgramacion.getFechaFin(), programacionOriginal.getId());
+			long cantidadProgramacionesSupervidorOficina = vacacionProgramacionService.contarProgramacionPorEmpleadoAgencia(
+					empleado.getId(), Constantes.SUPERVISOR_OFICINA,
+					nuevaProgramacion.getFechaInicio(), nuevaProgramacion.getFechaFin(), programacionOriginal.getId());
+			long cantidadProgramaciones = cantidadProgramacionesAsesorServicio + cantidadProgramacionesAsesorPlataforma	+ cantidadProgramacionesSupervidorOficina;
+			cantidadProgramaciones++;
+			if (cantidadProgramaciones > limite)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,
+						"vacaciones.politica.bolsa.operaciones.agencia.limite_error", limite + ""));
+		}
+		Agencia agencia = empleado.getAgencia();
+		if (agencia.getDescripcion().contains("EOB")) { // AGENCIA TAMBO - TAMBO_PLUS
+
+		}
+		logger.info("[END] validarPoliticaBolsaOperaciones");
+	}
+	
+	
 
 }

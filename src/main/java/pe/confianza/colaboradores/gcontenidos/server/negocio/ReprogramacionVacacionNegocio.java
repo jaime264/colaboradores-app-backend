@@ -25,4 +25,16 @@ public interface ReprogramacionVacacionNegocio {
 	void validarDiasReprogramados(VacacionProgramacion programacion, RequestReprogramarVacacion request);
 
 	void validarEmpleadoNuevo(VacacionProgramacion programacion, Empleado empleado);
+	
+	void validarPoliticasRegulatorias(VacacionProgramacion nuevaProgramacion, VacacionProgramacion programacionOriginal);
+	
+	void validarPoliticaBolsa(VacacionProgramacion nuevaProgramacion, VacacionProgramacion programacionOriginal);
+	
+	void validarPoliticaBolsaComercial(VacacionProgramacion nuevaProgramacion, VacacionProgramacion programacionOriginal);
+	 
+	void validarPoliticaBolsaRecuperaciones(VacacionProgramacion nuevaProgramacion, VacacionProgramacion programacionOriginal);
+	
+	void validarPoliticaBolsaOperaciones(VacacionProgramacion nuevaProgramacion, VacacionProgramacion programacionOriginal);
+	
+	void obtenerOrden(VacacionProgramacion nuevaProgramacion, VacacionProgramacion programacionOriginal, String usuarioModifica);
 }

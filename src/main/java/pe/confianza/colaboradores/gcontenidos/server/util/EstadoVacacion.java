@@ -7,7 +7,8 @@ public enum EstadoVacacion {
 	APROBADO(3,  "PARAMVAC008"),
 	RECHAZADO(4,  "PARAMVAC009"),
 	GOZANDO(5,  "PARAMVAC010"),
-	GOZADO(6,  "PARAMVAC011");
+	GOZADO(6,  "PARAMVAC011"),
+	REPROGRAMADO(7, "PARAMVAC014");
 	
 	public int id;
 	public String codigoParametro;

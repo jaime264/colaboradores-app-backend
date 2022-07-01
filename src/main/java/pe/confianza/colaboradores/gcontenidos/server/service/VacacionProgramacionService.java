@@ -44,15 +44,15 @@ public interface VacacionProgramacionService {
 	
 	int obtenerSumaDiasPorPeriodoYEstado(long idPeriodo, EstadoVacacion estado);
 	
-	long contarProgramacionPorUnidadNegocioEmpleado(Long idEmpleado, String descripcionPuesto, LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
+	long contarProgramacionPorUnidadNegocioEmpleado(Long idEmpleado, String descripcionPuesto, LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion, Long idProgReprogramar);
 	
-	long contarProgramacionPorCorredorEmpleadoPuesto(long idEmpleado, String descripcionPuesto, LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
+	long contarProgramacionPorCorredorEmpleadoPuesto(long idEmpleado, String descripcionPuesto, LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion, Long idProgReprogramar);
 	
-	long contarProgramacionPorTerritorioEmpleadoPuesto(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
+	long contarProgramacionPorTerritorioEmpleadoPuesto(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion, Long idProgReprogramar);
 	
 	long contarProgramacionPorEmpleadoPuesto(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
 	
-	long contarProgramacionPorEmpleadoAgencia(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
+	long contarProgramacionPorEmpleadoAgencia(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion, Long idProgReprogramar);
 	
 	List<EmplVacPerRes> listEmpleadoByprogramacion(RequestProgramacionEmpleado reqPrograEmp);
 	

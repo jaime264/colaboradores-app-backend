@@ -97,8 +97,8 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		programaciones.forEach(prog -> {
 			prog.setEstado(EstadoVacacion.REGISTRADO);
 			validarPoliticasRegulatorias(prog);
-			obtenerOrden(prog, usuarioOperacion);
 			validarPoliticaBolsa(prog);
+			obtenerOrden(prog, usuarioOperacion);
 		});
 		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.registrar(programaciones, usuarioOperacion);
 		List<Long> idsProgRegistradas = programacionesRegistradas.stream().map(prog -> prog.getId()).collect(Collectors.toList());
@@ -639,13 +639,13 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		if (puesto.contains(Constantes.ASESOR_SERVICIO) || puesto.contains(Constantes.ASESOR_PLATAFORMA) || puesto.contains(Constantes.SUPERVISOR_OFICINA)) {
 			long cantidadProgramacionesAsesorServicio = vacacionProgramacionService.contarProgramacionPorEmpleadoAgencia(
 					empleado.getId(), Constantes.ASESOR_SERVICIO,
-					programacion.getFechaInicio(), programacion.getFechaFin());
+					programacion.getFechaInicio(), programacion.getFechaFin(), null);
 			long cantidadProgramacionesAsesorPlataforma = vacacionProgramacionService.contarProgramacionPorEmpleadoAgencia(
 					empleado.getId(), Constantes.ASESOR_PLATAFORMA,
-					programacion.getFechaInicio(), programacion.getFechaFin());
+					programacion.getFechaInicio(), programacion.getFechaFin(), null);
 			long cantidadProgramacionesSupervidorOficina = vacacionProgramacionService.contarProgramacionPorEmpleadoAgencia(
 					empleado.getId(), Constantes.SUPERVISOR_OFICINA,
-					programacion.getFechaInicio(), programacion.getFechaFin());
+					programacion.getFechaInicio(), programacion.getFechaFin(), null);
 			long cantidadProgramaciones = cantidadProgramacionesAsesorServicio + cantidadProgramacionesAsesorPlataforma	+ cantidadProgramacionesSupervidorOficina;
 			cantidadProgramaciones++;
 			if (cantidadProgramaciones > limite)
@@ -672,7 +672,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.validacion.unidad_negocio_error", empleado.getCodigoUnidadNegocio() + ""));
 			int totalEmpleados = empleadoService.obtenerCantidadEmpleadosPorPuestoYUnidadNegocio(empleado.getCodigoUnidadNegocio(), Constantes.ASESOR_NEGOCIO);
 			double limite = totalEmpleados * 0.12;
-			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorUnidadNegocioEmpleado(empleado.getId(), Constantes.ASESOR_NEGOCIO, programacion.getFechaInicio(), programacion.getFechaFin());
+			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorUnidadNegocioEmpleado(empleado.getId(), Constantes.ASESOR_NEGOCIO, programacion.getFechaInicio(), programacion.getFechaFin(), null);
 			cantidadProgramaciones++;
 			if (cantidadProgramaciones > limite)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.bolsa.comercial.asesor_negocio_individual.limite_error", 12 + ""));
@@ -685,7 +685,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			int limite = 1;
 			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorCorredorEmpleadoPuesto(
 					empleado.getId(), Constantes.ADMINISTRADOR_NEGOCIO, programacion.getFechaInicio(),
-					programacion.getFechaFin());
+					programacion.getFechaFin(), null);
 			cantidadProgramaciones++;
 			if (cantidadProgramaciones > limite)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.bolsa.comercial.administrador_negocio.limite_error"));
@@ -694,7 +694,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			int limite = 1;
 			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorTerritorioEmpleadoPuesto(
 					empleado.getId(), Constantes.GERENTE_CORREDOR, programacion.getFechaInicio(),
-					programacion.getFechaFin());
+					programacion.getFechaFin(), null);
 			cantidadProgramaciones++;
 			if (cantidadProgramaciones > limite)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.politica.bolsa.comercial.administrador_negocio.limite_error"));
@@ -711,7 +711,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			int limite = 1;
 			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorCorredorEmpleadoPuesto(
 					empleado.getId(), Constantes.ANALISTA_COBRANZA, programacion.getFechaInicio(),
-					programacion.getFechaFin());
+					programacion.getFechaFin(), null);
 			cantidadProgramaciones++;
 			if (cantidadProgramaciones > limite)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,
@@ -721,7 +721,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			int limite = 1;
 			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorTerritorioEmpleadoPuesto(
 					empleado.getId(), Constantes.ANALISTA_RECUPERACIONES, programacion.getFechaInicio(),
-					programacion.getFechaFin());
+					programacion.getFechaFin(), null);
 			cantidadProgramaciones++;
 			if (cantidadProgramaciones > limite)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,
@@ -731,7 +731,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			int limite = 1;
 			long cantidadProgramaciones = vacacionProgramacionService.contarProgramacionPorTerritorioEmpleadoPuesto(
 					empleado.getId(), Constantes.RESPONSABLE_DEPARTAMENTO_COBRANZA, programacion.getFechaInicio(),
-					programacion.getFechaFin());
+					programacion.getFechaFin(), null);
 			cantidadProgramaciones++;
 			if (cantidadProgramaciones > limite)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,
