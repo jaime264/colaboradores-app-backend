@@ -652,10 +652,10 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,
 						"vacaciones.politica.bolsa.operaciones.agencia.limite_error", limite + ""));
 		}
-		Agencia agencia = empleado.getAgencia();
+		/*Agencia agencia = empleado.getAgencia();
 		if (agencia.getDescripcion().contains("EOB")) { // AGENCIA TAMBO - TAMBO_PLUS
 
-		}
+		}*/
 		LOGGER.info("[END] validarPoliticaBolsaOperaciones");
 	}
 

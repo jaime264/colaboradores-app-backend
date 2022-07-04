@@ -52,9 +52,6 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 	private EmpleadoService empleadoService;
 	
 	@Autowired
-	private ProgramacionVacacionNegocio programacionVacacionNegocio;
-	
-	@Autowired
 	private UnidadNegocioService unidadNegocioService;
 	
 	@Autowired
@@ -88,7 +85,6 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 			logger.error("[ERROR] programacionAnual", e);
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
 		}
-		
 	}
 	
 	@Override
@@ -142,7 +138,7 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 			}).collect(Collectors.toList());
 			programaciones.forEach(prog -> {
 				validarPoliticasRegulatorias(prog, programacion);
-				programacionVacacionNegocio.validarPoliticaBolsa(prog);
+				validarPoliticaBolsa(prog, programacion);
 				obtenerOrden(prog, programacion, usuarioOperacion);
 			});
 			
