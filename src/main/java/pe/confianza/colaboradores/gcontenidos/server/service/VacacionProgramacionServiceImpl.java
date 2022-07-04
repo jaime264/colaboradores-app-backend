@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -40,6 +42,9 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	@Autowired
 	private EmpleadoDao empleadoDao;
+
+	@Autowired
+	private EmpleadoService empleadoService;
 
 	@Override
 	public void actualizarEstadoProgramaciones() {
@@ -92,6 +97,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 			throw new ModelNotFoundException("No existe la programación con id " + idProgramacion);
 		VacacionProgramacion progamacion = optProgramacion.get();
 		progamacion.setEstadoRegistro(EstadoRegistro.INACTIVO.valor);
+		progamacion.setIdEstado(4);
 		if (EstadoMigracion.IMPORTADO.valor.equals(progamacion.getEstadoMigracion()))
 			progamacion.setEstadoMigracion(EstadoMigracion.MODIFICADO.valor);
 		actualizar(progamacion, usuarioOperacion);
@@ -190,6 +196,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	}
 
 	@Override
+
 	public long contarProgramacionPorUnidadNegocioEmpleado(Long idEmpleado, String descripcionPuesto, LocalDate fechaIncioProgramacion,
 			LocalDate fechaFinProgramacion, Long idProgReprogramar) {
 		logger.info("[BEGIN] contarProgramacionPorUnidadNegocioEmpleado {}", idEmpleado);
@@ -197,6 +204,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		String strFechaInicio = fechaIncioProgramacion.format(formatter);
 		String strFechaFin = fechaFinProgramacion.format(formatter);
 		return vacacionProgramacionDao.contarProgramacionPorUnidadNegocioEmpleado(idEmpleado, descripcionPuesto, strFechaInicio, strFechaFin, idProgReprogramar);
+
 	}
 
 	@Override
@@ -250,6 +258,96 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	@Override
 	public List<EmplVacPerRes> listEmpleadoByprogramacion(RequestProgramacionEmpleado reqPrograEmp) {
 
+		List<EmplVacPerRes> listEmpByProgramacion = listEmpleadoProgramacionFilter(reqPrograEmp);
+
+		List<EmplVacPerRes> listEmp = new ArrayList<>();
+
+		switch (reqPrograEmp.getTipoFiltro().toUpperCase().trim()) {
+		case "NOMBRE":
+			listEmp = listEmpByProgramacion.stream().filter(e -> reqPrograEmp.getFiltro().contains(e.getNombres()))
+					.collect(Collectors.toList());
+			break;
+		case "CARGO":
+			listEmp = listEmpByProgramacion.stream().filter(e -> reqPrograEmp.getFiltro().contains(e.getPuesto()))
+					.collect(Collectors.toList());
+			break;
+		case "AGENCIA":
+			listEmp = listEmpByProgramacion.stream().filter(e -> reqPrograEmp.getFiltro().contains(e.getAgencia()))
+					.collect(Collectors.toList());
+			break;
+		case "TERRITORIO":
+			listEmp = listEmpleadoProgramacionACT(reqPrograEmp, listEmpByProgramacion);
+			break;
+		case "CORREDOR":
+			listEmp = listEmpleadoProgramacionACT(reqPrograEmp, listEmpByProgramacion);
+			break;
+		case "AREA":
+			listEmp = listEmpleadoProgramacionACT(reqPrograEmp, listEmpByProgramacion);
+			break;
+		case "TRAMO":
+			listEmp = listEmpByFecha(listEmpByProgramacion, reqPrograEmp);
+			break;
+		default:
+			listEmp = listEmpByProgramacion;
+			break;
+		}
+
+		return listEmp;
+	}
+
+	private List<EmplVacPerRes> listEmpByFecha(List<EmplVacPerRes> listEmpByProgramacion,
+			RequestProgramacionEmpleado reqPrograEmp) {
+
+		List<EmplVacPerRes> listEmp = new ArrayList<>();
+
+		listEmpByProgramacion.stream().forEach(e -> {
+
+			if (e.getFechaInicio().isAfter(reqPrograEmp.getFechaInicio())
+					&& e.getFechaInicio().isBefore(reqPrograEmp.getFechaFin())) {
+				listEmp.add(e);
+			} else if (e.getFechaFin().isAfter(reqPrograEmp.getFechaInicio())
+					&& e.getFechaFin().isBefore(reqPrograEmp.getFechaFin())) {
+				listEmp.add(e);
+			}
+		});
+
+		return listEmp;
+	}
+
+	private List<EmplVacPerRes> listEmpleadoProgramacionACT(RequestProgramacionEmpleado reqPrograEmp,
+			List<EmplVacPerRes> listEmpByProgramacion) {
+
+		List<EmplVacPerRes> listEmp = new ArrayList<>();
+
+		for (String f : reqPrograEmp.getFiltro()) {
+			for (EmplVacPerRes e : listEmpByProgramacion) {
+				if (reqPrograEmp.getTipoFiltro().equals("TERRITORIO")) {
+					for (int i = 0; i < e.getTerritorio().size(); i++) {
+						if (e.getTerritorio().get(i).getDescripcion().equals(f)) {
+							listEmp.add(e);
+						}
+					}
+				} else if (reqPrograEmp.getTipoFiltro().equals("CORREDOR")) {
+					for (int i = 0; i < e.getCorredor().size(); i++) {
+						if (e.getCorredor().get(i).getDescripcion().equals(f)) {
+							listEmp.add(e);
+						}
+					}
+				} else if (reqPrograEmp.getTipoFiltro().equals("AREA")) {
+					for (int i = 0; i < e.getArea().size(); i++) {
+						if (e.getArea().get(i).getDescripcion().equals(f)) {
+							listEmp.add(e);
+						}
+					}
+				}
+			}
+		}
+
+		return listEmp;
+	}
+
+	private List<EmplVacPerRes> listEmpleadoProgramacionFilter(RequestProgramacionEmpleado reqPrograEmp) {
+
 		List<EmplVacPerRes> listEmp = new ArrayList<EmplVacPerRes>();
 
 		Optional<Empleado> emJefe = empleadoDao.findOneByUsuarioBT(reqPrograEmp.getUsuarioBt());
@@ -262,10 +360,11 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 				List<VacacionProgramacion> lVp = empleadoDao.findPeriodosByEmpleado(e.getId());
 				for (VacacionProgramacion v : lVp) {
 
+					Empleado empleado = empleadoService
+							.getEmpleadoCorredorTerritorioBt(v.getPeriodo().getEmpleado().getUsuarioBT());
+
 					EmplVacPerRes emp = new EmplVacPerRes();
-					emp.setNombres(e.getNombres());
-					emp.setApellidoPaterno(e.getApellidoPaterno());
-					emp.setApellidoMaterno(e.getApellidoMaterno());
+					emp.setNombres(e.getNombreCompleto());
 					emp.setIdEmpleado(e.getId());
 					emp.setPuesto(e.getPuesto().getDescripcion());
 					emp.setUsuarioBt(e.getUsuarioBT());
@@ -276,6 +375,10 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 					emp.setFechaFin(v.getFechaFin());
 					emp.setIdEstado(v.getIdEstado());
 					emp.setPeriodo(v.getPeriodo().getDescripcion());
+					emp.setAgencia(v.getPeriodo().getEmpleado().getAgencia().getDescripcion());
+					emp.setTerritorio(empleado.getTerritorios());
+					emp.setCorredor(empleado.getCorredores());
+					emp.setArea(empleado.getUnidadesOperativa());
 
 					listEmp.add(emp);
 				}
@@ -288,7 +391,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	public List<Map<String, String>> listFilstrosVacacionAprobacion(RequestFiltroVacacionesAprobacion reqFiltros) {
 		// TODO Auto-generated method stub
 		List<Map<String, String>> datos = new ArrayList<>();
-		switch (reqFiltros.getFiltro().toUpperCase()) {
+		switch (reqFiltros.getFiltro().toUpperCase().trim()) {
 		case "NOMBRE":
 			datos = empleadoDao.findNombreByCodigoN1(reqFiltros.getCodigo());
 			break;
@@ -315,13 +418,14 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	@Override
 	public List<VacacionProgramacion> listarProgramacionesPorAnio(int anio, String usuarioBT) {
-		logger.info("[BEGIN] listarProgramacionesPorAnio {}", anio );
+		logger.info("[BEGIN] listarProgramacionesPorAnio {}", anio);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		LocalDate fechaInicio = LocalDate.parse("01/01/" + anio, formatter);
 		LocalDate fechaFin = LocalDate.parse("31/12/" + anio, formatter);
-		List<VacacionProgramacion> programaciones = vacacionProgramacionDao.findBetweenDates(fechaInicio, fechaFin, usuarioBT);
+		List<VacacionProgramacion> programaciones = vacacionProgramacionDao.findBetweenDates(fechaInicio, fechaFin,
+				usuarioBT);
 		programaciones = programaciones == null ? new ArrayList<>() : programaciones;
-		logger.info("[END] listarProgramacionesPorAnio" );
+		logger.info("[END] listarProgramacionesPorAnio");
 		return programaciones;
 	}
 

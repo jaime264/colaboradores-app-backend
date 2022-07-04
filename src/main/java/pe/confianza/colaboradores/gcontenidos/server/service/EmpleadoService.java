@@ -22,5 +22,7 @@ public interface EmpleadoService {
 	ResponseTerminosCondiciones aceptarTerminosCondiciones(String usuarioBT);
 	
 	ResponseTerminosCondiciones consultarTerminosCondiciones(String usuarioBT);
+	
+	Empleado getEmpleadoCorredorTerritorioBt(String usuarioBT);
 
 }

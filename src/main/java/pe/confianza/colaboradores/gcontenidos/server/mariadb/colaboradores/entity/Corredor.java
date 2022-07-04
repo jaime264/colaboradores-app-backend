@@ -40,7 +40,7 @@ public class Corredor extends EntidadAuditoria {
 	@Column(nullable = true)
 	private Long codigoRepresentante;
 	
-
+	
 	public long getId() {
 		return id;
 	}
