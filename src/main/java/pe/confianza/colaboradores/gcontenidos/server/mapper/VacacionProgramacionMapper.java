@@ -48,6 +48,7 @@ public class VacacionProgramacionMapper {
 		destination.setDias(source.getNumeroDias());
 		destination.setPeriodo(source.getPeriodo().getDescripcion());
 		destination.setOrden(source.getOrden());
+		destination.setAdelantada(source.isVacacionesAdelantadas());
 		return destination;
 	}
 	

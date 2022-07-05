@@ -18,6 +18,8 @@ public interface VacacionProgramacionService {
 	
 	List<VacacionProgramacion> registrar(List<VacacionProgramacion> programaciones, String usuarioOperacion);
 	
+	List<VacacionProgramacion> modificar(List<VacacionProgramacion> programaciones, String usuarioOperacion);
+	
 	VacacionProgramacion registrar(VacacionProgramacion programacion, String usuarioOperacion);
 	
 	VacacionProgramacion actualizar(VacacionProgramacion programacion, String usuarioOperacion);

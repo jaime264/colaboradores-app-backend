@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -70,6 +69,19 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 			programacion.setFechaCrea(LocalDateTime.now());
 			programacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
 			programacion.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
+		});
+		return vacacionProgramacionDao.saveAll(programaciones);
+	}
+	
+	@Override
+	public List<VacacionProgramacion> modificar(List<VacacionProgramacion> programaciones, String usuarioOperacion) {
+		programaciones.forEach(programacion -> {
+			programacion.setUsuarioModifica(usuarioOperacion);
+			programacion.setFechaModifica(LocalDateTime.now());
+			programacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
+			if(EstadoMigracion.EXPORTADO.valor.equals(programacion.getEstadoMigracion()) || EstadoMigracion.IMPORTADO.valor.equals(programacion.getEstadoMigracion())) {
+				programacion.setEstadoMigracion(EstadoMigracion.MODIFICADO.valor);
+			}				
 		});
 		return vacacionProgramacionDao.saveAll(programaciones);
 	}
@@ -428,5 +440,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		logger.info("[END] listarProgramacionesPorAnio");
 		return programaciones;
 	}
+
+
 
 }

@@ -230,7 +230,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 				response.add(VacacionProgramacionMapper.convert(programacion, parametrosConstants));
 			}
 			actualizarPeriodo(empleado, request.getUsuarioOperacion());
-			consolidarMetaAnual(empleado, parametrosConstants.getMetaVacacionAnio(), request.getUsuarioOperacion());
+			//consolidarMetaAnual(empleado, parametrosConstants.getMetaVacacionAnio(), request.getUsuarioOperacion());
 			// actualizarMeta(empleado, ahora.getYear() + 1, 0,
 			// request.getUsuarioOperacion());
 			LOGGER.info("[END] generar");
@@ -430,9 +430,12 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 
 		int diasVacaciones = diasVencidos + diasTruncos;
 		int diasPorRegistrar = programacion.getNumeroDias();
-		if (diasPorRegistrar > diasVacaciones) {
-			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.no_dias_gozar"));
+		if(meta.getMeta() <= diasVacaciones) {
+			if (diasPorRegistrar > diasVacaciones) {
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.no_dias_gozar"));
+			}
 		}
+		
 		if (diasVencidos > 0) {
 			VacacionProgramacion programacionParteI = VacacionProgramacionMapper.clone(programacion);
 			if (diasVencidos >= diasPorRegistrar) {
@@ -445,35 +448,42 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 				programacionParteI.setNumeroPeriodo((long) meta.getPeriodoVencido().getNumero());
 			}
 			if (!meta.getPeriodoVencido().programacionDentroPeriodoGoce(programacionParteI))
-				throw new AppException(Utilitario.obtenerMensaje(messageSource,
-						"vacaciones.validacion.fuera_limite_goce", meta.getPeriodoVencido().getDescripcion()));
+				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.validacion.fuera_limite_goce", meta.getPeriodoVencido().getDescripcion()));
 			LOGGER.info("programacionParteI: " + programacionParteI.toString());
 			programaciones.add(programacionParteI);
 		}
 
 		diasVacaciones = diasVacaciones - programaciones.stream().mapToInt(VacacionProgramacion::getNumeroDias).sum();
-		diasPorRegistrar = diasPorRegistrar
-				- programaciones.stream().mapToInt(VacacionProgramacion::getNumeroDias).sum();
+		diasPorRegistrar = diasPorRegistrar	- programaciones.stream().mapToInt(VacacionProgramacion::getNumeroDias).sum();
 
 		if (diasPorRegistrar > 0) {
 			VacacionProgramacion programacionParteII = VacacionProgramacionMapper.clone(programacion);
-			if (diasTruncos > 0) {
-				if (diasTruncos >= diasPorRegistrar) {
-					programacionParteII
-							.setFechaInicio(Utilitario.quitarDias(programacion.getFechaFin(), diasPorRegistrar));
-					programacionParteII.calcularDias();
-					programacionParteII.setPeriodo(meta.getPeriodoTrunco());
-					programacionParteII.setNumeroPeriodo((long) meta.getPeriodoTrunco().getNumero());
-				} else {
-					throw new AppException(
-							Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.no_dias_gozar"));
+			if(meta.getMeta() <= diasVacaciones) {
+				if (diasTruncos > 0) {
+					if (diasTruncos >= diasPorRegistrar) {
+						programacionParteII.setFechaInicio(Utilitario.quitarDias(programacion.getFechaFin(), diasPorRegistrar));
+						programacionParteII.calcularDias();
+						programacionParteII.setPeriodo(meta.getPeriodoTrunco());
+						programacionParteII.setNumeroPeriodo((long) meta.getPeriodoTrunco().getNumero());
+					} else {
+						throw new AppException(
+								Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.no_dias_gozar"));
+					}
+					if (!meta.getPeriodoTrunco().programacionDentroPeriodoGoce(programacionParteII))
+						throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.fuera_limite_goce", meta.getPeriodoVencido().getDescripcion()));
+					LOGGER.info("programacionParteII: " + programacionParteII.toString());
+					programaciones.add(programacionParteII);
 				}
-				if (!meta.getPeriodoTrunco().programacionDentroPeriodoGoce(programacionParteII))
-					throw new AppException(Utilitario.obtenerMensaje(messageSource,
-							"vacaciones.validacion.fuera_limite_goce", meta.getPeriodoVencido().getDescripcion()));
+			} else {
+				programacionParteII.setFechaInicio(Utilitario.quitarDias(programacion.getFechaFin(), diasPorRegistrar));
+				programacionParteII.calcularDias();
+				programacionParteII.setPeriodo(meta.getPeriodoTrunco());
+				programacionParteII.setNumeroPeriodo((long) meta.getPeriodoTrunco().getNumero());
+				programacionParteII.setVacacionesAdelantadas(true);
 				LOGGER.info("programacionParteII: " + programacionParteII.toString());
 				programaciones.add(programacionParteII);
 			}
+			
 		}
 		LOGGER.info("[END] obtenerPeriodo");
 		return programaciones;

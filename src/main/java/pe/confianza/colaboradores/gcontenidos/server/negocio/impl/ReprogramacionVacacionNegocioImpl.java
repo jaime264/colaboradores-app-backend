@@ -26,11 +26,14 @@ import pe.confianza.colaboradores.gcontenidos.server.mapper.VacacionProgramacion
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Agencia;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.UnidadNegocio;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionMeta;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ReprogramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
+import pe.confianza.colaboradores.gcontenidos.server.service.PeriodoVacacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.UnidadNegocioService;
+import pe.confianza.colaboradores.gcontenidos.server.service.VacacionMetaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
@@ -55,7 +58,19 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 	private UnidadNegocioService unidadNegocioService;
 	
 	@Autowired
+	private PeriodoVacacionService periodoVacacionService;
+	
+	@Autowired
 	private MessageSource messageSource;
+	
+	@Autowired
+	private CargaParametros parametrosConstants;
+	
+	@Autowired
+	private VacacionMetaService vacacionMetaService;
+	
+	@Autowired
+	private ProgramacionVacacionNegocio programacionVacacionNegocio;
 	
 	@Override
 	public List<ResponseProgramacionVacacionReprogramar> programacionAnual(RequestConsultaVacacionesReprogramar request) {
@@ -96,12 +111,22 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", request.getUsuarioBT()));
 			VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(request);
 			vacacionProgramacion.setEstado(EstadoVacacion.REGISTRADO);
-			vacacionProgramacion.setVacacionesAdelantadas(false);
+			vacacionProgramacion.setVacacionesAdelantadas(true);
 			validarEmpleadoNuevo(vacacionProgramacion, empleado);
 			if(vacacionProgramacion.getNumeroDias() > cargaParametros.getDiasMaximoVacacionesAdelantadas())
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.vacaciones_adelantadas.limite_error", cargaParametros.getDiasMaximoVacacionesAdelantadas() + ""));
 			logger.info("[END] vacacionesAdelantadas");
-			return null;
+			VacacionMeta meta = vacacionMetaService.obtenerVacacionPorAnio(parametrosConstants.getMetaVacacionAnio(), empleado.getId());
+			vacacionProgramacion.setPeriodo(meta.getPeriodoTrunco());
+			vacacionProgramacion.setNumeroPeriodo((long) meta.getPeriodoTrunco().getNumero());
+			vacacionProgramacion.calcularDias();
+			programacionVacacionNegocio.validarPoliticasRegulatorias(vacacionProgramacion);
+			programacionVacacionNegocio.validarPoliticaBolsa(vacacionProgramacion);
+			programacionVacacionNegocio.obtenerOrden(vacacionProgramacion, request.getUsuarioOperacion());
+			vacacionProgramacion = vacacionProgramacionService.registrar(vacacionProgramacion, request.getUsuarioOperacion());
+			actualizarPeriodo(empleado, vacacionProgramacion.getPeriodo().getId(), request.getUsuarioOperacion());
+			vacacionProgramacion = vacacionProgramacionService.buscarPorId(vacacionProgramacion.getId());
+			return VacacionProgramacionMapper.convert(vacacionProgramacion, parametrosConstants);
 		} catch (ModelNotFoundException e) {
 			logger.error("[ERROR] programacionAnual", e);
 			throw new ModelNotFoundException(e.getMessage()); 
@@ -141,9 +166,20 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 				validarPoliticaBolsa(prog, programacion);
 				obtenerOrden(prog, programacion, usuarioOperacion);
 			});
-			
+			List<VacacionProgramacion> programacionesReprogramadas = vacacionProgramacionService.modificar(programaciones, usuarioOperacion);
+			List<Long> idsProgRegistradas = programacionesReprogramadas.stream().map(prog -> prog.getId()).collect(Collectors.toList());
+			List<Long> idsPeriodosModificados = programacionesReprogramadas.stream().map(prog -> prog.getPeriodo().getId()).distinct().collect(Collectors.toList());
+			idsPeriodosModificados.forEach(periodoId -> {
+				actualizarPeriodo(programacion.getPeriodo().getEmpleado(), periodoId, usuarioOperacion);
+			});
+			programacionesReprogramadas = new ArrayList<>();
+			for (Long idProgramacion : idsProgRegistradas) {
+				programacionesReprogramadas.add(vacacionProgramacionService.buscarPorId(idProgramacion));
+			}
 			logger.info("[END] reprogramarTramo");
-			return null;
+			return programacionesReprogramadas.stream().map(p -> {
+				return VacacionProgramacionMapper.convert(p, parametrosConstants);
+			}).collect(Collectors.toList());
 		} catch (ModelNotFoundException e) {
 			logger.error("[ERROR] reprogramarTramo", e);
 			throw new ModelNotFoundException(e.getMessage()); 
@@ -409,6 +445,14 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 
 		}
 		logger.info("[END] validarPoliticaBolsaOperaciones");
+	}
+	
+	@Override
+	public void actualizarPeriodo(Empleado empleado, long idPeriodo, String usuarioOperacion) {
+		logger.info("[BEGIN] actualizarPeriodo {}", idPeriodo);
+		periodoVacacionService.consolidarResumenDias(idPeriodo, usuarioOperacion);
+		periodoVacacionService.actualizarPeriodo(empleado, idPeriodo, usuarioOperacion);
+		logger.info("[END] actualizarPeriodo");
 	}
 	
 	

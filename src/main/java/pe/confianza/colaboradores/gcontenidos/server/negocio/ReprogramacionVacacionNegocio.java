@@ -37,4 +37,6 @@ public interface ReprogramacionVacacionNegocio {
 	void validarPoliticaBolsaOperaciones(VacacionProgramacion nuevaProgramacion, VacacionProgramacion programacionOriginal);
 	
 	void obtenerOrden(VacacionProgramacion nuevaProgramacion, VacacionProgramacion programacionOriginal, String usuarioModifica);
+
+	void actualizarPeriodo(Empleado empleado, long idPeriodo, String usuarioOperacion);
 }
