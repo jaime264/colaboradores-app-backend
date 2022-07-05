@@ -63,5 +63,11 @@ public interface EmpleadoDao extends JpaRepository<Empleado, Long> {
 			+ "on uo.id_empleado_responsable = e.id where e.codigo_nivel1 = ?1"
 			+ "", nativeQuery = true)
 	List<Map<String, String>> findAreaByCodigoN1(String codigoNivel1);
+	
+	@Query(value = "select (CASE WHEN SUM(cantidad_subordinados) IS NULL THEN 0 ELSE SUM(cantidad_subordinados) end)  from  vacaciones.aprobador_vacaciones_primer_nivel where id = ?1", nativeQuery = true)
+	int obtenerCantidadSuborninadosNivel1(long idEmpleado);
+	
+	@Query(value = "select (CASE WHEN SUM(cantidad_subordinados) IS NULL THEN 0 ELSE SUM(cantidad_subordinados) end)  from  vacaciones.aprobador_vacaciones_segundo_nivel where id = ?1", nativeQuery = true)
+	int obtenerCantidadSuborninadosNivel2(long idEmpleado);
 
 }

@@ -41,6 +41,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.UnidadOperativa;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
+import pe.confianza.colaboradores.gcontenidos.server.util.FuncionalidadApp;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 @Service
@@ -250,6 +251,8 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 			Empleado empleado = buscarPorUsuarioBT(usuarioBT);
 			if(empleado.getId() == null)
 				throw new ModelNotFoundException("No existe el usuario " + usuarioBT);
+			int cantidadSubordinadosNivel1 = empleadoDao.obtenerCantidadSuborninadosNivel1(empleado.getId());
+			int cantidadSubordinadosNivel2 = empleadoDao.obtenerCantidadSuborninadosNivel2(empleado.getId());
 			List<ResponseAcceso> accesos = new ArrayList<>();
 			List<PerfilSpringApp> perfilesSpringApp = perfilStringAppDao.listarPorPerfilSpring(empleado.getPerfilSpring().getId());
 			List<FuncionalidadAcceso> funcionalidades = new ArrayList<>();
@@ -262,7 +265,11 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 				ResponseAcceso acceso = new ResponseAcceso();
 				acceso.setFuncionalidadCodigo(f.getFuncionalidad().getCodigo());
 				acceso.setFuncionalidadDescripcion(f.getFuncionalidad().getDescripcion());
-				acceso.setAprobar(f.isAprobar());
+				if(f.getFuncionalidad().getCodigo().equals(FuncionalidadApp.VACACIONES_PROGRAMACION.codigo) && ((cantidadSubordinadosNivel1 + cantidadSubordinadosNivel2 ) > 0) ) {
+					acceso.setAprobar(true);
+				} else {
+					acceso.setAprobar(f.isAprobar());
+				}
 				acceso.setConsultar(f.isConsultar());
 				acceso.setEliminar(f.isEliminar());
 				acceso.setModificar(f.isModificar());
