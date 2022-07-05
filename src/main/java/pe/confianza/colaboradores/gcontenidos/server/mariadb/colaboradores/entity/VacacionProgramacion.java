@@ -29,7 +29,7 @@ import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 					@StoredProcedureParameter(mode = ParameterMode.IN, name = "descripcionPuesto", type = String.class),
 					@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaInicioProgramacion", type = String.class),
 					@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaFinProgramacion", type = String.class),
-					@StoredProcedureParameter(mode = ParameterMode.IN, name = "idProgReprogramar", type = Long.class),
+					@StoredProcedureParameter(mode = ParameterMode.IN, name = "idProgReprogramar", type = Long.class ),
 					@StoredProcedureParameter(mode = ParameterMode.OUT, name = "cantidad", type = Long.class)
 			}),
 	@NamedStoredProcedureQuery(name = "VacacionProgramacion.programacionContarPorCorredorYPuesto",
