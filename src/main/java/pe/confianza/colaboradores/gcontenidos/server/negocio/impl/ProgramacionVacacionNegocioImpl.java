@@ -80,44 +80,55 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	@Override
 	public List<ResponseProgramacionVacacion> registro(RequestProgramacionVacacion programacion) {
 		LOGGER.info("[BEGIN] registro: {} - {} - {}", new Object[] { programacion.getUsuarioBT(), programacion.getFechaInicio(), programacion.getFechaFin() });
-		validarFechaRegistro(programacion.getFechaInicio());
-		Empleado empleado = empleadoService.buscarPorUsuarioBT(programacion.getUsuarioBT().trim());
-		if (empleado == null)
-			throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", programacion.getUsuarioBT()));
-		validarEmpleado(empleado);
-		String usuarioOperacion = programacion.getUsuarioOperacion().trim();
-		VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(programacion);
-		vacacionProgramacion.setEstado(EstadoVacacion.REGISTRADO);
+		try {
+			validarFechaRegistro(programacion.getFechaInicio());
+			Empleado empleado = empleadoService.buscarPorUsuarioBT(programacion.getUsuarioBT().trim());
+			if (empleado == null)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", programacion.getUsuarioBT()));
+			validarEmpleado(empleado);
+			String usuarioOperacion = programacion.getUsuarioOperacion().trim();
+			VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(programacion);
+			vacacionProgramacion.setEstado(EstadoVacacion.REGISTRADO);
 
-		validarEmpleadoNuevo(vacacionProgramacion, empleado);
-		validarRangoFechas(vacacionProgramacion);
+			validarEmpleadoNuevo(vacacionProgramacion, empleado);
+			validarRangoFechas(vacacionProgramacion);
 
-		// --
-		List<VacacionProgramacion> programaciones = obtenerPeriodo(empleado, vacacionProgramacion);
-		programaciones.forEach(prog -> {
-			prog.setEstado(EstadoVacacion.REGISTRADO);
-			validarPoliticasRegulatorias(prog);
-			validarPoliticaBolsa(prog);
-			obtenerOrden(prog, usuarioOperacion);
-		});
-		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.registrar(programaciones, usuarioOperacion);
-		List<Long> idsProgRegistradas = programacionesRegistradas.stream().map(prog -> prog.getId()).collect(Collectors.toList());
-		List<Long> idsPeriodosModificados = programacionesRegistradas.stream().map(prog -> prog.getPeriodo().getId()).distinct().collect(Collectors.toList());
-		idsPeriodosModificados.forEach(periodoId -> {
-			actualizarPeriodo(empleado, periodoId, usuarioOperacion);
-		});
-		programacionesRegistradas.forEach(p -> {
-			actualizarMeta(parametrosConstants.getMetaVacacionAnio(), p, false, usuarioOperacion);
-		});
+			// --
+			List<VacacionProgramacion> programaciones = obtenerPeriodo(empleado, vacacionProgramacion);
+			programaciones.forEach(prog -> {
+				prog.setEstado(EstadoVacacion.REGISTRADO);
+				validarPoliticasRegulatorias(prog);
+				validarPoliticaBolsa(prog);
+				obtenerOrden(prog, usuarioOperacion);
+			});
+			List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.registrar(programaciones, usuarioOperacion);
+			List<Long> idsProgRegistradas = programacionesRegistradas.stream().map(prog -> prog.getId()).collect(Collectors.toList());
+			List<Long> idsPeriodosModificados = programacionesRegistradas.stream().map(prog -> prog.getPeriodo().getId()).distinct().collect(Collectors.toList());
+			idsPeriodosModificados.forEach(periodoId -> {
+				actualizarPeriodo(empleado, periodoId, usuarioOperacion);
+			});
+			programacionesRegistradas.forEach(p -> {
+				actualizarMeta(parametrosConstants.getMetaVacacionAnio(), p, false, usuarioOperacion);
+			});
 
-		programacionesRegistradas = new ArrayList<>();
-		for (Long idProgramacion : idsProgRegistradas) {
-			programacionesRegistradas.add(vacacionProgramacionService.buscarPorId(idProgramacion));
+			programacionesRegistradas = new ArrayList<>();
+			for (Long idProgramacion : idsProgRegistradas) {
+				programacionesRegistradas.add(vacacionProgramacionService.buscarPorId(idProgramacion));
+			}
+			LOGGER.info("[END] registro");
+			return programacionesRegistradas.stream().map(p -> {
+				return VacacionProgramacionMapper.convert(p, parametrosConstants);
+			}).collect(Collectors.toList());
+		} catch (ModelNotFoundException e) {
+			LOGGER.error("[ERROR] registro", e);
+			throw new ModelNotFoundException(e.getMessage()); 
+		} catch (AppException e) {
+			LOGGER.error("[ERROR] registro", e);
+			throw new AppException(e.getMessage(), e);
+		} catch (Exception e) {
+			LOGGER.error("[ERROR] registro", e);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
 		}
-		LOGGER.info("[END] registro");
-		return programacionesRegistradas.stream().map(p -> {
-			return VacacionProgramacionMapper.convert(p, parametrosConstants);
-		}).collect(Collectors.toList());
 	}
 
 	@Override
@@ -173,139 +184,183 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	@Override
 	public void cancelar(RequestCancelarProgramacionVacacion cancelacion) {
 		LOGGER.info("[BEGIN] cancelar");
-		Empleado empleado = empleadoService.buscarPorUsuarioBT(cancelacion.getUsuarioOperacion().trim());
-		if (empleado == null)
-			throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe",
-					new String[] { cancelacion.getUsuarioOperacion() }));
-		LocalDate ahora = LocalDate.now();
-		validarPeriodoRegistro(ahora);
-		VacacionProgramacion programacion = vacacionProgramacionService.buscarPorId(cancelacion.getIdProgramacion());
-		if (programacion.getPeriodo().getEmpleado().getId() != empleado.getId())
-			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.cancelar.sin_permiso", cancelacion.getUsuarioOperacion()));
-		if (programacion.getIdEstado() != EstadoVacacion.REGISTRADO.id)
-			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.cancelar.estado_error", parametrosConstants.getEstadoProgramacionDescripcion(EstadoVacacion.REGISTRADO.id)));
-		long idPeriodo = programacion.getPeriodo().getId();
-		vacacionProgramacionService.eliminar(cancelacion.getIdProgramacion(), cancelacion.getUsuarioOperacion());
-		actualizarPeriodo(empleado, idPeriodo, cancelacion.getUsuarioOperacion());
-		actualizarMeta(parametrosConstants.getMetaVacacionAnio(), programacion, true, cancelacion.getUsuarioOperacion().trim());
-		LOGGER.info("[END] cancelar");
+		try {
+			Empleado empleado = empleadoService.buscarPorUsuarioBT(cancelacion.getUsuarioOperacion().trim());
+			if (empleado == null)
+				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe",
+						new String[] { cancelacion.getUsuarioOperacion() }));
+			LocalDate ahora = LocalDate.now();
+			validarPeriodoRegistro(ahora);
+			VacacionProgramacion programacion = vacacionProgramacionService.buscarPorId(cancelacion.getIdProgramacion());
+			if (programacion.getPeriodo().getEmpleado().getId() != empleado.getId())
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.cancelar.sin_permiso", cancelacion.getUsuarioOperacion()));
+			if (programacion.getIdEstado() != EstadoVacacion.REGISTRADO.id)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.cancelar.estado_error", parametrosConstants.getEstadoProgramacionDescripcion(EstadoVacacion.REGISTRADO.id)));
+			long idPeriodo = programacion.getPeriodo().getId();
+			vacacionProgramacionService.eliminar(cancelacion.getIdProgramacion(), cancelacion.getUsuarioOperacion());
+			actualizarPeriodo(empleado, idPeriodo, cancelacion.getUsuarioOperacion());
+			actualizarMeta(parametrosConstants.getMetaVacacionAnio(), programacion, true, cancelacion.getUsuarioOperacion().trim());
+			LOGGER.info("[END] cancelar");
+		} catch (ModelNotFoundException e) {
+			LOGGER.error("[ERROR] registro", e);
+			throw new ModelNotFoundException(e.getMessage()); 
+		} catch (AppException e) {
+			LOGGER.error("[ERROR] registro", e);
+			throw new AppException(e.getMessage(), e);
+		} catch (Exception e) {
+			LOGGER.error("[ERROR] registro", e);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
+		}
 	}
 
 	@Override
 	public List<ResponseProgramacionVacacion> generar(RequestGenerarProgramacionVacacion request) {
 		LOGGER.info("[BEGIN] generar");
-		Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioOperacion().trim());
-		if (empleado == null)
-			throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", request.getUsuarioOperacion()));
-		LocalDate ahora = LocalDate.now();
-		validarPeriodoRegistro(ahora);
-		List<VacacionProgramacion> programacionesGenerar = vacacionProgramacionService.buscarPorUsuarioBTYEstado(request.getUsuarioOperacion().trim(), EstadoVacacion.REGISTRADO);
-		List<ResponseProgramacionVacacion> response = new ArrayList<>();
-		for (VacacionProgramacion programacion : programacionesGenerar) {
-			programacion.setEstado(EstadoVacacion.GENERADO);
-			programacion = vacacionProgramacionService.actualizar(programacion, request.getUsuarioOperacion());
-			response.add(VacacionProgramacionMapper.convert(programacion, parametrosConstants));
+		try {
+			Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioOperacion().trim());
+			if (empleado == null)
+				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", request.getUsuarioOperacion()));
+			LocalDate ahora = LocalDate.now();
+			validarPeriodoRegistro(ahora);
+			List<VacacionProgramacion> programacionesGenerar = vacacionProgramacionService.buscarPorUsuarioBTYEstado(request.getUsuarioOperacion().trim(), EstadoVacacion.REGISTRADO);
+			List<ResponseProgramacionVacacion> response = new ArrayList<>();
+			for (VacacionProgramacion programacion : programacionesGenerar) {
+				programacion.setEstado(EstadoVacacion.GENERADO);
+				programacion = vacacionProgramacionService.actualizar(programacion, request.getUsuarioOperacion());
+				response.add(VacacionProgramacionMapper.convert(programacion, parametrosConstants));
+			}
+			actualizarPeriodo(empleado, request.getUsuarioOperacion());
+			consolidarMetaAnual(empleado, parametrosConstants.getMetaVacacionAnio(), request.getUsuarioOperacion());
+			// actualizarMeta(empleado, ahora.getYear() + 1, 0,
+			// request.getUsuarioOperacion());
+			LOGGER.info("[END] generar");
+			return response;
+		} catch (ModelNotFoundException e) {
+			LOGGER.error("[ERROR] registro", e);
+			throw new ModelNotFoundException(e.getMessage()); 
+		} catch (AppException e) {
+			LOGGER.error("[ERROR] registro", e);
+			throw new AppException(e.getMessage(), e);
+		} catch (Exception e) {
+			LOGGER.error("[ERROR] registro", e);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
 		}
-		actualizarPeriodo(empleado, request.getUsuarioOperacion());
-		consolidarMetaAnual(empleado, parametrosConstants.getMetaVacacionAnio(), request.getUsuarioOperacion());
-		// actualizarMeta(empleado, ahora.getYear() + 1, 0,
-		// request.getUsuarioOperacion());
-		LOGGER.info("[END] generar");
-		return response;
 	}
 
 	@Override
 	public List<ResponseProgramacionVacacion> consultar(RequestListarVacacionProgramacion request) {
 		LOGGER.info("[BEGIN] consultar");
-		Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioBT());
-		if (empleado == null)
-			throw new ModelNotFoundException("No existe el usuario " + request.getUsuarioBT());
-		List<VacacionProgramacion> lstProgramacion = new ArrayList<>();
-		EstadoVacacion estadoSeleccionado = null;
-		if (!StringUtils.isEmpty(request.getIdEstado()))
-			estadoSeleccionado = EstadoVacacion.getEstado(request.getIdEstado());
+		try {
+			Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioBT());
+			if (empleado == null)
+				throw new ModelNotFoundException("No existe el usuario " + request.getUsuarioBT());
+			List<VacacionProgramacion> lstProgramacion = new ArrayList<>();
+			EstadoVacacion estadoSeleccionado = null;
+			if (!StringUtils.isEmpty(request.getIdEstado()))
+				estadoSeleccionado = EstadoVacacion.getEstado(request.getIdEstado());
 
-		if (estadoSeleccionado == null && StringUtils.isEmpty(request.getPeriodo()))
-			lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBT(request.getUsuarioBT().trim());
-		if (estadoSeleccionado != null && !StringUtils.isEmpty(request.getPeriodo()))
-			lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBTYPeriodoYEstado(
-					request.getUsuarioBT().trim(), request.getPeriodo().trim(), estadoSeleccionado);
-		if (estadoSeleccionado == null && !StringUtils.isEmpty(request.getPeriodo()))
-			lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBTYPeriodo(request.getUsuarioBT().trim(),
-					request.getPeriodo().trim());
-		if (estadoSeleccionado != null && StringUtils.isEmpty(request.getPeriodo()))
-			lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBTYEstado(request.getUsuarioBT().trim(),
-					estadoSeleccionado);
-		lstProgramacion.sort(Comparator.comparing(VacacionProgramacion::getFechaInicio));
-		LOGGER.info("[END] consultar");
-		return lstProgramacion.stream().map(p -> {
-			return VacacionProgramacionMapper.convert(p, parametrosConstants);
-		}).collect(Collectors.toList());
+			if (estadoSeleccionado == null && StringUtils.isEmpty(request.getPeriodo()))
+				lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBT(request.getUsuarioBT().trim());
+			if (estadoSeleccionado != null && !StringUtils.isEmpty(request.getPeriodo()))
+				lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBTYPeriodoYEstado(
+						request.getUsuarioBT().trim(), request.getPeriodo().trim(), estadoSeleccionado);
+			if (estadoSeleccionado == null && !StringUtils.isEmpty(request.getPeriodo()))
+				lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBTYPeriodo(request.getUsuarioBT().trim(),
+						request.getPeriodo().trim());
+			if (estadoSeleccionado != null && StringUtils.isEmpty(request.getPeriodo()))
+				lstProgramacion = vacacionProgramacionService.buscarPorUsuarioBTYEstado(request.getUsuarioBT().trim(),
+						estadoSeleccionado);
+			lstProgramacion.sort(Comparator.comparing(VacacionProgramacion::getFechaInicio));
+			LOGGER.info("[END] consultar");
+			return lstProgramacion.stream().map(p -> {
+				return VacacionProgramacionMapper.convert(p, parametrosConstants);
+			}).collect(Collectors.toList());
+		} catch (ModelNotFoundException e) {
+			LOGGER.error("[ERROR] registro", e);
+			throw new ModelNotFoundException(e.getMessage()); 
+		} catch (AppException e) {
+			LOGGER.error("[ERROR] registro", e);
+			throw new AppException(e.getMessage(), e);
+		} catch (Exception e) {
+			LOGGER.error("[ERROR] registro", e);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
+		}
 	}
 
 	@Override
 	public ResponseResumenVacacion consultar(RequestResumenVacaciones request) {
 		LOGGER.info("[BEGIN] consultar");
-		Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioBT());
-		if (empleado == null)
-			throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe",
-					new String[] { request.getUsuarioBT() }));
+		try {
+			Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioBT());
+			if (empleado == null)
+				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe",
+						new String[] { request.getUsuarioBT() }));
 
-		LocalDate fechaConsulta = LocalDate.now();
-		VacacionMeta meta = vacacionMetaService.obtenerVacacionPorAnio(parametrosConstants.getMetaVacacionAnio(), empleado.getId());
-		if (meta == null)
-			throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe",
-					new String[] { request.getUsuarioBT() }));
-		LocalDate fechaCorte = parametrosConstants.getFechaCorteMeta();
-		ResponseResumenVacacion response = new ResponseResumenVacacion();
-		response.setFechaConsulta(fechaConsulta);
-		response.setFechaCorte(fechaCorte);
-		response.setNombres(empleado.getNombres());
-		response.setApellidoPaterno(empleado.getApellidoPaterno());
-		response.setApellidoMaterno(empleado.getApellidoMaterno());
-		response.setFechaInicioLabores(empleado.getFechaIngreso());
-		response.setFechaFinLabores(empleado.getFechaFinContrato());
-		response.setCargo(empleado.getPuesto().getDescripcion().trim());
-		response.setMeta(meta.getMeta() < 1.0 ? 0.0 : Utilitario.redondearMeta(meta.getMeta()));
-		response.setFechaInicioRegistroProgramacion(parametrosConstants.getFechaInicioRegistroProgramacion());
-		response.setFechaFinRegistroProgramacion(parametrosConstants.getFechaFinRegistroProgramacion());
+			LocalDate fechaConsulta = LocalDate.now();
+			VacacionMeta meta = vacacionMetaService.obtenerVacacionPorAnio(parametrosConstants.getMetaVacacionAnio(), empleado.getId());
+			if (meta == null)
+				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe",
+						new String[] { request.getUsuarioBT() }));
+			LocalDate fechaCorte = parametrosConstants.getFechaCorteMeta();
+			ResponseResumenVacacion response = new ResponseResumenVacacion();
+			response.setFechaConsulta(fechaConsulta);
+			response.setFechaCorte(fechaCorte);
+			response.setNombres(empleado.getNombres());
+			response.setApellidoPaterno(empleado.getApellidoPaterno());
+			response.setApellidoMaterno(empleado.getApellidoMaterno());
+			response.setFechaInicioLabores(empleado.getFechaIngreso());
+			response.setFechaFinLabores(empleado.getFechaFinContrato());
+			response.setCargo(empleado.getPuesto().getDescripcion().trim());
+			response.setMeta(meta.getMeta() < 1.0 ? 0.0 : Utilitario.redondearMeta(meta.getMeta()));
+			response.setFechaInicioRegistroProgramacion(parametrosConstants.getFechaInicioRegistroProgramacion());
+			response.setFechaFinRegistroProgramacion(parametrosConstants.getFechaFinRegistroProgramacion());
 
-		response.setAnio(meta.getAnio());
+			response.setAnio(meta.getAnio());
 
-		ResponseResumenPeriodoVacacion periodoTrunco = null;
-		ResponseResumenPeriodoVacacion periodoVencido = null;
+			ResponseResumenPeriodoVacacion periodoTrunco = null;
+			ResponseResumenPeriodoVacacion periodoVencido = null;
 
-		if (meta.getPeriodoVencido() != null) {
-			PeriodoVacacion periodo = meta.getPeriodoVencido();
-			VacacionProgramacion ultimaProgramacion = vacacionProgramacionService.obtenerUltimaProgramacion(periodo.getId());
-			periodoVencido = new ResponseResumenPeriodoVacacion();
-			periodoVencido.setDescripcion(periodo.getDescripcion());
-			periodoVencido.setDias(Utilitario.redondearMeta(meta.getDiasVencidos()));
-			periodoVencido.setFechaLimite(periodo.getFechaLimiteIndemnizacion());
-			periodoVencido.setUltimoTramo(ultimaProgramacion == null ? 0 : ultimaProgramacion.getOrden());
+			if (meta.getPeriodoVencido() != null) {
+				PeriodoVacacion periodo = meta.getPeriodoVencido();
+				VacacionProgramacion ultimaProgramacion = vacacionProgramacionService.obtenerUltimaProgramacion(periodo.getId());
+				periodoVencido = new ResponseResumenPeriodoVacacion();
+				periodoVencido.setDescripcion(periodo.getDescripcion());
+				periodoVencido.setDias(Utilitario.redondearMeta(meta.getDiasVencidos()));
+				periodoVencido.setFechaLimite(periodo.getFechaLimiteIndemnizacion());
+				periodoVencido.setUltimoTramo(ultimaProgramacion == null ? 0 : ultimaProgramacion.getOrden());
+			}
+
+			if (meta.getPeriodoTrunco() != null) {
+				PeriodoVacacion periodo = meta.getPeriodoTrunco();
+				VacacionProgramacion ultimaProgramacion = vacacionProgramacionService
+						.obtenerUltimaProgramacion(periodo.getId());
+				periodoTrunco = new ResponseResumenPeriodoVacacion();
+				periodoTrunco.setDescripcion(periodo.getDescripcion());
+				periodoTrunco.setDias(Utilitario.redondearMeta(meta.getDiasTruncos()));
+				periodoTrunco.setFechaLimite(periodo.getFechaLimiteIndemnizacion());
+				periodoTrunco.setUltimoTramo(ultimaProgramacion == null ? 0 : ultimaProgramacion.getOrden());
+			}
+
+			response.setPeriodoTrunco(periodoTrunco);
+			response.setPeriodoVencido(periodoVencido);
+
+			if (response.getMeta() == 0.0) {
+				response.setSolicitar(true);
+			} else {
+				response.setSolicitar(false);
+			}
+			LOGGER.info("[BEGIN] consultar");
+			return response;
+		} catch (ModelNotFoundException e) {
+			LOGGER.error("[ERROR] registro", e);
+			throw new ModelNotFoundException(e.getMessage()); 
+		} catch (AppException e) {
+			LOGGER.error("[ERROR] registro", e);
+			throw new AppException(e.getMessage(), e);
+		} catch (Exception e) {
+			LOGGER.error("[ERROR] registro", e);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
 		}
-
-		if (meta.getPeriodoTrunco() != null) {
-			PeriodoVacacion periodo = meta.getPeriodoTrunco();
-			VacacionProgramacion ultimaProgramacion = vacacionProgramacionService
-					.obtenerUltimaProgramacion(periodo.getId());
-			periodoTrunco = new ResponseResumenPeriodoVacacion();
-			periodoTrunco.setDescripcion(periodo.getDescripcion());
-			periodoTrunco.setDias(Utilitario.redondearMeta(meta.getDiasTruncos()));
-			periodoTrunco.setFechaLimite(periodo.getFechaLimiteIndemnizacion());
-			periodoTrunco.setUltimoTramo(ultimaProgramacion == null ? 0 : ultimaProgramacion.getOrden());
-		}
-
-		response.setPeriodoTrunco(periodoTrunco);
-		response.setPeriodoVencido(periodoVencido);
-
-		if (response.getMeta() == 0.0) {
-			response.setSolicitar(true);
-		} else {
-			response.setSolicitar(false);
-		}
-		LOGGER.info("[BEGIN] consultar");
-		return response;
 	}
 
 	@Override
