@@ -4,6 +4,7 @@ public class ResponseTipoNotificacion {
 	
 	private String codigo;
 	private String descripcion;
+	private String descripcionExtendida;
 	
 	public String getCodigo() {
 		return codigo;
@@ -16,6 +17,12 @@ public class ResponseTipoNotificacion {
 	}
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
+	}
+	public String getDescripcionExtendida() {
+		return descripcionExtendida;
+	}
+	public void setDescripcionExtendida(String descripcionExtendida) {
+		this.descripcionExtendida = descripcionExtendida;
 	}
 	
 	

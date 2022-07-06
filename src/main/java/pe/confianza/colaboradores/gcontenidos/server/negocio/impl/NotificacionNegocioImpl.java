@@ -35,6 +35,7 @@ public class NotificacionNegocioImpl implements NotificacionNegocio {
 			ResponseTipoNotificacion response = new ResponseTipoNotificacion();
 			response.setCodigo(t.getCodigo());
 			response.setDescripcion(t.getDescripcion());
+			response.setDescripcionExtendida(t.getDescripcionExtendida());
 			return response;
 		}).collect(Collectors.toList());
 	}
