@@ -32,6 +32,8 @@ public interface NotificacionService {
 	
 	Optional<NotificacionTipo> obtenerTipoNotificacion(String codigo);
 	
+	Notificacion obtenerPorId(long id);
+	
 	
 
 }

@@ -157,6 +157,14 @@ public class NotificacionServiceImpl implements NotificacionService{
 	public Optional<NotificacionTipo> obtenerTipoNotificacion(String codigo) {
 		return notificacionTipoDao.findOneByCodigo(codigo);
 	}
+
+	@Override
+	public Notificacion obtenerPorId(long id) {
+		Optional<Notificacion> opt = notificacionDao.findById(id);
+		if(opt.isPresent())
+			return opt.get();
+		return null;
+	}
 	
 	
 

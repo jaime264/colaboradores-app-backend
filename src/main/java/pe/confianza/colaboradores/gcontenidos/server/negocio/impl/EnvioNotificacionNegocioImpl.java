@@ -48,13 +48,16 @@ public class EnvioNotificacionNegocioImpl implements EnvioNotificacionNegocio {
 
 	@Override
 	public void enviarNotificacionCorreo(Notificacion notificacion) {
-		notificacionService.enviarNotificacionCorreo(notificacion);
-		
+		Notificacion not = notificacionService.obtenerPorId(notificacion.getId());
+		if(not != null) 
+			notificacionService.enviarNotificacionCorreo(not);		
 	}
 
 	@Override
 	public void enviarNotificacionApp(Notificacion notificacion) {
-		notificacionService.enviarNotificacionApp(notificacion);
+		Notificacion not = notificacionService.obtenerPorId(notificacion.getId());
+		if(not != null)
+			notificacionService.enviarNotificacionApp(not);
 	}
 
 	

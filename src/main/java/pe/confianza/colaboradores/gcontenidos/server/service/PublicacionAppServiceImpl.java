@@ -411,6 +411,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			});
 			
 			envioNotificacionNegocio.enviarNotificacionesApp(notificaciones);
+			envioNotificacionNegocio.enviarNotificacionesCorreo(notificaciones);
 		} catch (Exception e) {
 			logger.error("[ERROR] registro", e);
 			throw new AppException("Ocurrió un error al registrar usuario y notificación", e);
