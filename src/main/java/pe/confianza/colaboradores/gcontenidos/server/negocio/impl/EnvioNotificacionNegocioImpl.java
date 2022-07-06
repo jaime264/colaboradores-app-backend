@@ -65,7 +65,7 @@ public class EnvioNotificacionNegocioImpl implements EnvioNotificacionNegocio {
 	public void enviarNotificacionesCorreo(TipoNotificacion tipoNotificacion) {
 		List<Notificacion> notificaciones = notificacionService.listarNotificacionesPorTipoNoEnviadasCorreo(tipoNotificacion.valor);
 		for (Notificacion notificacion : notificaciones) {
-			enviarNotificacionApp(notificacion);
+			enviarNotificacionCorreo(notificacion);
 		}
 	}
 

@@ -45,7 +45,7 @@ public class EmailUtil {
 	}
 	
 	public boolean enviarEmail(Mail mail) {
-		LOGGER.info("[BEGIN] enviarEmail");
+		LOGGER.info("[BEGIN] enviarEmail " + mail.toString());
 		try {
 			 MimeMessage message = emailSender.createMimeMessage();
 	            MimeMessageHelper helper = new MimeMessageHelper(message,

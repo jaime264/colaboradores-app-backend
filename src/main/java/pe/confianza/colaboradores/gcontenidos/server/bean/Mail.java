@@ -33,7 +33,9 @@ public class Mail {
 	public void setContenido(Map<String, Object> contenido) {
 		this.contenido = contenido;
 	}
-	
-	
+	@Override
+	public String toString() {
+		return "Mail [emisor=" + emisor + ", asunto=" + asunto + "]";
+	}	
 
 }

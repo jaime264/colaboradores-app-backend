@@ -168,23 +168,27 @@ public class NotificacionServiceImpl implements NotificacionService {
 
 	@Override
 	public List<Notificacion> listarNotificacionesPorTipoNoEnviadasCorreo(String codigoTipo) {
+		logger.info("[BEGIN] listarNotificacionesPorTipoNoEnviadasCorreo " + codigoTipo);
 		Optional<NotificacionTipo> opt = obtenerTipoNotificacion(codigoTipo);
 		List<Notificacion> notificacionesPendientes = null;
 		if(opt.isPresent()) {
 			notificacionesPendientes = notificacionDao.listarNotificacionesPorTipoNoEnviadasCorreo(opt.get().getId());
 		}
 		notificacionesPendientes = notificacionesPendientes == null ? new ArrayList<>() : notificacionesPendientes;
+		logger.info("[END] listarNotificacionesPorTipoNoEnviadasCorreo " + notificacionesPendientes.size());
 		return notificacionesPendientes;
 	}
 
 	@Override
 	public List<Notificacion> listarNotificacionesPorTipoNoEnviadasApp(String codigoTipo) {
+		logger.info("[BEGIN] listarNotificacionesPorTipoNoEnviadasApp " + codigoTipo);
 		Optional<NotificacionTipo> opt = obtenerTipoNotificacion(codigoTipo);
 		List<Notificacion> notificacionesPendientes = null;
 		if(opt.isPresent()) {
 			 notificacionesPendientes = notificacionDao.listarNotificacionesPorTipoNoEnviadasApp(opt.get().getId());
 		}
 		notificacionesPendientes = notificacionesPendientes == null ? new ArrayList<>() : notificacionesPendientes;
+		logger.info("[END] listarNotificacionesPorTipoNoEnviadasApp " + notificacionesPendientes.size());
 		return notificacionesPendientes;
 	}
 	
