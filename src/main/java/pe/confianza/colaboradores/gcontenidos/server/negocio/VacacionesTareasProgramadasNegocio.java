@@ -8,6 +8,18 @@ public interface VacacionesTareasProgramadasNegocio {
 	
 	void consolidarMetasAnuales();
 	
-	void notificarHabilitacionRegistroProgramacion();
-
+	void registroNotificacionesInicioRegistroProgramacion();
+	
+	void registroNotificacionesMetaNoCumplida();
+	
+	void registroNotificacionesSinRegistroProgramacion();
+	
+	void registroNotificacionesJefeColaboradoresSinRegistroProgramacion();
+	
+	void registroNotificacionJefePendienteAprobacionProgramacion();
+	
+	void enviarNotificacionesAppPendienteVacaciones();
+	
+	void enviarNotificacionesCorreoPendienteVacaciones();
+	
 }

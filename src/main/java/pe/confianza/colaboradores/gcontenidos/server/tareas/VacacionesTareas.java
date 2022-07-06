@@ -41,10 +41,23 @@ public class VacacionesTareas {
 		LOGGER.info("[END] calcularMetaAnual " + LocalDate.now());
 	}
 	
-	public void notificarHabilitacionRegistroProgramacion() {
-		vacacionesTareasProgramadasService.notificarHabilitacionRegistroProgramacion();
+	@Scheduled(cron = "${vacaciones.programacion.registro_notificaciones}")
+	public void registrarNotificacionesVacaciones() {
+		LOGGER.info("[BEGIN] registrarNotificacionesVacaciones " + LocalDate.now());
+		vacacionesTareasProgramadasService.registroNotificacionesInicioRegistroProgramacion();
+		vacacionesTareasProgramadasService.registroNotificacionesMetaNoCumplida();
+		vacacionesTareasProgramadasService.registroNotificacionesSinRegistroProgramacion();
+		vacacionesTareasProgramadasService.registroNotificacionesJefeColaboradoresSinRegistroProgramacion();
+		vacacionesTareasProgramadasService.registroNotificacionJefePendienteAprobacionProgramacion();
+		LOGGER.info("[END] registrarNotificacionesVacaciones " + LocalDate.now());
 	}
 	
-	
+	@Scheduled(cron = "0 0/5 * * * ?")
+	public void enviarNotificacionesVacaciones() {
+		LOGGER.info("[BEGIN] enviarNotificacionesVacaciones " + LocalDate.now());
+		vacacionesTareasProgramadasService.enviarNotificacionesAppPendienteVacaciones();
+		vacacionesTareasProgramadasService.enviarNotificacionesCorreoPendienteVacaciones();
+		LOGGER.info("[END] enviarNotificacionesVacaciones " + LocalDate.now());
+	}
 	
 }

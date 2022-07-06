@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseTerminosCondiciones;
@@ -27,5 +28,7 @@ public interface EmpleadoService {
 	Empleado getEmpleadoCorredorTerritorioBt(String usuarioBT);
 	
 	List<ResponseAcceso> consultaAccesos(String usuarioBT);
+	
+	Optional<Empleado> buscarPorId(long id);
 
 }

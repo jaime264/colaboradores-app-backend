@@ -32,7 +32,7 @@ import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.util.FirebaseCloudMessagingClient;
 
 @Service
-public class NotificacionServiceImpl implements NotificacionService{
+public class NotificacionServiceImpl implements NotificacionService {
 	
 	private static Logger logger = LoggerFactory.getLogger(NotificacionServiceImpl.class);
 
@@ -164,6 +164,28 @@ public class NotificacionServiceImpl implements NotificacionService{
 		if(opt.isPresent())
 			return opt.get();
 		return null;
+	}
+
+	@Override
+	public List<Notificacion> listarNotificacionesPorTipoNoEnviadasCorreo(String codigoTipo) {
+		Optional<NotificacionTipo> opt = obtenerTipoNotificacion(codigoTipo);
+		List<Notificacion> notificacionesPendientes = null;
+		if(opt.isPresent()) {
+			notificacionesPendientes = notificacionDao.listarNotificacionesPorTipoNoEnviadasCorreo(opt.get().getId());
+		}
+		notificacionesPendientes = notificacionesPendientes == null ? new ArrayList<>() : notificacionesPendientes;
+		return notificacionesPendientes;
+	}
+
+	@Override
+	public List<Notificacion> listarNotificacionesPorTipoNoEnviadasApp(String codigoTipo) {
+		Optional<NotificacionTipo> opt = obtenerTipoNotificacion(codigoTipo);
+		List<Notificacion> notificacionesPendientes = null;
+		if(opt.isPresent()) {
+			 notificacionesPendientes = notificacionDao.listarNotificacionesPorTipoNoEnviadasApp(opt.get().getId());
+		}
+		notificacionesPendientes = notificacionesPendientes == null ? new ArrayList<>() : notificacionesPendientes;
+		return notificacionesPendientes;
 	}
 	
 	

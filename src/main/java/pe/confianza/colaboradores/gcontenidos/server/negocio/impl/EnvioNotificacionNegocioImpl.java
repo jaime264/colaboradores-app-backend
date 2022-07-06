@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Notificacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.EnvioNotificacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.NotificacionService;
+import pe.confianza.colaboradores.gcontenidos.server.util.TipoNotificacion;
 
 @Service
 public class EnvioNotificacionNegocioImpl implements EnvioNotificacionNegocio {
@@ -60,6 +61,20 @@ public class EnvioNotificacionNegocioImpl implements EnvioNotificacionNegocio {
 			notificacionService.enviarNotificacionApp(not);
 	}
 
-	
+	@Override
+	public void enviarNotificacionesCorreo(TipoNotificacion tipoNotificacion) {
+		List<Notificacion> notificaciones = notificacionService.listarNotificacionesPorTipoNoEnviadasCorreo(tipoNotificacion.valor);
+		for (Notificacion notificacion : notificaciones) {
+			enviarNotificacionApp(notificacion);
+		}
+	}
+
+	@Override
+	public void enviarNotificacionesApp(TipoNotificacion tipoNotificacion) {
+		List<Notificacion> notificaciones = notificacionService.listarNotificacionesPorTipoNoEnviadasApp(tipoNotificacion.valor);
+		for (Notificacion notificacion : notificaciones) {
+			enviarNotificacionApp(notificacion);
+		}
+	}
 
 }

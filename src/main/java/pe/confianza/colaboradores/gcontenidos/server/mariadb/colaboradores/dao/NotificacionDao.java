@@ -21,5 +21,13 @@ public interface NotificacionDao extends JpaRepository<Notificacion, Long> {
 	
 	@Query("SELECT n FROM Notificacion n where n.estadoRegistro = 'A' AND n.enviadoApp = false ORDER BY fechaCrea desc")
 	List<Notificacion> listarNotificacionesNoEnviadasApp();
+	
+	@Query("SELECT n FROM Notificacion n where n.estadoRegistro = 'A' AND n.enviadoCorreo = false AND n.tipo.id = ?1 ORDER BY fechaCrea desc")
+	List<Notificacion> listarNotificacionesPorTipoNoEnviadasCorreo(long idTipo);
+	
+	@Query("SELECT n FROM Notificacion n where n.estadoRegistro = 'A' AND n.enviadoApp = false AND n.tipo.id = ?1 ORDER BY fechaCrea desc")
+	List<Notificacion> listarNotificacionesPorTipoNoEnviadasApp(long idTipo);
+	
+	
 
 }

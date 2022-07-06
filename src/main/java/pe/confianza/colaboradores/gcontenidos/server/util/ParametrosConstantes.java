@@ -18,7 +18,7 @@ public class ParametrosConstantes {
 		public static final String[] ESTADOS_PROGRAMACION;
 		public static final String DIAS_MAXIMO_VACACIONES_ADELANTADAS = "PARAMVAC012";
 		public static final String MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS = "PARAMVAC013";
-		public static final String HORA_ENVIO_NOTIFICACIONES = "PARAMVAC022";
+		public static final String DIAS_INTERVALO_NOTIFICACIONES = "PARAMVAC022";
 		
 		static {
 			ESTADOS_PROGRAMACION = new String[] {"PARAMVAC006", "PARAMVAC007", "PARAMVAC008", "PARAMVAC009", "PARAMVAC010", "PARAMVAC011" };

@@ -34,6 +34,8 @@ public interface NotificacionService {
 	
 	Notificacion obtenerPorId(long id);
 	
+	List<Notificacion> listarNotificacionesPorTipoNoEnviadasCorreo(String codigoTipo);
 	
+	List<Notificacion> listarNotificacionesPorTipoNoEnviadasApp(String codigoTipo);
 
 }

@@ -291,4 +291,10 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		}
 	}
 
+
+	@Override
+	public Optional<Empleado> buscarPorId(long id) {
+		return empleadoDao.findById(id);
+	}
+
 }
