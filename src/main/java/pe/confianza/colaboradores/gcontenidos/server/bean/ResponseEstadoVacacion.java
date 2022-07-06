@@ -4,6 +4,7 @@ public class ResponseEstadoVacacion {
 	
 	private int codigo;
 	private String descripcion;
+	private String leyenda;
 	
 	public int getCodigo() {
 		return codigo;
@@ -16,6 +17,12 @@ public class ResponseEstadoVacacion {
 	}
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
+	}
+	public String getLeyenda() {
+		return leyenda;
+	}
+	public void setLeyenda(String leyenda) {
+		this.leyenda = leyenda;
 	}
 	
 	

@@ -9,6 +9,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.Mail;
@@ -21,6 +22,7 @@ import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacio
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.EmailUtil;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
+import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 
 @Service
@@ -45,6 +47,9 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 	
 	@Autowired
 	private EmailUtil emailUtil;
+	
+	@Autowired
+	private MessageSource messageSource;
 
 	@Override
 	public void actualizarEstadoProgramaciones() {
@@ -79,12 +84,15 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 
 	@Override
 	public void notificarHabilitacionRegistroProgramacion() {
-		/*final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		LocalDateTime ahora = LocalDateTime.now();
-		Integer horaEnvioNotificacion = parametrosConstants.getHoraEnvioNotificacionVacaciones();
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		/*LocalDateTime ahora = LocalDateTime.now();
+		Integer horaEnvioNotificacion = cargaParametros.getHoraEnvioNotificacionVacaciones();
 		LocalDateTime horaEnvio = LocalDateTime.parse(ahora.getYear() + "-" + ahora.getMonthValue() + "-" + ahora.getDayOfMonth() + " " + horaEnvioNotificacion + ":00:00", formatter);
 		LocalDateTime horaEnvioMax = horaEnvio.plusMinutes(10).plusMinutes(59);
 		if(ahora.isAfter(horaEnvio) && ahora.isBefore(horaEnvioMax)) {
+			String mensaje = Utilitario.obtenerMensaje(messageSource, "vacaciones.correo.inicio_programacion", new Object[] {
+				cargaParametros.getAnioPresente() + 1, cargaParametros.getFechaInicioRegistroProgramacion(), cargaParametros.getFechaFinRegistroProgramacion()
+			});
 			List<Empleado> lstEmpleado = empleadoService.listar();
 			lstEmpleado.forEach(e -> {
 				if(e.getEstadoRegistro().equals(EstadoRegistro.ACTIVO.valor)) {
@@ -92,7 +100,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 					mail.setAsunto("REGISTRO DE VACACIONES");
 					mail.setContenido(new HashMap<>());
 					mail.getContenido().put("empleado", "Hola, " + e.getNombres() + " " + e.getApellidoPaterno());
-					mail.getContenido().put("mensaje", "Estimado Colaborador, a partir del día de mañana 1ro de Noviemebre debes registrar tus  vacaciones para el año XXXX, tienes un plazo máximo hasta el 30 de noviembre para culminar esta actividad");
+					mail.getContenido().put("mensaje", mensaje);
 					mail.setReceptor(e.getEmail());
 					mail.setEmisor("desarrollofc@confianza.pe");
 					emailUtil.enviarEmail(mail);

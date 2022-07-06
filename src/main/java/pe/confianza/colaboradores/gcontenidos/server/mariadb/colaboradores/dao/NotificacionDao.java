@@ -1,5 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,5 +15,11 @@ public interface NotificacionDao extends JpaRepository<Notificacion, Long> {
 	
 	@Query("SELECT n FROM Notificacion n WHERE n.empleado.id = ?1 AND n.tipo.id = ?2 AND n.estadoRegistro = 'A' ORDER BY fechaCrea desc")
 	Page<Notificacion> consultar(long idEmpledo, long idTipo, Pageable pageable);
+	
+	@Query("SELECT n FROM Notificacion n where n.estadoRegistro = 'A' AND n.enviadoCorreo = false ORDER BY fechaCrea desc")
+	List<Notificacion> listarNotificacionesNoEnviadasCorreo();
+	
+	@Query("SELECT n FROM Notificacion n where n.estadoRegistro = 'A' AND n.enviadoApp = false ORDER BY fechaCrea desc")
+	List<Notificacion> listarNotificacionesNoEnviadasApp();
 
 }
