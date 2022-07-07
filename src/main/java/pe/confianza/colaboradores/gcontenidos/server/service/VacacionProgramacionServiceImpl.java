@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,6 +27,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.V
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
@@ -45,6 +45,9 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	@Autowired
 	private EmpleadoService empleadoService;
+	
+	@Autowired
+	private CargaParametros cargaParametros;
 
 	@Override
 	public void actualizarEstadoProgramaciones() {
@@ -368,13 +371,13 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 					emp.setPuesto(e.getPuesto().getDescripcion());
 					emp.setUsuarioBt(e.getUsuarioBT());
 
-					VacacionPeriodo vp = new VacacionPeriodo();
 					emp.setIdProgramacion(v.getId());
 					emp.setFechaInicio(v.getFechaInicio());
 					emp.setFechaFin(v.getFechaFin());
 					emp.setIdEstado(v.getIdEstado());
 					emp.setPeriodo(v.getPeriodo().getDescripcion());
 					emp.setAgencia(v.getPeriodo().getEmpleado().getAgencia().getDescripcion());
+					emp.setDescripcionEstado(cargaParametros.getEstadoProgramacionDescripcion(v.getEstado().id));
 					emp.setTerritorio(empleado.getTerritorios());
 					emp.setCorredor(empleado.getCorredores());
 					emp.setArea(empleado.getUnidadesOperativa());
@@ -392,22 +395,22 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		List<Map<String, String>> datos = new ArrayList<>();
 		switch (reqFiltros.getFiltro().toUpperCase().trim()) {
 		case "NOMBRE":
-			datos = empleadoDao.findNombreByCodigoN1(reqFiltros.getCodigo());
+			datos = empleadoDao.findNombreByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel2());
 			break;
 		case "CARGO":
-			datos = empleadoDao.findPuestoByCodigoN1(reqFiltros.getCodigo());
+			datos = empleadoDao.findPuestoByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel2());
 			break;
 		case "AGENCIA":
-			datos = empleadoDao.findAgenciaByCodigoN1(reqFiltros.getCodigo());
+			datos = empleadoDao.findAgenciaByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel2());
 			break;
 		case "TERRITORIO":
-			datos = empleadoDao.findTerritorioByCodigoN1(reqFiltros.getCodigo());
+			datos = empleadoDao.findTerritorioByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel2());
 			break;
 		case "CORREDOR":
-			datos = empleadoDao.findCorredorByCodigoN1(reqFiltros.getCodigo());
+			datos = empleadoDao.findCorredorByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel2());
 			break;
 		case "AREA":
-			datos = empleadoDao.findAreaByCodigoN1(reqFiltros.getCodigo());
+			datos = empleadoDao.findAreaByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel2());
 			break;
 		default:
 			break;
