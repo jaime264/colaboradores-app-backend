@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametroTipo;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
@@ -20,6 +21,7 @@ import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundExce
 import pe.confianza.colaboradores.gcontenidos.server.mapper.ParametroMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
+import pe.confianza.colaboradores.gcontenidos.server.util.FuncionalidadApp;
 import pe.confianza.colaboradores.gcontenidos.server.util.TipoParametro;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 import pe.confianza.colaboradores.gcontenidos.server.util.VacacionesSubTipoParametro;
@@ -31,6 +33,9 @@ public class ParametrosServiceImpl implements ParametrosService {
 
 	@Autowired
 	private CargaParametros parametrosConstants;
+	
+	@Autowired
+	private EmpleadoService empleadoService;
 	
 	@Autowired
 	private MessageSource messageSource;
@@ -81,12 +86,21 @@ public class ParametrosServiceImpl implements ParametrosService {
 	@Override
 	public ResponseParametro actualizarParametroVacaciones(RequestParametroActualizacion parametro) {
 		try {
+			List<ResponseAcceso> accesos = empleadoService.consultaAccesos(parametro.getUsuarioOperacion());
+			boolean tienePermiso = false;
+			for (ResponseAcceso acceso : accesos) {
+				if(FuncionalidadApp.PARAMETRIA_VACACIONES.codigo.equals(acceso.getFuncionalidadCodigo()) && acceso.isModificar()) {
+					tienePermiso = true;
+				}
+			}
+			if(!tienePermiso)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.sin_permiso", parametro.getUsuarioOperacion()));
 			Parametro parametroOld = parametrosConstants.search(parametro.getCodigo());
 			if(parametroOld == null)
-				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "vacaciones.paramtros.no_encontrado", parametro.getCodigo()));
+				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.no_encontrado", parametro.getCodigo()));
 			Parametro parametroNuevo = parametrosConstants.actualizarParametro(parametro.getCodigo(), parametro.getNuevoValor(), parametro.getUsuarioOperacion());
 			if(parametroNuevo == null)
-				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "vacaciones.paramtros.no_encontrado", parametro.getCodigo()));
+				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.no_encontrado", parametro.getCodigo()));
 			return ParametroMapper.convert(parametroNuevo);
 		} catch (ModelNotFoundException e) {
 			logger.error("[ERROR] actualizarParametroVacaciones", e);
