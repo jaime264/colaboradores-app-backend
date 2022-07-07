@@ -475,6 +475,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 					programaciones.add(programacionParteII);
 				}
 			} else {
+				
 				programacionParteII.setFechaInicio(Utilitario.quitarDias(programacion.getFechaFin(), diasPorRegistrar));
 				programacionParteII.calcularDias();
 				programacionParteII.setPeriodo(meta.getPeriodoTrunco());
@@ -589,6 +590,9 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		List<VacacionProgramacion> programaciones = vacacionProgramacionService.listarPorPeriodo(programacion.getPeriodo().getId());
 		programaciones = programaciones.stream().filter(p -> p.getIdEstado() != EstadoVacacion.RECHAZADO.id).collect(Collectors.toList());
 		programaciones.add(programacion);
+		int totalDiasProgramadosPeriodo = programaciones.stream().mapToInt(VacacionProgramacion::getNumeroDias).sum();
+		if(totalDiasProgramadosPeriodo > 30)
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.periodo_dias_limite", programacion.getPeriodo().getDescripcion()));
 		Comparator<VacacionProgramacion> odenPorFechas = new Comparator<VacacionProgramacion>() {
 			@Override
 			public int compare(VacacionProgramacion prog1, VacacionProgramacion prog2) {
