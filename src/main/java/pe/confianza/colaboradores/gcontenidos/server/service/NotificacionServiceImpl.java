@@ -97,17 +97,27 @@ public class NotificacionServiceImpl implements NotificacionService {
 		logger.info("[BEGIN] enviarNotificacionApp");
 		Optional<Dispositivo> optDispositivo = dispositivoDao.findByUser(notificacion.getEmpleado().getUsuarioBT());
 		if(optDispositivo.isPresent()) {
-			String dispositiboFirebase = optDispositivo.get().getIdDispositivoFirebase();
-			if(StringUtils.hasText(dispositiboFirebase)) {
-				RequestFirebaseMessagingData data = new RequestFirebaseMessagingData();
-				data.setTitle(notificacion.getTitulo());
-				data.setBody(notificacion.getDescripcion());
-				data.setExtra(new HashMap<>());
-				data.getExtra().put("extra", notificacion.getData());
+			RequestFirebaseMessagingData data = new RequestFirebaseMessagingData();
+			data.setTitle(notificacion.getTitulo());
+			data.setBody(notificacion.getDescripcion());
+			data.setExtra(new HashMap<>());
+			data.getExtra().put("extra", notificacion.getData());
+			String dispositivoWeb = optDispositivo.get().getIdDispositivoFirebase();
+			String dispositivoMobile = optDispositivo.get().getIdDispositivo();
+			if(StringUtils.hasText(dispositivoWeb)) {
 				RequestFirebaseMessaging request = new RequestFirebaseMessaging();
-				request.setTokens(Arrays.asList(new String[] {dispositiboFirebase}));
+				request.setTokens(Arrays.asList(new String[] {dispositivoWeb}));
 				request.setData(data);
 				if(FirebaseCloudMessagingClient.sendMessageToWeb(request)) {
+					notificacion.setEnviadoApp(true);
+					actualizar(notificacion, "APP");
+				}
+			}
+			if(StringUtils.hasText(dispositivoMobile)) {
+				RequestFirebaseMessaging request = new RequestFirebaseMessaging();
+				request.setTokens(Arrays.asList(new String[] {dispositivoMobile}));
+				request.setData(data);
+				if(FirebaseCloudMessagingClient.sendMessageToApp(request)) {
 					notificacion.setEnviadoApp(true);
 					actualizar(notificacion, "APP");
 				}

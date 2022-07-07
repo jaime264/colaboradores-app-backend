@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.MulticastMessage;
+import com.google.firebase.messaging.Notification;
 import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushNotification;
 
@@ -16,7 +17,7 @@ public class FirebaseCloudMessagingClient {
 	private static Logger logger = LoggerFactory.getLogger(FirebaseCloudMessagingClient.class);
 	
 	public static boolean sendMessageToWeb(RequestFirebaseMessaging request) {
-		logger.info("[BEGIN] sendMessage");
+		logger.info("[BEGIN] sendMessageToWeb");
 		boolean executed = false;
 		try {
 			
@@ -35,10 +36,36 @@ public class FirebaseCloudMessagingClient {
 			logger.info("Firebase response: " + response.getSuccessCount());
 			executed = true;
 		} catch (Exception e) {
-			logger.error("[ERROR] sendMessage", e);
+			logger.error("[ERROR] sendMessageToWeb", e);
 			executed = false;
 		}
-		logger.info("[END] sendMessage");
+		logger.info("[END] sendMessageToWeb");
+		return executed;
+
+	}
+	
+	public static boolean sendMessageToApp(RequestFirebaseMessaging request) {
+		logger.info("[BEGIN] sendMessageToApp");
+		boolean executed = false;
+		try {
+			
+			MulticastMessage message = MulticastMessage.builder()
+					.setNotification(Notification.builder()
+							.setTitle(request.getData().getTitle())
+							.setBody(request.getData().getBody())
+							.build())
+				.putAllData(request.getData().getExtra())
+				.addAllTokens(request.getTokens())
+			    .build();
+		
+			BatchResponse response = FirebaseMessaging.getInstance().sendMulticast(message);
+			logger.info("Firebase response: " + response.getSuccessCount());
+			executed = true;
+		} catch (Exception e) {
+			logger.error("[ERROR] sendMessageToApp", e);
+			executed = false;
+		}
+		logger.info("[END] sendMessageToApp");
 		return executed;
 
 	}
