@@ -13,7 +13,7 @@ public class PublicacionMapper {
 	public static Publicacion convert(RequestPublicacionGestorContenido source) {
 		Publicacion destination = new Publicacion();
 		destination.setDescripcion(source.getDescripcion());
-		destination.setUsuarioBt(source.getUsuarioBt());
+		destination.setUsuarioBt(source.getUsuarioBt().trim());
 		destination.setUsuarioCrea(source.getUsuarioBt());
 		destination.setFlagReacion(source.isFlagReacion());
 		destination.setFlagAprobacion(1);

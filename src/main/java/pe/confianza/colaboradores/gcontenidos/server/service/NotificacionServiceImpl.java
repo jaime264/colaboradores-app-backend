@@ -160,6 +160,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 		notificacion.setDescripcion(descripcion);
 		notificacion.setTitulo(titulo);
 		notificacion.setTipo(tipo);
+		notificacion.setEmpleado(empleado);
 		notificacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
 		notificacion.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
 		notificacion.setUsuarioCrea(usuarioRegistra);

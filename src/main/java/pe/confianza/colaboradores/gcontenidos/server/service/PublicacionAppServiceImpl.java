@@ -392,8 +392,8 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		try {
 			List<Notificacion> notificaciones = new ArrayList<>();
 			request.getUsuarios().forEach(u -> {
-				logger.info("Buscar empleado {}" , u);
-				Empleado empelado = empleadoService.buscarPorUsuarioBT(u);
+				logger.error("Buscar empleado {}" , u);
+				Empleado empelado = empleadoService.buscarPorUsuarioBT(u.trim());
 				if(empelado.getId() != null) {
 					UsuarioPublicacion usuarioPublicacion = new UsuarioPublicacion();
 					usuarioPublicacion.setEmpleado(empelado);

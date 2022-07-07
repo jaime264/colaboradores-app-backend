@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.util;
 
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 
 import javax.mail.internet.MimeMessage;
 
@@ -19,6 +20,8 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.Mail;
 public class EmailUtil {
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(EmailUtil.class);
+	
+	private static String EMAIL_PATTERN = "^(.+)@(\\S+)$";
 	
 	@Autowired
 	private JavaMailSender emailSender;
@@ -46,6 +49,8 @@ public class EmailUtil {
 	
 	public boolean enviarEmail(Mail mail) {
 		LOGGER.info("[BEGIN] enviarEmail " + mail.toString());
+		if(!Pattern.compile(EMAIL_PATTERN).matcher(mail.getReceptor()).matches())
+			return false;
 		try {
 			 MimeMessage message = emailSender.createMimeMessage();
 	            MimeMessageHelper helper = new MimeMessageHelper(message,
