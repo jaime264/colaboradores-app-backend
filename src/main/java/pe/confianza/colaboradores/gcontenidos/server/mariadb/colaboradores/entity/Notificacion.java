@@ -34,7 +34,10 @@ public class Notificacion extends EntidadAuditoria {
 	private boolean visto;
 	
 	@Column(nullable = false)
-	private boolean enviado;
+	private boolean enviadoCorreo;
+	
+	@Column(nullable = false)
+	private boolean enviadoApp;
 	
 	@ManyToOne
 	@JoinColumn(nullable = true, name = "idTipo")
@@ -88,12 +91,20 @@ public class Notificacion extends EntidadAuditoria {
 		this.visto = visto;
 	}
 
-	public boolean isEnviado() {
-		return enviado;
+	public boolean isEnviadoCorreo() {
+		return enviadoCorreo;
 	}
 
-	public void setEnviado(boolean enviado) {
-		this.enviado = enviado;
+	public void setEnviadoCorreo(boolean enviadoCorreo) {
+		this.enviadoCorreo = enviadoCorreo;
+	}
+
+	public boolean isEnviadoApp() {
+		return enviadoApp;
+	}
+
+	public void setEnviadoApp(boolean enviadoApp) {
+		this.enviadoApp = enviadoApp;
 	}
 
 	public NotificacionTipo getTipo() {
@@ -103,6 +114,7 @@ public class Notificacion extends EntidadAuditoria {
 	public void setTipo(NotificacionTipo tipo) {
 		this.tipo = tipo;
 	}
+
 	
 	
 	

@@ -90,5 +90,15 @@ public class UtilitarioTest {
 		LocalDate fechaLess = Utilitario.quitarDias(fechaIngreso, diasQuitar);
 		assertEquals(diasQuitar, Utilitario.obtenerDiferenciaDias(fechaLess, fechaIngreso));
 	}
+	
+	@Test
+	public void fechaEntrePeriodo() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		LocalDate fechaInicio = LocalDate.parse("02/08/2022", formatter);
+		LocalDate fechaFIn = LocalDate.parse("31/08/2022", formatter);
+		LocalDate fecha = LocalDate.parse("31/08/2022", formatter);
+		LocalDate fecha2 = LocalDate.parse("19/09/2022", formatter);
+		System.out.println(Utilitario.fechaEntrePeriodo(fechaInicio, fechaFIn, fecha2));
+	}
 
 }

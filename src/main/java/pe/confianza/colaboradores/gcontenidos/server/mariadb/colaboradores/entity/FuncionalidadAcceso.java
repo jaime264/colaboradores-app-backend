@@ -26,12 +26,13 @@ public class FuncionalidadAcceso extends EntidadAuditoria {
 	
 	private boolean modificar;
 	
-	private boolean nuevo;
+	private boolean registrar;
 	
 	private boolean eliminar;
 	
 	private boolean consultar;
 	
+	private boolean aprobar;
 
 	public Long getId() {
 		return id;
@@ -65,12 +66,12 @@ public class FuncionalidadAcceso extends EntidadAuditoria {
 		this.modificar = modificar;
 	}
 
-	public boolean isNuevo() {
-		return nuevo;
+	public boolean isRegistrar() {
+		return registrar;
 	}
 
-	public void setNuevo(boolean nuevo) {
-		this.nuevo = nuevo;
+	public void setRegistrar(boolean registrar) {
+		this.registrar = registrar;
 	}
 
 	public boolean isEliminar() {
@@ -88,6 +89,17 @@ public class FuncionalidadAcceso extends EntidadAuditoria {
 	public void setConsultar(boolean consultar) {
 		this.consultar = consultar;
 	}
+
+	public boolean isAprobar() {
+		return aprobar;
+	}
+
+	public void setAprobar(boolean aprobar) {
+		this.aprobar = aprobar;
+	}
+	
+
+	
 	
 	
 	

@@ -8,6 +8,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,23 +18,30 @@ import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmpleadoRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.spring.EmpleadoApi;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseTerminosCondiciones;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
+import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.EmpleadoMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.AgenciaDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.CorredorDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.FuncionalidadAccesoDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PerfilStringAppDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PuestoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.TerritorioDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.UnidadOperativaDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Agencia;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Corredor;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.FuncionalidadAcceso;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PerfilSpringApp;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Puesto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Territorio;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.UnidadOperativa;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
+import pe.confianza.colaboradores.gcontenidos.server.util.FuncionalidadApp;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 @Service
@@ -70,6 +78,12 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	
 	@Autowired
 	private UnidadOperativaDao unidadOperativaDao;
+	
+	@Autowired
+	private PerfilStringAppDao perfilStringAppDao;
+	
+	@Autowired
+	private FuncionalidadAccesoDao funcionalidadAccesoDao;
 
 	@Override
 	public Empleado actualizarInformacionEmpleado(String usuarioBT) {
@@ -224,6 +238,60 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		empleado.setTerritorios(territorios);		
 		
 		return empleado;
+	}
+
+
+	@Override
+	public List<ResponseAcceso> consultaAccesos(String usuarioBT) {
+		LOGGER.info("[BEGIN] consultaAccesos {} ", usuarioBT);
+		try {
+			Empleado empleado = buscarPorUsuarioBT(usuarioBT);
+			if(empleado.getId() == null)
+				throw new ModelNotFoundException("No existe el usuario " + usuarioBT);
+			int cantidadSubordinadosNivel1 = empleadoDao.obtenerCantidadSuborninadosNivel1(empleado.getId());
+			int cantidadSubordinadosNivel2 = empleadoDao.obtenerCantidadSuborninadosNivel2(empleado.getId());
+			List<ResponseAcceso> accesos = new ArrayList<>();
+			List<PerfilSpringApp> perfilesSpringApp = perfilStringAppDao.listarPorPerfilSpring(empleado.getPerfilSpring().getId());
+			List<FuncionalidadAcceso> funcionalidades = new ArrayList<>();
+			for (PerfilSpringApp perfilSpringApp : perfilesSpringApp) {
+				List<FuncionalidadAcceso> lstFunciones = funcionalidadAccesoDao.listarPorPerfilApp(perfilSpringApp.getPerfilApp().getId());
+				lstFunciones = lstFunciones == null ? new ArrayList<>() : lstFunciones;
+				funcionalidades.addAll(lstFunciones);
+			}
+			accesos = funcionalidades.stream().map(f -> {
+				ResponseAcceso acceso = new ResponseAcceso();
+				acceso.setFuncionalidadCodigo(f.getFuncionalidad().getCodigo());
+				acceso.setFuncionalidadDescripcion(f.getFuncionalidad().getDescripcion());
+				if(f.getFuncionalidad().getCodigo().equals(FuncionalidadApp.VACACIONES_PROGRAMACION.codigo) && ((cantidadSubordinadosNivel1 + cantidadSubordinadosNivel2 ) > 0) ) {
+					acceso.setAprobar(true);
+				} else {
+					acceso.setAprobar(f.isAprobar());
+				}
+				acceso.setConsultar(f.isConsultar());
+				acceso.setEliminar(f.isEliminar());
+				acceso.setModificar(f.isModificar());
+				acceso.setRegistrar(f.isRegistrar());
+				acceso.setPerfilCodigo(f.getPerfilApp().getCodigo());
+				acceso.setPerfilDescripcion(f.getPerfilApp().getDescripcion());
+				return acceso;
+			}).collect(Collectors.toList());
+			return accesos;
+		} catch (ModelNotFoundException e) {
+			LOGGER.error("[ERROR] consultaAccesos", e);
+			throw new ModelNotFoundException(e.getMessage()); 
+		} catch (AppException e) {
+			LOGGER.error("[ERROR] consultaAccesos", e);
+			throw new AppException(e.getMessage(), e); 
+		} catch (Exception e) {
+			LOGGER.error("[ERROR] consultaAccesos", e);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
+		}
+	}
+
+
+	@Override
+	public Optional<Empleado> buscarPorId(long id) {
+		return empleadoDao.findById(id);
 	}
 
 }

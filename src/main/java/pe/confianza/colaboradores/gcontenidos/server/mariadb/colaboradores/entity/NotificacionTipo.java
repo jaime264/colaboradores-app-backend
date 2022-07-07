@@ -16,6 +16,8 @@ public class NotificacionTipo extends EntidadAuditoria {
 	
 	private String descripcion;
 	
+	private String descripcionExtendida;
+	
 	private String codigo;
 
 	public Long getId() {
@@ -41,6 +43,15 @@ public class NotificacionTipo extends EntidadAuditoria {
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
 	}
+
+	public String getDescripcionExtendida() {
+		return descripcionExtendida;
+	}
+
+	public void setDescripcionExtendida(String descripcionExtendida) {
+		this.descripcionExtendida = descripcionExtendida;
+	}
+	
 	
 	
 }

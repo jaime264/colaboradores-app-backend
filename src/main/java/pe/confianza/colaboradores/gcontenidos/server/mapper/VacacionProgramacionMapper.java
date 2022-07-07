@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.mapper;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramacionTramo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacionReprogramar;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
@@ -22,6 +23,20 @@ public class VacacionProgramacionMapper {
 		return destination;
 	}
 	
+	public static VacacionProgramacion convert(final RequestReprogramacionTramo source, final VacacionProgramacion programacionSource) {
+		VacacionProgramacion destination = new VacacionProgramacion();
+		destination.setFechaInicio(source.getFechaInicio());
+		destination.setFechaFin(source.getFechaFin());
+		destination.setNumeroDias(Utilitario.obtenerDiferenciaDias(source.getFechaInicio(), source.getFechaFin()));
+		destination.setNumeroSabados(Utilitario.obtenerCantidadSabados(source.getFechaInicio(), source.getFechaFin()));
+		destination.setNumeroDomingos(Utilitario.obtenerCantidadDomingos(source.getFechaInicio(), source.getFechaFin()));
+		destination.setNumeroReprogramaciones(0);
+		destination.setIdProgramacionOriginal(programacionSource.getId());
+		destination.setNumeroReprogramaciones(programacionSource.getNumeroReprogramaciones() + 1);
+		destination.setVacacionesAdelantadas(false);
+		return destination;
+	}
+	
 	public static ResponseProgramacionVacacion convert(final VacacionProgramacion source, CargaParametros cargaParametros) {
 		ResponseProgramacionVacacion destination = new ResponseProgramacionVacacion();
 		destination.setId(source.getId());
@@ -33,6 +48,7 @@ public class VacacionProgramacionMapper {
 		destination.setDias(source.getNumeroDias());
 		destination.setPeriodo(source.getPeriodo().getDescripcion());
 		destination.setOrden(source.getOrden());
+		destination.setAdelantada(source.isVacacionesAdelantadas());
 		return destination;
 	}
 	

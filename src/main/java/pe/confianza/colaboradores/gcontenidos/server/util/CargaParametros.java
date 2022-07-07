@@ -146,9 +146,11 @@ public class CargaParametros {
 		List<ResponseEstadoVacacion> estados = new ArrayList<>();
 		for (EstadoVacacion estado : EstadoVacacion.values()) {
 			String descripcionEstado = populateParametro(estado.codigoParametro);
+			String leyendaEstado = populateParametro(estado.codigoParametroLeyenda);
 			ResponseEstadoVacacion estadoRes = new ResponseEstadoVacacion();
 			estadoRes.setCodigo(estado.id);
 			estadoRes.setDescripcion(descripcionEstado);
+			estadoRes.setLeyenda(leyendaEstado);
 			estados.add(estadoRes);
 		}
 		return estados;
@@ -171,6 +173,12 @@ public class CargaParametros {
 		throw new AppException("No existe el parámetro de meses de antiguedad para vacaciones adelantadas");
 	}
 	
+	public int getIntervaloDiasRecordatorioVacaciones() {
+		if(DIAS_INTERVALO_NOTIFICACIONES != null)
+			return Integer.parseInt(DIAS_INTERVALO_NOTIFICACIONES);
+		throw new AppException("No existe el parámetro de intervalo de días de recordatorio de vacaciones");
+	}
+	
 	// Parametros genericos
 	public String ANIO_PRESENTE = null;
 	
@@ -183,6 +191,7 @@ public class CargaParametros {
 	public String DIA_FIN_REPROGRAMACION = null;
 	public String DIAS_MAXIMO_VACACIONES_ADELANTADAS = null;
 	public String MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS = null;
+	public String DIAS_INTERVALO_NOTIFICACIONES = null;
 	
 
 	@PostConstruct
@@ -202,6 +211,7 @@ public class CargaParametros {
 		DIA_FIN_REPROGRAMACION = populateParametro(ParametrosConstantes.Vacaciones.DIA_FIN_REPROGRAMACION);
 		DIAS_MAXIMO_VACACIONES_ADELANTADAS = populateParametro(ParametrosConstantes.Vacaciones.DIAS_MAXIMO_VACACIONES_ADELANTADAS);
 		MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS = populateParametro(ParametrosConstantes.Vacaciones.MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS);
+		DIAS_INTERVALO_NOTIFICACIONES = populateParametro(ParametrosConstantes.Vacaciones.DIAS_INTERVALO_NOTIFICACIONES);
 		
 		ANIO_PRESENTE = populateParametro(ParametrosConstantes.Genericos.ANIO_PRESENTE);
 		

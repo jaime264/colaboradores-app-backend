@@ -32,7 +32,6 @@ public class FirebaseCloudMessagingClient {
 			    .build();
 		
 			BatchResponse response = FirebaseMessaging.getInstance().sendMulticast(message);
-			 
 			logger.info("Firebase response: " + response.getSuccessCount());
 			executed = true;
 		} catch (Exception e) {

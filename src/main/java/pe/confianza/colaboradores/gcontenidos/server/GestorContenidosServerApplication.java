@@ -60,8 +60,7 @@ public class GestorContenidosServerApplication {
 		VacacionesTareasProgramadasNegocio vacacioneTareas = applicationContext.getBean(VacacionesTareasProgramadasNegocioImpl.class);
 		vacacioneTareas.actualizarEstadoProgramaciones();
 		vacacioneTareas.actualizarPeriodos();
-		vacacioneTareas.consolidarMetasAnuales();
-		vacacioneTareas.notificarHabilitacionRegistroProgramacion();
+		vacacioneTareas.consolidarMetasAnuales(false);
 	}
 
 }

@@ -76,6 +76,19 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		});
 		return vacacionProgramacionDao.saveAll(programaciones);
 	}
+	
+	@Override
+	public List<VacacionProgramacion> modificar(List<VacacionProgramacion> programaciones, String usuarioOperacion) {
+		programaciones.forEach(programacion -> {
+			programacion.setUsuarioModifica(usuarioOperacion);
+			programacion.setFechaModifica(LocalDateTime.now());
+			programacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
+			if(EstadoMigracion.EXPORTADO.valor.equals(programacion.getEstadoMigracion()) || EstadoMigracion.IMPORTADO.valor.equals(programacion.getEstadoMigracion())) {
+				programacion.setEstadoMigracion(EstadoMigracion.MODIFICADO.valor);
+			}				
+		});
+		return vacacionProgramacionDao.saveAll(programaciones);
+	}
 
 	@Override
 	public VacacionProgramacion registrar(VacacionProgramacion programacion, String usuarioOperacion) {
@@ -199,38 +212,39 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	}
 
 	@Override
-	public long contarProgramacionPorUnidadNegocioEmpleado(Long idEmpleado, String descripcionPuesto,
-			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion) {
+
+	public long contarProgramacionPorUnidadNegocioEmpleado(Long idEmpleado, String descripcionPuesto, LocalDate fechaIncioProgramacion,
+			LocalDate fechaFinProgramacion, Long idProgReprogramar) {
 		logger.info("[BEGIN] contarProgramacionPorUnidadNegocioEmpleado {}", idEmpleado);
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String strFechaInicio = fechaIncioProgramacion.format(formatter);
 		String strFechaFin = fechaFinProgramacion.format(formatter);
-		return vacacionProgramacionDao.contarProgramacionPorUnidadNegocioEmpleado(idEmpleado, descripcionPuesto,
-				strFechaInicio, strFechaFin);
+		return vacacionProgramacionDao.contarProgramacionPorUnidadNegocioEmpleado(idEmpleado, descripcionPuesto, strFechaInicio, strFechaFin, idProgReprogramar);
+
 	}
 
 	@Override
 	public long contarProgramacionPorCorredorEmpleadoPuesto(long idEmpleado, String descripcionPuesto,
-			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion) {
+			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion, Long idProgReprogramar) {
 		logger.info("[BEGIN] contarProgramacionPorCorredorEmpleadoPuesto {} - {}",
 				new Object[] { idEmpleado, descripcionPuesto });
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String strFechaInicio = fechaIncioProgramacion.format(formatter);
 		String strFechaFin = fechaFinProgramacion.format(formatter);
 		return vacacionProgramacionDao.contarProgramacionPorCorredorEmpleadoPuesto(idEmpleado, descripcionPuesto,
-				strFechaInicio, strFechaFin);
+				strFechaInicio, strFechaFin, idProgReprogramar);
 	}
 
 	@Override
 	public long contarProgramacionPorTerritorioEmpleadoPuesto(long idEmpleado, String descripcionPuesto,
-			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion) {
+			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion, Long idProgReprogramar) {
 		logger.info("[BEGIN] contarProgramacionPorTerritorioEmpleadoPuesto {} - {}",
 				new Object[] { idEmpleado, descripcionPuesto });
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String strFechaInicio = fechaIncioProgramacion.format(formatter);
 		String strFechaFin = fechaFinProgramacion.format(formatter);
 		return vacacionProgramacionDao.contarProgramacionPorTerritorioEmpleadoPuesto(idEmpleado, descripcionPuesto,
-				strFechaInicio, strFechaFin);
+				strFechaInicio, strFechaFin, idProgReprogramar);
 	}
 
 	@Override
@@ -247,14 +261,14 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	@Override
 	public long contarProgramacionPorEmpleadoAgencia(long idEmpleado, String descripcionPuesto,
-			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion) {
+			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion, Long idProgReprogramar) {
 		logger.info("[BEGIN] contarProgramacionPorEmpleadoAgencia {} - {}",
 				new Object[] { idEmpleado, descripcionPuesto });
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String strFechaInicio = fechaIncioProgramacion.format(formatter);
 		String strFechaFin = fechaFinProgramacion.format(formatter);
 		return vacacionProgramacionDao.contarProgramacionPorEmpleadoAgencia(idEmpleado, descripcionPuesto,
-				strFechaInicio, strFechaFin);
+				strFechaInicio, strFechaFin, idProgReprogramar);
 	}
 
 	@Override
@@ -430,5 +444,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		logger.info("[END] listarProgramacionesPorAnio");
 		return programaciones;
 	}
+
+
 
 }

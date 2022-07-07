@@ -19,6 +19,7 @@ public class ResponseProgramacionVacacion {
 	private String descripcionEstado;
 	private String periodo;
 	private int orden;
+	private boolean adelantada;
 	
 	public long getId() {
 		return id;
@@ -73,6 +74,12 @@ public class ResponseProgramacionVacacion {
 	}
 	public void setOrden(int orden) {
 		this.orden = orden;
+	}
+	public boolean isAdelantada() {
+		return adelantada;
+	}
+	public void setAdelantada(boolean adelantada) {
+		this.adelantada = adelantada;
 	}
 	
 	

@@ -44,8 +44,8 @@ public class EmailUtil {
 		LOGGER.info("[END] enviarEmail");
 	}
 	
-	public void enviarEmail(Mail mail) {
-		LOGGER.info("[BEGIN] enviarEmail");
+	public boolean enviarEmail(Mail mail) {
+		LOGGER.info("[BEGIN] enviarEmail " + mail.toString());
 		try {
 			 MimeMessage message = emailSender.createMimeMessage();
 	            MimeMessageHelper helper = new MimeMessageHelper(message,
@@ -62,10 +62,12 @@ public class EmailUtil {
 	            helper.setFrom(mail.getEmisor());
 
 	            emailSender.send(message);
+	            LOGGER.info("[END] enviarEmail");
+	            return true;
 		} catch (Exception e) {
 			LOGGER.error("[ERROR] enviarEmail", e);
+			return false;
 		}
-		LOGGER.info("[END] enviarEmail");
 	}
 
 }

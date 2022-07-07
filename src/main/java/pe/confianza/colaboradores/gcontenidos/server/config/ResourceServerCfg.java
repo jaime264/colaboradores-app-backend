@@ -76,17 +76,18 @@ public class ResourceServerCfg extends ResourceServerConfigurerAdapter {
 		if (Boolean.valueOf(env.getProperty("spring.h2.console.enabled"))) {
 			logger.debug("Aplicando reglas de seguridad para H2 console");
 			http.authorizeRequests().antMatchers("/").permitAll().and().authorizeRequests()
-					.antMatchers("/h2-console/**").permitAll();
-
-			// TODO comprobar si realmente es necesario
-			http.csrf().disable();
+					.antMatchers("/h2-console/**").permitAll()
+					.antMatchers("/api/**").authenticated()
+					.and().csrf().disable();
 			http.headers().frameOptions().disable();
 		}
 	}
 
 	@Override
 	public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-		resources.resourceId("portal");
+		resources.resourceId("portal")// ID de recurso
+		.tokenServices(tokenService())// Verificar el servicio de token
+        .stateless(true);
 	}
 
 }

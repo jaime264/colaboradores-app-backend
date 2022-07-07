@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,8 +20,6 @@ import pe.confianza.colaboradores.gcontenidos.server.mapper.PublicacionMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ComentarioDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ImagenDao;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.NotificacionDao;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.NotificacionTipoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PublicacionAppDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ReaccionPubDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.UsuarioPublicacionDao;
@@ -34,6 +33,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Reaccion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.UsuarioPublicacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Video;
+import pe.confianza.colaboradores.gcontenidos.server.negocio.EnvioNotificacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
@@ -72,10 +72,10 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 	private UsuarioPublicacionDao usuarioPublicacionDao;
 	
 	@Autowired
-	private NotificacionDao notificacionDao;
+	private NotificacionService notificacionService;
 	
 	@Autowired
-	private NotificacionTipoDao notificacionTipoDao;
+	private EnvioNotificacionNegocio envioNotificacionNegocio;
 
 	@Override
 	public List<Publicacion> list() {
@@ -385,11 +385,12 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		Publicacion publicacion = PublicacionMapper.convert(request);
 		final Publicacion pub = guardar(publicacion);
 		if(pub == null)
-			throw new AppException("Ocurrió un error al registrar publicción");
-		Optional<NotificacionTipo> tipoNot = notificacionTipoDao.findOneByCodigo(TipoNotificacion.PUBLICACION_GESTOR_CONTENIDO.valor);
+			throw new AppException("Ocurrió un error al registrar publiacción");
+		Optional<NotificacionTipo> tipoNot = notificacionService.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_GESTOR_CONTENIDO.valor);
 		if(!tipoNot.isPresent())
 			throw new AppException("No se encontró el tipo de notificacion");
 		try {
+			List<Notificacion> notificaciones = new ArrayList<>();
 			request.getUsuarios().forEach(u -> {
 				logger.info("Buscar empleado {}" , u);
 				Empleado empelado = empleadoService.buscarPorUsuarioBT(u);
@@ -403,21 +404,14 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 					usuarioPublicacion.setFechaCrea(LocalDateTime.now());
 					usuarioPublicacionDao.save(usuarioPublicacion);
 					
-					Notificacion notificacion = new Notificacion();
-					notificacion.setData(pub.getId() + "");
-					notificacion.setDescripcion(pub.getDescripcion());
-					notificacion.setEmpleado(empelado);
-					notificacion.setEnviado(false);
-					notificacion.setTitulo(pub.getDescripcion());
-					notificacion.setVisto(false);
-					notificacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
-					notificacion.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
-					notificacion.setUsuarioCrea(pub.getUsuarioCrea());
-					notificacion.setFechaCrea(LocalDateTime.now());
-					notificacion.setTipo(tipoNot.get());
-					notificacionDao.save(notificacion);
+					notificaciones.add(notificacionService.registrar(
+							pub.getDescripcion(), pub.getDescripcion(), pub.getId() + "", 
+							tipoNot.get(), empelado, pub.getUsuarioCrea()));
 				}
 			});
+			
+			envioNotificacionNegocio.enviarNotificacionesApp(notificaciones);
+			envioNotificacionNegocio.enviarNotificacionesCorreo(notificaciones);
 		} catch (Exception e) {
 			logger.error("[ERROR] registro", e);
 			throw new AppException("Ocurrió un error al registrar usuario y notificación", e);

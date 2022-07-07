@@ -189,5 +189,15 @@ public class EmpleadoController {
 			return new ResponseEntity<>(responseStatus, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@ApiOperation(notes = "Empleado accesos", value = "url proxy /empleadoaccesos")
+	@PostMapping("empelado/accesos")
+	public ResponseEntity<ResponseStatus> accesosPorUsuario(@RequestBody RequestAuditoria request) {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(empleadoService.consultaAccesos(request.getUsuarioOperacion()));
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
 
 }

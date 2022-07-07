@@ -1,6 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.tareas;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,31 +20,51 @@ public class VacacionesTareas {
 	@Autowired
 	private VacacionesTareasProgramadasNegocio vacacionesTareasProgramadasService;
 	
-	@Scheduled(cron = "${vacaciones.programacion.actualizacion_estado}")
-	public void actualizarEstadoProgramaciones() {
-		LOGGER.info("[BEGIN] actualizarEstadoProgramaciones " + LocalDate.now());
+	@Scheduled(cron = "${vacaciones.programacion.actualizaciones}")
+	public void actualizacionesVacaciones() {
+		actualizarEstadoProgramaciones();
+		actualizarPeridos();
+		calcularMetaAnual();
+		registrarNotificacionesVacaciones();
+	}
+	
+	@Scheduled(cron = "0 0/5 * * * ?") // Verificacion cada 5 minutos
+	public void enviarNotificacionesVacaciones() {
+		LOGGER.info("[BEGIN] enviarNotificacionesVacaciones " + LocalDateTime.now());
+		vacacionesTareasProgramadasService.enviarNotificacionesAppPendienteVacaciones();
+		vacacionesTareasProgramadasService.enviarNotificacionesCorreoPendienteVacaciones();
+		LOGGER.info("[END] enviarNotificacionesVacaciones " + LocalDateTime.now());
+	}
+	
+	private void actualizarEstadoProgramaciones() {
+		LOGGER.info("[BEGIN] actualizarEstadoProgramaciones " + LocalDateTime.now());
 		vacacionesTareasProgramadasService.actualizarEstadoProgramaciones();
-		LOGGER.info("[END] actualizarEstadoProgramaciones " + LocalDate.now());
+		LOGGER.info("[END] actualizarEstadoProgramaciones " + LocalDateTime.now());
 	}
 	
-	@Scheduled(cron = "${vacaciones.programacion.actualizacion_periodos}")
-	public void actualizarPeridos() {
-		LOGGER.info("[BEGIN] actualizarEstadoProgramaciones " + LocalDate.now());
+
+	private void actualizarPeridos() {
+		LOGGER.info("[BEGIN] actualizarEstadoProgramaciones " + LocalDateTime.now());
 		vacacionesTareasProgramadasService.actualizarPeriodos();
-		LOGGER.info("[END] actualizarEstadoProgramaciones " + LocalDate.now());
+		LOGGER.info("[END] actualizarEstadoProgramaciones " + LocalDateTime.now());
 	}
 	
-	@Scheduled(cron = "${vacaciones.programacion.consolidar_metas_anuales}")
-	public void calcularMetaAnual() {
-		LOGGER.info("[BEGIN] calcularMetaAnual " + LocalDate.now());
-		vacacionesTareasProgramadasService.consolidarMetasAnuales();
-		LOGGER.info("[END] calcularMetaAnual " + LocalDate.now());
+
+	private void calcularMetaAnual() {
+		LOGGER.info("[BEGIN] calcularMetaAnual " + LocalDateTime.now());
+		vacacionesTareasProgramadasService.consolidarMetasAnuales(true);
+		LOGGER.info("[END] calcularMetaAnual " + LocalDateTime.now());
 	}
 	
-	public void notificarHabilitacionRegistroProgramacion() {
-		vacacionesTareasProgramadasService.notificarHabilitacionRegistroProgramacion();
+
+	private void registrarNotificacionesVacaciones() {
+		LOGGER.info("[BEGIN] registrarNotificacionesVacaciones " + LocalDateTime.now());
+		vacacionesTareasProgramadasService.registroNotificacionesInicioRegistroProgramacion();
+		vacacionesTareasProgramadasService.registroNotificacionesMetaNoCumplida();
+		vacacionesTareasProgramadasService.registroNotificacionesSinRegistroProgramacion();
+		vacacionesTareasProgramadasService.registroNotificacionesJefeColaboradoresSinRegistroProgramacion();
+		vacacionesTareasProgramadasService.registroNotificacionJefePendienteAprobacionProgramacion();
+		LOGGER.info("[END] registrarNotificacionesVacaciones " + LocalDateTime.now());
 	}
-	
-	
 	
 }
