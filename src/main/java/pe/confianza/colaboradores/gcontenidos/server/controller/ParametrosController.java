@@ -103,7 +103,7 @@ public class ParametrosController {
 		ResponseStatus responseStatus = new ResponseStatus();
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);
-		responseStatus.setResultObj(VacacionesSubTipoParametro.values());
+		responseStatus.setResultObj(parametrosService.listaParametrovaccionesTipos());
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	

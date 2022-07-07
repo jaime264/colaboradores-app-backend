@@ -5,6 +5,7 @@ import java.util.List;
 import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametroTipo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
 
 public interface ParametrosService {
@@ -22,5 +23,7 @@ public interface ParametrosService {
 	List<ResponseParametro> listarParametrosVacacionesPorTipo(String codigoTipo);
 	
 	ResponseParametro actualizarParametroVacaciones(RequestParametroActualizacion parametro);
+	
+	List<ResponseParametroTipo> listaParametrovaccionesTipos();
 
 }

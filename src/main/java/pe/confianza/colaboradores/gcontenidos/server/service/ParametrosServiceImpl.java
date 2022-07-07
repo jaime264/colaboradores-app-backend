@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametroTipo;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.ParametroMapper;
@@ -20,6 +22,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.TipoParametro;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
+import pe.confianza.colaboradores.gcontenidos.server.util.VacacionesSubTipoParametro;
 
 @Service
 public class ParametrosServiceImpl implements ParametrosService {
@@ -95,6 +98,18 @@ public class ParametrosServiceImpl implements ParametrosService {
 			logger.error("[ERROR] actualizarParametroVacaciones", e);
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
 		}
+	}
+
+	@Override
+	public List<ResponseParametroTipo> listaParametrovaccionesTipos() {
+		List<ResponseParametroTipo> tipos = Arrays.asList(VacacionesSubTipoParametro.values()).stream()
+				.map(t -> {
+					ResponseParametroTipo response = new ResponseParametroTipo();
+					response.setCodigo(t.codigo);
+					response.setDescripcion(t.descripcion);
+					return response;
+				}).collect(Collectors.toList());
+		return tipos;
 	}
 
 }
