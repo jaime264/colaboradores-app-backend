@@ -225,8 +225,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	@Override
 	public Empleado getEmpleadoCorredorTerritorioBt(String usuarioBT) {
 		// TODO Auto-generated method stub
-		Empleado empleado = buscarPorUsuarioBT(usuarioBT);
-				
+		Empleado empleado = buscarPorUsuarioBT(usuarioBT);		
 		List<Territorio> territorios = new ArrayList<>();
 		
 		List<Corredor> corredores = corredorDao.listCorredor(empleado.getId());
@@ -237,8 +236,6 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		empleado.setCorredores(corredores);
 		empleado.setUnidadesOperativa(unidadesOperativas);
 		empleado.setTerritorios(territorios);		
-		
-		
 		
 		return empleado;
 	}

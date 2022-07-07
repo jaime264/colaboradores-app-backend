@@ -20,6 +20,7 @@ public class EmplVacPerRes {
 	private LocalDate fechaInicio;
 	private LocalDate fechaFin;
 	private Integer idEstado;
+	private String descripcionEstado;
 
 	@JsonIgnore
 	private String agencia;
@@ -29,7 +30,14 @@ public class EmplVacPerRes {
 	private List<Corredor> corredor;
 	@JsonIgnore
 	private List<UnidadOperativa> area;
-	
+
+	public String getDescripcionEstado() {
+		return descripcionEstado;
+	}
+
+	public void setDescripcionEstado(String descripcionEstado) {
+		this.descripcionEstado = descripcionEstado;
+	}
 
 	public String getNombres() {
 		return nombres;
