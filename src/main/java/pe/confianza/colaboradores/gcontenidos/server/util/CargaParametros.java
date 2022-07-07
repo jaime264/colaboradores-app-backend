@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -66,6 +67,20 @@ public class CargaParametros {
 		throw new AppException("Ya existe un parametro con el código " + nuevoParametro.getCodigo());
 	}
 	
+	public Parametro actualizarParametro(String codigo, String nuevoValor, String usuarioModifica) {
+		Parametro buscado = search(codigo);
+		if(buscado != null) {
+			buscado.setValor(nuevoValor);
+			buscado.setUsuarioModifica(usuarioModifica);
+			buscado.setFechaModifica(LocalDateTime.now());
+			buscado = parametrosDao.save(buscado);
+			populateParametros();
+			loadParametros();
+			return buscado;
+		}
+		return null;
+	}
+	
 	public Parametro search(String codigo) {
 		for (Parametro parametro : listParams) {
 			if(parametro.getCodigo().equals(codigo)) {
@@ -82,6 +97,13 @@ public class CargaParametros {
 			}
 		}
 		return null;
+	}
+	
+	public List<Parametro> listarPorTipoYSubTipo(String codigoTipo, String codigoSubtipo) {
+		List<Parametro> params = listParams.stream().filter(p -> p.getTipo().getCodigo().equals(codigoTipo) && codigoSubtipo.equals(p.getSubTipo()))
+				.collect(Collectors.toList());
+		params = params == null ? new ArrayList<>() : params;
+		return params;
 	}
 	
 	public List<Parametro> findAll() {

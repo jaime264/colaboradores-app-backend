@@ -12,12 +12,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 //import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.ApiOperation;
+import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestBuscarPorId;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
@@ -25,6 +30,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
 import pe.confianza.colaboradores.gcontenidos.server.service.ParametrosService;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
+import pe.confianza.colaboradores.gcontenidos.server.util.VacacionesSubTipoParametro;
 
 @RestController
 @RequestMapping("/api")
@@ -89,6 +95,36 @@ public class ParametrosController {
 			responseStatus.setMsgStatus(e.getMessage());
 			return new ResponseEntity<>(responseStatus, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+	
+	@ApiOperation(notes = "Consultar tipos de parametros para vacaciones", value = "url proxy /parametros/vacaciones/tipos")
+	@GetMapping("/parametros/vacaciones/tipos")
+	public ResponseEntity<ResponseStatus> listarTipoParametrosVacaciones() {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(VacacionesSubTipoParametro.values());
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+	
+	@ApiOperation(notes = "Consultar para de vacaciones por tipo", value = "url proxy /parametros/vacaciones/{tipo}")
+	@GetMapping("/parametros/vacaciones/{tipo}")
+	public ResponseEntity<ResponseStatus> listarParametrosVacacionesPorTipo(@PathVariable String tipo){
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(parametrosService.listarParametrosVacacionesPorTipo(tipo));
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+	
+	@ApiOperation(notes = "Actualizar parametro de vacaciones", value = "url proxy /parametros/vacaciones/actualizar")
+	@PutMapping("/parametros/vacaciones/actualizar")
+	public ResponseEntity<ResponseStatus> actualizarParametrosVacaciones(@Valid @RequestBody RequestParametroActualizacion request) {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(parametrosService.actualizarParametroVacaciones(request));
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 
 }

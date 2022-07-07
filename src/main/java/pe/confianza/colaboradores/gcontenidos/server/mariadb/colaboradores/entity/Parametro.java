@@ -25,6 +25,7 @@ public class Parametro extends EntidadAuditoria implements Serializable {
 	private String codigo;
 	private String valor;
 	private String descripcion;
+	private String subTipo;
 	
 	@ManyToOne
 	@JoinColumn(nullable = true, name = "idTipo")
@@ -70,6 +71,15 @@ public class Parametro extends EntidadAuditoria implements Serializable {
 		this.tipo = tipo;
 	}
 
+	public String getSubTipo() {
+		return subTipo;
+	}
+
+	public void setSubTipo(String subTipo) {
+		this.subTipo = subTipo;
+	}
+
+	
 
 
 }
