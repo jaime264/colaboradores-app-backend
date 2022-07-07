@@ -134,6 +134,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 				return actualizarInformacionEmpleado(usuarioBT);
 			} catch (Exception e) {
 				Empleado em = new Empleado();
+				em.setId(null);
 				return em;
 			}
 
