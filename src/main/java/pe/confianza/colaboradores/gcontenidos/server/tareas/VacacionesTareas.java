@@ -20,36 +20,12 @@ public class VacacionesTareas {
 	@Autowired
 	private VacacionesTareasProgramadasNegocio vacacionesTareasProgramadasService;
 	
-	@Scheduled(cron = "${vacaciones.programacion.actualizacion_estado}")
-	public void actualizarEstadoProgramaciones() {
-		LOGGER.info("[BEGIN] actualizarEstadoProgramaciones " + LocalDateTime.now());
-		vacacionesTareasProgramadasService.actualizarEstadoProgramaciones();
-		LOGGER.info("[END] actualizarEstadoProgramaciones " + LocalDateTime.now());
-	}
-	
-	@Scheduled(cron = "${vacaciones.programacion.actualizacion_periodos}")
-	public void actualizarPeridos() {
-		LOGGER.info("[BEGIN] actualizarEstadoProgramaciones " + LocalDateTime.now());
-		vacacionesTareasProgramadasService.actualizarPeriodos();
-		LOGGER.info("[END] actualizarEstadoProgramaciones " + LocalDateTime.now());
-	}
-	
-	@Scheduled(cron = "${vacaciones.programacion.consolidar_metas_anuales}")
-	public void calcularMetaAnual() {
-		LOGGER.info("[BEGIN] calcularMetaAnual " + LocalDateTime.now());
-		vacacionesTareasProgramadasService.consolidarMetasAnuales();
-		LOGGER.info("[END] calcularMetaAnual " + LocalDateTime.now());
-	}
-	
-	@Scheduled(cron = "${vacaciones.programacion.registro_notificaciones}")
-	public void registrarNotificacionesVacaciones() {
-		LOGGER.info("[BEGIN] registrarNotificacionesVacaciones " + LocalDateTime.now());
-		vacacionesTareasProgramadasService.registroNotificacionesInicioRegistroProgramacion();
-		vacacionesTareasProgramadasService.registroNotificacionesMetaNoCumplida();
-		vacacionesTareasProgramadasService.registroNotificacionesSinRegistroProgramacion();
-		vacacionesTareasProgramadasService.registroNotificacionesJefeColaboradoresSinRegistroProgramacion();
-		vacacionesTareasProgramadasService.registroNotificacionJefePendienteAprobacionProgramacion();
-		LOGGER.info("[END] registrarNotificacionesVacaciones " + LocalDateTime.now());
+	@Scheduled(cron = "${vacaciones.programacion.actualizaciones}")
+	public void actualizacionesVacaciones() {
+		actualizarEstadoProgramaciones();
+		actualizarPeridos();
+		calcularMetaAnual();
+		registrarNotificacionesVacaciones();
 	}
 	
 	@Scheduled(cron = "0 0/5 * * * ?") // Verificacion cada 5 minutos
@@ -58,6 +34,37 @@ public class VacacionesTareas {
 		vacacionesTareasProgramadasService.enviarNotificacionesAppPendienteVacaciones();
 		vacacionesTareasProgramadasService.enviarNotificacionesCorreoPendienteVacaciones();
 		LOGGER.info("[END] enviarNotificacionesVacaciones " + LocalDateTime.now());
+	}
+	
+	private void actualizarEstadoProgramaciones() {
+		LOGGER.info("[BEGIN] actualizarEstadoProgramaciones " + LocalDateTime.now());
+		vacacionesTareasProgramadasService.actualizarEstadoProgramaciones();
+		LOGGER.info("[END] actualizarEstadoProgramaciones " + LocalDateTime.now());
+	}
+	
+
+	private void actualizarPeridos() {
+		LOGGER.info("[BEGIN] actualizarEstadoProgramaciones " + LocalDateTime.now());
+		vacacionesTareasProgramadasService.actualizarPeriodos();
+		LOGGER.info("[END] actualizarEstadoProgramaciones " + LocalDateTime.now());
+	}
+	
+
+	private void calcularMetaAnual() {
+		LOGGER.info("[BEGIN] calcularMetaAnual " + LocalDateTime.now());
+		vacacionesTareasProgramadasService.consolidarMetasAnuales(true);
+		LOGGER.info("[END] calcularMetaAnual " + LocalDateTime.now());
+	}
+	
+
+	private void registrarNotificacionesVacaciones() {
+		LOGGER.info("[BEGIN] registrarNotificacionesVacaciones " + LocalDateTime.now());
+		vacacionesTareasProgramadasService.registroNotificacionesInicioRegistroProgramacion();
+		vacacionesTareasProgramadasService.registroNotificacionesMetaNoCumplida();
+		vacacionesTareasProgramadasService.registroNotificacionesSinRegistroProgramacion();
+		vacacionesTareasProgramadasService.registroNotificacionesJefeColaboradoresSinRegistroProgramacion();
+		vacacionesTareasProgramadasService.registroNotificacionJefePendienteAprobacionProgramacion();
+		LOGGER.info("[END] registrarNotificacionesVacaciones " + LocalDateTime.now());
 	}
 	
 }

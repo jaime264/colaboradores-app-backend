@@ -85,11 +85,18 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 	}
 
 	@Override
-	public void consolidarMetasAnuales() {
+	public void consolidarMetasAnuales(boolean prod) {
 		LOGGER.info("[BEGIN] consolidarMetasAnuales " + LocalDate.now());
 		LocalDate fechaActual = LocalDate.now();
 		LocalDate fechaCorte = cargaParametros.getFechaCorteMeta();
-		if(fechaActual.isAfter(fechaCorte)) {
+		if(prod) {
+			if(fechaActual.getDayOfMonth() == fechaCorte.getDayOfMonth() && fechaActual.getMonthValue() == fechaCorte.getMonthValue()) {
+				List<Empleado> lstEmpleado = empleadoService.listar();
+				lstEmpleado.forEach(e -> {
+					vacacionMetaService.consolidarMetaAnual(e, fechaCorte.getYear() + 1, "TAREA_PROGRAMADA");
+				});
+			}
+		} else {
 			List<Empleado> lstEmpleado = empleadoService.listar();
 			lstEmpleado.forEach(e -> {
 				vacacionMetaService.consolidarMetaAnual(e, fechaCorte.getYear() + 1, "TAREA_PROGRAMADA");

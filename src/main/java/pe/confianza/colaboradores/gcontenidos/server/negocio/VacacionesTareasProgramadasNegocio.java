@@ -6,7 +6,7 @@ public interface VacacionesTareasProgramadasNegocio {
 	
 	void actualizarPeriodos();
 	
-	void consolidarMetasAnuales();
+	void consolidarMetasAnuales(boolean prod);
 	
 	void registroNotificacionesInicioRegistroProgramacion();
 	
