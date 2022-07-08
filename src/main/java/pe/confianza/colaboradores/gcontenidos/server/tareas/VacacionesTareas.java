@@ -64,6 +64,7 @@ public class VacacionesTareas {
 		vacacionesTareasProgramadasService.registroNotificacionesSinRegistroProgramacion();
 		vacacionesTareasProgramadasService.registroNotificacionesJefeColaboradoresSinRegistroProgramacion();
 		vacacionesTareasProgramadasService.registroNotificacionJefePendienteAprobacionProgramacion();
+		vacacionesTareasProgramadasService.registrarNotificacionesReprogramacionMensual();
 		LOGGER.info("[END] registrarNotificacionesVacaciones " + LocalDateTime.now());
 	}
 	

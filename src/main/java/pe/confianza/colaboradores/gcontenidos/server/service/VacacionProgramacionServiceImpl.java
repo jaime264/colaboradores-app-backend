@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -445,6 +446,42 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		return programaciones;
 	}
 
+	@Override
+	public Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelI(int anio, String codigoAprobador) {
+		logger.info("[BEGIN] listarProgramacionesPorAnioYAprobadorNivelI {} {}", anio, codigoAprobador);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		LocalDate fechaInicio = LocalDate.parse("01/01/" + anio, formatter);
+		LocalDate fechaFin = LocalDate.parse("31/12/" + anio, formatter);
+		List<VacacionProgramacion> programaciones = vacacionProgramacionDao.findBetweenDatesAndAprobadorNivelI(fechaInicio, fechaFin,
+				codigoAprobador);
+		programaciones = programaciones == null ? new ArrayList<>() : programaciones;
+		Map<Empleado, List<VacacionProgramacion>> empleadosProg = new HashMap<>();
+		for (VacacionProgramacion prog : programaciones) {
+			if(empleadosProg.get(prog.getPeriodo().getEmpleado()) == null)
+				empleadosProg.put(prog.getPeriodo().getEmpleado(), new ArrayList<>());
+			empleadosProg.get(prog.getPeriodo().getEmpleado()).add(prog);
+		}		
+		logger.info("[END] listarProgramacionesPorAnioYAprobadorNivelI");
+		return empleadosProg;
+	}
 
+	@Override
+	public Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelII(int anio, String codigoAprobador) {
+		logger.info("[BEGIN] listarProgramacionesPorAnioYAprobadorNivelII {} {}", anio, codigoAprobador);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		LocalDate fechaInicio = LocalDate.parse("01/01/" + anio, formatter);
+		LocalDate fechaFin = LocalDate.parse("31/12/" + anio, formatter);
+		List<VacacionProgramacion> programaciones = vacacionProgramacionDao.findBetweenDates(fechaInicio, fechaFin,
+				codigoAprobador);
+		programaciones = programaciones == null ? new ArrayList<>() : programaciones;
+		Map<Empleado, List<VacacionProgramacion>> empleadosProg = new HashMap<>();
+		for (VacacionProgramacion prog : programaciones) {
+			if(empleadosProg.get(prog.getPeriodo().getEmpleado()) == null)
+				empleadosProg.put(prog.getPeriodo().getEmpleado(), new ArrayList<>());
+			empleadosProg.get(prog.getPeriodo().getEmpleado()).add(prog);
+		}
+		logger.info("[END] listarProgramacionesPorAnioYAprobadorNivelII");
+		return empleadosProg;
+	}
 
 }

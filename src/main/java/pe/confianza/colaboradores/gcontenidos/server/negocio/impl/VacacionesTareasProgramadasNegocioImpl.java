@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
-import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacionReprogramar;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.NotificacionTipo;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionAprobadorNivelI;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionMetaResumen;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionPeriodoResumen;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
@@ -27,6 +27,7 @@ import pe.confianza.colaboradores.gcontenidos.server.negocio.VacacionesTareasPro
 import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 import pe.confianza.colaboradores.gcontenidos.server.service.NotificacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.PeriodoVacacionService;
+import pe.confianza.colaboradores.gcontenidos.server.service.VacacionAprobadorService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionMetaResumenService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionMetaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionPeriodoResumenService;
@@ -66,6 +67,9 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 	
 	@Autowired
 	private VacacionPeriodoResumenService vacacionPeriodoResumenService;
+	
+	@Autowired
+	private VacacionAprobadorService vacacionAprobadorService;
 	
 	@Autowired
 	private EnvioNotificacionNegocio envioNotificacionNegocio;
@@ -365,6 +369,33 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 			}
 		}
 		LOGGER.info("[BEGIN] registrarNotificacionesReprogramacionMensual " + LocalDate.now());
+	}
+
+	@Override
+	public void enviarCorreoReporteAprobadorNivelI() {
+		LOGGER.info("[BEGIN] enviarCorreoReporteAprobadorNivelI " + LocalDate.now());
+		LocalDate fechaActual = LocalDate.now();
+		if(fechaActual.getDayOfMonth() >= cargaParametros.getDiaNotificacionReprogramacion()) {
+			LocalDate fechaFinReprogramacion = cargaParametros.getFechaFinReprogramacion();
+			int intervaloRecordatorios = cargaParametros.getIntervaloDiasRecordatorioVacaciones();
+			LocalDate fechaRecordatorio = fechaActual;
+			while (fechaRecordatorio.isBefore(fechaFinReprogramacion)) {
+				if (fechaRecordatorio.getDayOfWeek() != DayOfWeek.SATURDAY	&& fechaRecordatorio.getDayOfWeek() != DayOfWeek.SUNDAY) {
+					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES.valor);
+					if (opt.isPresent()) {
+						List<VacacionAprobadorNivelI> aprobadores = vacacionAprobadorService.listarAprobadoresNivelI();
+						for (VacacionAprobadorNivelI aprobador : aprobadores) {
+							Map<Empleado, List<VacacionProgramacion>> empleadoProg = vacacionProgramacionService.listarProgramacionesPorAnioYAprobadorNivelI(LocalDate.now().getYear(), aprobador.getCodigo());
+							
+						}
+					}
+					fechaRecordatorio = fechaRecordatorio.plusDays(intervaloRecordatorios);
+				} else {
+					fechaRecordatorio = fechaRecordatorio.plusDays(fechaRecordatorio.getDayOfWeek() == DayOfWeek.SATURDAY ? 2 : 1);
+				}
+			}
+		}
+		
 	}
 
 }

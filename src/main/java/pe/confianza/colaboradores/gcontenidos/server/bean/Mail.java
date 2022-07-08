@@ -1,5 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.bean;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class Mail {
@@ -7,7 +9,12 @@ public class Mail {
 	private String emisor;
 	private String receptor;
 	private String asunto;
+	private List<MailFile> adjuntos;
 	private Map<String, Object> contenido;
+	
+	public Mail() {
+		this.adjuntos = new ArrayList<>();
+	}
 	
 	public String getEmisor() {
 		return emisor;
@@ -32,6 +39,13 @@ public class Mail {
 	}
 	public void setContenido(Map<String, Object> contenido) {
 		this.contenido = contenido;
+	}
+	
+	public List<MailFile> getAdjuntos() {
+		return adjuntos;
+	}
+	public void setAdjuntos(List<MailFile> adjuntos) {
+		this.adjuntos = adjuntos;
 	}
 	@Override
 	public String toString() {

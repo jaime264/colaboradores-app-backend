@@ -8,6 +8,7 @@ import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmplVacPerRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFiltroVacacionesAprobacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionEmpleado;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
@@ -61,5 +62,9 @@ public interface VacacionProgramacionService {
 	List<Map<String, String>> listFilstrosVacacionAprobacion(RequestFiltroVacacionesAprobacion reqFiltros);
 	
 	List<VacacionProgramacion> listarProgramacionesPorAnio(int anio, String usuarioBT);
+	
+	Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelI(int anio, String codigoAprobador);
+	
+	Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelII(int anio, String codigoAprobador);
 	
 }

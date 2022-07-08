@@ -3,6 +3,7 @@ package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.enti
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -334,6 +335,25 @@ public class Empleado extends EntidadAuditoria {
 	
 	public String getNombreCompleto() {
 		return this.nombres + " " + this.apellidoPaterno + " " + this.apellidoMaterno;
+	}
+	
+	
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Empleado other = (Empleado) obj;
+		return Objects.equals(id, other.id);
 	}
 
 	@Override
