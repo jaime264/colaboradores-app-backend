@@ -22,4 +22,6 @@ public interface VacacionesTareasProgramadasNegocio {
 	
 	void enviarNotificacionesCorreoPendienteVacaciones();
 	
+	void registrarNotificacionesReprogramacionMensual();
+	
 }
