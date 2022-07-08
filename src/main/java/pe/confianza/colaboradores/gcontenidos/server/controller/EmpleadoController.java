@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import io.swagger.annotations.ApiOperation;
+import pe.confianza.colaboradores.gcontenidos.server.api.entity.CumpleanosRes;
 import pe.confianza.colaboradores.gcontenidos.server.bean.InstruccionAcademica;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAuditoria;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestEmpleado;
@@ -131,10 +132,10 @@ public class EmpleadoController {
 	@PostMapping("/empleado/getEmpleadofechaNacimiento")
 	public ResponseEntity<?> getEmpleadoFechaNacimiento() throws IOException {
 
-		List<Empleado> listEmpleado = empleadoService.findfechaNacimientoDeHoy();
+		List<CumpleanosRes> listEmpleado = empleadoService.findfechaNacimientoDeHoy();
 
 		logger.info("Lista empleado: " + listEmpleado.toString());
-		return new ResponseEntity<List<Empleado>>(listEmpleado, HttpStatus.OK);
+		return new ResponseEntity<List<CumpleanosRes>>(listEmpleado, HttpStatus.OK);
 	}
 	
 	@PostMapping("/empleado/get/codigo")

@@ -173,6 +173,14 @@ public class ComentarioServiceImpl implements ComentarioService {
 
 	@Override
 	public List<Comentario> listByActivo() {
+		
+		List<Comentario> listComentarios = comentarioDao.listByActivo(true);
+		
+		listComentarios.stream().forEach(c -> {
+			c.setPublicacionId(c.getPublicacion().getId());
+		});
+		
+		
 		return comentarioDao.listByActivo(true);
 		// return null;
 	}

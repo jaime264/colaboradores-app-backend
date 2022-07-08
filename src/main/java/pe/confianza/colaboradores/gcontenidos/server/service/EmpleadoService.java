@@ -3,6 +3,7 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 import java.util.List;
 import java.util.Optional;
 
+import pe.confianza.colaboradores.gcontenidos.server.api.entity.CumpleanosRes;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseTerminosCondiciones;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
@@ -17,7 +18,7 @@ public interface EmpleadoService {
 	
 	Empleado buscarPorCodigo(Long codigo);
 		
-	List<Empleado> findfechaNacimientoDeHoy();
+	List<CumpleanosRes> findfechaNacimientoDeHoy();
 	
 	int obtenerCantidadEmpleadosPorPuestoYUnidadNegocio(long codigoUnidadNegocio, String descripcionPuesto);
 	

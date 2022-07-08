@@ -17,6 +17,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmpleadoRes;
+import pe.confianza.colaboradores.gcontenidos.server.api.entity.CumpleanosRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.spring.EmpleadoApi;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseTerminosCondiciones;
@@ -144,8 +145,10 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	}
 
 	@Override
-	public List<Empleado> findfechaNacimientoDeHoy() {
+	public List<CumpleanosRes> findfechaNacimientoDeHoy() {
+		
 		List<Empleado> listEmp = new ArrayList<>();
+		List<CumpleanosRes> listCumpleanos = new ArrayList<>();
 
 		Instant instant = Instant.now();
 		ZonedDateTime limaQuitoTime = instant.atZone(ZoneId.of("-05:00"));
@@ -155,11 +158,20 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
 		try {
 			listEmp = empleadoDao.findfechaNacimientoDeHoy(mes, dia);
+			
+			listEmp.stream().forEach(e ->{
+				CumpleanosRes cumpleanos = new CumpleanosRes();
+				cumpleanos.setIdEmpleado(e.getId());
+				cumpleanos.setNombres(e.getNombreCompleto());
+				cumpleanos.setAgencia(e.getAgencia().getDescripcion());
+				listCumpleanos.add(cumpleanos);
+			});
+			
 		} catch (Exception e) {
 			e.getMessage();
 		}
 
-		return listEmp;
+		return listCumpleanos;
 	}
 
 	@Override
