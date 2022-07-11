@@ -152,7 +152,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 				if(fechaActual.getDayOfMonth() == fechaRecordatorio.getDayOfMonth() && fechaActual.getMonthValue() == fechaRecordatorio.getMonthValue()) {
 					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES.valor);
 					String titulo = "VACACIONES - META INCOMPLETA";
-					String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.inicio_programacion",
+					String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.meta_incompleta",
 							new Object[] { 0, anio });
 					if(opt.isPresent()) {
 						
@@ -178,7 +178,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 
 	@Override
 	public void registroNotificacionesSinRegistroProgramacion() {
-		LOGGER.info("[BEGIN] registroNotificacionesMetaNoCumplida " + LocalDate.now());
+		LOGGER.info("[BEGIN] registroNotificacionesSinRegistroProgramacion " + LocalDate.now());
 		LocalDate fechaActual = LocalDate.now();
 		LocalDate fechaInicioProgramacion = cargaParametros.getFechaInicioRegistroProgramacion();
 		LocalDate fechaFinProgramacion = cargaParametros.getFechaFinRegistroProgramacion();
@@ -211,7 +211,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 				fechaRecordatorio = fechaRecordatorio.plusDays(fechaRecordatorio.getDayOfWeek() == DayOfWeek.SATURDAY ? 2 : 1);
 			}			
 		}
-		LOGGER.info("[END] registroNotificacionesMetaNoCumplida " + LocalDate.now());
+		LOGGER.info("[END] registroNotificacionesSinRegistroProgramacion " + LocalDate.now());
 	}
 
 	@Override

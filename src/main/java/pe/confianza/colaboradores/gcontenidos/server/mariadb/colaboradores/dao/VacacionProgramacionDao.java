@@ -65,6 +65,9 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	@Procedure(name = "VacacionProgramacion.programacionContarPorPuesto")
 	long contarProgramacionPorEmpleadoPuesto(@Param("idEmpleado") long idEmpleado, @Param("descripcionPuesto") String descripcionPuesto, @Param("strFechaInicioProgramacion") String strFechaInicioProgramacion, @Param("strFechaFinProgramacion") String strFechaFinProgramacion);
 	
+	@Procedure(name = "VacacionProgramacion.programacionContarRedOperaciones")
+	long contarProgramacionPorEmpleadoRedOperaciones(@Param("idEmpleado") long idEmpleado, @Param("strFechaInicioProgramacion") String strFechaInicioProgramacion, @Param("strFechaFinProgramacion") String strFechaFinProgramacion, @Param("idProgReprogramar") Long idProgReprogramar);
+	
 	
 	@Procedure(name = "VacacionProgramacion.programacionContarPorAgencia")
 	long contarProgramacionPorEmpleadoAgencia(@Param("idEmpleado") long idEmpleado, @Param("descripcionPuesto") String descripcionPuesto, @Param("strFechaInicioProgramacion") String strFechaInicioProgramacion, @Param("strFechaFinProgramacion") String strFechaFinProgramacion, @Param("idProgReprogramar") Long idProgReprogramar);

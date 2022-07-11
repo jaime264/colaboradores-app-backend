@@ -307,4 +307,10 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		return empleadoDao.findById(id);
 	}
 
+
+	@Override
+	public long obtenerCantidadEmpleadosRedOperaciones() {
+		return empleadoDao.contarEmpleadosRedOperaciones();
+	}
+
 }

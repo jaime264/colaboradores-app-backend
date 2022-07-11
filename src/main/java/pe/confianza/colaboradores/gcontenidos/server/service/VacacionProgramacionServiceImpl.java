@@ -271,6 +271,18 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		return vacacionProgramacionDao.contarProgramacionPorEmpleadoAgencia(idEmpleado, descripcionPuesto,
 				strFechaInicio, strFechaFin, idProgReprogramar);
 	}
+	
+	@Override
+	public long contarProgramacionPorEmpleadoRedOperaciones(long idEmpleado, LocalDate fechaIncioProgramacion,
+			LocalDate fechaFinProgramacion, Long idProgReprogramar) {
+		logger.info("[BEGIN] contarProgramacionPorEmpleadoAgencia {}",
+				new Object[] { idEmpleado });
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		String strFechaInicio = fechaIncioProgramacion.format(formatter);
+		String strFechaFin = fechaFinProgramacion.format(formatter);
+		return vacacionProgramacionDao.contarProgramacionPorEmpleadoRedOperaciones(idEmpleado, strFechaInicio, strFechaFin,
+				idProgReprogramar);
+	}
 
 	@Override
 	public List<EmplVacPerRes> listEmpleadoByprogramacion(RequestProgramacionEmpleado reqPrograEmp) {
@@ -483,5 +495,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		logger.info("[END] listarProgramacionesPorAnioYAprobadorNivelII");
 		return empleadosProg;
 	}
+
+	
 
 }

@@ -57,6 +57,8 @@ public interface VacacionProgramacionService {
 	
 	long contarProgramacionPorEmpleadoAgencia(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion, Long idProgReprogramar);
 	
+	long contarProgramacionPorEmpleadoRedOperaciones(long idEmpleado, LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion, Long idProgReprogramar);
+	
 	List<EmplVacPerRes> listEmpleadoByprogramacion(RequestProgramacionEmpleado reqPrograEmp);
 	
 	List<Map<String, String>> listFilstrosVacacionAprobacion(RequestFiltroVacacionesAprobacion reqFiltros);

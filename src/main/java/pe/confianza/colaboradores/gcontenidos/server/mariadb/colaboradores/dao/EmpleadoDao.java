@@ -71,5 +71,9 @@ public interface EmpleadoDao extends JpaRepository<Empleado, Long> {
 	
 	@Query(value = "select (CASE WHEN SUM(cantidad_subordinados) IS NULL THEN 0 ELSE SUM(cantidad_subordinados) end)  from  vacaciones.aprobador_vacaciones_segundo_nivel where id = ?1", nativeQuery = true)
 	int obtenerCantidadSuborninadosNivel2(long idEmpleado);
+	
+
+	@Query(value =  "SELECT COUNT(*) FROM empleado_red_operaciones", nativeQuery = true)
+	long contarEmpleadosRedOperaciones();
 
 }
