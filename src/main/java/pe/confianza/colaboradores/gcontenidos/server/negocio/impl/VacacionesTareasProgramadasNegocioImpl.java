@@ -152,13 +152,13 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 				if(fechaActual.getDayOfMonth() == fechaRecordatorio.getDayOfMonth() && fechaActual.getMonthValue() == fechaRecordatorio.getMonthValue()) {
 					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES.valor);
 					String titulo = "VACACIONES - META INCOMPLETA";
-					String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.meta_incompleta",
-							new Object[] { 0, anio });
+					
 					if(opt.isPresent()) {
 						
 							List<VacacionMetaResumen> resumenes = vacacionMetaResumenService.listarResumenAnio(anio);
 							for (VacacionMetaResumen resumen : resumenes) {
 								if(resumen.getMeta() > 0) {
+									String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.meta_incompleta",resumen.getMeta(), anio);
 									Optional<Empleado> optEmpleado = empleadoService.buscarPorId(resumen.getEmpleadoId());
 									if(optEmpleado.isPresent()) {
 										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), "TAREA_PROGRAMADA");
