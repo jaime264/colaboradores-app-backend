@@ -1,5 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -24,11 +25,17 @@ public class VacacionPeriodoResumen {
 	private String nombres;
 	private String apellidoPaterno;
 	private String apellidoMaterno;
+	@Column(name = "aprobador_nivel1_id")
 	private Long aprobadorNivel1Id;
+	@Column(name = "aprobador_nivel1_usuariobt")
 	private String aprobadorNivel1Usuariobt;
+	@Column(name = "aprobador_nivel1_nombres")
 	private String aprobadorNivel1Nombres;
+	@Column(name = "aprobador_nivel1_apellido_paterno")
 	private String aprobadorNivel1ApellidoPaterno;
+	@Column(name = "aprobador_nivel1_apellido_materno")
 	private String aprobadorNivel1ApellidoMaterno;
+	@Column(name = "aprobador_nivel1_email")
 	private String aprobadorNivel1Email;
 	private Double meta;
 	private Double metaInicial;
