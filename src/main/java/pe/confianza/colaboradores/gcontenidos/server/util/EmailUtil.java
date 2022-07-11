@@ -62,7 +62,7 @@ public class EmailUtil {
 	            context.setVariables(mail.getContenido());
 	            String html = templateEngine.process("email/fc", context);
 
-	            helper.setTo(mail.getReceptor());
+	            helper.setTo(mail.getReceptor().trim());
 	            helper.setText(html, true);
 	            helper.setSubject(mail.getAsunto());
 	            helper.setFrom(mail.getEmisor());
