@@ -2,7 +2,6 @@ package pe.confianza.colaboradores.gcontenidos.server.negocio.impl;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -310,26 +309,30 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 		}
 		LOGGER.info("[END] registroNotificacionJefePendienteAprobacionProgramacion " + LocalDate.now());
 	}
+	
+	@Override
+	public void registrarNotificacionesAutomaticas() {
+		LOGGER.info("[BEGIN] registrarNotificacionesAutomaticas " + LocalDate.now());
+		registroNotificacionesInicioRegistroProgramacion();
+		registroNotificacionesMetaNoCumplida();
+		registroNotificacionesSinRegistroProgramacion();
+		registroNotificacionesJefeColaboradoresSinRegistroProgramacion();
+		registroNotificacionJefePendienteAprobacionProgramacion();
+		registrarNotificacionesReprogramacionMensual();
+		LOGGER.info("[END] registrarNotificacionesAutomaticas " + LocalDate.now());
+	}
 
 	@Override
 	public void enviarNotificacionesAppPendienteVacaciones() {
 		LOGGER.info("[BEGIN] enviarNotificacionesAppPendienteVacaciones " + LocalDate.now());
-		LocalDateTime ahora = LocalDateTime.now();
-		int horaEnvioNotificacion = cargaParametros.getHoraEnvioNotificacionVacaciones();
-		if(ahora.getHour() == horaEnvioNotificacion) {
-			envioNotificacionNegocio.enviarNotificacionesApp(TipoNotificacion.VACACIONES);
-		}
+		envioNotificacionNegocio.enviarNotificacionesApp(TipoNotificacion.VACACIONES);
 		LOGGER.info("[END] enviarNotificacionesAppPendienteVacaciones " + LocalDate.now());
 	}
 
 	@Override
 	public void enviarNotificacionesCorreoPendienteVacaciones() {
 		LOGGER.info("[BEGIN] enviarNotificacionesCorreoPendienteVacaciones " + LocalDate.now());
-		LocalDateTime ahora = LocalDateTime.now();
-		int horaEnvioNotificacion = cargaParametros.getHoraEnvioNotificacionVacaciones();
-		if(ahora.getHour() == horaEnvioNotificacion) {
-			envioNotificacionNegocio.enviarNotificacionesCorreo(TipoNotificacion.VACACIONES);
-		}
+		envioNotificacionNegocio.enviarNotificacionesCorreo(TipoNotificacion.VACACIONES);
 		LOGGER.info("[END] enviarNotificacionesCorreoPendienteVacaciones " + LocalDate.now());
 	}
 

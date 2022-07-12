@@ -8,6 +8,8 @@ public interface VacacionesTareasProgramadasNegocio {
 	
 	void consolidarMetasAnuales(boolean prod);
 	
+	void registrarNotificacionesAutomaticas();
+	
 	void registroNotificacionesInicioRegistroProgramacion();
 	
 	void registroNotificacionesMetaNoCumplida();
