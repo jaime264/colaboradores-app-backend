@@ -28,6 +28,12 @@ public class ComentarioController {
 	@Autowired
 	private ComentarioService comentarioService;
 	
+	@PostMapping("/comentario/getId")
+	public ResponseEntity<?> getComentario(Long idComentario) {
+		Comentario comentario = comentarioService.getComentario(idComentario);	
+	
+		return new ResponseEntity<Comentario>(comentario, HttpStatus.OK);
+	}
 	
 	@PostMapping("/comentario/list")
 	public ResponseEntity<List<Comentario>> list() {
