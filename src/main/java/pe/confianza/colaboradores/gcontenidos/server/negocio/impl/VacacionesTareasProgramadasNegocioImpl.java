@@ -2,12 +2,12 @@ package pe.confianza.colaboradores.gcontenidos.server.negocio.impl;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,18 +17,24 @@ import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.NotificacionTipo;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionAprobadorNivelI;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionMetaResumen;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionPeriodoResumen;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.EnvioNotificacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.VacacionesTareasProgramadasNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 import pe.confianza.colaboradores.gcontenidos.server.service.NotificacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.PeriodoVacacionService;
+import pe.confianza.colaboradores.gcontenidos.server.service.VacacionAprobadorService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionMetaResumenService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionMetaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionPeriodoResumenService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
+import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
+import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.util.MesesAnio;
 import pe.confianza.colaboradores.gcontenidos.server.util.TipoNotificacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
@@ -60,6 +66,9 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 	
 	@Autowired
 	private VacacionPeriodoResumenService vacacionPeriodoResumenService;
+	
+	@Autowired
+	private VacacionAprobadorService vacacionAprobadorService;
 	
 	@Autowired
 	private EnvioNotificacionNegocio envioNotificacionNegocio;
@@ -142,13 +151,13 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 				if(fechaActual.getDayOfMonth() == fechaRecordatorio.getDayOfMonth() && fechaActual.getMonthValue() == fechaRecordatorio.getMonthValue()) {
 					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES.valor);
 					String titulo = "VACACIONES - META INCOMPLETA";
-					String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.inicio_programacion",
-							new Object[] { 0, anio });
+					
 					if(opt.isPresent()) {
 						
 							List<VacacionMetaResumen> resumenes = vacacionMetaResumenService.listarResumenAnio(anio);
 							for (VacacionMetaResumen resumen : resumenes) {
 								if(resumen.getMeta() > 0) {
+									String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.meta_incompleta",resumen.getMeta(), anio);
 									Optional<Empleado> optEmpleado = empleadoService.buscarPorId(resumen.getEmpleadoId());
 									if(optEmpleado.isPresent()) {
 										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), "TAREA_PROGRAMADA");
@@ -168,7 +177,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 
 	@Override
 	public void registroNotificacionesSinRegistroProgramacion() {
-		LOGGER.info("[BEGIN] registroNotificacionesMetaNoCumplida " + LocalDate.now());
+		LOGGER.info("[BEGIN] registroNotificacionesSinRegistroProgramacion " + LocalDate.now());
 		LocalDate fechaActual = LocalDate.now();
 		LocalDate fechaInicioProgramacion = cargaParametros.getFechaInicioRegistroProgramacion();
 		LocalDate fechaFinProgramacion = cargaParametros.getFechaFinRegistroProgramacion();
@@ -201,7 +210,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 				fechaRecordatorio = fechaRecordatorio.plusDays(fechaRecordatorio.getDayOfWeek() == DayOfWeek.SATURDAY ? 2 : 1);
 			}			
 		}
-		LOGGER.info("[END] registroNotificacionesMetaNoCumplida " + LocalDate.now());
+		LOGGER.info("[END] registroNotificacionesSinRegistroProgramacion " + LocalDate.now());
 	}
 
 	@Override
@@ -300,27 +309,96 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 		}
 		LOGGER.info("[END] registroNotificacionJefePendienteAprobacionProgramacion " + LocalDate.now());
 	}
+	
+	@Override
+	public void registrarNotificacionesAutomaticas() {
+		LOGGER.info("[BEGIN] registrarNotificacionesAutomaticas " + LocalDate.now());
+		registroNotificacionesInicioRegistroProgramacion();
+		registroNotificacionesMetaNoCumplida();
+		registroNotificacionesSinRegistroProgramacion();
+		registroNotificacionesJefeColaboradoresSinRegistroProgramacion();
+		registroNotificacionJefePendienteAprobacionProgramacion();
+		registrarNotificacionesReprogramacionMensual();
+		LOGGER.info("[END] registrarNotificacionesAutomaticas " + LocalDate.now());
+	}
 
 	@Override
 	public void enviarNotificacionesAppPendienteVacaciones() {
 		LOGGER.info("[BEGIN] enviarNotificacionesAppPendienteVacaciones " + LocalDate.now());
-		LocalDateTime ahora = LocalDateTime.now();
-		int horaEnvioNotificacion = cargaParametros.getHoraEnvioNotificacionVacaciones();
-		if(ahora.getHour() == horaEnvioNotificacion) {
-			envioNotificacionNegocio.enviarNotificacionesApp(TipoNotificacion.VACACIONES);
-		}
+		envioNotificacionNegocio.enviarNotificacionesApp(TipoNotificacion.VACACIONES);
 		LOGGER.info("[END] enviarNotificacionesAppPendienteVacaciones " + LocalDate.now());
 	}
 
 	@Override
 	public void enviarNotificacionesCorreoPendienteVacaciones() {
 		LOGGER.info("[BEGIN] enviarNotificacionesCorreoPendienteVacaciones " + LocalDate.now());
-		LocalDateTime ahora = LocalDateTime.now();
-		int horaEnvioNotificacion = cargaParametros.getHoraEnvioNotificacionVacaciones();
-		if(ahora.getHour() == horaEnvioNotificacion) {
-			envioNotificacionNegocio.enviarNotificacionesCorreo(TipoNotificacion.VACACIONES);
-		}
+		envioNotificacionNegocio.enviarNotificacionesCorreo(TipoNotificacion.VACACIONES);
 		LOGGER.info("[END] enviarNotificacionesCorreoPendienteVacaciones " + LocalDate.now());
+	}
+
+	@Override
+	public void registrarNotificacionesReprogramacionMensual() {
+		LOGGER.info("[BEGIN] registrarNotificacionesReprogramacionMensual " + LocalDate.now());
+		LocalDate fechaActual = LocalDate.now();
+		if(fechaActual.getDayOfMonth() >= cargaParametros.getDiaNotificacionReprogramacion()) {
+			LocalDate fechaFinReprogramacion = cargaParametros.getFechaFinReprogramacion();
+			int intervaloRecordatorios = cargaParametros.getIntervaloDiasRecordatorioVacaciones();
+			LocalDate fechaRecordatorio = fechaActual;
+			while (fechaRecordatorio.isBefore(fechaFinReprogramacion)) {
+				if (fechaRecordatorio.getDayOfWeek() != DayOfWeek.SATURDAY	&& fechaRecordatorio.getDayOfWeek() != DayOfWeek.SUNDAY) {
+					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES.valor);
+					if (opt.isPresent()) {
+						List<Empleado> lstEmpleado = empleadoService.listar();
+						String titulo = "VACACIONES - PENDIENTES DE APROBACIÓN";
+						String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.reprogramacion", MesesAnio.buscarPorValor(fechaActual.getMonthValue() + 1));
+						for (Empleado empleado : lstEmpleado) {
+							if(empleado.getEstadoRegistro().equals(EstadoRegistro.ACTIVO.valor)) {
+								List<VacacionProgramacion> programaciones = vacacionProgramacionService.listarProgramacionesPorAnio(cargaParametros.getAnioPresente(), empleado.getUsuarioBT())
+										.stream()
+										.filter(p -> p.getIdEstado() == EstadoVacacion.APROBADO.id && p.getFechaFin().getMonthValue() == fechaActual.getMonthValue() + 1)
+										.collect(Collectors.toList());
+								programaciones = programaciones == null ? new ArrayList<>() : programaciones;
+								if(!programaciones.isEmpty()) {
+									notificacionService.registrar(titulo, descripcion, "", opt.get(), empleado, "TAREA_PROGRAMADA");
+								}
+							}
+						}
+					}
+					
+					fechaRecordatorio = fechaRecordatorio.plusDays(intervaloRecordatorios);
+				} else {
+					fechaRecordatorio = fechaRecordatorio.plusDays(fechaRecordatorio.getDayOfWeek() == DayOfWeek.SATURDAY ? 2 : 1);
+				}
+			}
+		}
+		LOGGER.info("[BEGIN] registrarNotificacionesReprogramacionMensual " + LocalDate.now());
+	}
+
+	@Override
+	public void enviarCorreoReporteAprobadorNivelI() {
+		LOGGER.info("[BEGIN] enviarCorreoReporteAprobadorNivelI " + LocalDate.now());
+		LocalDate fechaActual = LocalDate.now();
+		if(fechaActual.getDayOfMonth() >= cargaParametros.getDiaNotificacionReprogramacion()) {
+			LocalDate fechaFinReprogramacion = cargaParametros.getFechaFinReprogramacion();
+			int intervaloRecordatorios = cargaParametros.getIntervaloDiasRecordatorioVacaciones();
+			LocalDate fechaRecordatorio = fechaActual;
+			while (fechaRecordatorio.isBefore(fechaFinReprogramacion)) {
+				if (fechaRecordatorio.getDayOfWeek() != DayOfWeek.SATURDAY	&& fechaRecordatorio.getDayOfWeek() != DayOfWeek.SUNDAY) {
+					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES.valor);
+					if (opt.isPresent()) {
+						List<VacacionAprobadorNivelI> aprobadores = vacacionAprobadorService.listarAprobadoresNivelI();
+						for (VacacionAprobadorNivelI aprobador : aprobadores) {
+							Map<Empleado, List<VacacionProgramacion>> empleadoProg = vacacionProgramacionService.listarProgramacionesPorAnioYAprobadorNivelI(LocalDate.now().getYear(), aprobador.getCodigo());
+							
+						}
+					}
+					fechaRecordatorio = fechaRecordatorio.plusDays(intervaloRecordatorios);
+				} else {
+					fechaRecordatorio = fechaRecordatorio.plusDays(fechaRecordatorio.getDayOfWeek() == DayOfWeek.SATURDAY ? 2 : 1);
+				}
+			}
+		}
+		
 	}
 
 }

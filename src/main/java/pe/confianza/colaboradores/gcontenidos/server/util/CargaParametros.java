@@ -201,6 +201,12 @@ public class CargaParametros {
 		throw new AppException("No existe el parámetro de intervalo de días de recordatorio de vacaciones");
 	}
 	
+	public int getDiaNotificacionReprogramacion() {
+		if(DIA_NOTIFICACION_REPROGRAMACION != null)
+			return Integer.parseInt(DIA_NOTIFICACION_REPROGRAMACION);
+		throw new AppException("No existe el parámetro de día de envio notificación de reprogramación");
+	}
+	
 	// Parametros genericos
 	public String ANIO_PRESENTE = null;
 	
@@ -214,6 +220,7 @@ public class CargaParametros {
 	public String DIAS_MAXIMO_VACACIONES_ADELANTADAS = null;
 	public String MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS = null;
 	public String DIAS_INTERVALO_NOTIFICACIONES = null;
+	public String DIA_NOTIFICACION_REPROGRAMACION = null;
 	
 
 	@PostConstruct
@@ -234,6 +241,7 @@ public class CargaParametros {
 		DIAS_MAXIMO_VACACIONES_ADELANTADAS = populateParametro(ParametrosConstantes.Vacaciones.DIAS_MAXIMO_VACACIONES_ADELANTADAS);
 		MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS = populateParametro(ParametrosConstantes.Vacaciones.MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS);
 		DIAS_INTERVALO_NOTIFICACIONES = populateParametro(ParametrosConstantes.Vacaciones.DIAS_INTERVALO_NOTIFICACIONES);
+		DIA_NOTIFICACION_REPROGRAMACION = populateParametro(ParametrosConstantes.Vacaciones.DIA_NOTIFICACION_REPROGRAMACION);
 		
 		ANIO_PRESENTE = populateParametro(ParametrosConstantes.Genericos.ANIO_PRESENTE);
 		

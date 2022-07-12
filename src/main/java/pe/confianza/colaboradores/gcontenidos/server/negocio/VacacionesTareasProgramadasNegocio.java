@@ -8,6 +8,8 @@ public interface VacacionesTareasProgramadasNegocio {
 	
 	void consolidarMetasAnuales(boolean prod);
 	
+	void registrarNotificacionesAutomaticas();
+	
 	void registroNotificacionesInicioRegistroProgramacion();
 	
 	void registroNotificacionesMetaNoCumplida();
@@ -21,5 +23,9 @@ public interface VacacionesTareasProgramadasNegocio {
 	void enviarNotificacionesAppPendienteVacaciones();
 	
 	void enviarNotificacionesCorreoPendienteVacaciones();
+	
+	void registrarNotificacionesReprogramacionMensual();
+	
+	void enviarCorreoReporteAprobadorNivelI();
 	
 }

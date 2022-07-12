@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import pe.confianza.colaboradores.gcontenidos.server.negocio.VacacionesTareasProgramadasNegocio;
+import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 
 @Component
 @PropertySource("classpath:tareas-programadas.properties")
@@ -20,19 +21,26 @@ public class VacacionesTareas {
 	@Autowired
 	private VacacionesTareasProgramadasNegocio vacacionesTareasProgramadasService;
 	
+	@Autowired
+	private CargaParametros cargaParametros;
+	
 	@Scheduled(cron = "${vacaciones.programacion.actualizaciones}")
 	public void actualizacionesVacaciones() {
 		actualizarEstadoProgramaciones();
 		actualizarPeridos();
 		calcularMetaAnual();
-		registrarNotificacionesVacaciones();
 	}
 	
-	@Scheduled(cron = "0 0/5 * * * ?") // Verificacion cada 5 minutos
+	@Scheduled(cron = "0 0/50 * * * ?") // Verificacion cada 50  minutos
 	public void enviarNotificacionesVacaciones() {
 		LOGGER.info("[BEGIN] enviarNotificacionesVacaciones " + LocalDateTime.now());
-		vacacionesTareasProgramadasService.enviarNotificacionesAppPendienteVacaciones();
-		vacacionesTareasProgramadasService.enviarNotificacionesCorreoPendienteVacaciones();
+		LocalDateTime ahora = LocalDateTime.now();
+		int horaEnvioNotificacion = cargaParametros.getHoraEnvioNotificacionVacaciones();
+		if(ahora.getHour() == horaEnvioNotificacion) {
+			vacacionesTareasProgramadasService.registrarNotificacionesAutomaticas();
+			vacacionesTareasProgramadasService.enviarNotificacionesAppPendienteVacaciones();
+			vacacionesTareasProgramadasService.enviarNotificacionesCorreoPendienteVacaciones();
+		}
 		LOGGER.info("[END] enviarNotificacionesVacaciones " + LocalDateTime.now());
 	}
 	
@@ -54,17 +62,6 @@ public class VacacionesTareas {
 		LOGGER.info("[BEGIN] calcularMetaAnual " + LocalDateTime.now());
 		vacacionesTareasProgramadasService.consolidarMetasAnuales(true);
 		LOGGER.info("[END] calcularMetaAnual " + LocalDateTime.now());
-	}
-	
-
-	private void registrarNotificacionesVacaciones() {
-		LOGGER.info("[BEGIN] registrarNotificacionesVacaciones " + LocalDateTime.now());
-		vacacionesTareasProgramadasService.registroNotificacionesInicioRegistroProgramacion();
-		vacacionesTareasProgramadasService.registroNotificacionesMetaNoCumplida();
-		vacacionesTareasProgramadasService.registroNotificacionesSinRegistroProgramacion();
-		vacacionesTareasProgramadasService.registroNotificacionesJefeColaboradoresSinRegistroProgramacion();
-		vacacionesTareasProgramadasService.registroNotificacionJefePendienteAprobacionProgramacion();
-		LOGGER.info("[END] registrarNotificacionesVacaciones " + LocalDateTime.now());
 	}
 	
 }

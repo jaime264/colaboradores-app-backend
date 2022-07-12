@@ -15,6 +15,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.Mail;
+import pe.confianza.colaboradores.gcontenidos.server.bean.MailFile;
 
 @Component
 public class EmailUtil {
@@ -61,11 +62,15 @@ public class EmailUtil {
 	            context.setVariables(mail.getContenido());
 	            String html = templateEngine.process("email/fc", context);
 
-	            helper.setTo(mail.getReceptor());
+	            helper.setTo(mail.getReceptor().trim());
 	            helper.setText(html, true);
 	            helper.setSubject(mail.getAsunto());
 	            helper.setFrom(mail.getEmisor());
-
+	            if(mail.getAdjuntos() != null) {
+	            	for (MailFile adjunto : mail.getAdjuntos()) {
+	            		helper.addAttachment(adjunto.getNombreArchivo(), adjunto.getAttachmentSource(), adjunto.getContentType());
+					}
+	            }
 	            emailSender.send(message);
 	            LOGGER.info("[END] enviarEmail");
 	            return true;

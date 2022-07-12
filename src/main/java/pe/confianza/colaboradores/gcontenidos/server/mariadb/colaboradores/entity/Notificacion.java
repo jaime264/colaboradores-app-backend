@@ -20,7 +20,7 @@ public class Notificacion extends EntidadAuditoria {
 	@Column(nullable = false)
 	private String titulo;
 	
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition = "TEXT")
 	private String descripcion;
 	
 	@Column(nullable = false)

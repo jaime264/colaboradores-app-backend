@@ -97,6 +97,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			List<VacacionProgramacion> programaciones = obtenerPeriodo(empleado, vacacionProgramacion);
 			programaciones.forEach(prog -> {
 				prog.setEstado(EstadoVacacion.REGISTRADO);
+				prog.setCodigoEmpleado(empleado.getCodigo());
 				validarPoliticasRegulatorias(prog);
 				validarPoliticaBolsa(prog);
 				obtenerOrden(prog, usuarioOperacion);
@@ -293,14 +294,12 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		try {
 			Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioBT());
 			if (empleado == null)
-				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe",
-						new String[] { request.getUsuarioBT() }));
+				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", request.getUsuarioBT()));
 
 			LocalDate fechaConsulta = LocalDate.now();
 			VacacionMeta meta = vacacionMetaService.obtenerVacacionPorAnio(parametrosConstants.getMetaVacacionAnio(), empleado.getId());
 			if (meta == null)
-				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe",
-						new String[] { request.getUsuarioBT() }));
+				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", request.getUsuarioBT()));
 			LocalDate fechaCorte = parametrosConstants.getFechaCorteMeta();
 			ResponseResumenVacacion response = new ResponseResumenVacacion();
 			response.setFechaConsulta(fechaConsulta);
@@ -729,6 +728,14 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			if (cantidadProgramaciones > limite)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,
 						"vacaciones.politica.bolsa.operaciones.agencia.limite_error", limite + ""));
+			long cantidadEmpeadosRedOperaciones = empleadoService.obtenerCantidadEmpleadosRedOperaciones();
+			double limiteRedOperaciones = cantidadEmpeadosRedOperaciones * 0.12;
+			long cantidadProgramacionesRedComercial = vacacionProgramacionService.contarProgramacionPorEmpleadoRedOperaciones(empleado.getId(), 
+					programacion.getFechaInicio(), programacion.getFechaFin(), null);
+			cantidadProgramacionesRedComercial++;
+			if(cantidadProgramacionesRedComercial > limiteRedOperaciones)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.politica.bolsa.operaciones.limite_red", 12));
+			
 		}
 		/*Agencia agencia = empleado.getAgencia();
 		if (agencia.getDescripcion().contains("EOB")) { // AGENCIA TAMBO - TAMBO_PLUS

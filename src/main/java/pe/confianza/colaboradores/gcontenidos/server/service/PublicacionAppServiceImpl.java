@@ -386,7 +386,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		final Publicacion pub = guardar(publicacion);
 		if(pub == null)
 			throw new AppException("Ocurrió un error al registrar publiacción");
-		Optional<NotificacionTipo> tipoNot = notificacionService.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_GESTOR_CONTENIDO.valor);
+		Optional<NotificacionTipo> tipoNot = notificacionService.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APP.valor);
 		if(!tipoNot.isPresent())
 			throw new AppException("No se encontró el tipo de notificacion");
 		try {

@@ -31,5 +31,7 @@ public interface EmpleadoService {
 	List<ResponseAcceso> consultaAccesos(String usuarioBT);
 	
 	Optional<Empleado> buscarPorId(long id);
+	
+	long obtenerCantidadEmpleadosRedOperaciones();
 
 }

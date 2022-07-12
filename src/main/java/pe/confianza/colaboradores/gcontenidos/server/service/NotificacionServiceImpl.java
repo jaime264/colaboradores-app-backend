@@ -139,7 +139,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 			mail.setContenido(new HashMap<>());
 			mail.getContenido().put("empleado", "Hola, " + notificacion.getEmpleado().getNombres() + " " + notificacion.getEmpleado().getApellidoPaterno());
 			mail.getContenido().put("mensaje", notificacion.getDescripcion());
-			mail.setReceptor(notificacion.getEmpleado().getEmail());
+			mail.setReceptor(notificacion.getEmpleado().getEmail().trim());
 			mail.setEmisor("desarrollofc@confianza.pe");
 			if(emailUtil.enviarEmail(mail)) {
 				notificacion.setEnviadoCorreo(true);
