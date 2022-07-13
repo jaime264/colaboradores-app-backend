@@ -64,6 +64,11 @@ public class Video extends EntidadAuditoria  {
 	public void setActivo(Boolean activo) {
 		this.activo = activo;
 	}
+	@Override
+	public String toString() {
+		return "Video [id=" + id + ", activo=" + activo + "]";
+	}
 
+	
 	
 }

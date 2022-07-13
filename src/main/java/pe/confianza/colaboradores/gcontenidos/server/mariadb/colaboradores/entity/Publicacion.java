@@ -257,6 +257,13 @@ public class Publicacion extends EntidadAuditoria {
 	public void setGestorContenido(Boolean gestorContenido) {
 		this.gestorContenido = gestorContenido;
 	}
+
+	@Override
+	public String toString() {
+		return "Publicacion [id=" + id + ", Descripcion=" + Descripcion + ", flagAprobacion=" + flagAprobacion
+				+ ", videos=" + videos + ", imagenes=" + imagenes + ", gestorContenido=" + gestorContenido + "]";
+	}
+
 	
 	
 

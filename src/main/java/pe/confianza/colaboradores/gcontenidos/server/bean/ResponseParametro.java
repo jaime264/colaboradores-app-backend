@@ -6,6 +6,7 @@ public class ResponseParametro {
 	private String codigo;
 	private String valor;
 	private String descripcion;
+	private String unidad;
 	
 	public long getId() {
 		return id;
@@ -30,6 +31,12 @@ public class ResponseParametro {
 	}
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
+	}
+	public String getUnidad() {
+		return unidad;
+	}
+	public void setUnidad(String unidad) {
+		this.unidad = unidad;
 	}
 
 	

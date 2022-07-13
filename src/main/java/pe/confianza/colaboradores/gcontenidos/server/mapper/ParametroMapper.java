@@ -3,6 +3,7 @@ package pe.confianza.colaboradores.gcontenidos.server.mapper;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
+import pe.confianza.colaboradores.gcontenidos.server.util.ParametroUnidad;
 
 public class ParametroMapper {
 	
@@ -12,6 +13,7 @@ public class ParametroMapper {
 		destination.setDescripcion(source.getDescripcion());
 		destination.setValor(source.getValor().toString());
 		destination.setId(source.getId());
+		destination.setUnidad(ParametroUnidad.getDescripcionPorCodigo(source.getUnidad()));
 		return destination;
 	}
 	
