@@ -61,7 +61,6 @@ public class GestorContenidosServerApplication {
 		vacacioneTareas.actualizarEstadoProgramaciones();
 		vacacioneTareas.actualizarPeriodos();
 		vacacioneTareas.consolidarMetasAnuales(false);
-		vacacioneTareas.registrarNotificacionesAutomaticas();
 	}
 
 }
