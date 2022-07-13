@@ -220,7 +220,7 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 		for (RequestReprogramacionTramo tramo : request.getTramos()) {
 			if(tramo.getFechaInicio().isAfter(tramo.getFechaFin()))
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.rango_error"));
-			if(programacion.getPeriodo().programacionDentroPeriodoGoce(tramo.getFechaInicio(), tramo.getFechaFin()))
+			if(!programacion.getPeriodo().programacionDentroPeriodoGoce(tramo.getFechaInicio(), tramo.getFechaFin()))
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.validacion.fuera_limite_goce", programacion.getPeriodo().getDescripcion()));
 			diasReprogramados += Utilitario.obtenerDiferenciaDias(tramo.getFechaInicio(), tramo.getFechaFin());
 		}

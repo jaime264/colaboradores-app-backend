@@ -238,7 +238,7 @@ public class PeriodoVacacion extends EntidadAuditoria{
 	public boolean programacionDentroPeriodoGoce(LocalDate fechaInicio, LocalDate fechaFin) {
 		LocalDate fechaInicioPeriodo = this.fechaInicioPeriodo.minusDays(1);
 		LocalDate fechaMaximaGoce = this.fechaLimiteIndemnizacion.plusDays(1);
-		boolean respuesta = true;;
+		boolean respuesta = true;
 		if(fechaInicioPeriodo.isAfter(fechaInicio))
 			respuesta = false;
 		if(fechaMaximaGoce.isBefore(fechaFin))

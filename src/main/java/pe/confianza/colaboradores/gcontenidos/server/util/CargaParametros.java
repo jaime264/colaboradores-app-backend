@@ -151,7 +151,8 @@ public class CargaParametros {
 	public LocalDate getFechaInicioReprogramacion() {
 		if(DIA_INICIO_REPROGRAMACION != null) {
 			LocalDate fechaActual = LocalDate.now();
-			return LocalDate.parse(DIA_INICIO_REPROGRAMACION + "/" + (fechaActual.getMonthValue() < 10 ? "0" + fechaActual.getMonthValue() : fechaActual.getMonthValue()) + "/" + fechaActual.getYear(), formatter);
+			int diaInicio = Integer.parseInt(DIA_INICIO_REPROGRAMACION);
+			return LocalDate.parse((diaInicio < 10 ? "0" + diaInicio : diaInicio ) + "/" + (fechaActual.getMonthValue() < 10 ? "0" + fechaActual.getMonthValue() : fechaActual.getMonthValue()) + "/" + fechaActual.getYear(), formatter);
 		}
 		throw new AppException("No existe el parámetro de inicio de reprogramación");
 	}
