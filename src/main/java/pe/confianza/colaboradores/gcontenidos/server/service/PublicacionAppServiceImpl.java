@@ -1,5 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -398,28 +400,36 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		if(!tipoNot.isPresent())
 			throw new AppException("No se encontró el tipo de notificacion");
 		try {
-			List<Notificacion> notificaciones = new ArrayList<>();
-			request.getUsuarios().forEach(u -> {
-				Empleado empelado = empleadoService.buscarPorUsuarioBT(u.trim());
-				if(empelado.getId() != null) {
-					UsuarioPublicacion usuarioPublicacion = new UsuarioPublicacion();
-					usuarioPublicacion.setEmpleado(empelado);
-					usuarioPublicacion.setPublicacion(pubActual);
-					usuarioPublicacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
-					usuarioPublicacion.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
-					usuarioPublicacion.setUsuarioCrea(pubActual.getUsuarioBt());
-					usuarioPublicacion.setFechaCrea(LocalDateTime.now());
-					usuarioPublicacionDao.save(usuarioPublicacion);
-					
-					String extradata = generarExtraDataPublicacion(pubActual, empelado, 3);
-					notificaciones.add(notificacionService.registrar(
-							pub.getDescripcion(), pubActual.getDescripcion(), extradata, 
-							tipoNot.get(), empelado, pubActual.getUsuarioCrea()));
+			Empleado empleadoPublicador = empleadoService.buscarPorUsuarioBT(pub.getUsuarioBt());
+			if(empleadoPublicador != null) {
+				List<Notificacion> notificaciones = new ArrayList<>();
+				for (String u : request.getUsuarios()) {
+					Empleado empelado = empleadoService.buscarPorUsuarioBT(u.trim());
+					if(empelado.getId() != null) {
+						UsuarioPublicacion usuarioPublicacion = new UsuarioPublicacion();
+						usuarioPublicacion.setEmpleado(empelado);
+						usuarioPublicacion.setPublicacion(pubActual);
+						usuarioPublicacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
+						usuarioPublicacion.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
+						usuarioPublicacion.setUsuarioCrea(pubActual.getUsuarioBt());
+						usuarioPublicacion.setFechaCrea(LocalDateTime.now());
+						usuarioPublicacionDao.save(usuarioPublicacion);
+						
+						String extradata = generarExtraDataPublicacion(pubActual, empleadoPublicador, 3);
+						StringBuilder tituloSb = new StringBuilder().append(pubActual.getMenu()).append(" - ").append(pubActual.getSubmenu());
+						if(pubActual.getCategoria() != null) {
+							tituloSb.append(" - ").append(pub.getCategoria());
+						}
+						Notificacion not = notificacionService.registrar(
+								tituloSb.toString(), pubActual.getDescripcion(), extradata, 
+								tipoNot.get(), empelado, pubActual.getUsuarioCrea());
+						notificaciones.add(not);
+					}
 				}
-			});
+				envioNotificacionNegocio.enviarNotificacionesApp(notificaciones);
+				envioNotificacionNegocio.enviarNotificacionesCorreo(notificaciones);
+			}
 			
-			envioNotificacionNegocio.enviarNotificacionesApp(notificaciones);
-			envioNotificacionNegocio.enviarNotificacionesCorreo(notificaciones);
 		} catch (Exception e) {
 			logger.error("[ERROR] registro", e);
 			throw new AppException("Ocurrió un error al registrar usuario y notificación", e);
@@ -440,7 +450,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			publicacion.setActivo(true);
 			publicacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
 
-			Publicacion pub = publicacionAppDao.save(publicacion);
+			Publicacion pub = publicacionAppDao.saveAndFlush(publicacion);
 
 			List<Imagen> imagenes = new ArrayList<>();
 			List<Video> videos = new ArrayList<>();
@@ -481,7 +491,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		}
 	}
 	
-	private String generarExtraDataPublicacion(Publicacion pub, Empleado empleadoNotificar, int subTipo) {
+	private String generarExtraDataPublicacion(Publicacion pub, Empleado publicador, int subTipo) {
 		logger.info("[BEGIN] generarExtraDataPublicacion ");		
 		try {
 			NotificacionPublicacionDataExtra extraData = new NotificacionPublicacionDataExtra();
@@ -494,15 +504,15 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			extraData.setDescripcion(pub.getDescripcion());
 			extraData.setObservacion(pub.getObservacion());
 			extraData.setFlagAprobacion(pub.getFlagAprobacion());
-			extraData.setSexo(empleadoNotificar.getSexo());
-			extraData.setNombre(empleadoNotificar.getNombres() + " " + empleadoNotificar.getApellidoPaterno());
+			extraData.setSexo(publicador.getSexo());
+			extraData.setNombre(publicador.getNombres() + " " + publicador.getApellidoPaterno());
 			extraData.setGestorContenido(pub.getGestorContenido());
 			List<NotificacionPublicacionMediaDataExtra> imagenes = pub.getImagenes().stream().map(i -> {
 				NotificacionPublicacionMediaDataExtra media = new NotificacionPublicacionMediaDataExtra();
 				media.setUsuarioCrea(i.getUsuarioCrea());
-				media.setFechaCrea(i.getFechaCrea());
+				media.setFechaCrea(null);
 				media.setUsuarioModifica(i.getUsuarioModifica());
-				media.setFechaModifica(i.getFechaModifica());
+				media.setFechaModifica(null);
 				media.setEstadoRegistro(i.getEstadoRegistro());
 				media.setId(i.getId());
 				media.setActivo(i.getActivo());
@@ -512,9 +522,9 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			List<NotificacionPublicacionMediaDataExtra> videos = pub.getVideos().stream().map(i -> {
 				NotificacionPublicacionMediaDataExtra media = new NotificacionPublicacionMediaDataExtra();
 				media.setUsuarioCrea(i.getUsuarioCrea());
-				media.setFechaCrea(i.getFechaCrea());
+				media.setFechaCrea(null);
 				media.setUsuarioModifica(i.getUsuarioModifica());
-				media.setFechaModifica(i.getFechaModifica());
+				media.setFechaModifica(null);
 				media.setEstadoRegistro(i.getEstadoRegistro());
 				media.setId(i.getId());
 				media.setActivo(i.getActivo());
@@ -524,6 +534,8 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			extraData.getImagenes().addAll(imagenes);
 			extraData.getVideos().addAll(videos);
 			ObjectMapper objectMapper = new ObjectMapper();
+			DateFormat df = new SimpleDateFormat(Constantes.FORMATO_FECHA_HORA);
+			objectMapper.setDateFormat(df);
 			logger.info("[END] generarExtraDataPublicacion");
 			return objectMapper.writeValueAsString(extraData);
 		} catch (Exception e) {

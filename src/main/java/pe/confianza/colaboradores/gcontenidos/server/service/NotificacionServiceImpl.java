@@ -75,7 +75,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 	public Notificacion actualizar(Notificacion notificacion, String usuarioActualiza) {
 		notificacion.setFechaModifica(LocalDateTime.now());
 		notificacion.setUsuarioModifica(usuarioActualiza);
-		return notificacionDao.save(notificacion);
+		return notificacionDao.saveAndFlush(notificacion);
 	}
 
 	@Override
@@ -169,7 +169,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 		notificacion.setEnviadoCorreo(false);
 		notificacion.setVisto(false);
 		logger.info("[END] registrar");
-		return notificacionDao.save(notificacion);
+		return notificacionDao.saveAndFlush(notificacion);
 	}
 
 	@Override
