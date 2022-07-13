@@ -3,6 +3,7 @@ package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.enti
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -63,10 +64,12 @@ public class Publicacion extends EntidadAuditoria {
 	@OneToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
 	private List<Comentario> comentarios;
 
-	@OneToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "publicacion", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE,
+			CascadeType.REMOVE })
 	private List<Video> videos;
 
-	@OneToMany(mappedBy = "publicacion", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "publicacion", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE,
+			CascadeType.REMOVE })
 	private List<Imagen> imagenes;
 
 	@Column(nullable = true)

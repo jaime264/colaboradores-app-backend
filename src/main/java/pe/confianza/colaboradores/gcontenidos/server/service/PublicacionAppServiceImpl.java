@@ -385,22 +385,18 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		}
 	}
 
-	@Transactional
 	@Override
 	public ResponseStatus registro(RequestPublicacionGestorContenido request) {
 		logger.info("[BEGIN] registro");
 		Publicacion publicacion = PublicacionMapper.convert(request);
-		Publicacion pub = guardar(publicacion);
-		if(pub == null)
-			throw new AppException("Ocurrió un error al registrar publicación");
-		final Publicacion pubActual = publicacionById(pub.getId());
+		final Publicacion pubActual = guardar(publicacion);
 		if(pubActual == null)
 			throw new AppException("Ocurrió un error al registrar publicación");
 		Optional<NotificacionTipo> tipoNot = notificacionService.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APP.valor);
 		if(!tipoNot.isPresent())
 			throw new AppException("No se encontró el tipo de notificacion");
 		try {
-			Empleado empleadoPublicador = empleadoService.buscarPorUsuarioBT(pub.getUsuarioBt());
+			Empleado empleadoPublicador = empleadoService.buscarPorUsuarioBT(pubActual.getUsuarioBt());
 			if(empleadoPublicador != null) {
 				List<Notificacion> notificaciones = new ArrayList<>();
 				for (String u : request.getUsuarios()) {
@@ -418,7 +414,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 						String extradata = generarExtraDataPublicacion(pubActual, empleadoPublicador, 3);
 						StringBuilder tituloSb = new StringBuilder().append(pubActual.getMenu()).append(" - ").append(pubActual.getSubmenu());
 						if(pubActual.getCategoria() != null) {
-							tituloSb.append(" - ").append(pub.getCategoria());
+							tituloSb.append(" - ").append(pubActual.getCategoria());
 						}
 						Notificacion not = notificacionService.registrar(
 								tituloSb.toString(), pubActual.getDescripcion(), extradata, 
@@ -429,7 +425,6 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 				envioNotificacionNegocio.enviarNotificacionesApp(notificaciones);
 				envioNotificacionNegocio.enviarNotificacionesCorreo(notificaciones);
 			}
-			
 		} catch (Exception e) {
 			logger.error("[ERROR] registro", e);
 			throw new AppException("Ocurrió un error al registrar usuario y notificación", e);
@@ -437,11 +432,12 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		ResponseStatus response = new ResponseStatus();
 		response.setCodeStatus(Constantes.COD_OK);
 		response.setMsgStatus(Constantes.OK);
-		response.setResultObj(pub);
+		response.setResultObj(pubActual);
 		logger.info("[END] registro");
 		return response;
 	}
 	
+	@Transactional
 	private Publicacion guardar(Publicacion publicacion) {
 		logger.info("[BEGIN] guardar");
 		try {
@@ -450,41 +446,29 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			publicacion.setActivo(true);
 			publicacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
 
-			Publicacion pub = publicacionAppDao.saveAndFlush(publicacion);
-
-			List<Imagen> imagenes = new ArrayList<>();
-			List<Video> videos = new ArrayList<>();
-			if (pub.getImagenes() != null) {
-				for (Imagen e : pub.getImagenes()) {
-					Imagen imagen = new Imagen();
-					imagen.setPublicacion(pub);
+			if (publicacion.getImagenes() != null) {
+				for (Imagen imagen : publicacion.getImagenes()) {
+					imagen.setPublicacion(publicacion);
 					imagen.setFechaCrea(LocalDateTime.now());
-					imagen.setUrl(e.getUrl());
+					imagen.setUrl(imagen.getUrl());
 					imagen.setActivo(true);
-					imagen.setUsuarioCrea(pub.getUsuarioCrea());
+					imagen.setUsuarioCrea(publicacion.getUsuarioCrea());
 					imagen.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
-					imagenes.add(imagen);
 				}
 			}
 			
-			if (pub.getVideos() != null) {
-				for (Video e : pub.getVideos()) {
-					Video video = new Video();
-					video.setPublicacion(pub);
+			if (publicacion.getVideos() != null) {
+				for (Video video : publicacion.getVideos()) {
+					video.setPublicacion(publicacion);
 					video.setFechaCrea(LocalDateTime.now());
-					video.setUrl(e.getUrl());
+					video.setUrl(video.getUrl());
 					video.setActivo(true);
-					video.setUsuarioCrea(pub.getUsuarioCrea());
+					video.setUsuarioCrea(publicacion.getUsuarioCrea());
 					video.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
-					videos.add(video);
 				}
 			}
-			imagenDao.saveAll(imagenes);
-			videoDao.saveAll(videos);
-			pub.setImagenes(imagenes);
-			pub.setVideos(videos);
 			logger.info("[END] guardar");
-			return pub;
+			return publicacionAppDao.save(publicacion);
 		} catch (Exception e) {
 			logger.error("[ERROR] guardar", e);
 			return null;
@@ -507,32 +491,36 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			extraData.setSexo(publicador.getSexo());
 			extraData.setNombre(publicador.getNombres() + " " + publicador.getApellidoPaterno());
 			extraData.setGestorContenido(pub.getGestorContenido());
-			List<NotificacionPublicacionMediaDataExtra> imagenes = pub.getImagenes().stream().map(i -> {
-				NotificacionPublicacionMediaDataExtra media = new NotificacionPublicacionMediaDataExtra();
-				media.setUsuarioCrea(i.getUsuarioCrea());
-				media.setFechaCrea(null);
-				media.setUsuarioModifica(i.getUsuarioModifica());
-				media.setFechaModifica(null);
-				media.setEstadoRegistro(i.getEstadoRegistro());
-				media.setId(i.getId());
-				media.setActivo(i.getActivo());
-				media.setUrl(i.getUrl());
-				return media;
-			}).collect(Collectors.toList());
-			List<NotificacionPublicacionMediaDataExtra> videos = pub.getVideos().stream().map(i -> {
-				NotificacionPublicacionMediaDataExtra media = new NotificacionPublicacionMediaDataExtra();
-				media.setUsuarioCrea(i.getUsuarioCrea());
-				media.setFechaCrea(null);
-				media.setUsuarioModifica(i.getUsuarioModifica());
-				media.setFechaModifica(null);
-				media.setEstadoRegistro(i.getEstadoRegistro());
-				media.setId(i.getId());
-				media.setActivo(i.getActivo());
-				media.setUrl(i.getUrl());
-				return media;
-			}).collect(Collectors.toList());
-			extraData.getImagenes().addAll(imagenes);
-			extraData.getVideos().addAll(videos);
+			if(pub.getImagenes() !=null) {
+				List<NotificacionPublicacionMediaDataExtra> imagenes = pub.getImagenes().stream().map(i -> {
+					NotificacionPublicacionMediaDataExtra media = new NotificacionPublicacionMediaDataExtra();
+					media.setUsuarioCrea(i.getUsuarioCrea());
+					media.setFechaCrea(null);
+					media.setUsuarioModifica(i.getUsuarioModifica());
+					media.setFechaModifica(null);
+					media.setEstadoRegistro(i.getEstadoRegistro());
+					media.setId(i.getId());
+					media.setActivo(i.getActivo());
+					media.setUrl(i.getUrl());
+					return media;
+				}).collect(Collectors.toList());
+				extraData.getImagenes().addAll(imagenes);
+			}
+			if(pub.getVideos() !=null) {
+				List<NotificacionPublicacionMediaDataExtra> videos = pub.getVideos().stream().map(i -> {
+					NotificacionPublicacionMediaDataExtra media = new NotificacionPublicacionMediaDataExtra();
+					media.setUsuarioCrea(i.getUsuarioCrea());
+					media.setFechaCrea(null);
+					media.setUsuarioModifica(i.getUsuarioModifica());
+					media.setFechaModifica(null);
+					media.setEstadoRegistro(i.getEstadoRegistro());
+					media.setId(i.getId());
+					media.setActivo(i.getActivo());
+					media.setUrl(i.getUrl());
+					return media;
+				}).collect(Collectors.toList());
+				extraData.getVideos().addAll(videos);
+			}			
 			ObjectMapper objectMapper = new ObjectMapper();
 			DateFormat df = new SimpleDateFormat(Constantes.FORMATO_FECHA_HORA);
 			objectMapper.setDateFormat(df);
