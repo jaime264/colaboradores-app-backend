@@ -442,8 +442,10 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 			Publicacion pub = publicacionAppDao.save(publicacion);
 
+			List<Imagen> imagenes = new ArrayList<>();
+			List<Video> videos = new ArrayList<>();
 			if (pub.getImagenes() != null) {
-				pub.getImagenes().forEach(e -> {
+				for (Imagen e : pub.getImagenes()) {
 					Imagen imagen = new Imagen();
 					imagen.setPublicacion(pub);
 					imagen.setFechaCrea(LocalDateTime.now());
@@ -451,11 +453,12 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 					imagen.setActivo(true);
 					imagen.setUsuarioCrea(pub.getUsuarioCrea());
 					imagen.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
-					imagenDao.save(imagen);
-				});
+					imagenes.add(imagen);
+				}
 			}
+			
 			if (pub.getVideos() != null) {
-				pub.getVideos().forEach(e -> {
+				for (Video e : pub.getVideos()) {
 					Video video = new Video();
 					video.setPublicacion(pub);
 					video.setFechaCrea(LocalDateTime.now());
@@ -463,9 +466,13 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 					video.setActivo(true);
 					video.setUsuarioCrea(pub.getUsuarioCrea());
 					video.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
-					videoDao.save(video);
-				});
+					videos.add(video);
+				}
 			}
+			imagenDao.saveAll(imagenes);
+			videoDao.saveAll(videos);
+			pub.setImagenes(imagenes);
+			pub.setVideos(videos);
 			logger.info("[END] guardar");
 			return pub;
 		} catch (Exception e) {
