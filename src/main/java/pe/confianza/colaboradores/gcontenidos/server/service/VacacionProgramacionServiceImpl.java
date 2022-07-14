@@ -104,6 +104,9 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	public VacacionProgramacion actualizar(VacacionProgramacion programacion, String usuarioOperacion) {
 		programacion.setUsuarioModifica(usuarioOperacion);
 		programacion.setFechaModifica(LocalDateTime.now());
+		if(EstadoMigracion.EXPORTADO.valor.equals(programacion.getEstadoMigracion()) || EstadoMigracion.IMPORTADO.valor.equals(programacion.getEstadoMigracion())) {
+			programacion.setEstadoMigracion(EstadoMigracion.MODIFICADO.valor);
+		}
 		return vacacionProgramacionDao.saveAndFlush(programacion);
 	}
 
