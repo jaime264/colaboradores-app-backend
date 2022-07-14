@@ -1,9 +1,12 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -12,7 +15,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import pe.confianza.colaboradores.gcontenidos.server.api.spring.EmpleadoApi;
+import pe.confianza.colaboradores.gcontenidos.server.bean.NotificacionPublicacionDataExtra;
+import pe.confianza.colaboradores.gcontenidos.server.bean.NotificacionPublicacionMediaDataExtra;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestPublicacionGestorContenido;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
@@ -378,40 +385,46 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		}
 	}
 
-	@Transactional
 	@Override
 	public ResponseStatus registro(RequestPublicacionGestorContenido request) {
 		logger.info("[BEGIN] registro");
 		Publicacion publicacion = PublicacionMapper.convert(request);
-		final Publicacion pub = guardar(publicacion);
-		if(pub == null)
+		final Publicacion pubActual = guardar(publicacion);
+		if(pubActual == null)
 			throw new AppException("Ocurrió un error al registrar publicación");
 		Optional<NotificacionTipo> tipoNot = notificacionService.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APP.valor);
 		if(!tipoNot.isPresent())
 			throw new AppException("No se encontró el tipo de notificacion");
 		try {
-			List<Notificacion> notificaciones = new ArrayList<>();
-			request.getUsuarios().forEach(u -> {
-				logger.error("Buscar empleado {}" , u);
-				Empleado empelado = empleadoService.buscarPorUsuarioBT(u.trim());
-				if(empelado.getId() != null) {
-					UsuarioPublicacion usuarioPublicacion = new UsuarioPublicacion();
-					usuarioPublicacion.setEmpleado(empelado);
-					usuarioPublicacion.setPublicacion(pub);
-					usuarioPublicacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
-					usuarioPublicacion.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
-					usuarioPublicacion.setUsuarioCrea(pub.getUsuarioBt());
-					usuarioPublicacion.setFechaCrea(LocalDateTime.now());
-					usuarioPublicacionDao.save(usuarioPublicacion);
-					
-					notificaciones.add(notificacionService.registrar(
-							pub.getDescripcion(), pub.getDescripcion(), pub.getId() + "", 
-							tipoNot.get(), empelado, pub.getUsuarioCrea()));
+			Empleado empleadoPublicador = empleadoService.buscarPorUsuarioBT(pubActual.getUsuarioBt());
+			if(empleadoPublicador != null) {
+				List<Notificacion> notificaciones = new ArrayList<>();
+				for (String u : request.getUsuarios()) {
+					Empleado empelado = empleadoService.buscarPorUsuarioBT(u.trim());
+					if(empelado.getId() != null) {
+						UsuarioPublicacion usuarioPublicacion = new UsuarioPublicacion();
+						usuarioPublicacion.setEmpleado(empelado);
+						usuarioPublicacion.setPublicacion(pubActual);
+						usuarioPublicacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
+						usuarioPublicacion.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
+						usuarioPublicacion.setUsuarioCrea(pubActual.getUsuarioBt());
+						usuarioPublicacion.setFechaCrea(LocalDateTime.now());
+						usuarioPublicacionDao.save(usuarioPublicacion);
+						
+						String extradata = generarExtraDataPublicacion(pubActual, empleadoPublicador, 3);
+						StringBuilder tituloSb = new StringBuilder().append(pubActual.getMenu()).append(" - ").append(pubActual.getSubmenu());
+						if(pubActual.getCategoria() != null) {
+							tituloSb.append(" - ").append(pubActual.getCategoria());
+						}
+						Notificacion not = notificacionService.registrar(
+								tituloSb.toString(), pubActual.getDescripcion(), extradata, 
+								tipoNot.get(), empelado, pubActual.getUsuarioCrea());
+						notificaciones.add(not);
+					}
 				}
-			});
-			
-			envioNotificacionNegocio.enviarNotificacionesApp(notificaciones);
-			envioNotificacionNegocio.enviarNotificacionesCorreo(notificaciones);
+				envioNotificacionNegocio.enviarNotificacionesApp(notificaciones);
+				envioNotificacionNegocio.enviarNotificacionesCorreo(notificaciones);
+			}
 		} catch (Exception e) {
 			logger.error("[ERROR] registro", e);
 			throw new AppException("Ocurrió un error al registrar usuario y notificación", e);
@@ -419,11 +432,12 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		ResponseStatus response = new ResponseStatus();
 		response.setCodeStatus(Constantes.COD_OK);
 		response.setMsgStatus(Constantes.OK);
-		response.setResultObj(pub);
+		response.setResultObj(pubActual);
 		logger.info("[END] registro");
 		return response;
 	}
 	
+	@Transactional
 	private Publicacion guardar(Publicacion publicacion) {
 		logger.info("[BEGIN] guardar");
 		try {
@@ -432,37 +446,90 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			publicacion.setActivo(true);
 			publicacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
 
-			Publicacion pub = publicacionAppDao.save(publicacion);
-
-			if (pub.getImagenes() != null) {
-				pub.getImagenes().forEach(e -> {
-					Imagen imagen = new Imagen();
-					imagen.setPublicacion(pub);
+			if (publicacion.getImagenes() != null) {
+				for (Imagen imagen : publicacion.getImagenes()) {
+					imagen.setPublicacion(publicacion);
 					imagen.setFechaCrea(LocalDateTime.now());
-					imagen.setUrl(e.getUrl());
+					imagen.setUrl(imagen.getUrl());
 					imagen.setActivo(true);
-					imagen.setUsuarioCrea(pub.getUsuarioCrea());
+					imagen.setUsuarioCrea(publicacion.getUsuarioCrea());
 					imagen.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
-					imagenDao.save(imagen);
-				});
+				}
 			}
-			if (pub.getVideos() != null) {
-				pub.getVideos().forEach(e -> {
-					Video video = new Video();
-					video.setPublicacion(pub);
+			
+			if (publicacion.getVideos() != null) {
+				for (Video video : publicacion.getVideos()) {
+					video.setPublicacion(publicacion);
 					video.setFechaCrea(LocalDateTime.now());
-					video.setUrl(e.getUrl());
+					video.setUrl(video.getUrl());
 					video.setActivo(true);
-					video.setUsuarioCrea(pub.getUsuarioCrea());
+					video.setUsuarioCrea(publicacion.getUsuarioCrea());
 					video.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
-					videoDao.save(video);
-				});
+				}
 			}
 			logger.info("[END] guardar");
-			return pub;
+			return publicacionAppDao.save(publicacion);
 		} catch (Exception e) {
 			logger.error("[ERROR] guardar", e);
 			return null;
+		}
+	}
+	
+	private String generarExtraDataPublicacion(Publicacion pub, Empleado publicador, int subTipo) {
+		logger.info("[BEGIN] generarExtraDataPublicacion ");		
+		try {
+			NotificacionPublicacionDataExtra extraData = new NotificacionPublicacionDataExtra();
+			extraData.setSubTipo(subTipo);
+			extraData.setIdPublicacion(pub.getId());
+			extraData.setUsuarioCrea(pub.getUsuarioCrea());
+			extraData.setMenu(pub.getMenu());
+			extraData.setSubmenu(pub.getSubmenu());
+			extraData.setCategoria(pub.getCategoria());
+			extraData.setDescripcion(pub.getDescripcion());
+			extraData.setObservacion(pub.getObservacion());
+			extraData.setFlagAprobacion(pub.getFlagAprobacion());
+			extraData.setSexo(publicador.getSexo());
+			extraData.setNombre(publicador.getNombres() + " " + publicador.getApellidoPaterno());
+			extraData.setGestorContenido(pub.getGestorContenido());
+			if(pub.getImagenes() !=null) {
+				List<NotificacionPublicacionMediaDataExtra> imagenes = pub.getImagenes().stream().map(i -> {
+					NotificacionPublicacionMediaDataExtra media = new NotificacionPublicacionMediaDataExtra();
+					media.setUsuarioCrea(i.getUsuarioCrea());
+					media.setFechaCrea(null);
+					media.setUsuarioModifica(i.getUsuarioModifica());
+					media.setFechaModifica(null);
+					media.setEstadoRegistro(i.getEstadoRegistro());
+					media.setId(i.getId());
+					media.setActivo(i.getActivo());
+					media.setUrl(i.getUrl());
+					return media;
+				}).collect(Collectors.toList());
+				extraData.getImagenes().addAll(imagenes);
+			}
+			if(pub.getVideos() !=null) {
+				List<NotificacionPublicacionMediaDataExtra> videos = pub.getVideos().stream().map(i -> {
+					NotificacionPublicacionMediaDataExtra media = new NotificacionPublicacionMediaDataExtra();
+					media.setUsuarioCrea(i.getUsuarioCrea());
+					media.setFechaCrea(null);
+					media.setUsuarioModifica(i.getUsuarioModifica());
+					media.setFechaModifica(null);
+					media.setEstadoRegistro(i.getEstadoRegistro());
+					media.setId(i.getId());
+					media.setActivo(i.getActivo());
+					media.setUrl(i.getUrl());
+					return media;
+				}).collect(Collectors.toList());
+				extraData.getVideos().addAll(videos);
+			}			
+			ObjectMapper objectMapper = new ObjectMapper();
+			DateFormat df = new SimpleDateFormat(Constantes.FORMATO_FECHA_HORA);
+			objectMapper.setDateFormat(df);
+			logger.info("[END] generarExtraDataPublicacion");
+			return objectMapper.writeValueAsString(extraData);
+		} catch (Exception e) {
+			logger.error("[ERROR] " + pub.toString());
+			logger.error("[ERROR] generarExtraDataPublicacion", e);
+			return "";
 		}
 	}
 

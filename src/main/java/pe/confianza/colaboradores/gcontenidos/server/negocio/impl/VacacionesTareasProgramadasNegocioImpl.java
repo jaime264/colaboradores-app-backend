@@ -123,7 +123,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 		int anio = cargaParametros.getMetaVacacionAnio();
 		LocalDate fechaEnvioNotificaicon = fechaInicioProgramacion.minusDays(1);
 		if(fechaActual.getDayOfMonth() == fechaEnvioNotificaicon.getDayOfMonth() && fechaActual.getMonthValue() == fechaEnvioNotificaicon.getMonthValue()) {
-			Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES.valor);
+			Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
 			String titulo = "VACACIONES - INICIO PROGRAMACION";
 			String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.inicio_programacion",
 					new Object[] { anio, fechaInicioProgramacion.toString(), fechaFinProgramacion.toString() });
@@ -149,7 +149,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 		while (fechaRecordatorio.isBefore(fechaFinProgramacion)) {
 			if(fechaRecordatorio.getDayOfWeek() != DayOfWeek.SATURDAY && fechaRecordatorio.getDayOfWeek() != DayOfWeek.SUNDAY) {
 				if(fechaActual.getDayOfMonth() == fechaRecordatorio.getDayOfMonth() && fechaActual.getMonthValue() == fechaRecordatorio.getMonthValue()) {
-					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES.valor);
+					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
 					String titulo = "VACACIONES - META INCOMPLETA";
 					
 					if(opt.isPresent()) {
@@ -187,7 +187,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 		while (fechaRecordatorio.isBefore(fechaFinProgramacion)) {
 			if(fechaRecordatorio.getDayOfWeek() != DayOfWeek.SATURDAY && fechaRecordatorio.getDayOfWeek() != DayOfWeek.SUNDAY) {
 				if(fechaActual.getDayOfMonth() == fechaRecordatorio.getDayOfMonth() && fechaActual.getMonthValue() == fechaRecordatorio.getMonthValue()) {
-					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES.valor);
+					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
 					String titulo = "VACACIONES - META INCOMPLETA";
 					if(opt.isPresent()) {
 						
@@ -226,7 +226,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 		while (fechaRecordatorio.isBefore(fechaFinProgramacion)) {
 			if(fechaRecordatorio.getDayOfWeek() != DayOfWeek.SATURDAY && fechaRecordatorio.getDayOfWeek() != DayOfWeek.SUNDAY) {
 				if(fechaActual.getDayOfMonth() == fechaRecordatorio.getDayOfMonth() && fechaActual.getMonthValue() == fechaRecordatorio.getMonthValue()) {
-					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES.valor);
+					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_APROBADOR.valor);
 					if(opt.isPresent()) {
 						
 							List<VacacionPeriodoResumen> resumenes = vacacionPeriodoResumenService.listarPorAnio(anio);
@@ -277,7 +277,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 			if (fechaRecordatorio.getDayOfWeek() != DayOfWeek.SATURDAY	&& fechaRecordatorio.getDayOfWeek() != DayOfWeek.SUNDAY) {
 				if (fechaActual.getDayOfMonth() == fechaRecordatorio.getDayOfMonth()
 						&& fechaActual.getMonthValue() == fechaRecordatorio.getMonthValue()) {
-					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES.valor);
+					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_APROBADOR.valor);
 					if (opt.isPresent()) {
 						List<VacacionPeriodoResumen> resumenes = vacacionPeriodoResumenService.listarPorAnio(anio);
 						for (VacacionPeriodoResumen resumen : resumenes) {
@@ -325,14 +325,16 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 	@Override
 	public void enviarNotificacionesAppPendienteVacaciones() {
 		LOGGER.info("[BEGIN] enviarNotificacionesAppPendienteVacaciones " + LocalDate.now());
-		envioNotificacionNegocio.enviarNotificacionesApp(TipoNotificacion.VACACIONES);
+		envioNotificacionNegocio.enviarNotificacionesApp(TipoNotificacion.VACACIONES_APROBADOR);
+		envioNotificacionNegocio.enviarNotificacionesApp(TipoNotificacion.VACACIONES_COLABORADOR);
 		LOGGER.info("[END] enviarNotificacionesAppPendienteVacaciones " + LocalDate.now());
 	}
 
 	@Override
 	public void enviarNotificacionesCorreoPendienteVacaciones() {
 		LOGGER.info("[BEGIN] enviarNotificacionesCorreoPendienteVacaciones " + LocalDate.now());
-		envioNotificacionNegocio.enviarNotificacionesCorreo(TipoNotificacion.VACACIONES);
+		envioNotificacionNegocio.enviarNotificacionesCorreo(TipoNotificacion.VACACIONES_APROBADOR);
+		envioNotificacionNegocio.enviarNotificacionesCorreo(TipoNotificacion.VACACIONES_COLABORADOR);
 		LOGGER.info("[END] enviarNotificacionesCorreoPendienteVacaciones " + LocalDate.now());
 	}
 
@@ -346,7 +348,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 			LocalDate fechaRecordatorio = fechaActual;
 			while (fechaRecordatorio.isBefore(fechaFinReprogramacion)) {
 				if (fechaRecordatorio.getDayOfWeek() != DayOfWeek.SATURDAY	&& fechaRecordatorio.getDayOfWeek() != DayOfWeek.SUNDAY) {
-					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES.valor);
+					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
 					if (opt.isPresent()) {
 						List<Empleado> lstEmpleado = empleadoService.listar();
 						String titulo = "VACACIONES - PENDIENTES DE APROBACIÓN";
@@ -384,7 +386,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 			LocalDate fechaRecordatorio = fechaActual;
 			while (fechaRecordatorio.isBefore(fechaFinReprogramacion)) {
 				if (fechaRecordatorio.getDayOfWeek() != DayOfWeek.SATURDAY	&& fechaRecordatorio.getDayOfWeek() != DayOfWeek.SUNDAY) {
-					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES.valor);
+					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_APROBADOR.valor);
 					if (opt.isPresent()) {
 						List<VacacionAprobadorNivelI> aprobadores = vacacionAprobadorService.listarAprobadoresNivelI();
 						for (VacacionAprobadorNivelI aprobador : aprobadores) {

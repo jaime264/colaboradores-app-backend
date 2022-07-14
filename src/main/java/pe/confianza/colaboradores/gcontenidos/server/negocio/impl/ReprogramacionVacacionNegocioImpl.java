@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.negocio.impl;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -158,6 +159,8 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 				prog.setIdEstado(EstadoVacacion.REGISTRADO.id);
 				prog.setPeriodo(programacion.getPeriodo());
 				prog.setNumeroPeriodo((long)programacion.getPeriodo().getNumero());
+				prog.setUsuarioCrea(request.getUsuarioOperacion());
+				prog.setFechaCrea(LocalDateTime.now());
 				prog.calcularDias();
 				return prog;
 			}).collect(Collectors.toList());

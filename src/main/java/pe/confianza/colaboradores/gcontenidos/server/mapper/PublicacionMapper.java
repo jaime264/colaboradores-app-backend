@@ -14,7 +14,7 @@ public class PublicacionMapper {
 		Publicacion destination = new Publicacion();
 		destination.setDescripcion(source.getDescripcion());
 		destination.setUsuarioBt(source.getUsuarioBt().trim());
-		destination.setUsuarioCrea(source.getUsuarioBt());
+		destination.setUsuarioCrea(source.getUsuarioBt().trim());
 		destination.setFlagReacion(source.isFlagReacion());
 		destination.setFlagAprobacion(1);
 		destination.setFlagPermanente(source.isFlagPermanente());

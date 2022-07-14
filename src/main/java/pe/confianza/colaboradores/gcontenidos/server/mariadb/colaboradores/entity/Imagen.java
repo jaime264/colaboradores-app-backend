@@ -64,6 +64,10 @@ public class Imagen extends EntidadAuditoria  {
 	public void setActivo(Boolean activo) {
 		this.activo = activo;
 	}
+	@Override
+	public String toString() {
+		return "Imagen [id=" + id + ", activo=" + activo + "]";
+	}
 
 	
 }
