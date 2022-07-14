@@ -169,6 +169,8 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 				validarPoliticaBolsa(prog, programacion);
 				obtenerOrden(prog, programacion, usuarioOperacion);
 			});
+			programacion.setIdEstado(EstadoVacacion.REPROGRAMADO.id);
+			vacacionProgramacionService.actualizar(programacion, usuarioOperacion);
 			List<VacacionProgramacion> programacionesReprogramadas = vacacionProgramacionService.modificar(programaciones, usuarioOperacion);
 			List<Long> idsProgRegistradas = programacionesReprogramadas.stream().map(prog -> prog.getId()).collect(Collectors.toList());
 			List<Long> idsPeriodosModificados = programacionesReprogramadas.stream().map(prog -> prog.getPeriodo().getId()).distinct().collect(Collectors.toList());
