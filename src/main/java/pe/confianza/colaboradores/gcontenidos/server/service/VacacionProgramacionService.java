@@ -53,7 +53,7 @@ public interface VacacionProgramacionService {
 	
 	long contarProgramacionPorTerritorioEmpleadoPuesto(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion, Long idProgReprogramar);
 	
-	long contarProgramacionPorEmpleadoPuesto(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion);
+	long contarProgramacionPorEmpleadoPuesto(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion, Long idProgReprogramar);
 	
 	long contarProgramacionPorEmpleadoAgencia(long idEmpleado, String descripcionPuesto,LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion, Long idProgReprogramar);
 	

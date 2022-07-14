@@ -253,14 +253,14 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	@Override
 	public long contarProgramacionPorEmpleadoPuesto(long idEmpleado, String descripcionPuesto,
-			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion) {
+			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion, Long idProgReprogramar) {
 		logger.info("[BEGIN] contarProgramacionPorEmpleadoPuesto {} - {}",
 				new Object[] { idEmpleado, descripcionPuesto });
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String strFechaInicio = fechaIncioProgramacion.format(formatter);
 		String strFechaFin = fechaFinProgramacion.format(formatter);
 		return vacacionProgramacionDao.contarProgramacionPorEmpleadoPuesto(idEmpleado, descripcionPuesto,
-				strFechaInicio, strFechaFin);
+				strFechaInicio, strFechaFin, idProgReprogramar);
 	}
 
 	@Override

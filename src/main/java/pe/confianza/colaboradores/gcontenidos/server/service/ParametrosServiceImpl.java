@@ -22,6 +22,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mapper.ParametroMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.FuncionalidadApp;
+import pe.confianza.colaboradores.gcontenidos.server.util.ParametroUnidad;
 import pe.confianza.colaboradores.gcontenidos.server.util.TipoParametro;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 import pe.confianza.colaboradores.gcontenidos.server.util.VacacionesSubTipoParametro;
@@ -98,6 +99,11 @@ public class ParametrosServiceImpl implements ParametrosService {
 			Parametro parametroOld = parametrosConstants.search(parametro.getCodigo());
 			if(parametroOld == null)
 				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.no_encontrado", parametro.getCodigo()));
+			ParametroUnidad unidad = ParametroUnidad.buscar(parametro.getCodigo());
+			if(unidad == null)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"));
+			if(!ParametroUnidad.esValidoValor(unidad, parametro.getNuevoValor()))
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.formato_incorrecto"));
 			Parametro parametroNuevo = parametrosConstants.actualizarParametro(parametro.getCodigo(), parametro.getNuevoValor(), parametro.getUsuarioOperacion());
 			if(parametroNuevo == null)
 				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.no_encontrado", parametro.getCodigo()));

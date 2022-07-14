@@ -1,5 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.util;
 
+import java.text.SimpleDateFormat;
+
 public enum ParametroUnidad {
 	
 	DIAS("DIAS", "días", Integer.class),
@@ -29,6 +31,80 @@ public enum ParametroUnidad {
 				return unidad.descripcion;
 		}
 		return null;
+	}
+	
+	public static ParametroUnidad buscar(String codigo) {
+		for (ParametroUnidad unidad : ParametroUnidad.values()) {
+			if(unidad.codigo.equals(codigo))
+				return unidad;
+		}
+		return null;
+	}
+	
+	public static boolean esValidoValor(ParametroUnidad unidad, String valor) {
+		if(Integer.class == unidad.clazz) {
+			try {
+				int intValor = Integer.parseInt(valor);
+				if(ParametroUnidad.HORA.codigo.equals(valor)) {
+					if(intValor < 0 || intValor > 23)
+						return false;
+				}
+				if(ParametroUnidad.DIA_MES.codigo.equals(valor)) {
+					if(intValor < 1 || intValor > 30)
+						return false;
+				}
+				if(ParametroUnidad.INTERVALO_DIAS.codigo.equals(valor)) {
+					if(intValor < 0)
+						return false;
+				}
+				if(ParametroUnidad.DIAS.codigo.equals(valor)) {
+					if(intValor < 0)
+						return false;
+				}
+				if(ParametroUnidad.MESES.codigo.equals(valor)) {
+					if(intValor < 0)
+						return false;
+				}
+				return true;
+			} catch (Exception e) {
+				return false;
+			}
+		}
+		if(Double.class == unidad.clazz) {
+			try {
+				double dValor = Double.parseDouble(valor);
+				if(ParametroUnidad.PORCENTAJE.codigo.equals(valor)) {
+					if(dValor < 0 || dValor > 100)
+						return false;
+				}
+				return true;
+			} catch (Exception e) {
+				return false;
+			}
+		}
+		if(String.class == unidad.clazz) {
+			if(valor == null)
+				return false;
+			if(valor.length() == 0)
+				return false;
+			if(ParametroUnidad.DIA_MES_FECHA.codigo.equals(unidad.codigo)) {
+				if(!valor.contains("/"))
+					return false;
+				String[] fecha = valor.split("/");
+				if(fecha.length != 2)
+					return false;
+				try {
+					int dia = Integer.parseInt(fecha[0]);
+					int mes = Integer.parseInt(fecha[1]);
+					String diaMes = (dia < 10 ? "0"+dia : dia) + "/" + ( mes < 10 ? "0"+mes : mes) + "/2020";
+					new SimpleDateFormat("dd/MM/yyyy").parse(diaMes);
+					return true;
+				} catch (Exception e) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 }

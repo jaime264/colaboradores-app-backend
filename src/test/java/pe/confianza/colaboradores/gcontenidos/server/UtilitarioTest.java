@@ -100,5 +100,15 @@ public class UtilitarioTest {
 		LocalDate fecha2 = LocalDate.parse("19/09/2022", formatter);
 		System.out.println(Utilitario.fechaEntrePeriodo(fechaInicio, fechaFIn, fecha2));
 	}
+	
+	@Test
+	public void Test() {
+		String t = "01";
+		try {
+			System.out.println(Integer.parseInt(t));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 }
