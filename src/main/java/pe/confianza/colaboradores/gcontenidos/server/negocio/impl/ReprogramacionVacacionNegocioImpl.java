@@ -156,7 +156,7 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 			String usuarioOperacion = request.getUsuarioOperacion().trim();
 			List<VacacionProgramacion> programaciones = request.getTramos().stream().map(t -> {
 				VacacionProgramacion prog = VacacionProgramacionMapper.convert(t, programacion);
-				prog.setIdEstado(EstadoVacacion.REGISTRADO.id);
+				prog.setIdEstado(EstadoVacacion.GENERADO.id);
 				prog.setPeriodo(programacion.getPeriodo());
 				prog.setNumeroPeriodo((long)programacion.getPeriodo().getNumero());
 				prog.setUsuarioCrea(request.getUsuarioOperacion());
