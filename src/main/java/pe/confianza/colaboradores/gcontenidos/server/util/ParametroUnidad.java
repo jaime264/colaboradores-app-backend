@@ -2,13 +2,15 @@ package pe.confianza.colaboradores.gcontenidos.server.util;
 
 public enum ParametroUnidad {
 	
-	MESES("MESES", "Meses", Integer.class),
-	ANIO("ANIO", "Años", Integer.class),
+	DIAS("DIAS", "días", Integer.class),
+	MESES("MESES", "meses", Integer.class),
+	ANIO("ANIO", "años", Integer.class),
 	DIA_MES_FECHA("DIA_MES_FECHA","Dia/Mes", String.class),
 	INTERVALO_DIAS("INTERVALO_DIAS", "Días", Integer.class),
-	HORA("HORA", "Hora", Integer.class),
-	DIA_MES("DIA_MES", "de cada mes", String.class),
+	HORA("HORA", "hora", Integer.class),
+	DIA_MES("DIA_MES", "de cada mes", Integer.class),
 	TEXTO_GENERAL("TEXTO_GENERAL", "", String.class ),
+	NUMERO_GENERAL("NUMERO_GENERAL", "", String.class ),
 	PORCENTAJE("PORCENTAJE", "%", Double.class);
 	
 	public String codigo;
