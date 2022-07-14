@@ -97,6 +97,12 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		Publicacion pub = guardar(publicacion);
 		if(pub != null) {
 			status.setCodeStatus(200);
+			//registrar las veces de la cantidad de empleados aprobadores
+//			notificacionService.registrar(null, null, null, null, null, null);
+//		
+//			notificacionService.enviarNotificacionApp(null);
+//						
+//			envioNotificacionNegocio.enviarNotificacionesCorreo(null);
 		} else {
 			status.setCodeStatus(500);
 		}
@@ -190,13 +196,13 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		for (Publicacion p : listP) {
 			Empleado emp = empleadoService.buscarPorUsuarioBT(p.getUsuarioBt());
 
-			p.setNombre(emp.getNombres() + " " + emp.getApellidoPaterno() + " " + emp.getApellidoMaterno());
+			p.setNombre(emp.getNombreCompleto());
 			p.setSexo(emp.getSexo());
 
 			for (Comentario c : p.getComentarios()) {
 				Empleado emC = empleadoService.buscarPorUsuarioBT(c.getUsuarioBt());
 
-				c.setNombre(emC.getNombres() + " " + emC.getApellidoPaterno() + " " + emC.getApellidoMaterno());
+				c.setNombre(emC.getNombreCompleto());
 				c.setSexo(emC.getSexo());
 			}
 		}

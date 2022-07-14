@@ -49,7 +49,17 @@ public class ComentarioServiceImpl implements ComentarioService {
 
 	@Override
 	public List<Comentario> listByIdPublicacion(Long idPublicacion) {
-		return comentarioDao.findByPublicacion(idPublicacion, true);
+		
+		List<Comentario> listComentarios = comentarioDao.findByPublicacion(idPublicacion, true);
+		
+		listComentarios.stream().forEach(c -> {
+			Empleado emp = empleadoService.buscarPorUsuarioBT(c.getUsuarioBt());
+			c.setPublicacionId(c.getPublicacion().getId());
+			c.setNombre(emp.getNombreCompleto());
+			c.setSexo(emp.getSexo());
+		});
+		
+		return listComentarios;
 	}
 
 	@Override
