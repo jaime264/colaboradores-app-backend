@@ -15,6 +15,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.O
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PublicacionAppDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VideoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Comentario;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Imagen;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.OcultarComentario;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Publicacion;
@@ -37,6 +38,9 @@ public class ComentarioServiceImpl implements ComentarioService {
 	
 	@Autowired
 	OcultarComentarioDao ocultarComentarioDao;
+	
+	@Autowired
+	EmpleadoService empleadoService;
 
 	@Override
 	public List<Comentario> list() {
@@ -45,7 +49,17 @@ public class ComentarioServiceImpl implements ComentarioService {
 
 	@Override
 	public List<Comentario> listByIdPublicacion(Long idPublicacion) {
-		return comentarioDao.findByPublicacion(idPublicacion, true);
+		
+		List<Comentario> listComentarios = comentarioDao.findByPublicacion(idPublicacion, true);
+		
+		listComentarios.stream().forEach(c -> {
+			Empleado emp = empleadoService.buscarPorUsuarioBT(c.getUsuarioBt());
+			c.setPublicacionId(c.getPublicacion().getId());
+			c.setNombre(emp.getNombreCompleto());
+			c.setSexo(emp.getSexo());
+		});
+		
+		return listComentarios;
 	}
 
 	@Override
@@ -177,7 +191,10 @@ public class ComentarioServiceImpl implements ComentarioService {
 		List<Comentario> listComentarios = comentarioDao.listByActivo(true);
 		
 		listComentarios.stream().forEach(c -> {
+			Empleado emp = empleadoService.buscarPorUsuarioBT(c.getUsuarioBt());
 			c.setPublicacionId(c.getPublicacion().getId());
+			c.setNombre(emp.getNombreCompleto());
+			c.setSexo(emp.getSexo());
 		});
 		
 		
@@ -234,6 +251,17 @@ public class ComentarioServiceImpl implements ComentarioService {
 		}
 		// TODO Auto-generated method stub
 		return status;
+	}
+
+	@Override
+	public Comentario getComentario(Long id) {
+		Optional<Comentario> cm = comentarioDao.findById(id);
+		Empleado emp = empleadoService.buscarPorUsuarioBT(cm.get().getUsuarioBt());
+		cm.get().setPublicacionId(cm.get().getPublicacion().getId());
+		cm.get().setNombre(emp.getNombreCompleto());
+		cm.get().setSexo(emp.getSexo());
+		
+		return cm.get();
 	}
 
 }

@@ -13,6 +13,8 @@ public interface ComentarioService {
 	
 	public List<Comentario> listByActivo();
 	
+	public Comentario getComentario(Long id);
+	
 	public List<Comentario> listByIdPublicacion(Long idPublicacion);
 
 	public ResponseStatus add(Comentario comentario);
