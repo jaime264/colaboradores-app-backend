@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -29,6 +30,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.UnidadNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionMeta;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionReprogramacionContador;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ReprogramacionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
@@ -36,6 +38,7 @@ import pe.confianza.colaboradores.gcontenidos.server.service.PeriodoVacacionServ
 import pe.confianza.colaboradores.gcontenidos.server.service.UnidadNegocioService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionMetaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
+import pe.confianza.colaboradores.gcontenidos.server.service.VacacionReprogramacionContadorService;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
@@ -72,6 +75,9 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 	
 	@Autowired
 	private ProgramacionVacacionNegocio programacionVacacionNegocio;
+	
+	@Autowired
+	private VacacionReprogramacionContadorService vacacionReprogramacionContadorService;
 	
 	@Override
 	public List<ResponseProgramacionVacacionReprogramar> programacionAnual(RequestConsultaVacacionesReprogramar request) {
@@ -150,10 +156,11 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.estado_error", cargaParametros.getEstadoProgramacionDescripcion(EstadoVacacion.APROBADO.id)));
 			if(programacion.getFechaFin().getMonthValue() != (LocalDate.now().getMonthValue() + 1))
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.mes_error"));
+			String usuarioOperacion = request.getUsuarioOperacion().trim();
+			validarCantidadReprogramaciones(programacion.getPeriodo().getEmpleado(), usuarioOperacion);
 			validarPeriodoReprogramacion();
 			validarPermisoReprogramar(programacion, request.getUsuarioOperacion());
 			validarDiasReprogramados(programacion, request);
-			String usuarioOperacion = request.getUsuarioOperacion().trim();
 			List<VacacionProgramacion> programaciones = request.getTramos().stream().map(t -> {
 				VacacionProgramacion prog = VacacionProgramacionMapper.convert(t, programacion);
 				prog.setIdEstado(EstadoVacacion.GENERADO.id);
@@ -171,6 +178,7 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 			});
 			programacion.setIdEstado(EstadoVacacion.REPROGRAMADO.id);
 			vacacionProgramacionService.actualizar(programacion, usuarioOperacion);
+			actualizarCantidadReprogramaciones(programacion.getPeriodo().getEmpleado(), usuarioOperacion);
 			List<VacacionProgramacion> programacionesReprogramadas = vacacionProgramacionService.modificar(programaciones, usuarioOperacion);
 			List<Long> idsProgRegistradas = programacionesReprogramadas.stream().map(prog -> prog.getId()).collect(Collectors.toList());
 			List<Long> idsPeriodosModificados = programacionesReprogramadas.stream().map(prog -> prog.getPeriodo().getId()).distinct().collect(Collectors.toList());
@@ -202,9 +210,9 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 		logger.info("[BEGIN] validarPeriodoReprogramacion");
 		LocalDate fechaActual = LocalDate.now();
 		if(fechaActual.isBefore(cargaParametros.getFechaInicioReprogramacion()))
-			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.fuera_fecha", new String[] { cargaParametros.DIA_INICIO_REPROGRAMACION, cargaParametros.DIA_FIN_REPROGRAMACION}));
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.fuera_fecha",  cargaParametros.DIA_INICIO_REPROGRAMACION, cargaParametros.DIA_FIN_REPROGRAMACION));
 		if(fechaActual.isAfter(cargaParametros.getFechaFinReprogramacion()))
-			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.fuera_fecha", new String[] { cargaParametros.DIA_INICIO_REPROGRAMACION, cargaParametros.DIA_FIN_REPROGRAMACION}));
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.fuera_fecha", cargaParametros.DIA_INICIO_REPROGRAMACION, cargaParametros.DIA_FIN_REPROGRAMACION));
 		logger.info("[END] validarPeriodoReprogramacion");
 	}
 
@@ -458,6 +466,33 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 		periodoVacacionService.consolidarResumenDias(idPeriodo, usuarioOperacion);
 		periodoVacacionService.actualizarPeriodo(empleado, idPeriodo, usuarioOperacion);
 		logger.info("[END] actualizarPeriodo");
+	}
+
+	@Override
+	public void validarCantidadReprogramaciones(Empleado empleado, String usuarioOperacion) {
+		logger.info("[BEGIN] validarCantidadReprogramaciones");
+		LocalDate fechaActual = LocalDate.now();
+		int reprogramacionesMaxima = cargaParametros.getCantidadMaximaReprogramacionAnio();
+		VacacionReprogramacionContador contador = null;
+		Optional<VacacionReprogramacionContador> opt = vacacionReprogramacionContadorService.obtenerPorEmpleadoAndAnio(empleado, fechaActual.getYear());
+		if(opt.isPresent()) {
+			contador = opt.get();
+		} else {
+			contador = vacacionReprogramacionContadorService.registrar(empleado.getId(), fechaActual.getYear(), usuarioOperacion);
+		}
+		if(contador == null)
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"));
+		if(contador.getReprogramaciones() == reprogramacionesMaxima)
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.limite_anio", reprogramacionesMaxima));
+		logger.info("[END] validarCantidadReprogramaciones");
+	}
+
+	@Override
+	public void actualizarCantidadReprogramaciones(Empleado empleado, String usuarioOperacion) {
+		logger.info("[BEGIN] actualizarCantidadReprogramaciones");
+		LocalDate fechaActual = LocalDate.now();
+		vacacionReprogramacionContadorService.actualizarContador(empleado.getId(), fechaActual.getYear(), usuarioOperacion);
+		logger.info("[END] actualizarCantidadReprogramaciones");
 	}
 	
 	

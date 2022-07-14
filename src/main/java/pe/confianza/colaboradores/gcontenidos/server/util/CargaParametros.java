@@ -208,6 +208,60 @@ public class CargaParametros {
 		throw new AppException("No existe el parámetro de día de envio notificación de reprogramación");
 	}
 	
+	public int getCantidadMaximaReprogramacionAnio() {
+		if(CANTIDAD_MAX_REPROGRAMACIONES_ANIO != null)
+			return Integer.parseInt(CANTIDAD_MAX_REPROGRAMACIONES_ANIO);
+		throw new AppException("No existe el parámetro de reprogramaciones año");
+	}
+	
+	public int getDiasMinimoTramosAntesPrimeraMitad() {
+		if(DIAS_MINIMOS_TRAMOS_PRIMERA_MITAD != null)
+			return Integer.parseInt(DIAS_MINIMOS_TRAMOS_PRIMERA_MITAD);
+		throw new AppException("No existe el parámetro de días mínimos de tramos vacaciones");
+	}
+	
+	public int getTotalVacacionesAnio() {
+		if(TOTAL_VACACIONES_ANIO != null)
+			return Integer.parseInt(TOTAL_VACACIONES_ANIO);
+		throw new AppException("No existe el parámetro total del vacaciones por año");
+	}
+	
+	public int getMitadTotalVacacionesAnio() {
+		if(TOTAL_VACACIONES_ANIO != null)
+			return Integer.parseInt(TOTAL_VACACIONES_ANIO) / 2;
+		throw new AppException("No existe el parámetro total del vacaciones por año");
+	}
+	
+	public double getVacacionesGanadasPorMes() {
+		if(TOTAL_VACACIONES_ANIO != null)
+			return Integer.parseInt(TOTAL_VACACIONES_ANIO) / 12;
+		throw new AppException("No existe el parámetro total del vacaciones por año");
+	}
+	
+	public int getMesesParaIndemnizacion() {
+		if(LIMITE_TIEMPO_INDEMNIZABLE != null)
+			return Integer.parseInt(LIMITE_TIEMPO_INDEMNIZABLE);
+		throw new AppException("No existe el parámetro límite para indemnización");
+	}
+	
+	public int getSabadosMinPorPeriodo() {
+		if(SABADOS_MIN_POR_PERIODO != null)
+			return Integer.parseInt(SABADOS_MIN_POR_PERIODO);
+		throw new AppException("No existe el parámetro sábados por periodo");
+	}
+	
+	public int getDomingoMinPorPeriodo() {
+		if(DOMINGOS_MIN_POR_PERIODO != null)
+			return Integer.parseInt(DOMINGOS_MIN_POR_PERIODO);
+		throw new AppException("No existe el parámetro domingos por periodo");
+	}
+	
+	public int getDiaLimiteAprobacionReprogramacion() {
+		if(DIA_LIMITE_APROBACION_REPROGRAMACION != null)
+			return Integer.parseInt(DIA_LIMITE_APROBACION_REPROGRAMACION);
+		throw new AppException("No existe el parámetro día límite de aprobación de reprogramación");
+	}
+	
 	// Parametros genericos
 	public String ANIO_PRESENTE = null;
 	
@@ -222,6 +276,14 @@ public class CargaParametros {
 	public String MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS = null;
 	public String DIAS_INTERVALO_NOTIFICACIONES = null;
 	public String DIA_NOTIFICACION_REPROGRAMACION = null;
+	public String DIAS_MINIMOS_TRAMOS_PRIMERA_MITAD = null;
+	public String TOTAL_VACACIONES_ANIO = null;
+	public String LIMITE_TIEMPO_INDEMNIZABLE = null;
+	public String SABADOS_MIN_POR_PERIODO = null;
+	public String DOMINGOS_MIN_POR_PERIODO = null;
+	public String DIA_LIMITE_APROBACION_REPROGRAMACION = null;
+	
+	public String CANTIDAD_MAX_REPROGRAMACIONES_ANIO = null;
 	
 
 	@PostConstruct
@@ -234,16 +296,35 @@ public class CargaParametros {
 	}
 	
 	private void loadParametros() {
-		FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES = populateParametro(ParametrosConstantes.Vacaciones.FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES);
-		FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES = populateParametro(ParametrosConstantes.Vacaciones.FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES);
-		HORA_ENVIO_NOTIFICACIONES_VACACIONES = populateParametro(ParametrosConstantes.Vacaciones.HORA_ENVIO_NOTIFICACIONES_VACACIONES);
-		DIA_INICIO_REPROGRAMACION = populateParametro(ParametrosConstantes.Vacaciones.DIA_INICIO_REPROGRAMACION);
-		DIA_FIN_REPROGRAMACION = populateParametro(ParametrosConstantes.Vacaciones.DIA_FIN_REPROGRAMACION);
-		DIAS_MAXIMO_VACACIONES_ADELANTADAS = populateParametro(ParametrosConstantes.Vacaciones.DIAS_MAXIMO_VACACIONES_ADELANTADAS);
-		MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS = populateParametro(ParametrosConstantes.Vacaciones.MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS);
-		DIAS_INTERVALO_NOTIFICACIONES = populateParametro(ParametrosConstantes.Vacaciones.DIAS_INTERVALO_NOTIFICACIONES);
-		DIA_NOTIFICACION_REPROGRAMACION = populateParametro(ParametrosConstantes.Vacaciones.DIA_NOTIFICACION_REPROGRAMACION);
 		
+		//vacaciones - politicas regularorias
+		DIAS_MAXIMO_VACACIONES_ADELANTADAS = populateParametro(ParametrosConstantes.VacacionesPoliticaRegulatoria.DIAS_MAXIMO_VACACIONES_ADELANTADAS);
+		MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS = populateParametro(ParametrosConstantes.VacacionesPoliticaRegulatoria.MESES_MINIMO_ANTIGUEDAD_VACACIONES_ADELANTADAS);
+		DIAS_MINIMOS_TRAMOS_PRIMERA_MITAD = populateParametro(ParametrosConstantes.VacacionesPoliticaRegulatoria.DIAS_MINIMOS_TRAMOS_PRIMERA_MITAD);
+		TOTAL_VACACIONES_ANIO = populateParametro(ParametrosConstantes.VacacionesPoliticaRegulatoria.TOTAL_VACACIONES_ANIO);
+		LIMITE_TIEMPO_INDEMNIZABLE = populateParametro(ParametrosConstantes.VacacionesPoliticaRegulatoria.LIMITE_TIEMPO_INDEMNIZABLE);
+		SABADOS_MIN_POR_PERIODO = populateParametro(ParametrosConstantes.VacacionesPoliticaRegulatoria.SABADOS_MIN_POR_PERIODO);
+		DOMINGOS_MIN_POR_PERIODO = populateParametro(ParametrosConstantes.VacacionesPoliticaRegulatoria.DOMINGOS_MIN_POR_PERIODO);
+		
+		//vacaciones - programacion anual
+		FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES = populateParametro(ParametrosConstantes.VacacionesProgramacionAnual.FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES);
+		FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES = populateParametro(ParametrosConstantes.VacacionesProgramacionAnual.FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES);
+		
+		//vacaciones - reprogramacion
+		DIA_INICIO_REPROGRAMACION = populateParametro(ParametrosConstantes.VacacionesReprogramacion.DIA_INICIO_REPROGRAMACION);
+		DIA_FIN_REPROGRAMACION = populateParametro(ParametrosConstantes.VacacionesReprogramacion.DIA_FIN_REPROGRAMACION);
+		DIA_LIMITE_APROBACION_REPROGRAMACION = populateParametro(ParametrosConstantes.VacacionesReprogramacion.DIA_LIMITE_APROBACION_REPROGRAMACION);
+		CANTIDAD_MAX_REPROGRAMACIONES_ANIO = populateParametro(ParametrosConstantes.VacacionesReprogramacion.CANTIDAD_MAX_REPROGRAMACIONES_ANIO);
+		
+		//vacaciones - notificacioens
+		HORA_ENVIO_NOTIFICACIONES_VACACIONES = populateParametro(ParametrosConstantes.VacacionesNotificacion.HORA_ENVIO_NOTIFICACIONES_VACACIONES);
+		DIAS_INTERVALO_NOTIFICACIONES = populateParametro(ParametrosConstantes.VacacionesNotificacion.DIAS_INTERVALO_NOTIFICACIONES);
+		DIA_NOTIFICACION_REPROGRAMACION = populateParametro(ParametrosConstantes.VacacionesNotificacion.DIA_NOTIFICACION_REPROGRAMACION);
+		
+		
+		
+		
+		//parametros generales
 		ANIO_PRESENTE = populateParametro(ParametrosConstantes.Genericos.ANIO_PRESENTE);
 		
 	}

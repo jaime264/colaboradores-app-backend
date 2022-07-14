@@ -39,4 +39,8 @@ public interface ReprogramacionVacacionNegocio {
 	void obtenerOrden(VacacionProgramacion nuevaProgramacion, VacacionProgramacion programacionOriginal, String usuarioModifica);
 
 	void actualizarPeriodo(Empleado empleado, long idPeriodo, String usuarioOperacion);
+	
+	void validarCantidadReprogramaciones(Empleado empleado, String usuarioOperacion);
+	
+	void actualizarCantidadReprogramaciones(Empleado empleado, String usuarioOperacion);
 }

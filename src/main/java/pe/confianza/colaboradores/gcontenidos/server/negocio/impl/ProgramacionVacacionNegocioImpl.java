@@ -29,7 +29,6 @@ import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.VacacionProgramacionMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VacacionProgramacionDao;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Agencia;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.UnidadNegocio;
@@ -590,7 +589,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		programaciones = programaciones.stream().filter(p -> p.getIdEstado() != EstadoVacacion.RECHAZADO.id).collect(Collectors.toList());
 		programaciones.add(programacion);
 		int totalDiasProgramadosPeriodo = programaciones.stream().mapToInt(VacacionProgramacion::getNumeroDias).sum();
-		if(totalDiasProgramadosPeriodo > 30)
+		if(totalDiasProgramadosPeriodo > parametrosConstants.getTotalVacacionesAnio())
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.periodo_dias_limite", programacion.getPeriodo().getDescripcion()));
 		Comparator<VacacionProgramacion> odenPorFechas = new Comparator<VacacionProgramacion>() {
 			@Override
@@ -608,10 +607,12 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		int diasAcumulados = 0;
 		for (VacacionProgramacion vacacionProgramacion : programaciones) {
 			int diasProgramacion = vacacionProgramacion.getNumeroDias();
-			if(diasAcumulados < 15) {
-				if((diasAcumulados + diasProgramacion) <= 15 && diasProgramacion < 7)
+			int mitadVacacionesAnio = parametrosConstants.getMitadTotalVacacionesAnio();
+			int diasMinimosTramosPrimeraMitad = parametrosConstants.getDiasMinimoTramosAntesPrimeraMitad();
+			if(diasAcumulados < mitadVacacionesAnio) {
+				if((diasAcumulados + diasProgramacion) <= mitadVacacionesAnio && diasProgramacion < diasMinimosTramosPrimeraMitad)
 					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error"));
-				if((diasAcumulados + diasProgramacion) > 15 && diasProgramacion < 7)
+				if((diasAcumulados + diasProgramacion) > mitadVacacionesAnio && diasProgramacion < diasMinimosTramosPrimeraMitad)
 					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.bloque_error"));
 			}
 			diasAcumulados += vacacionProgramacion.getNumeroDias();
