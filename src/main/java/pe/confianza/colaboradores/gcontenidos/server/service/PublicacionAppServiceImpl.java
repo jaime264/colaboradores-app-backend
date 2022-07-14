@@ -180,6 +180,11 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		if (pub.isPresent()) {
 
 			if (pub.get().getActivo()) {
+				
+				Empleado emp = empleadoService.buscarPorUsuarioBT(pub.get().getUsuarioBt());
+
+				pub.get().setNombre(emp.getNombreCompleto());
+				pub.get().setSexo(emp.getSexo());
 				return pub.get();
 			}
 			return null;

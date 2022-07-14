@@ -422,22 +422,22 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		List<Map<String, String>> datos = new ArrayList<>();
 		switch (reqFiltros.getFiltro().toUpperCase().trim()) {
 		case "NOMBRE":
-			datos = empleadoDao.findNombreByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel2());
+			datos = empleadoDao.findNombreByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel1());
 			break;
 		case "CARGO":
-			datos = empleadoDao.findPuestoByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel2());
+			datos = empleadoDao.findPuestoByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel1());
 			break;
 		case "AGENCIA":
-			datos = empleadoDao.findAgenciaByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel2());
+			datos = empleadoDao.findAgenciaByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel1());
 			break;
 		case "TERRITORIO":
-			datos = empleadoDao.findTerritorioByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel2());
+			datos = empleadoDao.findTerritorioByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel1());
 			break;
 		case "CORREDOR":
-			datos = empleadoDao.findCorredorByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel2());
+			datos = empleadoDao.findCorredorByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel1());
 			break;
 		case "AREA":
-			datos = empleadoDao.findAreaByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel2());
+			datos = empleadoDao.findAreaByCodigoN1(reqFiltros.getCodigoNivel1(), reqFiltros.getCodigoNivel1());
 			break;
 		default:
 			break;
