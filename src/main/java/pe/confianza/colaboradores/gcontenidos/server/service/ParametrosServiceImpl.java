@@ -99,7 +99,7 @@ public class ParametrosServiceImpl implements ParametrosService {
 			Parametro parametroOld = parametrosConstants.search(parametro.getCodigo());
 			if(parametroOld == null)
 				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.no_encontrado", parametro.getCodigo()));
-			ParametroUnidad unidad = ParametroUnidad.buscar(parametro.getCodigo());
+			ParametroUnidad unidad = ParametroUnidad.buscar(parametroOld.getUnidad());
 			if(unidad == null)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"));
 			if(!ParametroUnidad.esValidoValor(unidad, parametro.getNuevoValor()))

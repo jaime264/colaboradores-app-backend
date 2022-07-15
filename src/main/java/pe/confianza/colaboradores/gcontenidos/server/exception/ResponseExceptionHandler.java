@@ -37,7 +37,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 		ResponseStatus response = new ResponseStatus();
 		response.setMsgStatus(msgErr);
 		response.setCodeStatus(Constantes.COD_ERR);
-		log.info("ERROR BAD_REQUEST: {}", msgErr);
+		log.error("ERROR BAD_REQUEST: {}", msgErr);
 		log.error(ex.getMessage(), ex);
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
@@ -57,7 +57,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 		ResponseStatus response = new ResponseStatus();
 		response.setMsgStatus(ex.getMessage());
 		response.setCodeStatus(Constantes.COD_ERR);
-		log.info("ERROR INTERNAL_SERVER_ERROR: {}", ex.getMessage());
+		log.error("ERROR INTERNAL_SERVER_ERROR: {}", ex.getMessage());
 		log.error(ex.getMessage(), ex);
 		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
@@ -68,7 +68,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 		ResponseStatus response = new ResponseStatus();
 		response.setMsgStatus(ex.getMessage());
 		response.setCodeStatus(Constantes.COD_EMPTY);
-		log.info("ERROR NOT_FOUND: {}", ex.getMessage());
+		log.error("ERROR NOT_FOUND: {}", ex.getMessage());
 		log.error(ex.getMessage(), ex);
 		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 	}
