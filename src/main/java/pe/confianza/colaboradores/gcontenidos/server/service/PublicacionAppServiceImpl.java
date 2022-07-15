@@ -297,21 +297,21 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 				switch (publicacion.getFlagAprobacion()) {
 				case Constantes.EstadoPublicacion.ACEPTADO:
-					extraData = generarExtraDataPublicacion(publicacion, empleado, 4);
+					extraData = generarExtraDataPublicacion(publicacion, empleado, 1);
 					notificacion = notificacionService.registrar("publicación aceptada", pub.get().getDescripcion(),
 							extraData, tipoNot.get(), empleado, publicacion.getUsuarioBt());
 					notificacionService.enviarNotificacionApp(notificacion);
 					notificacionService.enviarNotificacionCorreo(notificacion);
 					break;
 				case Constantes.EstadoPublicacion.RECHAZADO:
-					extraData = generarExtraDataPublicacion(publicacion, empleado, 4);
+					extraData = generarExtraDataPublicacion(publicacion, empleado, 0);
 					notificacion = notificacionService.registrar("publicacion rechazada", publicacion.getObservacion(),
 							extraData, tipoNot.get(), empleado, publicacion.getUsuarioBt());
 					notificacionService.enviarNotificacionApp(notificacion);
 					notificacionService.enviarNotificacionCorreo(notificacion);
 					break;
 				case Constantes.EstadoPublicacion.OBSERVADO:
-					extraData = generarExtraDataPublicacion(publicacion, empleado, 4);
+					extraData = generarExtraDataPublicacion(publicacion, empleado, 2);
 					notificacion = notificacionService.registrar("publicacion observada", publicacion.getObservacion(),
 							extraData, tipoNot.get(), empleado, publicacion.getUsuarioBt());
 					notificacionService.enviarNotificacionApp(notificacion);
