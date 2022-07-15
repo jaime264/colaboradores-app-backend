@@ -8,4 +8,5 @@ public interface VacacionPeriodoResumenService {
 	
 	List<VacacionPeriodoResumen> listarPorAnio(int anio);
 
+
 }

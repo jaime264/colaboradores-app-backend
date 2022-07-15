@@ -118,7 +118,7 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 			if (empleado == null)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", request.getUsuarioBT()));
 			VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(request);
-			vacacionProgramacion.setEstado(EstadoVacacion.REGISTRADO);
+			vacacionProgramacion.setEstado(EstadoVacacion.GENERADO);
 			vacacionProgramacion.setVacacionesAdelantadas(true);
 			validarEmpleadoNuevo(vacacionProgramacion, empleado);
 			if(vacacionProgramacion.getNumeroDias() > cargaParametros.getDiasMaximoVacacionesAdelantadas())

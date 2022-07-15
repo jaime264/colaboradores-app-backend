@@ -126,5 +126,7 @@ public class ParametrosController {
 		responseStatus.setResultObj(parametrosService.actualizarParametroVacaciones(request));
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
+	
+	
 
 }
