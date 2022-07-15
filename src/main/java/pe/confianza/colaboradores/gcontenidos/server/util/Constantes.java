@@ -57,10 +57,10 @@ public class Constantes {
 		public static final String INACTIVO = "I";
 	}
 	
-	public class estadoPublicacion{		
-		public final Integer RECHAZADO = 0;
-		public final Integer ACEPTADO = 1;
-		public final Integer OBSERVADO = 2;
+	public class EstadoPublicacion{		
+		public static final int RECHAZADO = 0;
+		public static final int ACEPTADO = 1;
+		public static final int OBSERVADO = 2;
 	}
 	
 }
