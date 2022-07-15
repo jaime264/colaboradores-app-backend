@@ -100,12 +100,5 @@ public class UtilitarioTest {
 		LocalDate fecha2 = LocalDate.parse("19/09/2022", formatter);
 		System.out.println(Utilitario.fechaEntrePeriodo(fechaInicio, fechaFIn, fecha2));
 	}
-	
-	@Test
-	public void Test() {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		LocalDate fechaInicio = LocalDate.parse("01/02/2022", formatter);
-		System.out.println(fechaInicio.plusMonths(6));
-	}
 
 }

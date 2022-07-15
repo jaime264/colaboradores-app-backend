@@ -25,17 +25,17 @@ public enum ParametroUnidad {
 		this.clazz = clazz;
 	}
 	
-	public static String getDescripcionPorCodigo(String codigo) {
+	public static String getDescripcionPorCodigo(String codigoBuscar) {
 		for (ParametroUnidad unidad : ParametroUnidad.values()) {
-			if(unidad.codigo.equals(codigo))
+			if(unidad.codigo.equals(codigoBuscar))
 				return unidad.descripcion;
 		}
 		return null;
 	}
 	
-	public static ParametroUnidad buscar(String codigo) {
+	public static ParametroUnidad buscar(String codigoBuscar) {
 		for (ParametroUnidad unidad : ParametroUnidad.values()) {
-			if(unidad.codigo.equals(codigo))
+			if(unidad.codigo.equals(codigoBuscar))
 				return unidad;
 		}
 		return null;
