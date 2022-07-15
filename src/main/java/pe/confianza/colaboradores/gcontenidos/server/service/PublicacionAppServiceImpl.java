@@ -105,7 +105,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 				List<Map<Integer, String>> empleadosAprobadores = publicacionAppDao.listPublicacionPefilAprobador(
 						FuncionalidadApp.PUBLICACIONES.codigo, PerfilApp.EMPLEADO_APROBADOR_PUBLICACIONES.codigo);
 				Optional<NotificacionTipo> tipoNot = notificacionService
-						.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APP.valor);
+						.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APROBADOR.valor);
 
 				Empleado empleado = empleadoService.buscarPorUsuarioBT(publicacion.getUsuarioBt());
 				String extraData = generarExtraDataPublicacion(pub, empleado, 4);
@@ -160,17 +160,17 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 				guardarImg(publicacion, pub);
 				guardarVid(publicacion, pub);
 
-				publicacionAppDao.save(pub.get());
+				Publicacion pubRes = publicacionAppDao.save(pub.get());
 				status.setCodeStatus(200);
 				status.setMsgStatus("Publicación actualizada");
 				try {
 					List<Map<Integer, String>> empleadosAprobadores = publicacionAppDao.listPublicacionPefilAprobador(
 							FuncionalidadApp.PUBLICACIONES.codigo, PerfilApp.EMPLEADO_APROBADOR_PUBLICACIONES.codigo);
 					Optional<NotificacionTipo> tipoNot = notificacionService
-							.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APP.valor);
+							.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APROBADOR.valor);
 
 					Empleado empleado = empleadoService.buscarPorUsuarioBT(publicacion.getUsuarioBt());
-					String extraData = generarExtraDataPublicacion(publicacion, empleado, 4);
+					String extraData = generarExtraDataPublicacion(pubRes, empleado, 4);
 					
 					List<Empleado> empleados = new ArrayList<>();
 					empleadosAprobadores.stream().forEach(e ->{
