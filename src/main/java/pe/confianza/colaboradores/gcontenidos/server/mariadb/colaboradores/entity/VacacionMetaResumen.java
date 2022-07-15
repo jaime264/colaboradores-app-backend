@@ -1,5 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity;
 
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -10,7 +12,8 @@ import org.hibernate.annotations.Subselect;
 @Entity
 @Immutable
 @Subselect("SELECT "
-		+ "meta_id, empleado_id, empleado_usuariobt, empleado_nombres, empleado_apellido_paterno, "
+		+ "meta_id, empleado_id, empleado_usuariobt, empleado_nombres, empleado_apellido_paterno, empleado_nombre_completo, "
+		+ "empleado_fecha_ingreso, puesto_id, puesto_descripcion, "
 		+ "empleado_apellido_materno, empleado_email, aprobador_nivel1_id, "
 		+ "aprobador_nivel1_usuariobt, aprobador_nivel1_nombres, aprobador_nivel1_apellido_paterno, "
 		+ "aprobador_nivel1_apellido_materno, aprobador_nivel1_email, anio, "
@@ -24,7 +27,11 @@ public class VacacionMetaResumen {
 	private String empleadoNombres;
 	private String empleadoApellidoPaterno;
 	private String empleadoApellidoMaterno;
+	private String empleadoNombreCompleto;
 	private String empleadoEmail;
+	private LocalDate empleadoFechaIngreso;
+	private Long puestoId;
+	private String puestoDescripcion;
 	@Column(name = "aprobador_nivel1_id")
 	private Long aprobadorNivel1Id;
 	@Column(name = "aprobador_nivel1_usuariobt")
@@ -40,6 +47,7 @@ public class VacacionMetaResumen {
 	private Integer anio; 
 	private Double metaInicial;
 	private Double meta;
+	
 	public Long getEmpleadoId() {
 		return empleadoId;
 	}
@@ -129,6 +137,36 @@ public class VacacionMetaResumen {
 	}
 	public void setMeta(Double meta) {
 		this.meta = meta;
+	}
+	public Long getMetaId() {
+		return metaId;
+	}
+	public void setMetaId(Long metaId) {
+		this.metaId = metaId;
+	}
+	public String getEmpleadoNombreCompleto() {
+		return empleadoNombreCompleto;
+	}
+	public void setEmpleadoNombreCompleto(String empleadoNombreCompleto) {
+		this.empleadoNombreCompleto = empleadoNombreCompleto;
+	}
+	public Long getPuestoId() {
+		return puestoId;
+	}
+	public void setPuestoId(Long puestoId) {
+		this.puestoId = puestoId;
+	}
+	public String getPuestoDescripcion() {
+		return puestoDescripcion;
+	}
+	public void setPuestoDescripcion(String puestoDescripcion) {
+		this.puestoDescripcion = puestoDescripcion;
+	}
+	public LocalDate getEmpleadoFechaIngreso() {
+		return empleadoFechaIngreso;
+	}
+	public void setEmpleadoFechaIngreso(LocalDate empleadoFechaIngreso) {
+		this.empleadoFechaIngreso = empleadoFechaIngreso;
 	}
 	
 	
