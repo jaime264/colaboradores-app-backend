@@ -2,10 +2,14 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseEmpleadoMeta;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametroTipo;
+import pe.confianza.colaboradores.gcontenidos.server.controller.RequestFiltroEmpleadoMeta;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
 
 public interface ParametrosService {
@@ -25,5 +29,7 @@ public interface ParametrosService {
 	ResponseParametro actualizarParametroVacaciones(RequestParametroActualizacion parametro);
 	
 	List<ResponseParametroTipo> listaParametrovaccionesTipos();
+	
+	Page<ResponseEmpleadoMeta> listarVacacionMeta(RequestFiltroEmpleadoMeta filtro);
 
 }
