@@ -44,11 +44,13 @@ import pe.confianza.colaboradores.gcontenidos.server.negocio.EnvioNotificacionNe
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
+import pe.confianza.colaboradores.gcontenidos.server.util.FuncionalidadApp;
+import pe.confianza.colaboradores.gcontenidos.server.util.PerfilApp;
 import pe.confianza.colaboradores.gcontenidos.server.util.TipoNotificacion;
 
 @Service
 public class PublicacionAppServiceImpl implements PublicacionAppService {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(PublicacionAppServiceImpl.class);
 
 	@Autowired
@@ -74,13 +76,13 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 	@Autowired
 	EmpleadoService empleadoService;
-	
+
 	@Autowired
 	private UsuarioPublicacionDao usuarioPublicacionDao;
-	
+
 	@Autowired
 	private NotificacionService notificacionService;
-	
+
 	@Autowired
 	private EnvioNotificacionNegocio envioNotificacionNegocio;
 
@@ -95,14 +97,31 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 		ResponseStatus status = new ResponseStatus();
 		Publicacion pub = guardar(publicacion);
-		if(pub != null) {
+		if (pub != null) {
 			status.setCodeStatus(200);
-			//registrar las veces de la cantidad de empleados aprobadores
-//			notificacionService.registrar(null, null, null, null, null, null);
-//		
-//			notificacionService.enviarNotificacionApp(null);
-//						
-//			envioNotificacionNegocio.enviarNotificacionesCorreo(null);
+			status.setMsgStatus("Publicacion creada");
+			try {
+				List<Empleado> empleadosAprobadores = publicacionAppDao.listPublicacionPefilAprobador(
+						FuncionalidadApp.PUBLICACIONES.codigo, PerfilApp.EMPLEADO_APROBADOR_PUBLICACIONES.codigo);
+				Optional<NotificacionTipo> tipoNot = notificacionService
+						.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APP.valor);
+
+				Empleado empleado = empleadoService.buscarPorUsuarioBT(publicacion.getUsuarioBt());
+				String extraData = generarExtraDataPublicacion(publicacion, empleado, 4);
+				empleadosAprobadores.stream().forEach(e -> {
+					Notificacion notificacion = notificacionService.registrar("Aprobación de publicación",
+							"el colaborador " + empleado.getNombreCompleto() + " a publicado", extraData, tipoNot.get(), e,
+							publicacion.getUsuarioBt());
+
+					notificacionService.enviarNotificacionApp(notificacion);
+					notificacionService.enviarNotificacionCorreo(notificacion);
+				});
+
+			}catch (Exception e) {
+				status.setCodeStatus(200);
+				status.setMsgStatus("Notificacion no enviada");
+			}
+			
 		} else {
 			status.setCodeStatus(500);
 		}
@@ -136,6 +155,28 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 				publicacionAppDao.save(pub.get());
 				status.setCodeStatus(200);
 				status.setMsgStatus("Publicación actualizada");
+				try {
+					List<Empleado> empleadosAprobadores = publicacionAppDao.listPublicacionPefilAprobador(
+							FuncionalidadApp.PUBLICACIONES.codigo, PerfilApp.EMPLEADO_APROBADOR_PUBLICACIONES.codigo);
+					Optional<NotificacionTipo> tipoNot = notificacionService
+							.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APP.valor);
+
+					Empleado empleado = empleadoService.buscarPorUsuarioBT(publicacion.getUsuarioBt());
+					String extraData = generarExtraDataPublicacion(publicacion, empleado, 4);
+					empleadosAprobadores.stream().forEach(e -> {
+						Notificacion notificacion = notificacionService.registrar("Aprobación de publicación observada",
+								"el colaborador " + empleado.getNombreCompleto() + " actualizo su publicacion", extraData,
+								tipoNot.get(), e, publicacion.getUsuarioBt());
+
+						notificacionService.enviarNotificacionApp(notificacion);
+						notificacionService.enviarNotificacionCorreo(notificacion);
+					});
+				}catch (Exception e) {
+					status.setCodeStatus(200);
+					status.setMsgStatus("Notificacion no enviada");
+				}
+				
+
 			} else {
 				status.setCodeStatus(200);
 				status.setMsgStatus("No existe la publicación");
@@ -180,6 +221,19 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		if (pub.isPresent()) {
 
 			if (pub.get().getActivo()) {
+
+				Empleado emp = empleadoService.buscarPorUsuarioBT(pub.get().getUsuarioBt());
+
+				pub.get().setNombre(emp.getNombreCompleto());
+				pub.get().setSexo(emp.getSexo());
+
+				for (Comentario c : pub.get().getComentarios()) {
+					Empleado emC = empleadoService.buscarPorUsuarioBT(c.getUsuarioBt());
+
+					c.setNombre(emC.getNombreCompleto());
+					c.setSexo(emC.getSexo());
+				}
+
 				return pub.get();
 			}
 			return null;
@@ -234,6 +288,39 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 				publicacionAppDao.save(pub.get());
 				status.setCodeStatus(200);
 				status.setMsgStatus("Publicación actualizada");
+
+				Empleado empleado = empleadoService.buscarPorUsuarioBT(pub.get().getUsuarioBt());
+				Optional<NotificacionTipo> tipoNot = notificacionService
+						.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APP.valor);
+				String extraData = "";
+				Notificacion notificacion = new Notificacion();
+
+				switch (publicacion.getFlagAprobacion()) {
+				case Constantes.EstadoPublicacion.ACEPTADO:
+					extraData = generarExtraDataPublicacion(publicacion, empleado, 1);
+					notificacion = notificacionService.registrar("publicación aceptada", pub.get().getDescripcion(),
+							extraData, tipoNot.get(), empleado, publicacion.getUsuarioBt());
+					notificacionService.enviarNotificacionApp(notificacion);
+					notificacionService.enviarNotificacionCorreo(notificacion);
+					break;
+				case Constantes.EstadoPublicacion.RECHAZADO:
+					extraData = generarExtraDataPublicacion(publicacion, empleado, 0);
+					notificacion = notificacionService.registrar("publicacion rechazada", publicacion.getObservacion(),
+							extraData, tipoNot.get(), empleado, publicacion.getUsuarioBt());
+					notificacionService.enviarNotificacionApp(notificacion);
+					notificacionService.enviarNotificacionCorreo(notificacion);
+					break;
+				case Constantes.EstadoPublicacion.OBSERVADO:
+					extraData = generarExtraDataPublicacion(publicacion, empleado, 2);
+					notificacion = notificacionService.registrar("publicacion observada", publicacion.getObservacion(),
+							extraData, tipoNot.get(), empleado, publicacion.getUsuarioBt());
+					notificacionService.enviarNotificacionApp(notificacion);
+					notificacionService.enviarNotificacionCorreo(notificacion);
+					break;
+				default:
+					break;
+				}
+
 			} else {
 				status.setCodeStatus(200);
 				status.setMsgStatus("No existe la publicación");
@@ -396,18 +483,19 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		logger.info("[BEGIN] registro");
 		Publicacion publicacion = PublicacionMapper.convert(request);
 		final Publicacion pubActual = guardar(publicacion);
-		if(pubActual == null)
+		if (pubActual == null)
 			throw new AppException("Ocurrió un error al registrar publicación");
-		Optional<NotificacionTipo> tipoNot = notificacionService.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APP.valor);
-		if(!tipoNot.isPresent())
+		Optional<NotificacionTipo> tipoNot = notificacionService
+				.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APP.valor);
+		if (!tipoNot.isPresent())
 			throw new AppException("No se encontró el tipo de notificacion");
 		try {
 			Empleado empleadoPublicador = empleadoService.buscarPorUsuarioBT(pubActual.getUsuarioBt());
-			if(empleadoPublicador != null) {
+			if (empleadoPublicador != null) {
 				List<Notificacion> notificaciones = new ArrayList<>();
 				for (String u : request.getUsuarios()) {
 					Empleado empelado = empleadoService.buscarPorUsuarioBT(u.trim());
-					if(empelado.getId() != null) {
+					if (empelado.getId() != null) {
 						UsuarioPublicacion usuarioPublicacion = new UsuarioPublicacion();
 						usuarioPublicacion.setEmpleado(empelado);
 						usuarioPublicacion.setPublicacion(pubActual);
@@ -416,15 +504,16 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 						usuarioPublicacion.setUsuarioCrea(pubActual.getUsuarioBt());
 						usuarioPublicacion.setFechaCrea(LocalDateTime.now());
 						usuarioPublicacionDao.save(usuarioPublicacion);
-						
+
 						String extradata = generarExtraDataPublicacion(pubActual, empleadoPublicador, 3);
-						StringBuilder tituloSb = new StringBuilder().append(pubActual.getMenu()).append(" - ").append(pubActual.getSubmenu());
-						if(pubActual.getCategoria() != null) {
+						StringBuilder tituloSb = new StringBuilder().append(pubActual.getMenu()).append(" - ")
+								.append(pubActual.getSubmenu());
+						if (pubActual.getCategoria() != null) {
 							tituloSb.append(" - ").append(pubActual.getCategoria());
 						}
-						Notificacion not = notificacionService.registrar(
-								tituloSb.toString(), pubActual.getDescripcion(), extradata, 
-								tipoNot.get(), empelado, pubActual.getUsuarioCrea());
+						Notificacion not = notificacionService.registrar(tituloSb.toString(),
+								pubActual.getDescripcion(), extradata, tipoNot.get(), empelado,
+								pubActual.getUsuarioCrea());
 						notificaciones.add(not);
 					}
 				}
@@ -442,7 +531,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 		logger.info("[END] registro");
 		return response;
 	}
-	
+
 	@Transactional
 	private Publicacion guardar(Publicacion publicacion) {
 		logger.info("[BEGIN] guardar");
@@ -462,7 +551,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 					imagen.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
 				}
 			}
-			
+
 			if (publicacion.getVideos() != null) {
 				for (Video video : publicacion.getVideos()) {
 					video.setPublicacion(publicacion);
@@ -480,9 +569,9 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			return null;
 		}
 	}
-	
+
 	private String generarExtraDataPublicacion(Publicacion pub, Empleado publicador, int subTipo) {
-		logger.info("[BEGIN] generarExtraDataPublicacion ");		
+		logger.info("[BEGIN] generarExtraDataPublicacion ");
 		try {
 			NotificacionPublicacionDataExtra extraData = new NotificacionPublicacionDataExtra();
 			extraData.setSubTipo(subTipo);
@@ -497,7 +586,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			extraData.setSexo(publicador.getSexo());
 			extraData.setNombre(publicador.getNombres() + " " + publicador.getApellidoPaterno());
 			extraData.setGestorContenido(pub.getGestorContenido());
-			if(pub.getImagenes() !=null) {
+			if (pub.getImagenes() != null) {
 				List<NotificacionPublicacionMediaDataExtra> imagenes = pub.getImagenes().stream().map(i -> {
 					NotificacionPublicacionMediaDataExtra media = new NotificacionPublicacionMediaDataExtra();
 					media.setUsuarioCrea(i.getUsuarioCrea());
@@ -512,7 +601,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 				}).collect(Collectors.toList());
 				extraData.getImagenes().addAll(imagenes);
 			}
-			if(pub.getVideos() !=null) {
+			if (pub.getVideos() != null) {
 				List<NotificacionPublicacionMediaDataExtra> videos = pub.getVideos().stream().map(i -> {
 					NotificacionPublicacionMediaDataExtra media = new NotificacionPublicacionMediaDataExtra();
 					media.setUsuarioCrea(i.getUsuarioCrea());
@@ -526,7 +615,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 					return media;
 				}).collect(Collectors.toList());
 				extraData.getVideos().addAll(videos);
-			}			
+			}
 			ObjectMapper objectMapper = new ObjectMapper();
 			DateFormat df = new SimpleDateFormat(Constantes.FORMATO_FECHA_HORA);
 			objectMapper.setDateFormat(df);
@@ -538,7 +627,5 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			return "";
 		}
 	}
-
-
 
 }
