@@ -271,8 +271,8 @@ public class Utilitario {
 				);
 	}
 	
-	public static double calcularDiasPendientesPorRegistrarEnRegistroProgramacion(PeriodoVacacion periodo) {
-		return 30 - (
+	public static double calcularDiasPendientesPorRegistrarEnRegistroProgramacion(int totalDiasVacacionesAnio, PeriodoVacacion periodo) {
+		return totalDiasVacacionesAnio - (
 				periodo.getDiasGozados() +
 				periodo.getDiasAprobadosGozar() +
 				periodo.getDiasRegistradosGozar()

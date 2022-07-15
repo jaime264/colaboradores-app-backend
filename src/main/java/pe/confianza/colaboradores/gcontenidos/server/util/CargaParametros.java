@@ -250,7 +250,7 @@ public class CargaParametros {
 		throw new AppException("No existe el parámetro sábados por periodo");
 	}
 	
-	public int getDomingoMinPorPeriodo() {
+	public int getDomingosMinPorPeriodo() {
 		if(DOMINGOS_MIN_POR_PERIODO != null)
 			return Integer.parseInt(DOMINGOS_MIN_POR_PERIODO);
 		throw new AppException("No existe el parámetro domingos por periodo");
