@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -101,14 +102,21 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			status.setCodeStatus(200);
 			status.setMsgStatus("Publicacion creada");
 			try {
-				List<Empleado> empleadosAprobadores = publicacionAppDao.listPublicacionPefilAprobador(
+				List<Map<Integer, String>> empleadosAprobadores = publicacionAppDao.listPublicacionPefilAprobador(
 						FuncionalidadApp.PUBLICACIONES.codigo, PerfilApp.EMPLEADO_APROBADOR_PUBLICACIONES.codigo);
 				Optional<NotificacionTipo> tipoNot = notificacionService
 						.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APP.valor);
 
 				Empleado empleado = empleadoService.buscarPorUsuarioBT(publicacion.getUsuarioBt());
-				String extraData = generarExtraDataPublicacion(publicacion, empleado, 4);
-				empleadosAprobadores.stream().forEach(e -> {
+				String extraData = generarExtraDataPublicacion(pub, empleado, 4);
+				List<Empleado> empleados = new ArrayList<>();
+				
+				empleadosAprobadores.stream().forEach(e ->{
+					Empleado emp = empleadoService.buscarPorUsuarioBT(e.get("usuariobt"));
+					empleados.add(emp);
+				});
+				
+				empleados.stream().forEach(e -> {
 					Notificacion notificacion = notificacionService.registrar("Aprobación de publicación",
 							"el colaborador " + empleado.getNombreCompleto() + " a publicado", extraData, tipoNot.get(), e,
 							publicacion.getUsuarioBt());
@@ -156,14 +164,21 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 				status.setCodeStatus(200);
 				status.setMsgStatus("Publicación actualizada");
 				try {
-					List<Empleado> empleadosAprobadores = publicacionAppDao.listPublicacionPefilAprobador(
+					List<Map<Integer, String>> empleadosAprobadores = publicacionAppDao.listPublicacionPefilAprobador(
 							FuncionalidadApp.PUBLICACIONES.codigo, PerfilApp.EMPLEADO_APROBADOR_PUBLICACIONES.codigo);
 					Optional<NotificacionTipo> tipoNot = notificacionService
 							.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APP.valor);
 
 					Empleado empleado = empleadoService.buscarPorUsuarioBT(publicacion.getUsuarioBt());
 					String extraData = generarExtraDataPublicacion(publicacion, empleado, 4);
-					empleadosAprobadores.stream().forEach(e -> {
+					
+					List<Empleado> empleados = new ArrayList<>();
+					empleadosAprobadores.stream().forEach(e ->{
+						Empleado emp = empleadoService.buscarPorUsuarioBT(e.get("usuariobt"));
+						empleados.add(emp);
+					});
+					
+					empleados.stream().forEach(e -> {
 						Notificacion notificacion = notificacionService.registrar("Aprobación de publicación observada",
 								"el colaborador " + empleado.getNombreCompleto() + " actualizo su publicacion", extraData,
 								tipoNot.get(), e, publicacion.getUsuarioBt());
@@ -285,11 +300,11 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 				pub.get().setFlagPermanente(publicacion.getFlagPermanente());
 				pub.get().setUsuarioModifica(publicacion.getUsuarioModifica());
 
-				publicacionAppDao.save(pub.get());
+				Publicacion pubRes = publicacionAppDao.save(pub.get());
 				status.setCodeStatus(200);
 				status.setMsgStatus("Publicación actualizada");
 
-				Empleado empleado = empleadoService.buscarPorUsuarioBT(pub.get().getUsuarioBt());
+				Empleado empleado = empleadoService.buscarPorUsuarioBT(pubRes.getUsuarioBt());
 				Optional<NotificacionTipo> tipoNot = notificacionService
 						.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APP.valor);
 				String extraData = "";
@@ -297,23 +312,23 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 
 				switch (publicacion.getFlagAprobacion()) {
 				case Constantes.EstadoPublicacion.ACEPTADO:
-					extraData = generarExtraDataPublicacion(publicacion, empleado, 1);
+					extraData = generarExtraDataPublicacion(pubRes, empleado, 1);
 					notificacion = notificacionService.registrar("publicación aceptada", pub.get().getDescripcion(),
-							extraData, tipoNot.get(), empleado, publicacion.getUsuarioBt());
+							extraData, tipoNot.get(), empleado, pubRes.getUsuarioBt());
 					notificacionService.enviarNotificacionApp(notificacion);
 					notificacionService.enviarNotificacionCorreo(notificacion);
 					break;
 				case Constantes.EstadoPublicacion.RECHAZADO:
-					extraData = generarExtraDataPublicacion(publicacion, empleado, 0);
-					notificacion = notificacionService.registrar("publicacion rechazada", publicacion.getObservacion(),
-							extraData, tipoNot.get(), empleado, publicacion.getUsuarioBt());
+					extraData = generarExtraDataPublicacion(pubRes, empleado, 0);
+					notificacion = notificacionService.registrar("publicacion rechazada", pubRes.getObservacion(),
+							extraData, tipoNot.get(), empleado, pubRes.getUsuarioBt());
 					notificacionService.enviarNotificacionApp(notificacion);
 					notificacionService.enviarNotificacionCorreo(notificacion);
 					break;
 				case Constantes.EstadoPublicacion.OBSERVADO:
-					extraData = generarExtraDataPublicacion(publicacion, empleado, 2);
-					notificacion = notificacionService.registrar("publicacion observada", publicacion.getObservacion(),
-							extraData, tipoNot.get(), empleado, publicacion.getUsuarioBt());
+					extraData = generarExtraDataPublicacion(pubRes, empleado, 2);
+					notificacion = notificacionService.registrar("publicacion observada", pubRes.getObservacion(),
+							extraData, tipoNot.get(), empleado, pubRes.getUsuarioBt());
 					notificacionService.enviarNotificacionApp(notificacion);
 					notificacionService.enviarNotificacionCorreo(notificacion);
 					break;
@@ -585,7 +600,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 			extraData.setFlagAprobacion(pub.getFlagAprobacion());
 			extraData.setSexo(publicador.getSexo());
 			extraData.setNombre(publicador.getNombres() + " " + publicador.getApellidoPaterno());
-			extraData.setGestorContenido(pub.getGestorContenido());
+			extraData.setGestorContenido(pub.getGestorContenido() == null ? false : pub.getGestorContenido() );
 			if (pub.getImagenes() != null) {
 				List<NotificacionPublicacionMediaDataExtra> imagenes = pub.getImagenes().stream().map(i -> {
 					NotificacionPublicacionMediaDataExtra media = new NotificacionPublicacionMediaDataExtra();
