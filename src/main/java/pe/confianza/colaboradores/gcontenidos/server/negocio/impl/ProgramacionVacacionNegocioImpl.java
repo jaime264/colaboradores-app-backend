@@ -572,8 +572,12 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] validarPoliticasRegulatorias");
 		LocalDate fechaCorte = parametrosConstants.getFechaCorteMeta();
 		VacacionMeta meta = vacacionMetaService.obtenerVacacionPorAnio(fechaCorte.getYear() + 1, programacion.getPeriodo().getEmpleado().getId());
-		List<VacacionProgramacion> programacionesPeriodoVencido = vacacionProgramacionService.listarPorPeriodo(meta.getPeriodoVencido().getId());
-		List<VacacionProgramacion> programacionesPeriodoTrunco = vacacionProgramacionService.listarPorPeriodo(meta.getPeriodoTrunco().getId());
+		List<VacacionProgramacion> programacionesPeriodoVencido = new ArrayList<>();
+		List<VacacionProgramacion> programacionesPeriodoTrunco = new ArrayList<>();
+		if(meta.getPeriodoVencido() != null)
+			programacionesPeriodoVencido = vacacionProgramacionService.listarPorPeriodo(meta.getPeriodoVencido().getId());
+		if(meta.getPeriodoTrunco() != null)
+			programacionesPeriodoTrunco = vacacionProgramacionService.listarPorPeriodo(meta.getPeriodoTrunco().getId());
 		List<VacacionProgramacion> programacionesTodas = new ArrayList<>();
 		programacionesTodas.addAll(programacionesPeriodoVencido);
 		programacionesTodas.addAll(programacionesPeriodoTrunco);

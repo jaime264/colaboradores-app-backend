@@ -103,12 +103,9 @@ public class UtilitarioTest {
 	
 	@Test
 	public void Test() {
-		String t = "01";
-		try {
-			System.out.println(Integer.parseInt(t));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		LocalDate fechaInicio = LocalDate.parse("01/02/2022", formatter);
+		System.out.println(fechaInicio.plusMonths(6));
 	}
 
 }

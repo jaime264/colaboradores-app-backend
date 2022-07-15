@@ -44,7 +44,7 @@ public class CargaParametros {
 		logger.info("[BEGIN] populateParametro " + cod);
 		for (Parametro parametro : listParams) {
 			if (parametro.getCodigo().equals(cod)) {
-				logger.info(cod + " : " + parametro.getValor());
+				logger.error(cod + " : " + parametro.getValor());
 				return parametro.getValor();
 			}
 		}
@@ -68,6 +68,7 @@ public class CargaParametros {
 	}
 	
 	public Parametro actualizarParametro(String codigo, String nuevoValor, String usuarioModifica) {
+		logger.info("[BEGIN] addParametro");
 		Parametro buscado = search(codigo);
 		if(buscado != null) {
 			buscado.setValor(nuevoValor);
@@ -78,6 +79,7 @@ public class CargaParametros {
 			loadParametros();
 			return buscado;
 		}
+		logger.info("[END] addParametro");
 		return null;
 	}
 	
