@@ -26,6 +26,7 @@ import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundExce
 import pe.confianza.colaboradores.gcontenidos.server.mapper.EmpleadoMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.AgenciaDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.CorredorDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoAccesoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.FuncionalidadAccesoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PerfilStringAppDao;
@@ -35,6 +36,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.U
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Agencia;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Corredor;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.EmpleadoAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.FuncionalidadAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PerfilSpringApp;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Puesto;
@@ -85,6 +87,9 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	
 	@Autowired
 	private FuncionalidadAccesoDao funcionalidadAccesoDao;
+	
+	@Autowired
+	private EmpleadoAccesoDao empleadoAccesoDao;
 
 	@Override
 	public Empleado actualizarInformacionEmpleado(String usuarioBT) {
@@ -258,34 +263,29 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	public List<ResponseAcceso> consultaAccesos(String usuarioBT) {
 		LOGGER.info("[BEGIN] consultaAccesos {} ", usuarioBT);
 		try {
+			List<ResponseAcceso> accesos = new ArrayList<>();
 			Empleado empleado = buscarPorUsuarioBT(usuarioBT);
 			if(empleado.getId() == null)
 				throw new ModelNotFoundException("No existe el usuario " + usuarioBT);
 			int cantidadSubordinadosNivel1 = empleadoDao.obtenerCantidadSuborninadosNivel1(empleado.getId());
 			int cantidadSubordinadosNivel2 = empleadoDao.obtenerCantidadSuborninadosNivel2(empleado.getId());
-			List<ResponseAcceso> accesos = new ArrayList<>();
-			List<PerfilSpringApp> perfilesSpringApp = perfilStringAppDao.listarPorPerfilSpring(empleado.getPerfilSpring().getId());
-			List<FuncionalidadAcceso> funcionalidades = new ArrayList<>();
-			for (PerfilSpringApp perfilSpringApp : perfilesSpringApp) {
-				List<FuncionalidadAcceso> lstFunciones = funcionalidadAccesoDao.listarPorPerfilApp(perfilSpringApp.getPerfilApp().getId());
-				lstFunciones = lstFunciones == null ? new ArrayList<>() : lstFunciones;
-				funcionalidades.addAll(lstFunciones);
-			}
-			accesos = funcionalidades.stream().map(f -> {
+			List<EmpleadoAcceso> accesosConsolidados = empleadoAccesoDao.findByEmpleadoUsuariobt(empleado.getUsuarioBT());
+			accesosConsolidados = accesosConsolidados == null ? new ArrayList<>() : accesosConsolidados;
+			accesos = accesosConsolidados.stream().map(a -> {
 				ResponseAcceso acceso = new ResponseAcceso();
-				acceso.setFuncionalidadCodigo(f.getFuncionalidad().getCodigo());
-				acceso.setFuncionalidadDescripcion(f.getFuncionalidad().getDescripcion());
-				if(f.getFuncionalidad().getCodigo().equals(FuncionalidadApp.VACACIONES_PROGRAMACION.codigo) && ((cantidadSubordinadosNivel1 + cantidadSubordinadosNivel2 ) > 0) ) {
+				acceso.setFuncionalidadCodigo(a.getFuncionalidadCodigo());
+				acceso.setFuncionalidadDescripcion(a.getFuncionalidadDescripcion());
+				if(a.getFuncionalidadCodigo().equals(FuncionalidadApp.VACACIONES_PROGRAMACION.codigo) && ((cantidadSubordinadosNivel1 + cantidadSubordinadosNivel2 ) > 0) ) {
 					acceso.setAprobar(true);
 				} else {
-					acceso.setAprobar(f.isAprobar());
+					acceso.setAprobar(a.isFuncionalidadAccesoAprobar());
 				}
-				acceso.setConsultar(f.isConsultar());
-				acceso.setEliminar(f.isEliminar());
-				acceso.setModificar(f.isModificar());
-				acceso.setRegistrar(f.isRegistrar());
-				acceso.setPerfilCodigo(f.getPerfilApp().getCodigo());
-				acceso.setPerfilDescripcion(f.getPerfilApp().getDescripcion());
+				acceso.setConsultar(a.isFuncionalidadAccesoConsultar());
+				acceso.setEliminar(a.isFuncionalidadAccesoEliminar());
+				acceso.setModificar(a.isFuncionalidadAccesoModificar());
+				acceso.setRegistrar(a.isFuncionalidadAccesoRegistrar());
+				acceso.setPerfilCodigo(a.getPerfilAppCodigo());
+				acceso.setPerfilDescripcion(a.getPerfilAppDescripcion());
 				return acceso;
 			}).collect(Collectors.toList());
 			return accesos;

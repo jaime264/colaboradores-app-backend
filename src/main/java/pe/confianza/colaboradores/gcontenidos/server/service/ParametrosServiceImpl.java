@@ -9,13 +9,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAcceso;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseEmpleadoMeta;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametroTipo;
+import pe.confianza.colaboradores.gcontenidos.server.controller.RequestFiltroEmpleadoMeta;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.ParametroMapper;
@@ -37,6 +40,9 @@ public class ParametrosServiceImpl implements ParametrosService {
 	
 	@Autowired
 	private EmpleadoService empleadoService;
+	
+	@Autowired
+	private VacacionMetaResumenService vacacionMetaResumenService;
 	
 	@Autowired
 	private MessageSource messageSource;
@@ -131,5 +137,12 @@ public class ParametrosServiceImpl implements ParametrosService {
 				}).collect(Collectors.toList());
 		return tipos;
 	}
+
+	@Override
+	public Page<ResponseEmpleadoMeta> listarVacacionMeta(RequestFiltroEmpleadoMeta filtro) {
+		
+		return null;
+	}
+	
 
 }
