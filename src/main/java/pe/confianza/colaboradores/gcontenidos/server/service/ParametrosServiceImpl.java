@@ -110,7 +110,13 @@ public class ParametrosServiceImpl implements ParametrosService {
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"));
 			if(!ParametroUnidad.esValidoValor(unidad, parametro.getNuevoValor()))
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.formato_incorrecto"));
-			Parametro parametroNuevo = parametrosConstants.actualizarParametro(parametro.getCodigo(), parametro.getNuevoValor(), parametro.getUsuarioOperacion());
+			String descripcionParametro = null;
+			if(ParametroUnidad.ESTADO_VACACION.codigo.equals(unidad.codigo)) {
+				String[] valorArray = parametro.getNuevoValor().split("-");
+				descripcionParametro = valorArray[0];
+			}
+			Parametro parametroNuevo = parametrosConstants.actualizarParametro(parametro.getCodigo(), parametro.getNuevoValor(),
+					descripcionParametro, parametro.getUsuarioOperacion());
 			if(parametroNuevo == null)
 				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.no_encontrado", parametro.getCodigo()));
 			return ParametroMapper.convert(parametroNuevo);

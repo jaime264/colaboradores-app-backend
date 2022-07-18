@@ -67,10 +67,12 @@ public class CargaParametros {
 		throw new AppException("Ya existe un parametro con el código " + nuevoParametro.getCodigo());
 	}
 	
-	public Parametro actualizarParametro(String codigo, String nuevoValor, String usuarioModifica) {
+	public Parametro actualizarParametro(String codigo, String nuevoValor, String nuevaDescripcion, String usuarioModifica) {
 		logger.info("[BEGIN] addParametro");
 		Parametro buscado = search(codigo);
 		if(buscado != null) {
+			if(nuevaDescripcion != null)
+				buscado.setDescripcion(nuevaDescripcion);
 			buscado.setValor(nuevoValor);
 			buscado.setUsuarioModifica(usuarioModifica);
 			buscado.setFechaModifica(LocalDateTime.now());
