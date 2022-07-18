@@ -13,7 +13,7 @@ public class NotificacionPublicacionDataExtra {
 	private String categoria;
 	private String descripcion;
 	private String observacion;
-	private int flagAprobacion;
+	private Integer flagAprobacion;
 	private String nombre;
 	private String sexo;
 	private boolean gestorContenido;
@@ -76,10 +76,10 @@ public class NotificacionPublicacionDataExtra {
 	public void setObservacion(String observacion) {
 		this.observacion = observacion;
 	}
-	public int getFlagAprobacion() {
+	public Integer getFlagAprobacion() {
 		return flagAprobacion;
 	}
-	public void setFlagAprobacion(int flagAprobacion) {
+	public void setFlagAprobacion(Integer flagAprobacion) {
 		this.flagAprobacion = flagAprobacion;
 	}
 	public String getNombre() {
