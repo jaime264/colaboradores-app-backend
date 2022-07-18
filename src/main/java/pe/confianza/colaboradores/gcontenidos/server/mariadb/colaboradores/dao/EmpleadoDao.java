@@ -25,7 +25,10 @@ public interface EmpleadoDao extends JpaRepository<Empleado, Long> {
 	@Query("SELECT em FROM Empleado em WHERE em.codigoNivel1 = ?1 or em.codigoNivel2 = ?1 and em.estadoRegistro = 'A'")
 	public List<Empleado> findByCodigoAprobador(long codigoAprobador);
 
-	@Query("SELECT vp FROM VacacionProgramacion vp inner join vp.periodo pv inner join pv.empleado e inner join e.agencia a where vp.estadoRegistro = 'A' and vp.idEstado = 2 and e.id = ?1")
+	/*@Query("SELECT vp FROM VacacionProgramacion vp inner join vp.periodo pv inner join pv.empleado e inner join e.agencia a where vp.estadoRegistro = 'A' and vp.idEstado = 2 and e.id = ?1")
+	public List<VacacionProgramacion> findPeriodosByEmpleado(Long idEmpleado);*/
+	
+	@Query("SELECT vp FROM VacacionProgramacion vp where vp.estadoRegistro = 'A' and vp.idEstado = 2 and vp.periodo.empleado.id = ?1")
 	public List<VacacionProgramacion> findPeriodosByEmpleado(Long idEmpleado);
 
 	@Query(value = "Select * from empleado e where MONTH(e.fecha_nacimiento) = ?1 and DAY (e.fecha_nacimiento) = ?2", nativeQuery = true)

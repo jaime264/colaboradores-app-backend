@@ -47,7 +47,7 @@ public class VacacionReprogramacionContadorServiceImpl implements VacacionReprog
 		Empleado empleado = new Empleado();
 		empleado.setId(idEmpleado);
 		Optional<VacacionReprogramacionContador> opt = obtenerPorEmpleadoAndAnio(empleado, anio);
-		if(opt.isPresent())
+		if(!opt.isPresent())
 			return null;
 		VacacionReprogramacionContador contador = opt.get();
 		contador.setReprogramaciones(contador.getReprogramaciones() + 1);

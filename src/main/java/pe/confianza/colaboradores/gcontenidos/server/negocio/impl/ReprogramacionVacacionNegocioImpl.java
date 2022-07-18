@@ -158,6 +158,7 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 			if(programacion.getFechaFin().getMonthValue() != (LocalDate.now().getMonthValue() + 1))
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.mes_error"));
 			String usuarioOperacion = request.getUsuarioOperacion().trim();
+			programacion.calcularDias();
 			validarCantidadReprogramaciones(programacion.getPeriodo().getEmpleado(), usuarioOperacion);
 			validarPeriodoReprogramacion();
 			validarPermisoReprogramar(programacion, request.getUsuarioOperacion());
