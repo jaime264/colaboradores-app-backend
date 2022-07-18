@@ -382,12 +382,12 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 		List<EmplVacPerRes> listEmp = new ArrayList<EmplVacPerRes>();
 
-		Optional<Empleado> emJefe = empleadoDao.findOneByUsuarioBT(reqPrograEmp.getUsuarioBt());
+		Optional<Empleado> emAprobador = empleadoDao.findOneByUsuarioBT(reqPrograEmp.getUsuarioBt());
 
-		List<Empleado> emsByJefe = empleadoDao.findByCodigoJefe(emJefe.get().getCodigo());
+		List<Empleado> emsByAprobador = empleadoDao.findByCodigoAprobador(emAprobador.get().getCodigo());
 
-		if (!CollectionUtils.isEmpty(emsByJefe)) {
-			for (Empleado e : emsByJefe) {
+		if (!CollectionUtils.isEmpty(emsByAprobador)) {
+			for (Empleado e : emsByAprobador) {
 
 				List<VacacionProgramacion> lVp = empleadoDao.findPeriodosByEmpleado(e.getId());
 				for (VacacionProgramacion v : lVp) {
