@@ -171,11 +171,11 @@ public class CargaParametros {
 		List<ResponseEstadoVacacion> estados = new ArrayList<>();
 		for (EstadoVacacion estado : EstadoVacacion.values()) {
 			String descripcionEstado = populateParametro(estado.codigoParametro);
-			String leyendaEstado = populateParametro(estado.codigoParametroLeyenda);
+			String[] desaciptionArray = descripcionEstado.split("-");
 			ResponseEstadoVacacion estadoRes = new ResponseEstadoVacacion();
 			estadoRes.setCodigo(estado.id);
-			estadoRes.setDescripcion(descripcionEstado);
-			estadoRes.setLeyenda(leyendaEstado);
+			estadoRes.setDescripcion(desaciptionArray[0].trim());
+			estadoRes.setLeyenda(desaciptionArray[1].trim());
 			estados.add(estadoRes);
 		}
 		return estados;

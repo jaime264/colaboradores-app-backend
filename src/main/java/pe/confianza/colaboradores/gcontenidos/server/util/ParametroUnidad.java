@@ -11,6 +11,7 @@ public enum ParametroUnidad {
 	INTERVALO_DIAS("INTERVALO_DIAS", "Días", Integer.class),
 	HORA("HORA", "hora", Integer.class),
 	DIA_MES("DIA_MES", "de cada mes", Integer.class),
+	ESTADO_VACACION("ESTADO_VACACION", "", String.class),
 	TEXTO_GENERAL("TEXTO_GENERAL", "", String.class ),
 	NUMERO_GENERAL("NUMERO_GENERAL", "", String.class ),
 	PORCENTAJE("PORCENTAJE", "%", Double.class);
@@ -102,6 +103,10 @@ public enum ParametroUnidad {
 				} catch (Exception e) {
 					return false;
 				}
+			}
+			if(ParametroUnidad.ESTADO_VACACION.codigo.equals(unidad.codigo)) {
+				if(!valor.contains("-"))
+					return false;
 			}
 		}
 		return true;
