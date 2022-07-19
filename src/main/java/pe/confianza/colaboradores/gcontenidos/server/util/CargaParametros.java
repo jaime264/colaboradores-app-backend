@@ -183,10 +183,13 @@ public class CargaParametros {
 		return estados;
 	}
 	
-	public String getEstadoProgramacionDescripcion(int idEstadoProgramacion) {
+	public String[] getEstadoProgramacionDescripcion(int idEstadoProgramacion) {
 		EstadoVacacion estado = EstadoVacacion.getEstado(idEstadoProgramacion);
-		return populateParametro(estado.codigoParametro);
+		String descripcionParametro = populateParametro(estado.codigoParametro);
+		String[] desaciptionArray = descripcionParametro.split("-");
+		return new String[] {desaciptionArray[0], desaciptionArray[1]};
 	}
+
 	
 	public int getDiasMaximoVacacionesAdelantadas() {
 		if(DIAS_MAXIMO_VACACIONES_ADELANTADAS != null)

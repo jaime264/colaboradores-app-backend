@@ -21,6 +21,7 @@ public class EmplVacPerRes {
 	private LocalDate fechaFin;
 	private Integer idEstado;
 	private String descripcionEstado;
+	private String leyendaEstado;
 
 	@JsonIgnore
 	private String agencia;
@@ -151,6 +152,14 @@ public class EmplVacPerRes {
 
 	public void setAdelantada(boolean adelantada) {
 		this.adelantada = adelantada;
+	}
+
+	public String getLeyendaEstado() {
+		return leyendaEstado;
+	}
+
+	public void setLeyendaEstado(String leyendaEstado) {
+		this.leyendaEstado = leyendaEstado;
 	}
 	
 	

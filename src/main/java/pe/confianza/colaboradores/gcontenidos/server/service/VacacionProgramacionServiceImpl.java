@@ -440,7 +440,9 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 					emp.setIdEstado(v.getIdEstado());
 					emp.setPeriodo(v.getPeriodo().getDescripcion());
 					emp.setAgencia(v.getPeriodo().getEmpleado().getAgencia().getDescripcion());
-					emp.setDescripcionEstado(cargaParametros.getEstadoProgramacionDescripcion(v.getEstado().id));
+					String[] estadoProg = cargaParametros.getEstadoProgramacionDescripcion(v.getEstado().id);
+					emp.setDescripcionEstado(estadoProg[0]);
+					emp.setLeyendaEstado(estadoProg[1]);
 					emp.setTerritorio(empleado.getTerritorios());
 					emp.setCorredor(empleado.getCorredores());
 					emp.setArea(empleado.getUnidadesOperativa());

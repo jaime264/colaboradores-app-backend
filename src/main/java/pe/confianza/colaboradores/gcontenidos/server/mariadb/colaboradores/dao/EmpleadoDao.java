@@ -38,17 +38,20 @@ public interface EmpleadoDao extends JpaRepository<Empleado, Long> {
 	int obtenerCantidadEmpleadosPorPuestoYPorUnidadNegocio(long unidadNegocio, String puesto);
 
 	@Query(value = "select DISTINCT e.id, CONCAT(e.nombres, ' ', e.apellido_paterno, ' ', e.apellido_materno) as descripcion "
-			+ "from empleado e where e.codigo_nivel1 = ?1 or e.codigo_nivel2 = ?2"
+			+ "from empleado e INNER JOIN vacacion_periodo p on p.id_empleado = e.id INNER JOIN vacacion_programacion vp on vp.id_periodo = p.id "
+			+ " where e.codigo_nivel1 = ?1 or e.codigo_nivel2 = ?2 and vp.id_estado = 2"
 			+ "", nativeQuery = true)
 	List<Map<String, String>> findNombreByCodigoN1(String codigoNivel1, String codigoNivel2);
 	
 	@Query(value = "select DISTINCT p.id, p.descripcion "
 			+ "from empleado e inner join puesto p on e.id_puesto = p.id "
+			+ " INNER JOIN vacacion_periodo pe on pe.id_empleado = e.id INNER JOIN vacacion_programacion vp on vp.id_periodo = pe.id "
 			+ "where e.codigo_nivel1 = ?1 or e.codigo_nivel2 = ?2", nativeQuery = true)
 	List<Map<String, String>> findPuestoByCodigoN1(String codigoNivel1, String codigoNivel2);
 	
 	@Query(value = "select DISTINCT a.id, a.descripcion "
 			+ "from empleado e inner join agencia a  on e.id_agencia = a.id "
+			+ "  INNER JOIN vacacion_periodo p on p.id_empleado = e.id INNER JOIN vacacion_programacion vp on vp.id_periodo = p.id "
 			+ "where e.codigo_nivel1 = ?1 or e.codigo_nivel2 = ?2", nativeQuery = true)
 	List<Map<String, String>> findAgenciaByCodigoN1(String codigoNivel1, String codigoNivel2);
 	
@@ -56,18 +59,21 @@ public interface EmpleadoDao extends JpaRepository<Empleado, Long> {
 			+ "inner join agencia a  on e.id_agencia = a.id "
 			+ "inner join corredor c on a.id_corredor = c.id "
 			+ "inner join territorio t on c.id_territorio = t.id "
+			+ " INNER JOIN vacacion_periodo p on p.id_empleado = e.id INNER JOIN vacacion_programacion vp on vp.id_periodo = p.id "
 			+ "where e.codigo_nivel1 = ?1 or e.codigo_nivel2 = ?2", nativeQuery = true)
 	List<Map<String, String>> findTerritorioByCodigoN1(String codigoNivel1, String codigoNivel2);
 	
 	@Query(value = "select DISTINCT c.id, c.descripcion from empleado e "
 			+ "inner join agencia a  on e.id_agencia = a.id "
 			+ "inner join corredor c on a.id_corredor = c.id "
+			+ " INNER JOIN vacacion_periodo p on p.id_empleado = e.id INNER JOIN vacacion_programacion vp on vp.id_periodo = p.id "
 			+ "where e.codigo_nivel1 = ?1 or e.codigo_nivel2 = ?2", nativeQuery = true)
 	List<Map<String, String>> findCorredorByCodigoN1(String codigoNivel1, String codigoNivel2);
 	
 	@Query(value = "select DISTINCT a.id, uo.descripcion from empleado e "
 			+ "inner join agencia a  on e.id_agencia = a.id "
 			+ "inner join unidad_operativa uo on a.id = uo.id_agencia "
+			+ "  INNER JOIN vacacion_periodo p on p.id_empleado = e.id INNER JOIN vacacion_programacion vp on vp.id_periodo = p.id "
 			+ "where e.codigo_nivel1 = ?1 or e.codigo_nivel2 = ?2", nativeQuery = true)
 	List<Map<String, String>> findAreaByCodigoN1(String codigoNivel1, String codigoNivel2);
 

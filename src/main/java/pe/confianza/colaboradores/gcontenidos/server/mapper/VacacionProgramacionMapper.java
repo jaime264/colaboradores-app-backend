@@ -44,7 +44,7 @@ public class VacacionProgramacionMapper {
 		destination.setFechaInicio(source.getFechaInicio());
 		destination.setFechaFin(source.getFechaFin());
 		destination.setIdEstado(source.getEstado().id);
-		destination.setDescripcionEstado(cargaParametros.getEstadoProgramacionDescripcion(source.getEstado().id));
+		destination.setDescripcionEstado(cargaParametros.getEstadoProgramacionDescripcion(source.getEstado().id)[0]);
 		destination.setDias(source.getNumeroDias());
 		destination.setPeriodo(source.getPeriodo().getDescripcion());
 		destination.setOrden(source.getOrden());
@@ -69,7 +69,7 @@ public class VacacionProgramacionMapper {
 		destination.setFechaInicio(source.getFechaInicio());
 		destination.setFechaFin(source.getFechaFin());
 		destination.setIdEstado(source.getEstado().id);
-		destination.setDescripcionEstado(cargaParametros.getEstadoProgramacionDescripcion(source.getEstado().id));
+		destination.setDescripcionEstado(cargaParametros.getEstadoProgramacionDescripcion(source.getEstado().id)[0]);
 		destination.setDias(source.getNumeroDias());
 		destination.setPeriodo(source.getPeriodo().getDescripcion());
 		destination.setOrden(source.getOrden());

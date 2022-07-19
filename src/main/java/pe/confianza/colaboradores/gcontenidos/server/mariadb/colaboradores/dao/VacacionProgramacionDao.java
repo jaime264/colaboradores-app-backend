@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 
 @Repository
@@ -80,5 +81,8 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	
 	@Query("SELECT vp FROM VacacionProgramacion vp where vp.fechaFin >= ?1 AND vp.fechaFin <= ?2 AND vp.periodo.empleado.codigoNivel2 = ?3 AND vp.estadoRegistro = 'A' order by vp.fechaInicio ASC")
 	List<VacacionProgramacion> findBetweenDatesAndAprobadorNivelII(LocalDate fechaInicio, LocalDate fechaFin, String codigoAprobador);
+	
+	@Query("SELECT e FROM VacacionProgramacion vp INNER JOIN vp.periodo p INNER JOIN p.empleado e where (e.codigoNivel1 = ?1 OR e.codigoNivel1 = ?1) AND vp.idEstado = 2 AND vp.estadoRegistro = 'A' AND e.estadoRegistro = 'A'")
+	List<Empleado> listarEmpleadosPorAprobar(long codigoAprobador);
 
 }
