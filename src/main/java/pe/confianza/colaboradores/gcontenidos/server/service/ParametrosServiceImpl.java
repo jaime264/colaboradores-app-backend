@@ -146,8 +146,16 @@ public class ParametrosServiceImpl implements ParametrosService {
 
 	@Override
 	public Page<ResponseEmpleadoMeta> listarVacacionMeta(RequestFiltroEmpleadoMeta filtro) {
+		logger.info("[BEGIN] listarVacacionMeta");
+		if(filtro.getIdPuesto() != null) {
+			return vacacionMetaResumenService.listarPorPuesto(filtro);
+		}
 		
-		return null;
+		if(filtro.getNombre() != null) {
+			return vacacionMetaResumenService.listarPorNombreEmpleado(filtro);
+		}
+		filtro.setNombre("");
+		return vacacionMetaResumenService.listarPorNombreEmpleado(filtro);
 	}
 	
 

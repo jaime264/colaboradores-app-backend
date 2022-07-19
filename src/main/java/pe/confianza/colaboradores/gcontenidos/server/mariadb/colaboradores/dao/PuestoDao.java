@@ -14,6 +14,6 @@ public interface PuestoDao extends JpaRepository<Puesto, Long>{
 
 	Optional<Puesto> findOneByCodigo(long codigo);
 	
-	@Query("SELECT p FROM Puesto p WHERE UPPER(p.descripcion) LIKE ?1 AND p.estadoRegistro = 'A' ORDER BY p.descripcion ASC")
+	@Query("SELECT p FROM Puesto p WHERE p.descripcion LIKE CONCAT('%',?1,'%') AND p.estadoRegistro = 'A' ORDER BY p.descripcion ASC")
 	List<Puesto> listarPuestos(String descripcion);
 }

@@ -51,12 +51,13 @@ public class VacacionMetaResumenServiceImpl implements VacacionMetaResumenServic
 	public Page<ResponseEmpleadoMeta> listarPorNombreEmpleado(RequestFiltroEmpleadoMeta filtro) {
 		int anio = cargaParametros.getMetaVacacionAnio();
 		Pageable paginacion = PageRequest.of(filtro.getNumeroPagina(), filtro.getTamanioPagina());
-		Page<VacacionMetaResumen> metas = vacacionMetaResumenDao.consultarPorNombre(filtro.getNombre(), anio, paginacion);
+		Page<VacacionMetaResumen> metas = vacacionMetaResumenDao.consultarPorNombre(filtro.getNombre().toUpperCase(), anio, paginacion);
 		return metas.map(m -> {
 			ResponseEmpleadoMeta response = new ResponseEmpleadoMeta();
 			response.setId(m.getMetaId());
 			response.setEmpleado(m.getEmpleadoNombreCompleto());
 			response.setFechaIngreso(m.getEmpleadoFechaIngreso());
+			response.setPuesto(m.getPuestoDescripcion());
 			response.setMeta(m.getMetaInicial());
 			response.setDiasProgramados(m.getMetaInicial() - m.getMeta());
 			return response;

@@ -6,11 +6,10 @@ public class RequestFiltroEmpleadoMeta extends RequestPaginacion {
 	
 	private Long idPuesto;
 	private String nombre;
-	
-	public long getIdPuesto() {
+	public Long getIdPuesto() {
 		return idPuesto;
 	}
-	public void setIdPuesto(long idPuesto) {
+	public void setIdPuesto(Long idPuesto) {
 		this.idPuesto = idPuesto;
 	}
 	public String getNombre() {
@@ -19,6 +18,7 @@ public class RequestFiltroEmpleadoMeta extends RequestPaginacion {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
+	
 	
 	
 

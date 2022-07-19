@@ -16,7 +16,7 @@ public interface VacacionMetaResumenDao extends JpaRepository<VacacionMetaResume
 	@Query("SELECT v FROM VacacionMetaResumen v WHERE v.anio = ?1")
 	List<VacacionMetaResumen> listarResumenPorAnio(int anio);
 	
-	@Query("SELECT v FROM VacacionMetaResumen v WHERE UPPER(v.empleadoNombreCompleto) LIKE ?1 AND v.anio = ?2 ORDER BY v.empleadoNombreCompleto ASC")
+	@Query("SELECT v FROM VacacionMetaResumen v WHERE UPPER(v.empleadoNombreCompleto) LIKE CONCAT('%',?1,'%') AND v.anio = ?2 ORDER BY v.empleadoNombreCompleto ASC")
 	Page<VacacionMetaResumen> consultarPorNombre(String nombre, int anio, Pageable pageable);
 	
 	@Query("SELECT v FROM VacacionMetaResumen v WHERE puestoId = ?1 AND v.anio = ?2 ORDER BY v.empleadoNombreCompleto ASC")

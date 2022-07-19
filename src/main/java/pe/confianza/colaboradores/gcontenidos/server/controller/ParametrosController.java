@@ -127,6 +127,16 @@ public class ParametrosController {
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	
+	@ApiOperation(notes = "Consultar vacaciones meta por empleado", value = "url proxy /parametros/vacaciones/meta")
+	@PostMapping("/parametros/vacaciones/meta")
+	public ResponseEntity<ResponseStatus> listarEmpleadosMetaVacaciones(@Valid @RequestBody RequestFiltroEmpleadoMeta filtro) {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(parametrosService.listarVacacionMeta(filtro));
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+	
 	
 
 }
