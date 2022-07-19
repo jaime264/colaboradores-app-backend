@@ -25,6 +25,7 @@ public class ParametrosConstantes {
 	public static class VacacionesProgramacionAnual {
 		public static final String FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES = "PARAMVAC001";
 		public static final String FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES = "PARAMVAC002";
+		public static final String FECHA_MAXIMA_APROBACION = "PARAMVAC040";
 		
 		
 	}

@@ -839,4 +839,57 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[END] validarPoliticaBolsaRecuperaciones");
 	}
 
+	@Override
+	public void actualizarMeta(long idMeta, double nuevaMeta, String usuarioModifica) {
+		LOGGER.info("[BEGIN] actualizarMeta");
+		Optional<VacacionMeta> optMeta = vacacionMetaService.obtenerMeta(idMeta);
+		if(!optMeta.isPresent())
+			throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "app.error.objeto_no_encontrado"));
+		VacacionMeta meta = optMeta.get();
+		Empleado empleado = meta.getEmpleado();
+		List<VacacionProgramacion> programacionesRegistradasPeriodoVencido = new ArrayList<>();
+		List<VacacionProgramacion> programacionesRegistradasPeriodoTrunco = new ArrayList<>();
+		long diasProgramados = 0;
+		if(meta.getPeriodoVencido() != null) {
+			PeriodoVacacion periodoVencido = meta.getPeriodoVencido();
+			diasProgramados += periodoVencido.getDiasGeneradosGozar() + periodoVencido.getDiasAprobadosGozar();
+			programacionesRegistradasPeriodoVencido = vacacionProgramacionService.listarPorPeriodo(periodoVencido.getId())
+					.stream().filter(p -> p.getIdEstado() == EstadoVacacion.REGISTRADO.id)
+					.collect(Collectors.toList());
+			programacionesRegistradasPeriodoVencido = programacionesRegistradasPeriodoVencido == null ? new ArrayList<>() : programacionesRegistradasPeriodoVencido;
+		}
+		
+		if(meta.getPeriodoTrunco() != null) {
+			PeriodoVacacion periodoTrunco = meta.getPeriodoTrunco();
+			diasProgramados += periodoTrunco.getDiasGeneradosGozar() + periodoTrunco.getDiasAprobadosGozar();
+			programacionesRegistradasPeriodoTrunco = vacacionProgramacionService.listarPorPeriodo(periodoTrunco.getId())
+					.stream().filter(p -> p.getIdEstado() == EstadoVacacion.REGISTRADO.id)
+					.collect(Collectors.toList());
+			programacionesRegistradasPeriodoTrunco = programacionesRegistradasPeriodoTrunco == null ? new ArrayList<>() : programacionesRegistradasPeriodoTrunco;
+		}
+		if(diasProgramados >= 0)
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "Ya no se puede modificar la meta del empleado"));
+		
+		for (VacacionProgramacion programacion : programacionesRegistradasPeriodoVencido) {
+			vacacionProgramacionService.eliminar(programacion.getId(), usuarioModifica);
+			actualizarPeriodo(empleado, usuarioModifica);
+			actualizarMeta(parametrosConstants.getMetaVacacionAnio(), programacion, true, usuarioModifica);
+		}
+		
+		for (VacacionProgramacion programacion : programacionesRegistradasPeriodoTrunco) {
+			vacacionProgramacionService.eliminar(programacion.getId(), usuarioModifica);
+			actualizarPeriodo(empleado, usuarioModifica);
+			actualizarMeta(parametrosConstants.getMetaVacacionAnio(), programacion, true, usuarioModifica);
+		}
+		optMeta = vacacionMetaService.obtenerMeta(idMeta);
+		meta = optMeta.get();
+		
+		meta.setMetaInicial(nuevaMeta);
+		meta.setMeta(nuevaMeta);
+		
+		meta = vacacionMetaService.actualizarMeta(meta, usuarioModifica);
+		
+		LOGGER.info("[END] actualizarMeta");
+	}
+
 }

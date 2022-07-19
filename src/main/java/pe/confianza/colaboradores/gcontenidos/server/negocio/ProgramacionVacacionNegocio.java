@@ -61,5 +61,7 @@ public interface ProgramacionVacacionNegocio {
 	void validarPoliticaBolsaRecuperaciones(VacacionProgramacion programacion);
 	
 	VacacionProgramacion reprogramacionAprobador(RequestReprogramacionAprobador reqAprobador);
+	
+	void actualizarMeta(long idMeta, double nuevaMeta, String usuarioModifica);
 
 }

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.ApiOperation;
 import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestBuscarPorId;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestModificarMetaVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
@@ -134,6 +135,16 @@ public class ParametrosController {
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);
 		responseStatus.setResultObj(parametrosService.listarVacacionMeta(filtro));
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+	
+	@ApiOperation(notes = "Actualizar vacaciones meta por empleado", value = "url proxy /parametros/vacaciones/meta")
+	@PutMapping("/parametros/vacaciones/meta")
+	public ResponseEntity<ResponseStatus> actualizarMeta(@Valid @RequestBody RequestModificarMetaVacacion modificacion) {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		parametrosService.actualizarMeta(modificacion);
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestModificarMetaVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseEmpleadoMeta;
@@ -29,6 +30,7 @@ import pe.confianza.colaboradores.gcontenidos.server.util.ParametroUnidad;
 import pe.confianza.colaboradores.gcontenidos.server.util.TipoParametro;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 import pe.confianza.colaboradores.gcontenidos.server.util.VacacionesSubTipoParametro;
+import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacionNegocio;
 
 @Service
 public class ParametrosServiceImpl implements ParametrosService {
@@ -43,6 +45,9 @@ public class ParametrosServiceImpl implements ParametrosService {
 	
 	@Autowired
 	private VacacionMetaResumenService vacacionMetaResumenService;
+	
+	@Autowired
+	private ProgramacionVacacionNegocio ProgramacionVacacionNegocio;
 	
 	@Autowired
 	private MessageSource messageSource;
@@ -156,6 +161,32 @@ public class ParametrosServiceImpl implements ParametrosService {
 		}
 		filtro.setNombre("");
 		return vacacionMetaResumenService.listarPorNombreEmpleado(filtro);
+	}
+
+	@Override
+	public void actualizarMeta(RequestModificarMetaVacacion actualizacion) {
+		try {
+			List<ResponseAcceso> accesos = empleadoService.consultaAccesos(actualizacion.getUsuarioOperacion());
+			boolean tienePermiso = false;
+			for (ResponseAcceso acceso : accesos) {
+				if(FuncionalidadApp.PARAMETRIA_VACACIONES.codigo.equals(acceso.getFuncionalidadCodigo()) && acceso.isModificar()) {
+					tienePermiso = true;
+				}
+			}
+			if(!tienePermiso)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.sin_permiso", actualizacion.getUsuarioOperacion()));
+			ProgramacionVacacionNegocio.actualizarMeta(actualizacion.getIdMeta(), actualizacion.getNuevaMeta(), actualizacion.getUsuarioOperacion().trim());
+		} catch (ModelNotFoundException e) {
+			logger.error("[ERROR] actualizarParametroVacaciones", e);
+			throw new ModelNotFoundException(e.getMessage()); 
+		} catch (AppException e) {
+			logger.error("[ERROR] actualizarParametroVacaciones", e);
+			throw new AppException(e.getMessage(), e);
+		} catch (Exception e) {
+			logger.error("[ERROR] actualizarParametroVacaciones", e);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
+		}
+		
 	}
 	
 

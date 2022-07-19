@@ -1,6 +1,8 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 
+import java.util.Optional;
+
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionMeta;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
@@ -34,6 +36,10 @@ public interface VacacionMetaService {
 	 */
 	VacacionMeta actualizarMeta(int anio, VacacionProgramacion programacion, boolean cancelarProgramcion,
 			String usuarioOperacion);
+	
+	VacacionMeta actualizarMeta(VacacionMeta meta, String usuarioOperacion);
+	
+	Optional<VacacionMeta> obtenerMeta(long id);
 	
 
 }

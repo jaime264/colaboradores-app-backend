@@ -132,6 +132,18 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 		return meta;
 	}
 
+	@Override
+	public Optional<VacacionMeta> obtenerMeta(long id) {
+		return vacacionMetaDao.findById(id);
+	}
+
+	@Override
+	public VacacionMeta actualizarMeta(VacacionMeta meta, String usuarioOperacion) {
+		meta.setFechaModifica(LocalDateTime.now());
+		meta.setUsuarioModifica(usuarioOperacion);
+		return vacacionMetaDao.save(meta);
+	}
+
 	
 
 	

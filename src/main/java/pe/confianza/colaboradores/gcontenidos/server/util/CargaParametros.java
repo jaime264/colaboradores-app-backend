@@ -138,6 +138,13 @@ public class CargaParametros {
 		throw new AppException("No existe el parámetro de fecha fin de registro de programación");
 	}
 	
+	public LocalDate getFechaMaximaAprobacionProgramaciones() {
+		if(FECHA_MAXIMA_APROBACION != null) {
+			return LocalDate.parse(FECHA_MAXIMA_APROBACION + "/" + this.getAnioPresente(), formatter);
+		}
+		throw new AppException("No existe el parámetro de fecha máxima de aprobación");
+	}
+	
 	public LocalDate getFechaCorteMeta() {
 		if(FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES != null) {
 			return LocalDate.parse(FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES + "/" + this.getAnioPresente(), formatter).minusDays(1);
@@ -289,6 +296,7 @@ public class CargaParametros {
 	public String SABADOS_MIN_POR_PERIODO = null;
 	public String DOMINGOS_MIN_POR_PERIODO = null;
 	public String DIA_LIMITE_APROBACION_REPROGRAMACION = null;
+	public String FECHA_MAXIMA_APROBACION = null;
 	
 	public String CANTIDAD_MAX_REPROGRAMACIONES_ANIO = null;
 	
@@ -316,6 +324,7 @@ public class CargaParametros {
 		//vacaciones - programacion anual
 		FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES = populateParametro(ParametrosConstantes.VacacionesProgramacionAnual.FECHA_INICIO_REGISTRO_PROGRAMACION_VACACIONES);
 		FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES = populateParametro(ParametrosConstantes.VacacionesProgramacionAnual.FECHA_FIN_REGISTRO_PROGRAMACION_VACACIONES);
+		FECHA_MAXIMA_APROBACION = populateParametro(ParametrosConstantes.VacacionesProgramacionAnual.FECHA_MAXIMA_APROBACION);
 		
 		//vacaciones - reprogramacion
 		DIA_INICIO_REPROGRAMACION = populateParametro(ParametrosConstantes.VacacionesReprogramacion.DIA_INICIO_REPROGRAMACION);
