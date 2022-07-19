@@ -6,6 +6,7 @@ public class RequestFiltroVacacionesAprobacion {
 	private String codigoNivel1;
 	private String codigoNivel2;
 	private String filtro;
+	private String codigo;
 	
 	public String getUsuarioBt() {
 		return usuarioBt;
@@ -31,6 +32,14 @@ public class RequestFiltroVacacionesAprobacion {
 	public void setCodigoNivel2(String codigoNivel2) {
 		this.codigoNivel2 = codigoNivel2;
 	}
+	public String getCodigo() {
+		return codigo;
+	}
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}
+	
+	
 
 	
 }
