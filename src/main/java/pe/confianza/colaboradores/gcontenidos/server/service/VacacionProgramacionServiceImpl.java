@@ -25,8 +25,11 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionEmp
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VacacionProgramacionDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Corredor;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Territorio;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.UnidadOperativa;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
@@ -296,16 +299,34 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 		switch (reqPrograEmp.getTipoFiltro().toUpperCase().trim()) {
 		case "NOMBRE":
-			listEmp = listEmpByProgramacion.stream().filter(e -> reqPrograEmp.getFiltro().contains(e.getNombres()))
-					.collect(Collectors.toList());
+			listEmp = listEmpByProgramacion.stream().filter(e -> {
+				boolean encontrado = false;
+				for (String filtro : reqPrograEmp.getFiltro()) {
+					if(filtro.equalsIgnoreCase(e.getNombres()))
+						encontrado = true;
+				}
+				return encontrado;
+			}).collect(Collectors.toList());
 			break;
 		case "CARGO":
-			listEmp = listEmpByProgramacion.stream().filter(e -> reqPrograEmp.getFiltro().contains(e.getPuesto()))
-					.collect(Collectors.toList());
+			listEmp = listEmpByProgramacion.stream().filter(e -> {
+				boolean encontrado = false;
+				for (String filtro : reqPrograEmp.getFiltro()) {
+					if(filtro.equalsIgnoreCase(e.getPuesto()))
+						encontrado = true;
+				}
+				return encontrado;
+			}).collect(Collectors.toList());
 			break;
 		case "AGENCIA":
-			listEmp = listEmpByProgramacion.stream().filter(e -> reqPrograEmp.getFiltro().contains(e.getAgencia()))
-					.collect(Collectors.toList());
+			listEmp = listEmpByProgramacion.stream().filter(e -> {
+				boolean encontrado = false;
+				for (String filtro : reqPrograEmp.getFiltro()) {
+					if(filtro.equalsIgnoreCase(e.getAgencia()))
+						encontrado = true;
+				}
+				return encontrado;
+			}).collect(Collectors.toList());
 			break;
 		case "TERRITORIO":
 			listEmp = listEmpleadoProgramacionACT(reqPrograEmp, listEmpByProgramacion);
@@ -350,29 +371,41 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 			List<EmplVacPerRes> listEmpByProgramacion) {
 
 		List<EmplVacPerRes> listEmp = new ArrayList<>();
-
-		for (String f : reqPrograEmp.getFiltro()) {
-			for (EmplVacPerRes e : listEmpByProgramacion) {
-				if (reqPrograEmp.getTipoFiltro().equals("TERRITORIO")) {
-					for (int i = 0; i < e.getTerritorio().size(); i++) {
-						if (e.getTerritorio().get(i).getDescripcion().equals(f)) {
-							listEmp.add(e);
+		
+		for (EmplVacPerRes e : listEmpByProgramacion) {
+			Empleado empleado = empleadoService.buscarPorUsuarioBT(e.getUsuarioBt());
+			for (String f : reqPrograEmp.getFiltro()) {
+				
+				if(empleado.getAgencia() != null) {
+					
+					if (empleado.getAgencia().getCorredor() != null) {
+						if("CORREDOR".equals(reqPrograEmp.getTipoFiltro())) { 
+							if(empleado.getAgencia().getCorredor().getDescripcion().equalsIgnoreCase(f)) {
+								listEmp.add(e);
+							}
+						}
+						
+						if(empleado.getAgencia().getCorredor().getTerritorio() != null) {
+							if("TERRITORIO".equals(reqPrograEmp.getTipoFiltro())) {
+								if(empleado.getAgencia().getCorredor().getTerritorio().getDescripcion().equalsIgnoreCase(f)) {
+									listEmp.add(e);
+								}
+							}
 						}
 					}
-				} else if (reqPrograEmp.getTipoFiltro().equals("CORREDOR")) {
-					for (int i = 0; i < e.getCorredor().size(); i++) {
-						if (e.getCorredor().get(i).getDescripcion().equals(f)) {
-							listEmp.add(e);
-						}
-					}
-				} else if (reqPrograEmp.getTipoFiltro().equals("AREA")) {
-					for (int i = 0; i < e.getArea().size(); i++) {
-						if (e.getArea().get(i).getDescripcion().equals(f)) {
-							listEmp.add(e);
+				}
+				
+				if(empleado.getUnidadesOperativa() != null) {
+					if("AREA".equals(reqPrograEmp.getTipoFiltro())) {
+						for (UnidadOperativa a : empleado.getUnidadesOperativa()) {
+							if(a.getDescripcion().equalsIgnoreCase(f)) {
+								listEmp.add(e);
+							}
 						}
 					}
 				}
 			}
+			
 		}
 
 		return listEmp;
@@ -411,6 +444,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 					emp.setTerritorio(empleado.getTerritorios());
 					emp.setCorredor(empleado.getCorredores());
 					emp.setArea(empleado.getUnidadesOperativa());
+					
+					emp.setAdelantada(v.isVacacionesAdelantadas());
 
 					listEmp.add(emp);
 				}

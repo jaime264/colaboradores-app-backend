@@ -37,7 +37,7 @@ public interface EmpleadoDao extends JpaRepository<Empleado, Long> {
 	@Query(value = "SELECT COUNT(*) FROM empleado e INNER JOIN puesto p on e.id_puesto = p.id where e.codigo_unidad_negocio = ?1 AND p.descripcion like ?2", nativeQuery = true)
 	int obtenerCantidadEmpleadosPorPuestoYPorUnidadNegocio(long unidadNegocio, String puesto);
 
-	@Query(value = "select DISTINCT e.id, CONCAT(e.nombres, ' ', e.apellido_paterno, ' ', e.apellido_paterno) "
+	@Query(value = "select DISTINCT e.id, CONCAT(e.nombres, ' ', e.apellido_paterno, ' ', e.apellido_materno) as descripcion "
 			+ "from empleado e where e.codigo_nivel1 = ?1 or e.codigo_nivel2 = ?2"
 			+ "", nativeQuery = true)
 	List<Map<String, String>> findNombreByCodigoN1(String codigoNivel1, String codigoNivel2);

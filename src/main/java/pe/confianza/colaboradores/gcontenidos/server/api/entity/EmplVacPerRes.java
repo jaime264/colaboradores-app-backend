@@ -30,6 +30,8 @@ public class EmplVacPerRes {
 	private List<Corredor> corredor;
 	@JsonIgnore
 	private List<UnidadOperativa> area;
+	
+	private boolean adelantada;
 
 	public String getDescripcionEstado() {
 		return descripcionEstado;
@@ -142,5 +144,15 @@ public class EmplVacPerRes {
 	public void setArea(List<UnidadOperativa> area) {
 		this.area = area;
 	}
+
+	public boolean isAdelantada() {
+		return adelantada;
+	}
+
+	public void setAdelantada(boolean adelantada) {
+		this.adelantada = adelantada;
+	}
+	
+	
 
 }
