@@ -868,7 +868,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			programacionesRegistradasPeriodoTrunco = programacionesRegistradasPeriodoTrunco == null ? new ArrayList<>() : programacionesRegistradasPeriodoTrunco;
 		}
 		if(diasProgramados >= 0)
-			throw new AppException(Utilitario.obtenerMensaje(messageSource, "Ya no se puede modificar la meta del empleado"));
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.meta.empleado_generado"));
 		
 		for (VacacionProgramacion programacion : programacionesRegistradasPeriodoVencido) {
 			vacacionProgramacionService.eliminar(programacion.getId(), usuarioModifica);

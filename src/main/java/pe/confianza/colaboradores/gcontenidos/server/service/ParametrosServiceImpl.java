@@ -177,7 +177,7 @@ public class ParametrosServiceImpl implements ParametrosService {
 			if(!tienePermiso)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.sin_permiso", actualizacion.getUsuarioOperacion()));
 			LocalDate fechaActual = LocalDate.now();
-			if(fechaActual.isBefore(parametrosConstants.getFechaMaximaAprobacionProgramaciones()))
+			if(fechaActual.isAfter(parametrosConstants.getFechaMaximaAprobacionProgramaciones()))
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.meta.fuera_fecha"));
 			ProgramacionVacacionNegocio.actualizarMeta(actualizacion.getIdMeta(), actualizacion.getNuevaMeta(), actualizacion.getUsuarioOperacion().trim());
 		} catch (ModelNotFoundException e) {
