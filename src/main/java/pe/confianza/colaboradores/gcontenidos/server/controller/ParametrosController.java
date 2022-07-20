@@ -31,11 +31,9 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
 import pe.confianza.colaboradores.gcontenidos.server.service.ParametrosService;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
-import pe.confianza.colaboradores.gcontenidos.server.util.VacacionesSubTipoParametro;
 
 @RestController
 @RequestMapping("/api")
-//@CrossOrigin(origins = { "https://200.107.154.52:6020", "http://localhost", "http://localhost:8100", "http://localhost:4200", "http://172.20.9.12:7445", "http://172.20.10.13:7445" })
 public class ParametrosController {
 	
 	private static Logger logger = LoggerFactory.getLogger(ParametrosController.class);

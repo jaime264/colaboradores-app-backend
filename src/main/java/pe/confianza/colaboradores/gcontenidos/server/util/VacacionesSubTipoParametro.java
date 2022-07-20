@@ -9,7 +9,7 @@ public enum VacacionesSubTipoParametro {
 	REPORTES("REPORTES", "Reportes"),
 	ESTADOS_VACIONES("ESTADOS_VACIONES", "Estados"),
 	NOTIFICACIONES("NOTIFICACIONES", "Notificaciones"),
-	APROBACION_VACACIONES("APROBACION_VACACIONES", "Aprobaciones");
+	DIAS_META("DIAS_META", "Días meta");
 	
 	public String codigo;
 	public String descripcion;
