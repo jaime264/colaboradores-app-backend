@@ -1,4 +1,4 @@
-package pe.confianza.colaboradores.gcontenidos.server.util.reporte.excel;
+package pe.confianza.colaboradores.gcontenidos.server.util.file.read;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,7 +7,8 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Properties;
 
-import pe.confianza.colaboradores.gcontenidos.server.util.reporte.excel.collection.Collection;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.collection.Collection;
+
 
 /**
  * 

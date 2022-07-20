@@ -1,4 +1,4 @@
-package pe.confianza.colaboradores.gcontenidos.server.util.reporte.excel;
+package pe.confianza.colaboradores.gcontenidos.server.util.file.read;
 
 /**
  * 
