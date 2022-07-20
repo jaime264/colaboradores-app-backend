@@ -1,13 +1,18 @@
 package pe.confianza.colaboradores.gcontenidos.server.util.reporte.excel;
 
-public enum DataType {
+/**
+ * 
+ * @author kenyo.pecho
+ *
+ */
+public enum ColumnType {
 	
 	INTEGER("Integer"),
 	DOUBLE("Double"),
 	STRING("String"),
 	DATE("Date");
 	
-	private DataType(String label) {
+	private ColumnType(String label) {
 		this.label = label;
 	}
 

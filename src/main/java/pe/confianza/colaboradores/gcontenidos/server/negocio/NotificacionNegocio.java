@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAuditoria;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarNotificaciones;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestNotificacionVista;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseNotificacion;
@@ -12,7 +13,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseTipoNotificaci
 
 public interface NotificacionNegocio {
 	
-	List<ResponseTipoNotificacion> consultarTipos();
+	List<ResponseTipoNotificacion> consultarTipos(RequestAuditoria request);
 	
 	Page<ResponseNotificacion> listarPorTipo(RequestListarNotificaciones request);
 	

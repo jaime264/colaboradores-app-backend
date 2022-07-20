@@ -37,5 +37,7 @@ public interface NotificacionService {
 	List<Notificacion> listarNotificacionesPorTipoNoEnviadasCorreo(String codigoTipo);
 	
 	List<Notificacion> listarNotificacionesPorTipoNoEnviadasApp(String codigoTipo);
+	
+	long obtenerCantidadNotificacionesNoVistasPorEmpleadoYTipo(long idEmpleado, long idTipo);
 
 }

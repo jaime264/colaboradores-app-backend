@@ -12,7 +12,7 @@ public interface VacacionesTareasProgramadasNegocio {
 	
 	void registroNotificacionesInicioRegistroProgramacion();
 	
-	void registroNotificacionesMetaNoCumplida();
+	void registroNotificacionesMetaIncompleta();
 	
 	void registroNotificacionesSinRegistroProgramacion();
 	

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAuditoria;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFirebaseMessaging;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarNotificaciones;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestNotificacionVista;
@@ -41,11 +42,11 @@ public class NotificacionController {
 	
 	@ApiOperation(notes = "Consulta los tipos de notificaciones", value = "url proxy /notificaciontipolist")
 	@PostMapping("/tipos")
-	public ResponseEntity<ResponseStatus> listarTipoNotificaciones() {
+	public ResponseEntity<ResponseStatus> listarTipoNotificaciones(@RequestBody RequestAuditoria request) {
 		ResponseStatus responseStatus = new ResponseStatus();
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);
-		responseStatus.setResultObj(notificacionNegocio.consultarTipos());
+		responseStatus.setResultObj(notificacionNegocio.consultarTipos(request));
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	

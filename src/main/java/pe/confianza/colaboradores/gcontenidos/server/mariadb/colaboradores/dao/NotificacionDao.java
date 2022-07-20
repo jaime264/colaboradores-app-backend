@@ -28,6 +28,9 @@ public interface NotificacionDao extends JpaRepository<Notificacion, Long> {
 	@Query("SELECT n FROM Notificacion n where n.estadoRegistro = 'A' AND n.enviadoApp = false AND n.tipo.id = ?1 ORDER BY fechaCrea desc")
 	List<Notificacion> listarNotificacionesPorTipoNoEnviadasApp(long idTipo);
 	
+	@Query("SELECT COUNT(n) FROM Notificacion n where n.empleado.id = ?1  AND n.tipo.id = ?2 AND n.visto = false AND n.estadoRegistro = 'A'")
+	long getCountOfNotViewedByEmpleadoAndTipo(long idEmpleado, long idTipo);
+	
 	
 
 }

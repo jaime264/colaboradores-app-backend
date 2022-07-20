@@ -210,6 +210,11 @@ public class NotificacionServiceImpl implements NotificacionService {
 		logger.info("[END] listarNotificacionesPorTipoNoEnviadasApp " + notificacionesPendientes.size());
 		return notificacionesPendientes;
 	}
+
+	@Override
+	public long obtenerCantidadNotificacionesNoVistasPorEmpleadoYTipo(long idEmpleado, long idTipo) {
+		return notificacionDao.getCountOfNotViewedByEmpleadoAndTipo(idEmpleado, idTipo);
+	}
 	
 	
 

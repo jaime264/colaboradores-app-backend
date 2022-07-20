@@ -5,6 +5,7 @@ public class ResponseTipoNotificacion {
 	private String codigo;
 	private String descripcion;
 	private String descripcionExtendida;
+	private long notificacionesNoVistas;
 	
 	public String getCodigo() {
 		return codigo;
@@ -23,6 +24,12 @@ public class ResponseTipoNotificacion {
 	}
 	public void setDescripcionExtendida(String descripcionExtendida) {
 		this.descripcionExtendida = descripcionExtendida;
+	}
+	public long getNotificacionesNoVistas() {
+		return notificacionesNoVistas;
+	}
+	public void setNotificacionesNoVistas(long notificacionesNoVistas) {
+		this.notificacionesNoVistas = notificacionesNoVistas;
 	}
 	
 	

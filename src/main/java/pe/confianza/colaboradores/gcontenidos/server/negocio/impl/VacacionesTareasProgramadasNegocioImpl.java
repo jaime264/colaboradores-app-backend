@@ -138,8 +138,8 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 	}
 
 	@Override
-	public void registroNotificacionesMetaNoCumplida() {
-		LOGGER.info("[BEGIN] registroNotificacionesMetaNoCumplida " + LocalDate.now());
+	public void registroNotificacionesMetaIncompleta() {
+		LOGGER.info("[BEGIN] registroNotificacionesMetaIncompleta " + LocalDate.now());
 		LocalDate fechaActual = LocalDate.now();
 		LocalDate fechaInicioProgramacion = cargaParametros.getFechaInicioRegistroProgramacion();
 		LocalDate fechaFinProgramacion = cargaParametros.getFechaFinRegistroProgramacion();
@@ -172,7 +172,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 				fechaRecordatorio = fechaRecordatorio.plusDays(fechaRecordatorio.getDayOfWeek() == DayOfWeek.SATURDAY ? 2 : 1);
 			}			
 		}
-		LOGGER.info("[END] registroNotificacionesMetaNoCumplida " + LocalDate.now());
+		LOGGER.info("[END] registroNotificacionesMetaIncompleta " + LocalDate.now());
 	}
 
 	@Override
@@ -188,15 +188,15 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 			if(fechaRecordatorio.getDayOfWeek() != DayOfWeek.SATURDAY && fechaRecordatorio.getDayOfWeek() != DayOfWeek.SUNDAY) {
 				if(fechaActual.getDayOfMonth() == fechaRecordatorio.getDayOfMonth() && fechaActual.getMonthValue() == fechaRecordatorio.getMonthValue()) {
 					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
-					String titulo = "VACACIONES - META INCOMPLETA";
+					String titulo = "VACACIONES - NO HA REGISTRADO VACACIONES";
 					if(opt.isPresent()) {
 						
 							List<VacacionMetaResumen> resumenes = vacacionMetaResumenService.listarResumenAnio(anio);
 							for (VacacionMetaResumen resumen : resumenes) {
-								if(resumen.getMeta() > 0) {
+								if(resumen.getMetaInicial() == resumen.getMeta()) {
 									Optional<Empleado> optEmpleado = empleadoService.buscarPorId(resumen.getEmpleadoId());
 									if(optEmpleado.isPresent()) {
-										String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.meta_incompleta",
+										String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.sin_registro_programacion",
 												new Object[] { resumen.getMeta(), anio });
 										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), "TAREA_PROGRAMADA");
 									}
@@ -314,7 +314,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 	public void registrarNotificacionesAutomaticas() {
 		LOGGER.info("[BEGIN] registrarNotificacionesAutomaticas " + LocalDate.now());
 		registroNotificacionesInicioRegistroProgramacion();
-		registroNotificacionesMetaNoCumplida();
+		registroNotificacionesMetaIncompleta();
 		registroNotificacionesSinRegistroProgramacion();
 		registroNotificacionesJefeColaboradoresSinRegistroProgramacion();
 		registroNotificacionJefePendienteAprobacionProgramacion();

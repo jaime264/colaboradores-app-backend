@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAuditoria;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarNotificaciones;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestNotificacionVista;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseNotificacion;
@@ -30,12 +31,16 @@ public class NotificacionNegocioImpl implements NotificacionNegocio {
 	private EmpleadoService empleadoService;
 
 	@Override
-	public List<ResponseTipoNotificacion> consultarTipos() {
+	public List<ResponseTipoNotificacion> consultarTipos(RequestAuditoria request) {
+		Empleado empleado = empleadoService.buscarPorUsuarioBT(request.getUsuarioOperacion());
+		if(empleado.getId() == null) 
+			throw new AppException("No existe el empleado " + request.getUsuarioOperacion());
 		return notificacionService.obtenerTipos().stream().map(t -> {
 			ResponseTipoNotificacion response = new ResponseTipoNotificacion();
 			response.setCodigo(t.getCodigo());
 			response.setDescripcion(t.getDescripcion());
 			response.setDescripcionExtendida(t.getDescripcionExtendida());
+			response.setNotificacionesNoVistas(notificacionService.obtenerCantidadNotificacionesNoVistasPorEmpleadoYTipo(empleado.getId(), t.getId()));
 			return response;
 		}).collect(Collectors.toList());
 	}

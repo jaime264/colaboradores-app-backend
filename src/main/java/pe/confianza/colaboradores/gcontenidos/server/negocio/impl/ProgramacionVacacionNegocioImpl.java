@@ -867,7 +867,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 					.collect(Collectors.toList());
 			programacionesRegistradasPeriodoTrunco = programacionesRegistradasPeriodoTrunco == null ? new ArrayList<>() : programacionesRegistradasPeriodoTrunco;
 		}
-		if(diasProgramados >= 0)
+		if(diasProgramados > 0)
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.meta.empleado_generado"));
 		
 		for (VacacionProgramacion programacion : programacionesRegistradasPeriodoVencido) {
