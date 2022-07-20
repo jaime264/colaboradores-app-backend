@@ -1,4 +1,4 @@
-package pe.confianza.colaboradores.gcontenidos.server.util.reporte.excel.collection;
+package pe.confianza.colaboradores.gcontenidos.server.util.file.collection;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

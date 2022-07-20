@@ -1,4 +1,4 @@
-package pe.confianza.colaboradores.gcontenidos.server.util.reporte.excel.collection;
+package pe.confianza.colaboradores.gcontenidos.server.util.file.collection;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,7 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import pe.confianza.colaboradores.gcontenidos.server.util.reporte.excel.ColumnType;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.read.ColumnType;
+
 
 public class Collection {
 
