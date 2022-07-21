@@ -2,6 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.negocio.impl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -163,6 +164,7 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 			validarPeriodoReprogramacion();
 			validarPermisoReprogramar(programacion, request.getUsuarioOperacion());
 			validarDiasReprogramados(programacion, request);
+			
 			List<VacacionProgramacion> programaciones = request.getTramos().stream().map(t -> {
 				VacacionProgramacion prog = VacacionProgramacionMapper.convert(t, programacion);
 				prog.setIdEstado(EstadoVacacion.GENERADO.id);
@@ -178,6 +180,25 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 				validarPoliticaBolsa(prog, programacion);
 				obtenerOrden(prog, programacion, usuarioOperacion);
 			});
+			if(programacion.getFechaInicio().getYear() != programacion.getFechaFin().getYear()) {
+				final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				LocalDate fechaInicio = LocalDate.parse("01/01" + programacion.getFechaFin().getYear(), formatter);
+				VacacionProgramacion progNuevoAnio = new VacacionProgramacion();
+				progNuevoAnio.setFechaInicio(fechaInicio);
+				progNuevoAnio.setFechaFin(programacion.getFechaFin());
+				progNuevoAnio.setIdEstado(EstadoVacacion.GENERADO.id);
+				progNuevoAnio.setPeriodo(programacion.getPeriodo());
+				progNuevoAnio.setNumeroPeriodo((long)programacion.getPeriodo().getNumero());
+				progNuevoAnio.setUsuarioCrea(request.getUsuarioOperacion());
+				progNuevoAnio.setFechaCrea(LocalDateTime.now());
+				progNuevoAnio.calcularDias();
+				progNuevoAnio.setNumeroReprogramaciones(0);
+				progNuevoAnio.setIdProgramacionOriginal(programacion.getId());
+				progNuevoAnio.setNumeroReprogramaciones(0);
+				progNuevoAnio.setVacacionesAdelantadas(false);
+				obtenerOrden(progNuevoAnio, programacion, usuarioOperacion);
+				programaciones.add(progNuevoAnio);
+			}
 			programacion.setIdEstado(EstadoVacacion.REPROGRAMADO.id);
 			vacacionProgramacionService.actualizar(programacion, usuarioOperacion);
 			actualizarCantidadReprogramaciones(programacion.getPeriodo().getEmpleado(), usuarioOperacion);
@@ -230,17 +251,35 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 	@Override
 	public void validarDiasReprogramados(VacacionProgramacion programacion,	RequestReprogramarVacacion request) {
 		logger.info("[BEGIN] validarDiasReprogramados");
-		int diasProgramados = programacion.getNumeroDias();
-		int diasReprogramados = 0;
-		for (RequestReprogramacionTramo tramo : request.getTramos()) {
-			if(tramo.getFechaInicio().isAfter(tramo.getFechaFin()))
-				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.rango_error"));
-			if(!programacion.getPeriodo().programacionDentroPeriodoGoce(tramo.getFechaInicio(), tramo.getFechaFin()))
-				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.validacion.fuera_limite_goce", programacion.getPeriodo().getDescripcion()));
-			diasReprogramados += Utilitario.obtenerDiferenciaDias(tramo.getFechaInicio(), tramo.getFechaFin());
+		if(programacion.getFechaInicio().getYear() != programacion.getFechaFin().getYear()) {
+			final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			LocalDate fechaFinAnio = LocalDate.parse("31/12" + programacion.getFechaInicio().getYear(), formatter);
+			int diasProgramadosAnioActual = Utilitario.obtenerDiferenciaDias(programacion.getFechaInicio(), fechaFinAnio);
+			int diasReprogramados = 0;
+			for (RequestReprogramacionTramo tramo : request.getTramos()) {
+				if(tramo.getFechaInicio().isAfter(tramo.getFechaFin()))
+					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.rango_error"));
+				if(tramo.getFechaFin().getYear() != programacion.getFechaInicio().getYear())
+					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.error_anio"));
+				if(!programacion.getPeriodo().programacionDentroPeriodoGoce(tramo.getFechaInicio(), tramo.getFechaFin()))
+					throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.validacion.fuera_limite_goce", programacion.getPeriodo().getDescripcion()));
+				diasReprogramados += Utilitario.obtenerDiferenciaDias(tramo.getFechaInicio(), tramo.getFechaFin());
+			}
+			if(diasProgramadosAnioActual != diasReprogramados)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.dias_error"));
+		} else {
+			int diasProgramados = programacion.getNumeroDias();
+			int diasReprogramados = 0;
+			for (RequestReprogramacionTramo tramo : request.getTramos()) {
+				if(tramo.getFechaInicio().isAfter(tramo.getFechaFin()))
+					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.rango_error"));
+				if(!programacion.getPeriodo().programacionDentroPeriodoGoce(tramo.getFechaInicio(), tramo.getFechaFin()))
+					throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.validacion.fuera_limite_goce", programacion.getPeriodo().getDescripcion()));
+				diasReprogramados += Utilitario.obtenerDiferenciaDias(tramo.getFechaInicio(), tramo.getFechaFin());
+			}
+			if(diasProgramados != diasReprogramados)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.dias_error"));
 		}
-		if(diasProgramados != diasReprogramados)
-			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.dias_error"));
 		logger.info("[END] validarDiasReprogramados");
 	}
 
