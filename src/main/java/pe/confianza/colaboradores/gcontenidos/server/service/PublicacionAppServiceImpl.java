@@ -169,7 +169,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 					Optional<NotificacionTipo> tipoNot = notificacionService
 							.obtenerTipoNotificacion(TipoNotificacion.PUBLICACION_APROBADOR.valor);
 
-					Empleado empleado = empleadoService.buscarPorUsuarioBT(publicacion.getUsuarioBt());
+					Empleado empleado = empleadoService.buscarPorUsuarioBT(pubRes.getUsuarioBt());
 					String extraData = generarExtraDataPublicacion(pubRes, empleado, 4);
 					
 					List<Empleado> empleados = new ArrayList<>();
@@ -181,7 +181,7 @@ public class PublicacionAppServiceImpl implements PublicacionAppService {
 					empleados.stream().forEach(e -> {
 						Notificacion notificacion = notificacionService.registrar("Aprobación de publicación observada",
 								"el colaborador " + empleado.getNombreCompleto() + " actualizo su publicacion", extraData,
-								tipoNot.get(), e, publicacion.getUsuarioBt());
+								tipoNot.get(), e, pubRes.getUsuarioBt());
 
 						notificacionService.enviarNotificacionApp(notificacion);
 						notificacionService.enviarNotificacionCorreo(notificacion);
