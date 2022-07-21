@@ -2,6 +2,8 @@ package pe.confianza.colaboradores.gcontenidos.server.util.file.write.xlsx;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -30,6 +32,8 @@ public class XlsxReport implements IReport<ByteArrayInputStream> {
 	
 	private Report report;
 	
+	private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	private static final DateTimeFormatter FORMATO_FECHA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 	private final String company = "FINANCIERA CONFIANZA";
 	
 	private boolean hasLogo;
@@ -216,17 +220,30 @@ public class XlsxReport implements IReport<ByteArrayInputStream> {
 						cell.setCellStyle(valueStringTableStyle);
 					}
 					if(this.report.getCollection().getHeaders().get(key) == ColumnType.LOCALDATE) {
-						
+						LocalDate localDate = (LocalDate) rowData.getCellValue(key);
+						cell.setCellValue(localDate.format(FORMATO_FECHA));
+						cell.setCellStyle(valueStringTableStyle);
 					}
-					
-					
+					if(this.report.getCollection().getHeaders().get(key) == ColumnType.LOCALDATETIME) {
+						LocalDate localDate = (LocalDate) rowData.getCellValue(key);
+						cell.setCellValue(localDate.format(FORMATO_FECHA_HORA));
+						cell.setCellStyle(valueStringTableStyle);
+					}
 					numCol++;
 				}
+				rowNum ++;
+				numCol = 1;
 			}
+			
+			for(int i = 0; i < 100; i++) {
+	            sheet.autoSizeColumn(i);
+	        }
+			book.write(out);
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
+			return null;
 		}
-		return null;
+		return new ByteArrayInputStream(out.toByteArray());
 	}
 
 	
