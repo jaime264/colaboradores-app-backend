@@ -10,7 +10,8 @@ public enum ColumnType {
 	INTEGER("Integer"),
 	DOUBLE("Double"),
 	STRING("String"),
-	DATE("Date");
+	LOCALDATE("LocalDate"),
+	LOCALDATETIME("LocalDateTime");
 	
 	private ColumnType(String label) {
 		this.label = label;

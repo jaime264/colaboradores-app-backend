@@ -7,6 +7,6 @@ public interface IReport<T> {
 	
 	public static final  Logger LOGGER = LoggerFactory.getLogger("IReport");
 	
-	T generateReport();
+	T build();
 
 }

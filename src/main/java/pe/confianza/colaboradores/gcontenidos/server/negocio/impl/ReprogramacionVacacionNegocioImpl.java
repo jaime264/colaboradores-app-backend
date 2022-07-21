@@ -119,22 +119,30 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 			if (empleado == null)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", request.getUsuarioBT()));
 			VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(request);
+			vacacionProgramacion.calcularDias();
 			vacacionProgramacion.setEstado(EstadoVacacion.GENERADO);
 			vacacionProgramacion.setVacacionesAdelantadas(true);
 			validarEmpleadoNuevo(vacacionProgramacion, empleado);
-			if(vacacionProgramacion.getNumeroDias() > cargaParametros.getDiasMaximoVacacionesAdelantadas())
-				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.vacaciones_adelantadas.limite_error", cargaParametros.getDiasMaximoVacacionesAdelantadas() + ""));
-			logger.info("[END] vacacionesAdelantadas");
+			int diasLaborados = Utilitario.obtenerDiferenciaDias(empleado.getFechaIngreso(), LocalDate.now());
+			if(diasLaborados <= cargaParametros.getMesesAntiguedadVacacionesAdelantadas() * 30) {
+				if(vacacionProgramacion.getNumeroDias() > cargaParametros.getDiasMaximoVacacionesAdelantadas())
+					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.vacaciones_adelantadas.limite_error", cargaParametros.getDiasMaximoVacacionesAdelantadas() + ""));
+			}			
 			VacacionMeta meta = vacacionMetaService.obtenerVacacionPorAnio(parametrosConstants.getMetaVacacionAnio(), empleado.getId());
 			vacacionProgramacion.setPeriodo(meta.getPeriodoTrunco());
 			vacacionProgramacion.setNumeroPeriodo((long) meta.getPeriodoTrunco().getNumero());
-			vacacionProgramacion.calcularDias();
+			double diasProgramados = meta.getPeriodoTrunco().getDiasRegistradosGozar() + meta.getPeriodoTrunco().getDiasGeneradosGozar()
+					+ meta.getPeriodoTrunco().getDiasAprobadosGozar() + meta.getPeriodoTrunco().getDiasGozados()
+					+ vacacionProgramacion.getNumeroDias();
+			if(diasProgramados > 30)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.vacaciones_adelantadas.limite_error_antiguo", cargaParametros.getTotalVacacionesAnio()));
 			programacionVacacionNegocio.validarPoliticasRegulatorias(vacacionProgramacion);
 			programacionVacacionNegocio.validarPoliticaBolsa(vacacionProgramacion);
 			programacionVacacionNegocio.obtenerOrden(vacacionProgramacion, request.getUsuarioOperacion());
 			vacacionProgramacion = vacacionProgramacionService.registrar(vacacionProgramacion, request.getUsuarioOperacion());
 			actualizarPeriodo(empleado, vacacionProgramacion.getPeriodo().getId(), request.getUsuarioOperacion());
 			vacacionProgramacion = vacacionProgramacionService.buscarPorId(vacacionProgramacion.getId());
+			logger.info("[END] vacacionesAdelantadas");
 			return VacacionProgramacionMapper.convert(vacacionProgramacion, parametrosConstants);
 		} catch (ModelNotFoundException e) {
 			logger.error("[ERROR] programacionAnual", e);
