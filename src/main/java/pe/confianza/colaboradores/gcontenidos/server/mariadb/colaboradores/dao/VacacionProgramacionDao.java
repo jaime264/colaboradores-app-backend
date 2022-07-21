@@ -73,7 +73,7 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	@Procedure(name = "VacacionProgramacion.programacionContarPorAgencia")
 	long contarProgramacionPorEmpleadoAgencia(@Param("idEmpleado") long idEmpleado, @Param("descripcionPuesto") String descripcionPuesto, @Param("strFechaInicioProgramacion") String strFechaInicioProgramacion, @Param("strFechaFinProgramacion") String strFechaFinProgramacion, @Param("idProgReprogramar") Long idProgReprogramar);
 
-	@Query("SELECT vp FROM VacacionProgramacion vp where vp.fechaFin >= ?1 AND vp.fechaFin <= ?2 AND vp.periodo.empleado.usuarioBT = ?3 AND vp.estadoRegistro = 'A' order by vp.fechaInicio ASC")
+	@Query("SELECT vp FROM VacacionProgramacion vp where vp.fechaInicio >= ?1 AND vp.fechaInicio <= ?2 AND vp.periodo.empleado.usuarioBT = ?3 AND vp.estadoRegistro = 'A' order by vp.fechaInicio ASC")
 	List<VacacionProgramacion> findBetweenDates(LocalDate fechaInicio, LocalDate fechaFin, String usuarioBT);
 	
 	@Query("SELECT vp FROM VacacionProgramacion vp where vp.fechaFin >= ?1 AND vp.fechaFin <= ?2 AND vp.periodo.empleado.codigoNivel1 = ?3 AND vp.estadoRegistro = 'A' order by vp.fechaInicio ASC")

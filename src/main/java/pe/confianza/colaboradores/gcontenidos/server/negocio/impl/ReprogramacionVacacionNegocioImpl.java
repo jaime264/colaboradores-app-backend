@@ -154,7 +154,7 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 		try {
 			VacacionProgramacion programacion = vacacionProgramacionService.buscarPorId(request.getIdProgramacion());
 			if(programacion.getEstado().id != EstadoVacacion.APROBADO.id)
-				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.estado_error", cargaParametros.getEstadoProgramacionDescripcion(EstadoVacacion.APROBADO.id)));
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.estado_error", cargaParametros.getEstadoProgramacionDescripcion(EstadoVacacion.APROBADO.id)[0]));
 			if(programacion.getFechaFin().getMonthValue() != (LocalDate.now().getMonthValue() + 1))
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.mes_error"));
 			String usuarioOperacion = request.getUsuarioOperacion().trim();
