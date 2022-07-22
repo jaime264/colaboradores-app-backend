@@ -328,6 +328,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 		registroNotificacionesJefeColaboradoresSinRegistroProgramacion();
 		registroNotificacionJefePendienteAprobacionProgramacion();
 		registrarNotificacionesReprogramacionMensual();
+		enviarCorreoReporteAprobadorNivelI();
 		LOGGER.info("[END] registrarNotificacionesAutomaticas " + LocalDate.now());
 	}
 
