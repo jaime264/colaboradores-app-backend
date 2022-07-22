@@ -834,7 +834,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			LOGGER.info("{} cantidadProgramaciones {} - limite {}", Constantes.RESPONSABLE_DEPARTAMENTO_COBRANZA, cantidadProgramaciones, limite);
 			if (cantidadProgramaciones > limite)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,
-						"vacaciones.politica.bolsa.recuperaciones.analista_recuperaciones.limite_error", limite));
+						"vacaciones.politica.bolsa.recuperaciones.responsable_dpto_cobranza.limite_error", limite));
 		}
 		LOGGER.info("[END] validarPoliticaBolsaRecuperaciones");
 	}

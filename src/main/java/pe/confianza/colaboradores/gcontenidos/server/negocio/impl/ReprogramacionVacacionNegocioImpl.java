@@ -441,7 +441,7 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 			cantidadProgramaciones++;
 			if (cantidadProgramaciones > limite)
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,
-						"vacaciones.politica.bolsa.recuperaciones.analista_recuperaciones.limite_error", limite));
+						"vacaciones.politica.bolsa.recuperaciones.responsable_dpto_cobranza.limite_error", limite));
 		}
 		logger.info("[END] validarPoliticaBolsaRecuperaciones");
 	}
