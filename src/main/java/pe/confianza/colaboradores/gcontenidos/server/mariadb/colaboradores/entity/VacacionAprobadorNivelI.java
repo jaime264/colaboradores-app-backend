@@ -85,7 +85,9 @@ public class VacacionAprobadorNivelI {
 		this.cantidadSubordinados = cantidadSubordinados;
 	}
 	
-	
+	public String getNombreCompleto() {
+		return this.nombres + " " +  this.apellidoPaterno;
+	}
 	
 	
 	

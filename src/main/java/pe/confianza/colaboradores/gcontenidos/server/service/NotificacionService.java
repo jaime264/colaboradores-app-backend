@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
+
+import pe.confianza.colaboradores.gcontenidos.server.bean.Mail;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Notificacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.NotificacionTipo;
@@ -39,5 +41,7 @@ public interface NotificacionService {
 	List<Notificacion> listarNotificacionesPorTipoNoEnviadasApp(String codigoTipo);
 	
 	long obtenerCantidadNotificacionesNoVistasPorEmpleadoYTipo(long idEmpleado, long idTipo);
+	
+	void enviarCorreoReporte(String titulo, String descripcion, String receptorEmail, String receptorNombre, String nombreArchivo, String contentType, byte[] archivo);
 
 }

@@ -1,5 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.negocio.impl;
 
+import java.io.ByteArrayInputStream;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -37,6 +38,11 @@ import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.MesesAnio;
 import pe.confianza.colaboradores.gcontenidos.server.util.TipoNotificacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.collection.Row;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.read.ColumnType;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.write.IReport;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.write.Report;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.write.ReportFactory;
 
 @Service
 public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasProgramadasNegocio {
@@ -75,6 +81,9 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 	
 	@Autowired
 	private MessageSource messageSource;
+	
+	@Autowired
+	private ReportFactory reportFactory;
 
 	@Override
 	public void actualizarEstadoProgramaciones() {
@@ -197,7 +206,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 									Optional<Empleado> optEmpleado = empleadoService.buscarPorId(resumen.getEmpleadoId());
 									if(optEmpleado.isPresent()) {
 										String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.sin_registro_programacion",
-												new Object[] { resumen.getMeta(), anio });
+												 cargaParametros.getFechaFinRegistroProgramacion());
 										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), "TAREA_PROGRAMADA");
 									}
 								}
@@ -390,8 +399,43 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 					if (opt.isPresent()) {
 						List<VacacionAprobadorNivelI> aprobadores = vacacionAprobadorService.listarAprobadoresNivelI();
 						for (VacacionAprobadorNivelI aprobador : aprobadores) {
+							Report reporte = new Report();
+							reporte.setType("XLSX");
+							reporte.setTitle("REPORTE VACACIONES");
+							reporte.getCollection().addHeader("Colaborador", ColumnType.STRING);
+							reporte.getCollection().addHeader("Agencia", ColumnType.STRING);
+							reporte.getCollection().addHeader("Cargo", ColumnType.STRING);
+							reporte.getCollection().addHeader("Fecha inicio", ColumnType.LOCALDATE);
+							reporte.getCollection().addHeader("Fecha fin", ColumnType.LOCALDATE);
+							reporte.getCollection().addHeader("Días", ColumnType.INTEGER);
 							Map<Empleado, List<VacacionProgramacion>> empleadoProg = vacacionProgramacionService.listarProgramacionesPorAnioYAprobadorNivelI(LocalDate.now().getYear(), aprobador.getCodigo());
-							
+							for (Map.Entry<Empleado, List<VacacionProgramacion>> programacionesEmpl : empleadoProg.entrySet()) {
+								for (VacacionProgramacion programacion : programacionesEmpl.getValue()) {
+									if(programacion.getFechaInicio().getMonthValue() == LocalDate.now().getMonthValue() + 1) {
+										String colaborador = programacion.getPeriodo().getEmpleado().getNombreCompleto();
+										String agencia = programacion.getPeriodo().getEmpleado().getAgencia() == null ? "" : programacion.getPeriodo().getEmpleado().getAgencia().getDescripcion();
+										String cargo = programacion.getPeriodo().getEmpleado().getPuesto() == null ? "" : programacion.getPeriodo().getEmpleado().getPuesto().getDescripcion();
+										LocalDate fechaInicio = programacion.getFechaInicio();
+										LocalDate fechaFin = programacion.getFechaFin();
+										int cantidadDias = programacion.getNumeroDias();
+										Row row = new Row();
+										row.addCell("Colaborador", colaborador);
+										row.addCell("Agencia", agencia);
+										row.addCell("Cargo", cargo);
+										row.addCell("Fecha inicio", fechaInicio);
+										row.addCell("Fecha fin", fechaFin);
+										row.addCell("Días", cantidadDias);
+										reporte.getCollection().setCurrentRow(row);
+									}
+								}
+							}
+							try {
+								IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
+								notificacionService.enviarCorreoReporte("REPORTE VACACIONES", "", aprobador.getEmail(), aprobador.getNombreCompleto(),
+										"coloboradores_vacaciones.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", new byte[excel.build().available()]);
+							} catch (Exception e) {
+								LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
+							}
 						}
 					}
 					fechaRecordatorio = fechaRecordatorio.plusDays(intervaloRecordatorios);
@@ -400,6 +444,12 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 				}
 			}
 		}
+		LOGGER.info("[BEGIN] enviarCorreoReporteAprobadorNivelI " + LocalDate.now());
+	}
+
+	@Override
+	public void enviarCorreoReporteJefe() {
+		// TODO Auto-generated method stub
 		
 	}
 

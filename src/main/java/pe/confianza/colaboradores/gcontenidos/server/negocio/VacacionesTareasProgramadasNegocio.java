@@ -28,4 +28,6 @@ public interface VacacionesTareasProgramadasNegocio {
 	
 	void enviarCorreoReporteAprobadorNivelI();
 	
+	void enviarCorreoReporteJefe();
+	
 }

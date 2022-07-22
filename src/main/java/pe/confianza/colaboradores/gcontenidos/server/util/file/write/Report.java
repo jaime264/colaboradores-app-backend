@@ -12,6 +12,10 @@ public class Report {
 	private Collection collection;
 	private InputStream logo;
 	
+	public Report() {
+		this.collection = new Collection();
+	}
+	
 	public String getType() {
 		return type;
 	}

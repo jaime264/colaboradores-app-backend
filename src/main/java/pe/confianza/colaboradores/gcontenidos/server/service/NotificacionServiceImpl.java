@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.Mail;
+import pe.confianza.colaboradores.gcontenidos.server.bean.MailFile;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFirebaseMessaging;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFirebaseMessagingData;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.NotificacionDao;
@@ -215,6 +216,24 @@ public class NotificacionServiceImpl implements NotificacionService {
 	public long obtenerCantidadNotificacionesNoVistasPorEmpleadoYTipo(long idEmpleado, long idTipo) {
 		return notificacionDao.getCountOfNotViewedByEmpleadoAndTipo(idEmpleado, idTipo);
 	}
+
+	@Override
+	public void enviarCorreoReporte(String titulo, String descripcion, String receptorEmail, String receptorNombre, String nombreArchivo,
+			String contentType, byte[] archivo) {
+		logger.info("[BEGIN] enviarCorreoReporte ");
+		Mail mail = new Mail();
+		mail.setAsunto(titulo);
+		mail.setContenido(new HashMap<>());
+		mail.getContenido().put("empleado", "Hola, " + receptorNombre);
+		mail.getContenido().put("mensaje", descripcion);
+		mail.setReceptor(receptorEmail);
+		mail.setEmisor("desarrollofc@confianza.pe");
+		mail.getAdjuntos().add(new MailFile(nombreArchivo, contentType, archivo));
+		emailUtil.enviarEmail(mail);
+		logger.info("[END] enviarCorreoReporte ");
+	}
+
+	
 	
 	
 

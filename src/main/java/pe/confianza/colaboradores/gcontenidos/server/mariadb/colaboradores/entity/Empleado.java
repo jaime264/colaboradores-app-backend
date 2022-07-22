@@ -338,6 +338,8 @@ public class Empleado extends EntidadAuditoria {
 	}
 	
 	
+	
+	
 
 	@Override
 	public int hashCode() {
