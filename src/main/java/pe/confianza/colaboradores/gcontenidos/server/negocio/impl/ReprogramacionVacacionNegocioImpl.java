@@ -123,8 +123,7 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 			vacacionProgramacion.setEstado(EstadoVacacion.GENERADO);
 			vacacionProgramacion.setVacacionesAdelantadas(true);
 			validarEmpleadoNuevo(vacacionProgramacion, empleado);
-			int diasLaborados = Utilitario.obtenerDiferenciaDias(empleado.getFechaIngreso(), LocalDate.now());
-			if(diasLaborados <= cargaParametros.getMesesAntiguedadVacacionesAdelantadas() * 30) {
+			if(LocalDate.now().isAfter(empleado.getFechaIngreso().plusYears(1).plusDays(1))) {
 				if(vacacionProgramacion.getNumeroDias() > cargaParametros.getDiasMaximoVacacionesAdelantadas())
 					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.vacaciones_adelantadas.limite_error", cargaParametros.getDiasMaximoVacacionesAdelantadas() + ""));
 			}			
@@ -134,7 +133,7 @@ public class ReprogramacionVacacionNegocioImpl implements ReprogramacionVacacion
 			double diasProgramados = meta.getPeriodoTrunco().getDiasRegistradosGozar() + meta.getPeriodoTrunco().getDiasGeneradosGozar()
 					+ meta.getPeriodoTrunco().getDiasAprobadosGozar() + meta.getPeriodoTrunco().getDiasGozados()
 					+ vacacionProgramacion.getNumeroDias();
-			if(diasProgramados > 30)
+			if(diasProgramados > cargaParametros.getTotalVacacionesAnio())
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.vacaciones_adelantadas.limite_error_antiguo", cargaParametros.getTotalVacacionesAnio()));
 			programacionVacacionNegocio.validarPoliticasRegulatorias(vacacionProgramacion);
 			programacionVacacionNegocio.validarPoliticaBolsa(vacacionProgramacion);
