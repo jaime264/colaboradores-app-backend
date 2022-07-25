@@ -14,7 +14,11 @@ public enum ParametroUnidad {
 	ESTADO_VACACION("ESTADO_VACACION", "", String.class),
 	TEXTO_GENERAL("TEXTO_GENERAL", "", String.class ),
 	NUMERO_GENERAL("NUMERO_GENERAL", "", String.class ),
-	PORCENTAJE("PORCENTAJE", "%", Double.class);
+	PORCENTAJE("PORCENTAJE", "%", Double.class),
+	MENSAJE_UN_PARAMETRO("MENSAJE_UN_PARAMETRO", "", String.class),
+	MENSAJE_DOS_PARAMETROS("MENSAJE_DOS_PARAMETROS", "", String.class),
+	MENSAJE_TRES_PARAMETROS("MENSAJE_TRES_PARAMETROS", "", String.class),
+	MENSAJE_CUATRO_PARAMETROS("MENSAJE_CUATRO_PARAMETROS", "", String.class);
 	
 	public String codigo;
 	public String descripcion;
@@ -108,8 +112,95 @@ public enum ParametroUnidad {
 				if(!valor.contains("-"))
 					return false;
 			}
+			if(ParametroUnidad.MENSAJE_UN_PARAMETRO.codigo.equals(unidad.codigo)) {
+				String[] mensajeArray = valor.split(" ");
+				int nroParametros = 0;
+				for (String string : mensajeArray) {
+					if(string.contains("XX"))
+						nroParametros ++;
+				}
+				if(nroParametros == 1) {
+					return true;
+				}
+				return false;
+			}
+			if(ParametroUnidad.MENSAJE_UN_PARAMETRO.codigo.equals(unidad.codigo)) {
+				String[] mensajeArray = valor.split(" ");
+				int nroParametros = 0;
+				for (String string : mensajeArray) {
+					if(string.contains("XX"))
+						nroParametros ++;
+				}
+				if(nroParametros == 1) {
+					return true;
+				}
+				return false;
+			}
+			if(ParametroUnidad.MENSAJE_DOS_PARAMETROS.codigo.equals(unidad.codigo)) {
+				String[] mensajeArray = valor.split(" ");
+				int nroParametros = 0;
+				for (String string : mensajeArray) {
+					if(string.contains("XX"))
+						nroParametros ++;
+				}
+				if(nroParametros == 2) {
+					return true;
+				}
+				return false;
+			}
+			if(ParametroUnidad.MENSAJE_TRES_PARAMETROS.codigo.equals(unidad.codigo)) {
+				String[] mensajeArray = valor.split(" ");
+				int nroParametros = 0;
+				for (String string : mensajeArray) {
+					if(string.contains("XX"))
+						nroParametros ++;
+				}
+				if(nroParametros == 3) {
+					return true;
+				}
+				return false;
+			}
+			if(ParametroUnidad.MENSAJE_CUATRO_PARAMETROS.codigo.equals(unidad.codigo)) {
+				String[] mensajeArray = valor.split(" ");
+				int nroParametros = 0;
+				for (String string : mensajeArray) {
+					if(string.contains("XX"))
+						nroParametros ++;
+				}
+				if(nroParametros == 4) {
+					return true;
+				}
+				return false;
+			}
 		}
 		return true;
+	}
+	
+	public static String procesarNuevoValor(ParametroUnidad unidad, String valor) {
+		if(Integer.class == unidad.clazz) {
+			try {
+				Integer intValor = Integer.parseInt(valor.trim());
+				return intValor.toString();
+			} catch (Exception e) {
+				return "0";
+			}
+		}
+		if(Double.class == unidad.clazz) {
+			try {
+				Double dValor = Double.parseDouble(valor.trim());
+				return dValor.toString();
+			} catch (Exception e) {
+				return "0";
+			}
+		}
+		if(String.class == unidad.clazz) {
+			if(valor == null)
+				return "";
+			if(valor.length() == 0)
+				return "";
+			return valor.trim();
+		}
+		return valor.trim();
 	}
 
 }

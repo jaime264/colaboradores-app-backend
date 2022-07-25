@@ -116,6 +116,7 @@ public class ParametrosServiceImpl implements ParametrosService {
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"));
 			if(!ParametroUnidad.esValidoValor(unidad, parametro.getNuevoValor()))
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.formato_incorrecto"));
+			parametro.setNuevoValor(ParametroUnidad.procesarNuevoValor(unidad, parametro.getNuevoValor()));
 			String descripcionParametro = null;
 			if(ParametroUnidad.ESTADO_VACACION.codigo.equals(unidad.codigo)) {
 				String[] valorArray = parametro.getNuevoValor().split("-");

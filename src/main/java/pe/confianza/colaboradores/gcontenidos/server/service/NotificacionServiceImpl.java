@@ -226,7 +226,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 		mail.setContenido(new HashMap<>());
 		mail.getContenido().put("empleado", "Hola, " + receptorNombre);
 		mail.getContenido().put("mensaje", descripcion);
-		mail.setReceptor(receptorEmail);
+		mail.setReceptor(receptorEmail.toString());
 		mail.setEmisor("desarrollofc@confianza.pe");
 		mail.getAdjuntos().add(new MailFile(nombreArchivo, contentType, archivo));
 		emailUtil.enviarEmail(mail);

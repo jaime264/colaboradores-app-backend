@@ -2,6 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.enti
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,6 +24,7 @@ public class Parametro extends EntidadAuditoria implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String codigo;
+	@Column(columnDefinition = "TEXT")
 	private String valor;
 	private String descripcion;
 	private String subTipo;
