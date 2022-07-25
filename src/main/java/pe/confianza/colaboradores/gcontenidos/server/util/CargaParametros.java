@@ -302,8 +302,8 @@ public class CargaParametros {
 	
 	public String MENSAJE_COLABORDOR_INICIO_PROGRAMACION = null;
 	public String MENSAJE_COLABORDOR_META_INCOMPLETA =  null;
-	public String MENSAJE_COLABORDOR_SIN_REGISTRO_REPROGRAMACIONES = null;
-	public String MENSAJE_JEFE_SIN_REGISTRO_APROBACIONES = null;
+	public String MENSAJE_COLABORDOR_SIN_REGISTRO = null;
+	public String MENSAJE_JEFE_SIN_REGISTRO_PROGRAMACIONES = null;
 	public String MENSAJE_JEFE_PENDIENTE_APROBACION = null;
 	public String MENSAJE_COLABORDOR_REPROGRAMACION = null;
 	
@@ -345,8 +345,8 @@ public class CargaParametros {
 		DIA_NOTIFICACION_REPROGRAMACION = populateParametro(ParametrosConstantes.VacacionesNotificacion.DIA_NOTIFICACION_REPROGRAMACION);
 		MENSAJE_COLABORDOR_INICIO_PROGRAMACION = populateParametro(ParametrosConstantes.VacacionesNotificacion.MENSAJE_COLABORDOR_INICIO_PROGRAMACION);
 		MENSAJE_COLABORDOR_META_INCOMPLETA = populateParametro(ParametrosConstantes.VacacionesNotificacion.MENSAJE_COLABORDOR_META_INCOMPLETA);
-		MENSAJE_COLABORDOR_SIN_REGISTRO_REPROGRAMACIONES = populateParametro(ParametrosConstantes.VacacionesNotificacion.MENSAJE_COLABORDOR_SIN_REGISTRO_REPROGRAMACIONES);
-		MENSAJE_JEFE_SIN_REGISTRO_APROBACIONES = populateParametro(ParametrosConstantes.VacacionesNotificacion.MENSAJE_JEFE_SIN_REGISTRO_APROBACIONES);
+		MENSAJE_COLABORDOR_SIN_REGISTRO = populateParametro(ParametrosConstantes.VacacionesNotificacion.MENSAJE_COLABORDOR_SIN_REGISTRO);
+		MENSAJE_JEFE_SIN_REGISTRO_PROGRAMACIONES = populateParametro(ParametrosConstantes.VacacionesNotificacion.MENSAJE_JEFE_SIN_REGISTRO_PROGRAMACIONES);
 		MENSAJE_JEFE_PENDIENTE_APROBACION = populateParametro(ParametrosConstantes.VacacionesNotificacion.MENSAJE_JEFE_PENDIENTE_APROBACION);
 		MENSAJE_COLABORDOR_REPROGRAMACION = populateParametro(ParametrosConstantes.VacacionesNotificacion.MENSAJE_COLABORDOR_REPROGRAMACION);
 		

@@ -135,8 +135,8 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 		if(fechaActual.getDayOfMonth() == fechaEnvioNotificaicon.getDayOfMonth() && fechaActual.getMonthValue() == fechaEnvioNotificaicon.getMonthValue()) {
 			Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
 			String titulo = "VACACIONES - INICIO PROGRAMACION";
-			String descripcion = Utilitario.obtenerMensaje(messageSource,  "vacaciones.notificacion.inicio_programacion",
-					new Object[] { anio, fechaInicioProgramacion.toString(), fechaFinProgramacion.toString() });
+			String descripcion = Utilitario.generarMensajeNotificacion(messageSource, cargaParametros.MENSAJE_COLABORDOR_REPROGRAMACION, 
+					anio, fechaInicioProgramacion.toString(), fechaFinProgramacion.toString());
 			if(opt.isPresent()) {
 				List<Empleado> lstEmpleado = empleadoService.listar();
 				for (Empleado empleado : lstEmpleado) {
@@ -163,11 +163,11 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 					String titulo = "VACACIONES - META INCOMPLETA";
 					
 					if(opt.isPresent()) {
-						
 							List<VacacionMetaResumen> resumenes = vacacionMetaResumenService.listarResumenAnio(anio);
 							for (VacacionMetaResumen resumen : resumenes) {
 								if(resumen.getMeta() > 0) {
-									String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.meta_incompleta",resumen.getMeta(), anio);
+									String descripcion = Utilitario.generarMensajeNotificacion(messageSource,
+											cargaParametros.MENSAJE_COLABORDOR_META_INCOMPLETA,resumen.getMeta(), anio);
 									Optional<Empleado> optEmpleado = empleadoService.buscarPorId(resumen.getEmpleadoId());
 									if(optEmpleado.isPresent()) {
 										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), "TAREA_PROGRAMADA");
@@ -206,7 +206,8 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 								if(resumen.getMetaInicial() == resumen.getMeta()) {
 									Optional<Empleado> optEmpleado = empleadoService.buscarPorId(resumen.getEmpleadoId());
 									if(optEmpleado.isPresent()) {
-										String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.sin_registro_programacion",
+										String descripcion = Utilitario.generarMensajeNotificacion(messageSource, 
+												cargaParametros.MENSAJE_COLABORDOR_SIN_REGISTRO,
 												 cargaParametros.getFechaFinRegistroProgramacion());
 										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), "TAREA_PROGRAMADA");
 									}
@@ -255,7 +256,8 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 								for (Map.Entry<Long, List<String>> aprobador : aprobadores.entrySet()) {
 									Optional<Empleado> optEmpleado = empleadoService.buscarPorId(aprobador.getKey());
 									if(optEmpleado.isPresent()) {
-										String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.jefe.colaboradores_pendiente_registro",
+										String descripcion = Utilitario.generarMensajeNotificacion(messageSource,
+												cargaParametros.MENSAJE_JEFE_SIN_REGISTRO_PROGRAMACIONES,
 												new Object[] { String.join(", ", aprobador.getValue()) });
 										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), "TAREA_PROGRAMADA");
 									}
@@ -305,7 +307,8 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 								Optional<Empleado> optEmpleado = empleadoService.buscarPorId(aprobador.getKey());
 								if (optEmpleado.isPresent()) {
 									int empleadosAprobados = aprobador.getValue().size();
-									String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.jefe.pendiente_aprobacion", empleadosAprobados);
+									String descripcion = Utilitario.generarMensajeNotificacion(messageSource,
+											cargaParametros.MENSAJE_JEFE_PENDIENTE_APROBACION, empleadosAprobados);
 									notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), "TAREA_PROGRAMADA");
 								}
 							}
@@ -358,7 +361,9 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 			if (opt.isPresent()) {
 				List<Empleado> lstEmpleado = empleadoService.listar();
 				String titulo = "VACACIONES - REPROGRAMACIÓN";
-				String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.reprogramacion", MesesAnio.buscarPorValor(fechaActual.getMonthValue() + 1));
+				String descripcion = Utilitario.generarMensajeNotificacion(messageSource, 
+						cargaParametros.MENSAJE_COLABORDOR_REPROGRAMACION,
+						MesesAnio.buscarPorValor(fechaActual.getMonthValue() + 1));
 				for (Empleado empleado : lstEmpleado) {
 					if(empleado.getEstadoRegistro().equals(EstadoRegistro.ACTIVO.valor)) {
 						List<VacacionProgramacion> programaciones = vacacionProgramacionService.listarProgramacionesPorAnio(cargaParametros.getAnioPresente(), empleado.getUsuarioBT())
