@@ -124,18 +124,6 @@ public enum ParametroUnidad {
 				}
 				return false;
 			}
-			if(ParametroUnidad.MENSAJE_UN_PARAMETRO.codigo.equals(unidad.codigo)) {
-				String[] mensajeArray = valor.split(" ");
-				int nroParametros = 0;
-				for (String string : mensajeArray) {
-					if(string.contains("XX"))
-						nroParametros ++;
-				}
-				if(nroParametros == 1) {
-					return true;
-				}
-				return false;
-			}
 			if(ParametroUnidad.MENSAJE_DOS_PARAMETROS.codigo.equals(unidad.codigo)) {
 				String[] mensajeArray = valor.split(" ");
 				int nroParametros = 0;

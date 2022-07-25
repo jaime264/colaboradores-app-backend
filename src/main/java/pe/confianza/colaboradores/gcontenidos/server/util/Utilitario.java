@@ -303,9 +303,9 @@ public class Utilitario {
 					mensajeSb.append(string).append(" ");
 				}
 			}
-			return mensajeSb.toString().trim();
+			return source.getMessage(mensajeSb.toString().trim(), valores, Constantes.LOCALE_PER);
 		} catch (Exception e) {
-			return "Mensaje en generar mensaje";
+			return "Error en generar mensaje";
 		}
 	}
 	
