@@ -140,5 +140,7 @@ public class Empleado extends EntidadAuditoria {
 				+ codigoUnidadNegocio + ", codigoJefeInmediato=" + codigoJefeInmediato + ", codigoNivel1="
 				+ codigoNivel1 + ", codigoNivel2=" + codigoNivel2 + ", bloqueoVacaciones=" + bloqueoVacaciones + "]";
 	}
+	
+	
 
 }
