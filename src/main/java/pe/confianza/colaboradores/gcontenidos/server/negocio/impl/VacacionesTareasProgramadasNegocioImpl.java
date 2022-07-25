@@ -413,13 +413,14 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 								row.addCell("Fecha fin", fechaFin);
 								row.addCell("Días", cantidadDias);
 								reporte.getCollection().setCurrentRow(row);
+								reporte.getCollection().addRow();
 							}
 						}
 					}
 					try {
 						IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
 						notificacionService.enviarCorreoReporte("REPORTE VACACIONES", "", aprobador.getEmail(), aprobador.getNombreCompleto(),
-								"coloboradores_vacaciones.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", new byte[excel.build().available()]);
+								"coloboradores_vacaciones.xlsx", "application/octet-stream", new byte[excel.build().available()]);
 					} catch (Exception e) {
 						LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
 					}

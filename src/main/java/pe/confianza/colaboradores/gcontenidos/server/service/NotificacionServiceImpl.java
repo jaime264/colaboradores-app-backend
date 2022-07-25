@@ -228,6 +228,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 		mail.getContenido().put("mensaje", descripcion);
 		mail.setReceptor(receptorEmail.toString());
 		mail.setEmisor("desarrollofc@confianza.pe");
+		logger.error("archivo " + archivo.length);
 		mail.getAdjuntos().add(new MailFile(nombreArchivo, contentType, archivo));
 		emailUtil.enviarEmail(mail);
 		logger.info("[END] enviarCorreoReporte ");

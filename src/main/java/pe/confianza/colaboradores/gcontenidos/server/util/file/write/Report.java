@@ -14,6 +14,9 @@ public class Report {
 	
 	public Report() {
 		this.collection = new Collection();
+		this.title = null;
+		this.subTitle = null;
+		this.logo = null;
 	}
 	
 	public String getType() {

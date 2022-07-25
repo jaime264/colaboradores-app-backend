@@ -23,12 +23,16 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import pe.confianza.colaboradores.gcontenidos.server.util.file.read.ColumnType;
 import pe.confianza.colaboradores.gcontenidos.server.util.file.write.IReport;
 import pe.confianza.colaboradores.gcontenidos.server.util.file.write.Report;
 
 public class XlsxReport implements IReport<ByteArrayInputStream> {
+	
+	private static Logger logger = LoggerFactory.getLogger(XlsxReport.class);
 	
 	private Report report;
 	
@@ -44,6 +48,8 @@ public class XlsxReport implements IReport<ByteArrayInputStream> {
 	public XlsxReport(Report report) {
 		this.report = report;
 		this.hasLogo = this.report.getLogo() == null ? false : true;
+		this.hasTitle = this.report.getTitle() == null ? false : true;
+		this.hasSubTitle = this.report.getSubTitle() == null ? false : true;
 	}
 
 	@Override
@@ -196,17 +202,18 @@ public class XlsxReport implements IReport<ByteArrayInputStream> {
 				Cell cell = row.createCell(numCol);
 				cell.setCellValue(key);
 				cell.setCellStyle(headerTableStyle);
+				logger.error("[ERROR] header " + key);
 				numCol++;
 			}
 			rowNum ++;
 			numCol = 1;
-			itHeaders = this.report.getCollection().getHeaders().keySet().iterator();
 			for (pe.confianza.colaboradores.gcontenidos.server.util.file.collection.Row rowData : this.report.getCollection().getRows()) {
 				row = sheet.createRow(rowNum);
 				itHeaders = this.report.getCollection().getHeaders().keySet().iterator();
 				while(itHeaders.hasNext()) {
 					String key = itHeaders.next();
 					Cell cell = row.createCell(numCol);
+					logger.error("[ERROR] row " + key + ": " + rowData.getCellValue(key));
 					if(this.report.getCollection().getHeaders().get(key) == ColumnType.INTEGER) {
 						cell.setCellValue((Integer)rowData.getCellValue(key));
 						cell.setCellStyle(valueNumberTableStyle);
@@ -240,7 +247,7 @@ public class XlsxReport implements IReport<ByteArrayInputStream> {
 	        }
 			book.write(out);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("[ERROR] build", e);
 			return null;
 		}
 		return new ByteArrayInputStream(out.toByteArray());
