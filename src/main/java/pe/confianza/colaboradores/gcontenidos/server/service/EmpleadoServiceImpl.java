@@ -244,16 +244,17 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	public Empleado getEmpleadoCorredorTerritorioBt(String usuarioBT) {
 		// TODO Auto-generated method stub
 		Empleado empleado = buscarPorUsuarioBT(usuarioBT);		
-		List<Territorio> territorios = new ArrayList<>();
-		
-		List<Corredor> corredores = corredorDao.listCorredor(empleado.getId());
-		List<UnidadOperativa> unidadesOperativas = unidadOperativaDao.listUnidadOperativa(empleado.getId());
-		
-		corredores.stream().forEach(e -> territorios.add(e.getTerritorio()));
-		
-		empleado.setCorredores(corredores);
-		empleado.setUnidadesOperativa(unidadesOperativas);
-		empleado.setTerritorios(territorios);		
+//		List<Territorio> territorios = new ArrayList<>();
+//		
+//		List<Corredor> corredores = corredorDao.listCorredor(empleado.getId());
+//		
+//		corredorDao.findById(empleado.getAgencia().getCorredor().getId());
+//		Corredor corredor = corredorDao.corredorEmpledo(empleado.getId());
+//		List<UnidadOperativa> unidadesOperativas = unidadOperativaDao.listUnidadOperativa(empleado.getId());
+//				
+//		empleado.setCorredores(corredores);
+//		empleado.setUnidadesOperativa(unidadesOperativas);
+//		empleado.setTerritorios(territorios);		
 		
 		return empleado;
 	}

@@ -329,13 +329,24 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 			}).collect(Collectors.toList());
 			break;
 		case "TERRITORIO":
-			listEmp = listEmpleadoProgramacionACT(reqPrograEmp, listEmpByProgramacion);
+			listEmp = listEmpByProgramacion.stream().filter(e -> {
+				boolean encontrado = false;
+				for (String filtro : reqPrograEmp.getFiltro()) {
+					if(filtro.equalsIgnoreCase(e.getTerritorio()))
+						encontrado = true;
+				}
+				return encontrado;
+			}).collect(Collectors.toList());
 			break;
 		case "CORREDOR":
-			listEmp = listEmpleadoProgramacionACT(reqPrograEmp, listEmpByProgramacion);
-			break;
-		case "AREA":
-			listEmp = listEmpleadoProgramacionACT(reqPrograEmp, listEmpByProgramacion);
+			listEmp = listEmpByProgramacion.stream().filter(e -> {
+				boolean encontrado = false;
+				for (String filtro : reqPrograEmp.getFiltro()) {
+					if(filtro.equalsIgnoreCase(e.getCorredor()))
+						encontrado = true;
+				}
+				return encontrado;
+			}).collect(Collectors.toList());
 			break;
 		case "TRAMO":
 			listEmp = listEmpByFecha(listEmpByProgramacion, reqPrograEmp);
@@ -367,50 +378,6 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		return listEmp;
 	}
 
-	private List<EmplVacPerRes> listEmpleadoProgramacionACT(RequestProgramacionEmpleado reqPrograEmp,
-			List<EmplVacPerRes> listEmpByProgramacion) {
-
-		List<EmplVacPerRes> listEmp = new ArrayList<>();
-		
-		for (EmplVacPerRes e : listEmpByProgramacion) {
-			Empleado empleado = empleadoService.buscarPorUsuarioBT(e.getUsuarioBt());
-			for (String f : reqPrograEmp.getFiltro()) {
-				
-				if(empleado.getAgencia() != null) {
-					
-					if (empleado.getAgencia().getCorredor() != null) {
-						if("CORREDOR".equals(reqPrograEmp.getTipoFiltro())) { 
-							if(empleado.getAgencia().getCorredor().getDescripcion().equalsIgnoreCase(f)) {
-								listEmp.add(e);
-							}
-						}
-						
-						if(empleado.getAgencia().getCorredor().getTerritorio() != null) {
-							if("TERRITORIO".equals(reqPrograEmp.getTipoFiltro())) {
-								if(empleado.getAgencia().getCorredor().getTerritorio().getDescripcion().equalsIgnoreCase(f)) {
-									listEmp.add(e);
-								}
-							}
-						}
-					}
-				}
-				
-				if(empleado.getUnidadesOperativa() != null) {
-					if("AREA".equals(reqPrograEmp.getTipoFiltro())) {
-						for (UnidadOperativa a : empleado.getUnidadesOperativa()) {
-							if(a.getDescripcion().equalsIgnoreCase(f)) {
-								listEmp.add(e);
-							}
-						}
-					}
-				}
-			}
-			
-		}
-
-		return listEmp;
-	}
-
 	private List<EmplVacPerRes> listEmpleadoProgramacionFilter(RequestProgramacionEmpleado reqPrograEmp) {
 
 		List<EmplVacPerRes> listEmp = new ArrayList<EmplVacPerRes>();
@@ -425,8 +392,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 				List<VacacionProgramacion> lVp = empleadoDao.findPeriodosByEmpleado(e.getId());
 				for (VacacionProgramacion v : lVp) {
 
-					Empleado empleado = empleadoService
-							.getEmpleadoCorredorTerritorioBt(v.getPeriodo().getEmpleado().getUsuarioBT());
+//					Empleado empleado = empleadoService
+//							.getEmpleadoCorredorTerritorioBt(v.getPeriodo().getEmpleado().getUsuarioBT());
 
 					EmplVacPerRes emp = new EmplVacPerRes();
 					emp.setNombres(e.getNombreCompleto());
@@ -443,10 +410,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 					String[] estadoProg = cargaParametros.getEstadoProgramacionDescripcion(v.getIdEstado());
 					emp.setDescripcionEstado(estadoProg[0]);
 					emp.setLeyendaEstado(estadoProg[1]);
-					emp.setTerritorio(empleado.getTerritorios());
-					emp.setCorredor(empleado.getCorredores());
-					emp.setArea(empleado.getUnidadesOperativa());
-					
+					emp.setTerritorio(e.getAgencia().getCorredor().getTerritorio().getDescripcion());
+					emp.setCorredor(e.getAgencia().getCorredor().getDescripcion());
 					emp.setAdelantada(v.isVacacionesAdelantadas());
 
 					listEmp.add(emp);
