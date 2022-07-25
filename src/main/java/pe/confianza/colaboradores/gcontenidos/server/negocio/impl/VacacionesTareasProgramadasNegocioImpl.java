@@ -135,7 +135,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 		if(fechaActual.getDayOfMonth() == fechaEnvioNotificaicon.getDayOfMonth() && fechaActual.getMonthValue() == fechaEnvioNotificaicon.getMonthValue()) {
 			Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
 			String titulo = "VACACIONES - INICIO PROGRAMACION";
-			String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.inicio_programacion",
+			String descripcion = Utilitario.obtenerMensaje(messageSource,  "vacaciones.notificacion.inicio_programacion",
 					new Object[] { anio, fechaInicioProgramacion.toString(), fechaFinProgramacion.toString() });
 			if(opt.isPresent()) {
 				List<Empleado> lstEmpleado = empleadoService.listar();
