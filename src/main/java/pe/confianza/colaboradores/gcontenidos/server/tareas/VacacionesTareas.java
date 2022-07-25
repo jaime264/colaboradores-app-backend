@@ -31,7 +31,7 @@ public class VacacionesTareas {
 		calcularMetaAnual();
 	}
 	
-	@Scheduled(cron = "0 0/50 * * * ?") // Verificacion cada 50  minutos
+	@Scheduled(cron = "0 0/3 * * * ?") // Verificacion cada 50  minutos
 	public void enviarNotificacionesVacaciones() {
 		LOGGER.info("[BEGIN] enviarNotificacionesVacaciones " + LocalDateTime.now());
 		LocalDateTime ahora = LocalDateTime.now();

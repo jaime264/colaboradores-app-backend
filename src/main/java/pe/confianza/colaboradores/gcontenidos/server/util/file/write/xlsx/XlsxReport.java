@@ -204,7 +204,6 @@ public class XlsxReport implements IReport<ByteArrayInputStream> {
 				Cell cell = row.createCell(numCol);
 				cell.setCellValue(key);
 				cell.setCellStyle(headerTableStyle);
-				logger.error("[ERROR] header " + key);
 				numCol++;
 			}
 			rowNum ++;
@@ -215,7 +214,6 @@ public class XlsxReport implements IReport<ByteArrayInputStream> {
 				while(itHeaders.hasNext()) {
 					String key = itHeaders.next();
 					Cell cell = row.createCell(numCol);
-					logger.error("[ERROR] row " + key + ": " + rowData.getCellValue(key));
 					if(this.report.getCollection().getHeaders().get(key) == ColumnType.INTEGER) {
 						cell.setCellValue((Integer)rowData.getCellValue(key));
 						cell.setCellStyle(valueNumberTableStyle);

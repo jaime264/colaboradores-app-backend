@@ -385,7 +385,6 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 			if (opt.isPresent()) {
 				List<VacacionAprobadorNivelI> aprobadores = vacacionAprobadorService.listarAprobadoresNivelI();
 				for (VacacionAprobadorNivelI aprobador : aprobadores) {
-					LOGGER.error("[APROBADOR] " + aprobador.getNombreCompleto());
 					Report reporte = new Report();
 					reporte.setType("XLSX");
 					reporte.setTitle("REPORTE VACACIONES");
@@ -397,7 +396,6 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 					reporte.getCollection().addHeader("Días", ColumnType.INTEGER);
 					Map<Empleado, List<VacacionProgramacion>> empleadoProg = vacacionProgramacionService.listarProgramacionesPorAnioYAprobadorNivelI(LocalDate.now().getYear(), aprobador.getCodigo());
 					for (Map.Entry<Empleado, List<VacacionProgramacion>> programacionesEmpl : empleadoProg.entrySet()) {
-						LOGGER.error("[EMPLEADO] " + programacionesEmpl.getKey().getNombreCompleto());
 						for (VacacionProgramacion programacion : programacionesEmpl.getValue()) {
 							if(programacion.getFechaInicio().getMonthValue() == LocalDate.now().getMonthValue() + 1) {
 								String colaborador = programacion.getPeriodo().getEmpleado().getNombreCompleto();
