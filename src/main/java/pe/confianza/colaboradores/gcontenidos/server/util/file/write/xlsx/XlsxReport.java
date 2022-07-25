@@ -44,6 +44,8 @@ public class XlsxReport implements IReport<ByteArrayInputStream> {
 	private boolean hasTitle;
 	private boolean hasSubTitle;
 	
+	private ByteArrayInputStream excelData;
+	
 	
 	public XlsxReport(Report report) {
 		this.report = report;
@@ -53,7 +55,7 @@ public class XlsxReport implements IReport<ByteArrayInputStream> {
 	}
 
 	@Override
-	public ByteArrayInputStream build() {
+	public void build() {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		Workbook  book = new XSSFWorkbook();
 		try {
@@ -246,11 +248,16 @@ public class XlsxReport implements IReport<ByteArrayInputStream> {
 	            sheet.autoSizeColumn(i);
 	        }
 			book.write(out);
+			this.excelData = new ByteArrayInputStream(out.toByteArray());
+			out.close();
 		} catch (Exception e) {
 			logger.error("[ERROR] build", e);
-			return null;
 		}
-		return new ByteArrayInputStream(out.toByteArray());
+	}
+
+	@Override
+	public ByteArrayInputStream getReult() {
+		return this.excelData;
 	}
 
 	

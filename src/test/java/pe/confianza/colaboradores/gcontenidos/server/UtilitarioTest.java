@@ -129,7 +129,8 @@ public class UtilitarioTest {
 		ReportFactory reportFactory = new ReportFactory();
 		IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
 		try {
-			 IOUtils.copy(excel.build(), new FileOutputStream("/kenyo/reporte.xlsx"));
+			excel.build();
+			IOUtils.copy(excel.getReult(), new FileOutputStream("/kenyo/reporte1.xlsx"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

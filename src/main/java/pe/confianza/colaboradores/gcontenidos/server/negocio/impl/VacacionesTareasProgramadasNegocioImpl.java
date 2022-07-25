@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.poi.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -419,8 +420,9 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 					}
 					try {
 						IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
+						excel.build();
 						notificacionService.enviarCorreoReporte("REPORTE VACACIONES", "", aprobador.getEmail(), aprobador.getNombreCompleto(),
-								"coloboradores_vacaciones.xlsx", "application/octet-stream", new byte[excel.build().available()]);
+								"coloboradores_vacaciones.xlsx", "application/octet-stream", IOUtils.toByteArray(excel.getReult()));
 					} catch (Exception e) {
 						LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
 					}
