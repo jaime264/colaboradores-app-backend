@@ -499,7 +499,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	}
 
 	@Override
-	public Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelI(int anio, String codigoAprobador) {
+	public Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelI(int anio, long codigoAprobador) {
 		logger.info("[BEGIN] listarProgramacionesPorAnioYAprobadorNivelI {} {}", anio, codigoAprobador);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		LocalDate fechaInicio = LocalDate.parse("01/01/" + anio, formatter);
@@ -518,12 +518,12 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	}
 
 	@Override
-	public Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelII(int anio, String codigoAprobador) {
+	public Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelII(int anio, long codigoAprobador) {
 		logger.info("[BEGIN] listarProgramacionesPorAnioYAprobadorNivelII {} {}", anio, codigoAprobador);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		LocalDate fechaInicio = LocalDate.parse("01/01/" + anio, formatter);
 		LocalDate fechaFin = LocalDate.parse("31/12/" + anio, formatter);
-		List<VacacionProgramacion> programaciones = vacacionProgramacionDao.findBetweenDates(fechaInicio, fechaFin,
+		List<VacacionProgramacion> programaciones = vacacionProgramacionDao.findBetweenDatesAndAprobadorNivelII(fechaInicio, fechaFin,
 				codigoAprobador);
 		programaciones = programaciones == null ? new ArrayList<>() : programaciones;
 		Map<Empleado, List<VacacionProgramacion>> empleadosProg = new HashMap<>();

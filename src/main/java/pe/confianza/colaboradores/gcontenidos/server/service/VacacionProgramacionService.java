@@ -65,8 +65,8 @@ public interface VacacionProgramacionService {
 	
 	List<VacacionProgramacion> listarProgramacionesPorAnio(int anio, String usuarioBT);
 	
-	Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelI(int anio, String codigoAprobador);
+	Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelI(int anio, long codigoAprobador);
 	
-	Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelII(int anio, String codigoAprobador);
+	Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelII(int anio, long codigoAprobador);
 	
 }

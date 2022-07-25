@@ -22,7 +22,7 @@ public class VacacionAprobadorNivelII {
 	
 	@Id
 	private Long id;
-	private String codigo;
+	private long codigo;
 	private String apellidoPaterno;
 	private String apellidoMaterno;
 	private String nombres;
@@ -36,10 +36,10 @@ public class VacacionAprobadorNivelII {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getCodigo() {
+	public long getCodigo() {
 		return codigo;
 	}
-	public void setCodigo(String codigo) {
+	public void setCodigo(long codigo) {
 		this.codigo = codigo;
 	}
 	public String getApellidoPaterno() {

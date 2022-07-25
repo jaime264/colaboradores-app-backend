@@ -76,11 +76,11 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	@Query("SELECT vp FROM VacacionProgramacion vp where vp.fechaInicio >= ?1 AND vp.fechaInicio <= ?2 AND vp.periodo.empleado.usuarioBT = ?3 AND vp.estadoRegistro = 'A' order by vp.fechaInicio ASC")
 	List<VacacionProgramacion> findBetweenDates(LocalDate fechaInicio, LocalDate fechaFin, String usuarioBT);
 	
-	@Query("SELECT vp FROM VacacionProgramacion vp where vp.fechaFin >= ?1 AND vp.fechaFin <= ?2 AND vp.periodo.empleado.codigoNivel1 = ?3 AND vp.estadoRegistro = 'A' order by vp.fechaInicio ASC")
-	List<VacacionProgramacion> findBetweenDatesAndAprobadorNivelI(LocalDate fechaInicio, LocalDate fechaFin, String codigoAprobador);
+	@Query("SELECT vp FROM VacacionProgramacion vp where vp.fechaInicio >= ?1 AND vp.fechaInicio <= ?2 AND vp.periodo.empleado.codigoNivel1 = ?3 AND vp.estadoRegistro = 'A' order by vp.fechaInicio ASC")
+	List<VacacionProgramacion> findBetweenDatesAndAprobadorNivelI(LocalDate fechaInicio, LocalDate fechaFin, long codigoAprobador);
 	
-	@Query("SELECT vp FROM VacacionProgramacion vp where vp.fechaFin >= ?1 AND vp.fechaFin <= ?2 AND vp.periodo.empleado.codigoNivel2 = ?3 AND vp.estadoRegistro = 'A' order by vp.fechaInicio ASC")
-	List<VacacionProgramacion> findBetweenDatesAndAprobadorNivelII(LocalDate fechaInicio, LocalDate fechaFin, String codigoAprobador);
+	@Query("SELECT vp FROM VacacionProgramacion vp where vp.fechaInicio >= ?1 AND vp.fechaInicio <= ?2 AND vp.periodo.empleado.codigoNivel2 = ?3 AND vp.estadoRegistro = 'A' order by vp.fechaInicio ASC")
+	List<VacacionProgramacion> findBetweenDatesAndAprobadorNivelII(LocalDate fechaInicio, LocalDate fechaFin, long codigoAprobador);
 	
 	@Query("SELECT e FROM VacacionProgramacion vp INNER JOIN vp.periodo p INNER JOIN p.empleado e where (e.codigoNivel1 = ?1 OR e.codigoNivel1 = ?1) AND vp.idEstado = 2 AND vp.estadoRegistro = 'A' AND e.estadoRegistro = 'A'")
 	List<Empleado> listarEmpleadosPorAprobar(long codigoAprobador);
