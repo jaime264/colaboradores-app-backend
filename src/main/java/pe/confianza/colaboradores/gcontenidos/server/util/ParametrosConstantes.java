@@ -51,6 +51,12 @@ public class ParametrosConstantes {
 		public static final String HORA_ENVIO_NOTIFICACIONES_VACACIONES = "PARAMVAC003";
 		public static final String DIAS_INTERVALO_NOTIFICACIONES = "PARAMVAC022";
 		public static final String DIA_NOTIFICACION_REPROGRAMACION = "PARAMVAC023";
+		public static final String MENSAJE_COLABORDOR_INICIO_PROGRAMACION = "PARAMVAC041";
+		public static final String MENSAJE_COLABORDOR_META_INCOMPLETA = "PARAMVAC042";
+		public static final String MENSAJE_COLABORDOR_SIN_REGISTRO_REPROGRAMACIONES = "PARAMVAC043";
+		public static final String MENSAJE_JEFE_SIN_REGISTRO_APROBACIONES = "PARAMVAC044";
+		public static final String MENSAJE_JEFE_PENDIENTE_APROBACION = "PARAMVAC045";
+		public static final String MENSAJE_COLABORDOR_REPROGRAMACION = "PARAMVAC046";
 	}
 	
 	public static class Publicaciones {

@@ -288,6 +288,27 @@ public class Utilitario {
 		}
 	}
 	
+	public static String generarMensajeNotificacion(MessageSource source, String mensaje, Object ...valores) {
+		valores = valores == null ? new String[] {} : valores;
+		try {
+			StringBuilder mensajeSb = new StringBuilder();
+			String[] mensajeeArray = mensaje.split(" ");
+			int contadorParametro = 0;
+			for (String string : mensajeeArray) {
+				if(string.equals("XX")) {
+					mensajeSb.append("{").append(contadorParametro).append("}")
+					.append(" ");
+					contadorParametro++;
+				} else {
+					mensajeSb.append(string).append(" ");
+				}
+			}
+			return mensajeSb.toString().trim();
+		} catch (Exception e) {
+			return "Mensaje en generar mensaje";
+		}
+	}
+	
 	public static LocalDate agregarDias(LocalDate fecha, int numeroDias) {
 		return fecha.plusDays(numeroDias - 1);
 	}
