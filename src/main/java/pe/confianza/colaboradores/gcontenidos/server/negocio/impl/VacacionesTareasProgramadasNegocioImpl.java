@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.poi.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -353,33 +354,22 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 		LOGGER.info("[BEGIN] registrarNotificacionesReprogramacionMensual " + LocalDate.now());
 		LocalDate fechaActual = LocalDate.now();
 		if(fechaActual.getDayOfMonth() >= cargaParametros.getDiaNotificacionReprogramacion()) {
-			LocalDate fechaFinReprogramacion = cargaParametros.getFechaFinReprogramacion();
-			int intervaloRecordatorios = cargaParametros.getIntervaloDiasRecordatorioVacaciones();
-			LocalDate fechaRecordatorio = fechaActual;
-			while (fechaRecordatorio.isBefore(fechaFinReprogramacion)) {
-				if (fechaRecordatorio.getDayOfWeek() != DayOfWeek.SATURDAY	&& fechaRecordatorio.getDayOfWeek() != DayOfWeek.SUNDAY) {
-					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
-					if (opt.isPresent()) {
-						List<Empleado> lstEmpleado = empleadoService.listar();
-						String titulo = "VACACIONES - PENDIENTES DE APROBACIÓN";
-						String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.reprogramacion", MesesAnio.buscarPorValor(fechaActual.getMonthValue() + 1));
-						for (Empleado empleado : lstEmpleado) {
-							if(empleado.getEstadoRegistro().equals(EstadoRegistro.ACTIVO.valor)) {
-								List<VacacionProgramacion> programaciones = vacacionProgramacionService.listarProgramacionesPorAnio(cargaParametros.getAnioPresente(), empleado.getUsuarioBT())
-										.stream()
-										.filter(p -> p.getIdEstado() == EstadoVacacion.APROBADO.id && p.getFechaFin().getMonthValue() == fechaActual.getMonthValue() + 1)
-										.collect(Collectors.toList());
-								programaciones = programaciones == null ? new ArrayList<>() : programaciones;
-								if(!programaciones.isEmpty()) {
-									notificacionService.registrar(titulo, descripcion, "", opt.get(), empleado, "TAREA_PROGRAMADA");
-								}
-							}
+			Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
+			if (opt.isPresent()) {
+				List<Empleado> lstEmpleado = empleadoService.listar();
+				String titulo = "VACACIONES - REPROGRAMACIÓN";
+				String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.reprogramacion", MesesAnio.buscarPorValor(fechaActual.getMonthValue() + 1));
+				for (Empleado empleado : lstEmpleado) {
+					if(empleado.getEstadoRegistro().equals(EstadoRegistro.ACTIVO.valor)) {
+						List<VacacionProgramacion> programaciones = vacacionProgramacionService.listarProgramacionesPorAnio(cargaParametros.getAnioPresente(), empleado.getUsuarioBT())
+								.stream()
+								.filter(p -> p.getIdEstado() == EstadoVacacion.APROBADO.id && p.getFechaFin().getMonthValue() == fechaActual.getMonthValue() + 1)
+								.collect(Collectors.toList());
+						programaciones = programaciones == null ? new ArrayList<>() : programaciones;
+						if(!programaciones.isEmpty()) {
+							notificacionService.registrar(titulo, descripcion, "", opt.get(), empleado, "TAREA_PROGRAMADA");
 						}
 					}
-					
-					fechaRecordatorio = fechaRecordatorio.plusDays(intervaloRecordatorios);
-				} else {
-					fechaRecordatorio = fechaRecordatorio.plusDays(fechaRecordatorio.getDayOfWeek() == DayOfWeek.SATURDAY ? 2 : 1);
 				}
 			}
 		}
@@ -390,60 +380,50 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 	public void enviarCorreoReporteAprobadorNivelI() {
 		LOGGER.error("[BEGIN] enviarCorreoReporteAprobadorNivelI " + LocalDate.now());
 		LocalDate fechaActual = LocalDate.now();
-		if(fechaActual.getDayOfMonth() >= cargaParametros.getDiaNotificacionReprogramacion()) {
-			LocalDate fechaFinReprogramacion = cargaParametros.getFechaFinReprogramacion();
-			int intervaloRecordatorios = cargaParametros.getIntervaloDiasRecordatorioVacaciones();
-			LocalDate fechaRecordatorio = fechaActual;
-			while (fechaRecordatorio.isBefore(fechaFinReprogramacion)) {
-				if (fechaRecordatorio.getDayOfWeek() != DayOfWeek.SATURDAY	&& fechaRecordatorio.getDayOfWeek() != DayOfWeek.SUNDAY) {
-					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_APROBADOR.valor);
-					if (opt.isPresent()) {
-						List<VacacionAprobadorNivelI> aprobadores = vacacionAprobadorService.listarAprobadoresNivelI();
-						for (VacacionAprobadorNivelI aprobador : aprobadores) {
-							LOGGER.error("[APROBADOR] " + aprobador.getNombreCompleto());
-							Report reporte = new Report();
-							reporte.setType("XLSX");
-							reporte.setTitle("REPORTE VACACIONES");
-							reporte.getCollection().addHeader("Colaborador", ColumnType.STRING);
-							reporte.getCollection().addHeader("Agencia", ColumnType.STRING);
-							reporte.getCollection().addHeader("Cargo", ColumnType.STRING);
-							reporte.getCollection().addHeader("Fecha inicio", ColumnType.LOCALDATE);
-							reporte.getCollection().addHeader("Fecha fin", ColumnType.LOCALDATE);
-							reporte.getCollection().addHeader("Días", ColumnType.INTEGER);
-							Map<Empleado, List<VacacionProgramacion>> empleadoProg = vacacionProgramacionService.listarProgramacionesPorAnioYAprobadorNivelI(LocalDate.now().getYear(), aprobador.getCodigo());
-							for (Map.Entry<Empleado, List<VacacionProgramacion>> programacionesEmpl : empleadoProg.entrySet()) {
-								LOGGER.error("[EMPLEADO] " + programacionesEmpl.getKey().getNombreCompleto());
-								for (VacacionProgramacion programacion : programacionesEmpl.getValue()) {
-									if(programacion.getFechaInicio().getMonthValue() == LocalDate.now().getMonthValue() + 1) {
-										String colaborador = programacion.getPeriodo().getEmpleado().getNombreCompleto();
-										String agencia = programacion.getPeriodo().getEmpleado().getAgencia() == null ? "" : programacion.getPeriodo().getEmpleado().getAgencia().getDescripcion();
-										String cargo = programacion.getPeriodo().getEmpleado().getPuesto() == null ? "" : programacion.getPeriodo().getEmpleado().getPuesto().getDescripcion();
-										LocalDate fechaInicio = programacion.getFechaInicio();
-										LocalDate fechaFin = programacion.getFechaFin();
-										int cantidadDias = programacion.getNumeroDias();
-										Row row = new Row();
-										row.addCell("Colaborador", colaborador);
-										row.addCell("Agencia", agencia);
-										row.addCell("Cargo", cargo);
-										row.addCell("Fecha inicio", fechaInicio);
-										row.addCell("Fecha fin", fechaFin);
-										row.addCell("Días", cantidadDias);
-										reporte.getCollection().setCurrentRow(row);
-									}
-								}
-							}
-							try {
-								IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
-								notificacionService.enviarCorreoReporte("REPORTE VACACIONES", "", aprobador.getEmail(), aprobador.getNombreCompleto(),
-										"coloboradores_vacaciones.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", new byte[excel.build().available()]);
-							} catch (Exception e) {
-								LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
+		if(fechaActual.getDayOfMonth() == cargaParametros.getDiaNotificacionReprogramacion()) {
+			Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_APROBADOR.valor);
+			if (opt.isPresent()) {
+				List<VacacionAprobadorNivelI> aprobadores = vacacionAprobadorService.listarAprobadoresNivelI();
+				for (VacacionAprobadorNivelI aprobador : aprobadores) {
+					Report reporte = new Report();
+					reporte.setType("XLSX");
+					reporte.setTitle("REPORTE VACACIONES");
+					reporte.getCollection().addHeader("Colaborador", ColumnType.STRING);
+					reporte.getCollection().addHeader("Agencia", ColumnType.STRING);
+					reporte.getCollection().addHeader("Cargo", ColumnType.STRING);
+					reporte.getCollection().addHeader("Fecha inicio", ColumnType.LOCALDATE);
+					reporte.getCollection().addHeader("Fecha fin", ColumnType.LOCALDATE);
+					reporte.getCollection().addHeader("Días", ColumnType.INTEGER);
+					Map<Empleado, List<VacacionProgramacion>> empleadoProg = vacacionProgramacionService.listarProgramacionesPorAnioYAprobadorNivelI(LocalDate.now().getYear(), aprobador.getCodigo());
+					for (Map.Entry<Empleado, List<VacacionProgramacion>> programacionesEmpl : empleadoProg.entrySet()) {
+						for (VacacionProgramacion programacion : programacionesEmpl.getValue()) {
+							if(programacion.getFechaInicio().getMonthValue() == LocalDate.now().getMonthValue() + 1) {
+								String colaborador = programacion.getPeriodo().getEmpleado().getNombreCompleto();
+								String agencia = programacion.getPeriodo().getEmpleado().getAgencia() == null ? "" : programacion.getPeriodo().getEmpleado().getAgencia().getDescripcion();
+								String cargo = programacion.getPeriodo().getEmpleado().getPuesto() == null ? "" : programacion.getPeriodo().getEmpleado().getPuesto().getDescripcion();
+								LocalDate fechaInicio = programacion.getFechaInicio();
+								LocalDate fechaFin = programacion.getFechaFin();
+								int cantidadDias = programacion.getNumeroDias();
+								Row row = new Row();
+								row.addCell("Colaborador", colaborador);
+								row.addCell("Agencia", agencia);
+								row.addCell("Cargo", cargo);
+								row.addCell("Fecha inicio", fechaInicio);
+								row.addCell("Fecha fin", fechaFin);
+								row.addCell("Días", cantidadDias);
+								reporte.getCollection().setCurrentRow(row);
+								reporte.getCollection().addRow();
 							}
 						}
 					}
-					fechaRecordatorio = fechaRecordatorio.plusDays(intervaloRecordatorios);
-				} else {
-					fechaRecordatorio = fechaRecordatorio.plusDays(fechaRecordatorio.getDayOfWeek() == DayOfWeek.SATURDAY ? 2 : 1);
+					try {
+						IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
+						excel.build();
+						notificacionService.enviarCorreoReporte("REPORTE VACACIONES", "", aprobador.getEmail(), aprobador.getNombreCompleto(),
+								"coloboradores_vacaciones.xlsx", "application/octet-stream", IOUtils.toByteArray(excel.getReult()));
+					} catch (Exception e) {
+						LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
+					}
 				}
 			}
 		}

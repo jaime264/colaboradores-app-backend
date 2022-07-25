@@ -23,12 +23,16 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import pe.confianza.colaboradores.gcontenidos.server.util.file.read.ColumnType;
 import pe.confianza.colaboradores.gcontenidos.server.util.file.write.IReport;
 import pe.confianza.colaboradores.gcontenidos.server.util.file.write.Report;
 
 public class XlsxReport implements IReport<ByteArrayInputStream> {
+	
+	private static Logger logger = LoggerFactory.getLogger(XlsxReport.class);
 	
 	private Report report;
 	
@@ -40,14 +44,18 @@ public class XlsxReport implements IReport<ByteArrayInputStream> {
 	private boolean hasTitle;
 	private boolean hasSubTitle;
 	
+	private ByteArrayInputStream excelData;
+	
 	
 	public XlsxReport(Report report) {
 		this.report = report;
 		this.hasLogo = this.report.getLogo() == null ? false : true;
+		this.hasTitle = this.report.getTitle() == null ? false : true;
+		this.hasSubTitle = this.report.getSubTitle() == null ? false : true;
 	}
 
 	@Override
-	public ByteArrayInputStream build() {
+	public void build() {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		Workbook  book = new XSSFWorkbook();
 		try {
@@ -200,7 +208,6 @@ public class XlsxReport implements IReport<ByteArrayInputStream> {
 			}
 			rowNum ++;
 			numCol = 1;
-			itHeaders = this.report.getCollection().getHeaders().keySet().iterator();
 			for (pe.confianza.colaboradores.gcontenidos.server.util.file.collection.Row rowData : this.report.getCollection().getRows()) {
 				row = sheet.createRow(rowNum);
 				itHeaders = this.report.getCollection().getHeaders().keySet().iterator();
@@ -239,11 +246,16 @@ public class XlsxReport implements IReport<ByteArrayInputStream> {
 	            sheet.autoSizeColumn(i);
 	        }
 			book.write(out);
+			this.excelData = new ByteArrayInputStream(out.toByteArray());
+			out.close();
 		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+			logger.error("[ERROR] build", e);
 		}
-		return new ByteArrayInputStream(out.toByteArray());
+	}
+
+	@Override
+	public ByteArrayInputStream getReult() {
+		return this.excelData;
 	}
 
 	

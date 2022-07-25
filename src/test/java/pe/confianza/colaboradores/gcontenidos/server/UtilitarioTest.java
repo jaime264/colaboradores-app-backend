@@ -2,13 +2,21 @@ package pe.confianza.colaboradores.gcontenidos.server;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
+import org.apache.poi.util.IOUtils;
 import org.junit.jupiter.api.Test;
 
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.collection.Row;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.read.ColumnType;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.write.IReport;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.write.Report;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.write.ReportFactory;
 
 public class UtilitarioTest {
 	
@@ -100,5 +108,34 @@ public class UtilitarioTest {
 		LocalDate fecha2 = LocalDate.parse("19/09/2022", formatter);
 		System.out.println(Utilitario.fechaEntrePeriodo(fechaInicio, fechaFIn, fecha2));
 	}
+	
+	/*@Test
+	public void generarReporte() {
+		Report reporte = new Report();
+		reporte.setType("XLSX");
+		reporte.setTitle("REPORTE VACACIONES");
+		reporte.getCollection().addHeader("Colaborador", ColumnType.STRING);
+		reporte.getCollection().addHeader("Agencia", ColumnType.STRING);
+		Row row = new Row();
+		row.addCell("Colaborador", "Juan Perez");
+		row.addCell("Agencia", "AAAA");
+		reporte.getCollection().setCurrentRow(row);
+		reporte.getCollection().addRow();
+		row = new Row();
+		row.addCell("Colaborador", "Luis Perez");
+		row.addCell("Agencia", "BBB");
+		reporte.getCollection().setCurrentRow(row);
+		reporte.getCollection().addRow();
+		ReportFactory reportFactory = new ReportFactory();
+		IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
+		try {
+			excel.build();
+			IOUtils.copy(excel.getReult(), new FileOutputStream("/kenyo/reporte1.xlsx"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+	}*/
 
 }
