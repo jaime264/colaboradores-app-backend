@@ -92,5 +92,8 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	
 	@Query("SELECT vp FROM VacacionProgramacion vp WHERE UPPER(CONCAT(vp.periodo.empleado.nombres, ' ', vp.periodo.empleado.apellidoPaterno, ' ', vp.periodo.empleado.apellidoMaterno)) LIKE CONCAT('%', ?1, '%') AND  vp.idEstado > 1 AND vp.estadoRegistro = 'A' order by vp.periodo.empleado.nombres ASC ")
 	Page<VacacionProgramacion> listarProgramacionesDiferenteRegistrado(String nombre, Pageable pageable);
+	
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.idEstado = ?1")
+	List<VacacionProgramacion> listarPorEstado(int idEstado);
 
 }
