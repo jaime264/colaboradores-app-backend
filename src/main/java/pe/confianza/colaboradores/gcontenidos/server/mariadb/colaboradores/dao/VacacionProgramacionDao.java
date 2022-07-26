@@ -3,6 +3,8 @@ package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -84,5 +86,11 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	
 	@Query("SELECT e FROM VacacionProgramacion vp INNER JOIN vp.periodo p INNER JOIN p.empleado e where (e.codigoNivel1 = ?1 OR e.codigoNivel1 = ?1) AND vp.idEstado = 2 AND vp.estadoRegistro = 'A' AND e.estadoRegistro = 'A'")
 	List<Empleado> listarEmpleadosPorAprobar(long codigoAprobador);
+	
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.idEstado > 1 AND vp.estadoRegistro = 'A' order by vp.periodo.empleado.nombres ASC ")
+	Page<VacacionProgramacion> listarProgramacionesDiferenteRegistrado(Pageable pageable);
+	
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE UPPER(CONCAT(vp.periodo.empleado.nombres, ' ', vp.periodo.empleado.apellidoPaterno, ' ', vp.periodo.empleado.apellidoMaterno)) LIKE CONCAT('%', ?1, '%') AND  vp.idEstado > 1 AND vp.estadoRegistro = 'A' order by vp.periodo.empleado.nombres ASC ")
+	Page<VacacionProgramacion> listarProgramacionesDiferenteRegistrado(String nombre, Pageable pageable);
 
 }

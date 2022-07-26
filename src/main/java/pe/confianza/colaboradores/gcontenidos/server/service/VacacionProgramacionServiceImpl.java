@@ -16,6 +16,8 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -558,6 +560,13 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		}
 		logger.info("[END] listarProgramacionesPorAnioYAprobadorNivelII");
 		return empleadosProg;
+	}
+
+	@Override
+	public Page<VacacionProgramacion> listarProgramacionesDiferenteRegistrado(String nombre, Pageable pageable) {
+		if(nombre.isEmpty()) 
+			return vacacionProgramacionDao.listarProgramacionesDiferenteRegistrado(pageable);
+		return vacacionProgramacionDao.listarProgramacionesDiferenteRegistrado(nombre, pageable);
 	}
 
 }

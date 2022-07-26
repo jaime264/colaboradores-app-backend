@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "migracion_tipo_cargo")
+@Table(name = "imp_tipo_cargo")
 public class MiagracionTipoCargo extends MigracionBase{
 	
 	@Id

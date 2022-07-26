@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "migracion_puesto")
+@Table(name = "imp_puesto")
 public class MigracionPuesto extends MigracionBase{
 	
 	@Id
@@ -22,13 +22,13 @@ public class MigracionPuesto extends MigracionBase{
 	private String descripcion;
 	
 	@Column(nullable = true)
-	private String clasificacion;
-	
-	@Column(nullable = true)
-	private String codigoTipoCargo;
+	private String codigoClasificacion;
 	
 	@Column(nullable = true)
 	private String codigoTipoCalificacion;
+	
+	@Column(nullable = true)
+	private String codigoTipoCargo;
 	
 	@Column(nullable = true)
 	private Long codigoPuestoSuperior;
@@ -57,20 +57,12 @@ public class MigracionPuesto extends MigracionBase{
 		this.descripcion = descripcion;
 	}
 
-	public String getClasificacion() {
-		return clasificacion;
+	public String getCodigoClasificacion() {
+		return codigoClasificacion;
 	}
 
-	public void setClasificacion(String clasificacion) {
-		this.clasificacion = clasificacion;
-	}
-
-	public String getCodigoTipoCargo() {
-		return codigoTipoCargo;
-	}
-
-	public void setCodigoTipoCargo(String codigoTipoCargo) {
-		this.codigoTipoCargo = codigoTipoCargo;
+	public void setCodigoClasificacion(String codigoClasificacion) {
+		this.codigoClasificacion = codigoClasificacion;
 	}
 
 	public String getCodigoTipoCalificacion() {
@@ -81,6 +73,14 @@ public class MigracionPuesto extends MigracionBase{
 		this.codigoTipoCalificacion = codigoTipoCalificacion;
 	}
 
+	public String getCodigoTipoCargo() {
+		return codigoTipoCargo;
+	}
+
+	public void setCodigoTipoCargo(String codigoTipoCargo) {
+		this.codigoTipoCargo = codigoTipoCargo;
+	}
+
 	public Long getCodigoPuestoSuperior() {
 		return codigoPuestoSuperior;
 	}
@@ -88,6 +88,8 @@ public class MigracionPuesto extends MigracionBase{
 	public void setCodigoPuestoSuperior(Long codigoPuestoSuperior) {
 		this.codigoPuestoSuperior = codigoPuestoSuperior;
 	}
+
+	
 	
 	
 

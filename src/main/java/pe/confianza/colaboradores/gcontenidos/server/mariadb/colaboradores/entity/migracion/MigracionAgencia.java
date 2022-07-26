@@ -8,23 +8,24 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "migracion_agencia")
+@Table(name = "imp_agencia")
 public class MigracionAgencia extends MigracionBase {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column(nullable = false)
+	@Column(nullable = false, length = 4)
 	private String codigo;
 	
-	@Column(nullable = false)
+	@Column(nullable = false,  length = 5)
+	private String codigoCorredor;
+	
+	@Column(nullable = false, length = 50)
 	private String descripcion;
 	
-	@Column(nullable = true)
-	private String codigoOficinaMatriz;
-	
-	private String codigoCorredor;
+	@Column(nullable = true, length = 4)
+	private String codigoAgenciaMatriz;
 
 	public long getId() {
 		return id;
@@ -42,6 +43,14 @@ public class MigracionAgencia extends MigracionBase {
 		this.codigo = codigo;
 	}
 
+	public String getCodigoCorredor() {
+		return codigoCorredor;
+	}
+
+	public void setCodigoCorredor(String codigoCorredor) {
+		this.codigoCorredor = codigoCorredor;
+	}
+
 	public String getDescripcion() {
 		return descripcion;
 	}
@@ -50,20 +59,12 @@ public class MigracionAgencia extends MigracionBase {
 		this.descripcion = descripcion;
 	}
 
-	public String getCodigoOficinaMatriz() {
-		return codigoOficinaMatriz;
+	public String getCodigoAgenciaMatriz() {
+		return codigoAgenciaMatriz;
 	}
 
-	public void setCodigoOficinaMatriz(String codigoOficinaMatriz) {
-		this.codigoOficinaMatriz = codigoOficinaMatriz;
-	}
-
-	public String getCodigoCorredor() {
-		return codigoCorredor;
-	}
-
-	public void setCodigoCorredor(String codigoCorredor) {
-		this.codigoCorredor = codigoCorredor;
+	public void setCodigoAgenciaMatriz(String codigoAgenciaMatriz) {
+		this.codigoAgenciaMatriz = codigoAgenciaMatriz;
 	}
 	
 	
