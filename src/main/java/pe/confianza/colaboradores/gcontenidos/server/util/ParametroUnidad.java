@@ -109,7 +109,11 @@ public enum ParametroUnidad {
 					return false;
 				try {
 					int dia = Integer.parseInt(fecha[0]);
+					if(dia < 1 && dia > 31)
+						return false;
 					int mes = Integer.parseInt(fecha[1]);
+					if(mes < 1 && mes > 12)
+						return false;
 					String diaMes = (dia < 10 ? "0"+dia : dia) + "/" + ( mes < 10 ? "0"+mes : mes) + "/2020";
 					new SimpleDateFormat("dd/MM/yyyy").parse(diaMes);
 					return true;
