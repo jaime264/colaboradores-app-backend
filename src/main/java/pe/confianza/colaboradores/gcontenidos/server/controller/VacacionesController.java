@@ -246,6 +246,15 @@ public class VacacionesController {
 		
 		return new ResponseEntity<List<Map<String, String>>>(vacpro, HttpStatus.OK);
 	}
+	
+	@PostMapping("/vacaciones/programacion-filtros")
+	public ResponseEntity<?> getFitrosVac(@Valid @RequestBody RequestProgramacionEmpleado reqPrograEmp) throws IOException {
+		
+		logger.info("Empleado: " + reqPrograEmp.toString());
+		List<Map<String, String>> em = vacacionProgramacionService.listFilstrosVacacion(reqPrograEmp);
+		
+		return new ResponseEntity<List<Map<String, String>>>(em, HttpStatus.OK);
+	}
 
 	@ApiOperation(notes = "Lista de estados de programacion de vacaciones", value = "url proxy /vacaciones/programacion-estados")
 	@PostMapping("/vacaciones/programacion-estados")
