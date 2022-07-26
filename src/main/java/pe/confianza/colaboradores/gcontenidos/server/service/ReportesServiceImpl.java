@@ -42,9 +42,13 @@ public class ReportesServiceImpl implements ReportesService {
 		reporteColaboradores.getContent().stream().forEach(c ->{
 			Double valor = 0.0;
 			if(c.getDiasGozados()>0) {
-				valor = (double) (c.getDiasGozados() / c.getMeta());
+				valor = (double) (c.getDiasGozados() / c.getMeta()) *100;
+				
+				
 			}
 			c.setPorcentajeAvance(valor);
+			c.setDiasProgramados(c.getDiasAprobadosGozar());
+			c.setDiasNoProgramados(c.getMeta() - c.getDiasProgramados());
 		});
 
 		return reporteColaboradores;

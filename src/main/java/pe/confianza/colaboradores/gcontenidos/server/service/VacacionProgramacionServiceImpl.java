@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,7 +50,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	@Autowired
 	private EmpleadoService empleadoService;
-	
+
 	@Autowired
 	private CargaParametros cargaParametros;
 
@@ -80,16 +81,17 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		});
 		return vacacionProgramacionDao.saveAll(programaciones);
 	}
-	
+
 	@Override
 	public List<VacacionProgramacion> modificar(List<VacacionProgramacion> programaciones, String usuarioOperacion) {
 		programaciones.forEach(programacion -> {
 			programacion.setUsuarioModifica(usuarioOperacion);
 			programacion.setFechaModifica(LocalDateTime.now());
 			programacion.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
-			if(EstadoMigracion.EXPORTADO.valor.equals(programacion.getEstadoMigracion()) || EstadoMigracion.IMPORTADO.valor.equals(programacion.getEstadoMigracion())) {
+			if (EstadoMigracion.EXPORTADO.valor.equals(programacion.getEstadoMigracion())
+					|| EstadoMigracion.IMPORTADO.valor.equals(programacion.getEstadoMigracion())) {
 				programacion.setEstadoMigracion(EstadoMigracion.MODIFICADO.valor);
-			}				
+			}
 		});
 		return vacacionProgramacionDao.saveAll(programaciones);
 	}
@@ -107,7 +109,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	public VacacionProgramacion actualizar(VacacionProgramacion programacion, String usuarioOperacion) {
 		programacion.setUsuarioModifica(usuarioOperacion);
 		programacion.setFechaModifica(LocalDateTime.now());
-		if(EstadoMigracion.EXPORTADO.valor.equals(programacion.getEstadoMigracion()) || EstadoMigracion.IMPORTADO.valor.equals(programacion.getEstadoMigracion())) {
+		if (EstadoMigracion.EXPORTADO.valor.equals(programacion.getEstadoMigracion())
+				|| EstadoMigracion.IMPORTADO.valor.equals(programacion.getEstadoMigracion())) {
 			programacion.setEstadoMigracion(EstadoMigracion.MODIFICADO.valor);
 		}
 		return vacacionProgramacionDao.saveAndFlush(programacion);
@@ -220,13 +223,14 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	@Override
 
-	public long contarProgramacionPorUnidadNegocioEmpleado(Long idEmpleado, String descripcionPuesto, LocalDate fechaIncioProgramacion,
-			LocalDate fechaFinProgramacion, Long idProgReprogramar) {
+	public long contarProgramacionPorUnidadNegocioEmpleado(Long idEmpleado, String descripcionPuesto,
+			LocalDate fechaIncioProgramacion, LocalDate fechaFinProgramacion, Long idProgReprogramar) {
 		logger.info("[BEGIN] contarProgramacionPorUnidadNegocioEmpleado {}", idEmpleado);
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String strFechaInicio = fechaIncioProgramacion.format(formatter);
 		String strFechaFin = fechaFinProgramacion.format(formatter);
-		return vacacionProgramacionDao.contarProgramacionPorUnidadNegocioEmpleado(idEmpleado, descripcionPuesto, strFechaInicio, strFechaFin, idProgReprogramar);
+		return vacacionProgramacionDao.contarProgramacionPorUnidadNegocioEmpleado(idEmpleado, descripcionPuesto,
+				strFechaInicio, strFechaFin, idProgReprogramar);
 
 	}
 
@@ -277,17 +281,16 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		return vacacionProgramacionDao.contarProgramacionPorEmpleadoAgencia(idEmpleado, descripcionPuesto,
 				strFechaInicio, strFechaFin, idProgReprogramar);
 	}
-	
+
 	@Override
 	public long contarProgramacionPorEmpleadoRedOperaciones(long idEmpleado, LocalDate fechaIncioProgramacion,
 			LocalDate fechaFinProgramacion, Long idProgReprogramar) {
-		logger.info("[BEGIN] contarProgramacionPorEmpleadoAgencia {}",
-				new Object[] { idEmpleado });
+		logger.info("[BEGIN] contarProgramacionPorEmpleadoAgencia {}", new Object[] { idEmpleado });
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String strFechaInicio = fechaIncioProgramacion.format(formatter);
 		String strFechaFin = fechaFinProgramacion.format(formatter);
-		return vacacionProgramacionDao.contarProgramacionPorEmpleadoRedOperaciones(idEmpleado, strFechaInicio, strFechaFin,
-				idProgReprogramar);
+		return vacacionProgramacionDao.contarProgramacionPorEmpleadoRedOperaciones(idEmpleado, strFechaInicio,
+				strFechaFin, idProgReprogramar);
 	}
 
 	@Override
@@ -302,7 +305,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 			listEmp = listEmpByProgramacion.stream().filter(e -> {
 				boolean encontrado = false;
 				for (String filtro : reqPrograEmp.getFiltro()) {
-					if(filtro.equalsIgnoreCase(e.getNombres()))
+					if (filtro.equalsIgnoreCase(e.getNombres()))
 						encontrado = true;
 				}
 				return encontrado;
@@ -312,7 +315,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 			listEmp = listEmpByProgramacion.stream().filter(e -> {
 				boolean encontrado = false;
 				for (String filtro : reqPrograEmp.getFiltro()) {
-					if(filtro.equalsIgnoreCase(e.getPuesto()))
+					if (filtro.equalsIgnoreCase(e.getPuesto()))
 						encontrado = true;
 				}
 				return encontrado;
@@ -322,7 +325,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 			listEmp = listEmpByProgramacion.stream().filter(e -> {
 				boolean encontrado = false;
 				for (String filtro : reqPrograEmp.getFiltro()) {
-					if(filtro.equalsIgnoreCase(e.getAgencia()))
+					if (filtro.equalsIgnoreCase(e.getAgencia()))
 						encontrado = true;
 				}
 				return encontrado;
@@ -332,7 +335,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 			listEmp = listEmpByProgramacion.stream().filter(e -> {
 				boolean encontrado = false;
 				for (String filtro : reqPrograEmp.getFiltro()) {
-					if(filtro.equalsIgnoreCase(e.getTerritorio()))
+					if (filtro.equalsIgnoreCase(e.getTerritorio()))
 						encontrado = true;
 				}
 				return encontrado;
@@ -342,7 +345,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 			listEmp = listEmpByProgramacion.stream().filter(e -> {
 				boolean encontrado = false;
 				for (String filtro : reqPrograEmp.getFiltro()) {
-					if(filtro.equalsIgnoreCase(e.getCorredor()))
+					if (filtro.equalsIgnoreCase(e.getCorredor()))
 						encontrado = true;
 				}
 				return encontrado;
@@ -422,6 +425,60 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	}
 
 	@Override
+	public List<Map<String, String>> listFilstrosVacacion(RequestProgramacionEmpleado reqFiltros) {
+		List<EmplVacPerRes> listEmpByProgramacion = listEmpleadoProgramacionFilter(reqFiltros);
+
+		List<Map<String, String>> datos = new ArrayList<>();
+		switch (reqFiltros.getTipoFiltro().toUpperCase().trim()) {
+		case "NOMBRE":
+			for (Integer i = 1; i <= listEmpByProgramacion.size(); i++) {
+				Map<String, String> nombres = new HashMap<>();
+				nombres.put("id", i.toString());
+				nombres.put("descripcion", listEmpByProgramacion.get(i).getNombres());
+
+				datos.add(nombres);
+			}
+			break;
+		case "CARGO":
+			for (Integer i = 1; i <= listEmpByProgramacion.size(); i++) {
+				Map<String, String> nombres = new HashMap<>();
+				nombres.put("id", i.toString());
+				nombres.put("descripcion", listEmpByProgramacion.get(i).getPuesto());
+				datos.add(nombres);
+			}
+			break;
+		case "AGENCIA":
+			for (Integer i = 1; i <= listEmpByProgramacion.size(); i++) {
+				Map<String, String> nombres = new HashMap<>();
+				nombres.put("id", i.toString());
+				nombres.put("descripcion", listEmpByProgramacion.get(i).getAgencia());
+				datos.add(nombres);
+			}
+			break;
+		case "TERRITORIO":
+			for (Integer i = 1; i <= listEmpByProgramacion.size(); i++) {
+				Map<String, String> nombres = new HashMap<>();
+				nombres.put("id", i.toString());
+				nombres.put("descripcion", listEmpByProgramacion.get(i).getTerritorio());
+
+				datos.add(nombres);
+			}
+			break;
+		case "CORREDOR":
+			for (Integer i = 1; i <= listEmpByProgramacion.size(); i++) {
+				Map<String, String> nombres = new HashMap<>();
+				nombres.put("id", i.toString());
+				nombres.put("descripcion", listEmpByProgramacion.get(i).getCorredor());
+				datos.add(nombres);
+			}
+			break;
+		default:
+			break;
+		}
+		return datos;
+	}
+
+	@Override
 	public List<Map<String, String>> listFilstrosVacacionAprobacion(RequestFiltroVacacionesAprobacion reqFiltros) {
 		// TODO Auto-generated method stub
 		List<Map<String, String>> datos = new ArrayList<>();
@@ -464,43 +521,43 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	}
 
 	@Override
-	public Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelI(int anio, long codigoAprobador) {
+	public Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelI(int anio,
+			long codigoAprobador) {
 		logger.info("[BEGIN] listarProgramacionesPorAnioYAprobadorNivelI {} {}", anio, codigoAprobador);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		LocalDate fechaInicio = LocalDate.parse("01/01/" + anio, formatter);
 		LocalDate fechaFin = LocalDate.parse("31/12/" + anio, formatter);
-		List<VacacionProgramacion> programaciones = vacacionProgramacionDao.findBetweenDatesAndAprobadorNivelI(fechaInicio, fechaFin,
-				codigoAprobador);
+		List<VacacionProgramacion> programaciones = vacacionProgramacionDao
+				.findBetweenDatesAndAprobadorNivelI(fechaInicio, fechaFin, codigoAprobador);
 		programaciones = programaciones == null ? new ArrayList<>() : programaciones;
 		Map<Empleado, List<VacacionProgramacion>> empleadosProg = new HashMap<>();
 		for (VacacionProgramacion prog : programaciones) {
-			if(empleadosProg.get(prog.getPeriodo().getEmpleado()) == null)
+			if (empleadosProg.get(prog.getPeriodo().getEmpleado()) == null)
 				empleadosProg.put(prog.getPeriodo().getEmpleado(), new ArrayList<>());
 			empleadosProg.get(prog.getPeriodo().getEmpleado()).add(prog);
-		}		
+		}
 		logger.info("[END] listarProgramacionesPorAnioYAprobadorNivelI");
 		return empleadosProg;
 	}
 
 	@Override
-	public Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelII(int anio, long codigoAprobador) {
+	public Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelII(int anio,
+			long codigoAprobador) {
 		logger.info("[BEGIN] listarProgramacionesPorAnioYAprobadorNivelII {} {}", anio, codigoAprobador);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		LocalDate fechaInicio = LocalDate.parse("01/01/" + anio, formatter);
 		LocalDate fechaFin = LocalDate.parse("31/12/" + anio, formatter);
-		List<VacacionProgramacion> programaciones = vacacionProgramacionDao.findBetweenDatesAndAprobadorNivelII(fechaInicio, fechaFin,
-				codigoAprobador);
+		List<VacacionProgramacion> programaciones = vacacionProgramacionDao
+				.findBetweenDatesAndAprobadorNivelII(fechaInicio, fechaFin, codigoAprobador);
 		programaciones = programaciones == null ? new ArrayList<>() : programaciones;
 		Map<Empleado, List<VacacionProgramacion>> empleadosProg = new HashMap<>();
 		for (VacacionProgramacion prog : programaciones) {
-			if(empleadosProg.get(prog.getPeriodo().getEmpleado()) == null)
+			if (empleadosProg.get(prog.getPeriodo().getEmpleado()) == null)
 				empleadosProg.put(prog.getPeriodo().getEmpleado(), new ArrayList<>());
 			empleadosProg.get(prog.getPeriodo().getEmpleado()).add(prog);
 		}
 		logger.info("[END] listarProgramacionesPorAnioYAprobadorNivelII");
 		return empleadosProg;
 	}
-
-	
 
 }

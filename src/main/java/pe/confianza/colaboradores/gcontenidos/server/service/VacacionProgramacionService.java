@@ -61,6 +61,8 @@ public interface VacacionProgramacionService {
 	
 	List<EmplVacPerRes> listEmpleadoByprogramacion(RequestProgramacionEmpleado reqPrograEmp);
 	
+	List<Map<String, String>> listFilstrosVacacion(RequestProgramacionEmpleado reqFiltros);
+	
 	List<Map<String, String>> listFilstrosVacacionAprobacion(RequestFiltroVacacionesAprobacion reqFiltros);
 	
 	List<VacacionProgramacion> listarProgramacionesPorAnio(int anio, String usuarioBT);
