@@ -51,6 +51,10 @@ public enum ParametroUnidad {
 		if(Integer.class == unidad.clazz) {
 			try {
 				int intValor = Integer.parseInt(valor);
+				if(ParametroUnidad.NUMERO_GENERAL.codigo.equals(valor)) {
+					if(intValor < 1)
+						return false;
+				}
 				if(ParametroUnidad.HORA.codigo.equals(valor)) {
 					if(intValor < 0 || intValor > 23)
 						return false;
