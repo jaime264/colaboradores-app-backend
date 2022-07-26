@@ -113,6 +113,7 @@ public class VacacionProgramacionMapper {
 		destination.setDiasPorGozar(source.getDiasPendientesGozar());
 		destination.setDiasAnulados(source.getDiasAnulados());
 		destination.setDiasReprogramados(source.getDiasReprogramados());
+		destination.setNombreEmpleado(source.getPeriodo().getEmpleado().getNombreCompleto());
 		return destination;
 	}
 	
