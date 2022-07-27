@@ -190,7 +190,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		LocalDate hoy = LocalDate.now();
 		if (fechaMaxima.compareTo(hoy) <= 0) {
 			String formattedDate = fechaMaxima.format(DateTimeFormatter
-				    .ofLocalizedDate(FormatStyle.MEDIUM));
+				    .ofLocalizedDate(FormatStyle.SHORT));
 			throw new AppException("La fecha máxima de aprobación es " + formattedDate);
 		}
 			
