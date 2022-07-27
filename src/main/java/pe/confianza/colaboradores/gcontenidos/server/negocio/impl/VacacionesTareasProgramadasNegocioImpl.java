@@ -363,7 +363,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 				String titulo = "VACACIONES - REPROGRAMACIÓN";
 				String descripcion = Utilitario.generarMensajeNotificacion(messageSource, 
 						cargaParametros.MENSAJE_COLABORDOR_REPROGRAMACION,
-						MesesAnio.buscarPorValor(fechaActual.getMonthValue() + 1));
+						MesesAnio.buscarPorValor(fechaActual.getMonthValue() + 1).descripcion);
 				for (Empleado empleado : lstEmpleado) {
 					if(empleado.getEstadoRegistro().equals(EstadoRegistro.ACTIVO.valor)) {
 						List<VacacionProgramacion> programaciones = vacacionProgramacionService.listarProgramacionesPorAnio(cargaParametros.getAnioPresente(), empleado.getUsuarioBT())

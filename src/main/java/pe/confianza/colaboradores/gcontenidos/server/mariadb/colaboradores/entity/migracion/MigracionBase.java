@@ -5,8 +5,12 @@ import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
+
 @MappedSuperclass
-public class MigracionBase {
+public abstract class MigracionBase {
 	
 	@Column(nullable = false, length = 1)
 	private String estado;
@@ -14,16 +18,18 @@ public class MigracionBase {
 	@Column(nullable = false, length = 20)
 	private String ultimoUsuario;
 	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = Constantes.TIME_ZONE)
 	@Column(nullable = false, columnDefinition = "TIMESTAMP")
 	private LocalDateTime ultimaFechaModi;
 	
 	@Column(nullable = false, length = 1)
 	private String estadoProceso;
 	
-	@Column(nullable = false, columnDefinition = "TIMESTAMP")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = Constantes.TIME_ZONE)
+	@Column(nullable = true, columnDefinition = "TIMESTAMP" )
 	private LocalDateTime fechaProceso;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String usuarioProceso;
 
 	public String getEstado() {
