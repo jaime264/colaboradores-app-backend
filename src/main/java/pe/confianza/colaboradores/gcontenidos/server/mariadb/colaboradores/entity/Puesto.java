@@ -46,6 +46,10 @@ public class Puesto extends EntidadAuditoria{
 	
 	@Column(nullable = true)
 	private String clasificacion;
+	
+	@ManyToOne
+	@JoinColumn(nullable = true, name = "idTipoClasificacion")
+	private TipoClasificacionCargo tipoClasificacion;
 
 	public long getId() {
 		return id;
@@ -125,6 +129,14 @@ public class Puesto extends EntidadAuditoria{
 
 	public void setClasificacion(String clasificacion) {
 		this.clasificacion = clasificacion;
+	}
+
+	public TipoClasificacionCargo getTipoClasificacion() {
+		return tipoClasificacion;
+	}
+
+	public void setTipoClasificacion(TipoClasificacionCargo tipoClasificacion) {
+		this.tipoClasificacion = tipoClasificacion;
 	}	
 	
 	
