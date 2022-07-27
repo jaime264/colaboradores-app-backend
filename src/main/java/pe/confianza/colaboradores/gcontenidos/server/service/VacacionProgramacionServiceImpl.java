@@ -3,9 +3,9 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,14 +26,12 @@ import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmplVacPerRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFiltroVacacionesAprobacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionEmpleado;
+import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VacacionProgramacionDao;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Corredor;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Territorio;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.UnidadOperativa;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
@@ -55,6 +54,9 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	@Autowired
 	private CargaParametros cargaParametros;
+
+	@Autowired
+	private MessageSource messageSource;
 
 	@Override
 	public void actualizarEstadoProgramaciones() {
@@ -183,6 +185,15 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	@Transactional
 	public void aprobarVacacionPeriodos(List<VacacionPeriodo> vacacionPeriodos) {
 		// TODO Auto-generated method stub
+
+		LocalDate fechaMaxima = cargaParametros.getFechaMaximaAprobacionProgramaciones();
+		LocalDate hoy = LocalDate.now();
+		if (fechaMaxima.compareTo(hoy) <= 0) {
+			String formattedDate = fechaMaxima.format(DateTimeFormatter
+				    .ofLocalizedDate(FormatStyle.MEDIUM));
+			throw new AppException("La fecha máxima de aprobación es " + formattedDate);
+		}
+			
 		try {
 			vacacionPeriodos.forEach(e -> {
 				vacacionProgramacionDao.aprobarVacacionByPeriodo(e.getIdEstado(), e.getIdProgramacion());
@@ -490,7 +501,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 			datos.add(nombres);
 		}
-		
+
 		return datos;
 	}
 
@@ -513,9 +524,6 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 			break;
 		case "CORREDOR":
 			datos = empleadoDao.findCorredorByCodigoN1(reqFiltros.getCodigo(), reqFiltros.getCodigo());
-			break;
-		case "AREA":
-			datos = empleadoDao.findAreaByCodigoN1(reqFiltros.getCodigo(), reqFiltros.getCodigo());
 			break;
 		default:
 			break;
@@ -578,7 +586,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	@Override
 	public Page<VacacionProgramacion> listarProgramacionesDiferenteRegistrado(String nombre, Pageable pageable) {
-		if(nombre.isEmpty()) 
+		if (nombre.isEmpty())
 			return vacacionProgramacionDao.listarProgramacionesDiferenteRegistrado(pageable);
 		return vacacionProgramacionDao.listarProgramacionesDiferenteRegistrado(nombre, pageable);
 	}
