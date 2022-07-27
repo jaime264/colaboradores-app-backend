@@ -8,8 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "imp_calificacion_cargo")
-public class MigracionTipoCalificacionCargo extends MigracionBase{
+@Table(name = "imp_clasificacion_puesto")
+public class MigracionClasificacion extends MigracionBase {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

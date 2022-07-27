@@ -17,9 +17,12 @@ public class ResponseProgramacionVacacion {
 	private int dias;
 	private int idEstado;
 	private String descripcionEstado;
+	private String leyendaEstado;
 	private String periodo;
 	private int orden;
 	private boolean adelantada;
+	private boolean interrupcion;
+	private boolean anulacion;
 	
 	public long getId() {
 		return id;
@@ -80,6 +83,24 @@ public class ResponseProgramacionVacacion {
 	}
 	public void setAdelantada(boolean adelantada) {
 		this.adelantada = adelantada;
+	}
+	public String getLeyendaEstado() {
+		return leyendaEstado;
+	}
+	public void setLeyendaEstado(String leyendaEstado) {
+		this.leyendaEstado = leyendaEstado;
+	}
+	public boolean isInterrupcion() {
+		return interrupcion;
+	}
+	public void setInterrupcion(boolean interrupcion) {
+		this.interrupcion = interrupcion;
+	}
+	public boolean isAnulacion() {
+		return anulacion;
+	}
+	public void setAnulacion(boolean anulacion) {
+		this.anulacion = anulacion;
 	}
 	
 	

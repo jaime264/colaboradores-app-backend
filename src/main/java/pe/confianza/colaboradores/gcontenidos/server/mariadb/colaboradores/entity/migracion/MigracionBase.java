@@ -8,39 +8,77 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public class MigracionBase {
 	
-	@Column(nullable = false)
+	@Column(nullable = false, length = 1)
 	private String estado;
 	
+	@Column(nullable = false, length = 20)
+	private String ultimoUsuario;
+	
 	@Column(nullable = false, columnDefinition = "TIMESTAMP")
-	private LocalDateTime fechaOperacion;
+	private LocalDateTime ultimaFechaModi;
 	
-	private boolean leidoApp;
+	@Column(nullable = false, length = 1)
+	private String estadoProceso;
 	
-	private boolean leidoSpring;
+	@Column(nullable = false, columnDefinition = "TIMESTAMP")
+	private LocalDateTime fechaProceso;
+	
+	@Column(nullable = false)
+	private String usuarioProceso;
 
-	public LocalDateTime getFechaOperacion() {
-		return fechaOperacion;
+	public String getEstado() {
+		return estado;
 	}
 
-	public void setFechaOperacion(LocalDateTime fechaOperacion) {
-		this.fechaOperacion = fechaOperacion;
+	public void setEstado(String estado) {
+		this.estado = estado;
 	}
 
-	public boolean isLeidoApp() {
-		return leidoApp;
+	public String getUltimoUsuario() {
+		return ultimoUsuario;
 	}
 
-	public void setLeidoApp(boolean leidoApp) {
-		this.leidoApp = leidoApp;
+	public void setUltimoUsuario(String ultimoUsuario) {
+		this.ultimoUsuario = ultimoUsuario;
 	}
 
-	public boolean isLeidoSpring() {
-		return leidoSpring;
+	public LocalDateTime getUltimaFechaModi() {
+		return ultimaFechaModi;
 	}
 
-	public void setLeidoSpring(boolean leidoSpring) {
-		this.leidoSpring = leidoSpring;
+	public void setUltimaFechaModi(LocalDateTime ultimaFechaModi) {
+		this.ultimaFechaModi = ultimaFechaModi;
 	}
+
+	public String getEstadoProceso() {
+		return estadoProceso;
+	}
+
+	public void setEstadoProceso(String estadoProceso) {
+		this.estadoProceso = estadoProceso;
+	}
+
+	public LocalDateTime getFechaProceso() {
+		return fechaProceso;
+	}
+
+	public void setFechaProceso(LocalDateTime fechaProceso) {
+		this.fechaProceso = fechaProceso;
+	}
+
+	public String getUsuarioProceso() {
+		return usuarioProceso;
+	}
+
+	public void setUsuarioProceso(String usuarioProceso) {
+		this.usuarioProceso = usuarioProceso;
+	}
+
+	
+
+	
+
+	
 	
 	
 

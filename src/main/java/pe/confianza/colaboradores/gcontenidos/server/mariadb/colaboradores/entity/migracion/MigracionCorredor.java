@@ -8,23 +8,23 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "migracion_corredor")
+@Table(name = "imp_corredor")
 public class MigracionCorredor extends MigracionBase {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column(nullable = false)
-	private String codigo;
+	@Column(nullable = false,  length = 5)
+	private String sucursalGrupo;
 	
-	@Column(nullable = false)
+	@Column(nullable = false, length = 50)
 	private String descripcion;
 	
-	@Column(nullable = false)
-	private String codigoTerritorio;
-	
 	private Long codigoRepresentante;
+	
+	@Column(nullable = false, length = 4)
+	private String codigoTerritorio;
 
 	public long getId() {
 		return id;
@@ -34,12 +34,12 @@ public class MigracionCorredor extends MigracionBase {
 		this.id = id;
 	}
 
-	public String getCodigo() {
-		return codigo;
+	public String getSucursalGrupo() {
+		return sucursalGrupo;
 	}
 
-	public void setCodigo(String codigo) {
-		this.codigo = codigo;
+	public void setSucursalGrupo(String sucursalGrupo) {
+		this.sucursalGrupo = sucursalGrupo;
 	}
 
 	public String getDescripcion() {
@@ -50,6 +50,14 @@ public class MigracionCorredor extends MigracionBase {
 		this.descripcion = descripcion;
 	}
 
+	public Long getCodigoRepresentante() {
+		return codigoRepresentante;
+	}
+
+	public void setCodigoRepresentante(Long codigoRepresentante) {
+		this.codigoRepresentante = codigoRepresentante;
+	}
+
 	public String getCodigoTerritorio() {
 		return codigoTerritorio;
 	}
@@ -58,13 +66,7 @@ public class MigracionCorredor extends MigracionBase {
 		this.codigoTerritorio = codigoTerritorio;
 	}
 
-	public Long getCodigoRepresentante() {
-		return codigoRepresentante;
-	}
-
-	public void setCodigoRepresentante(Long codigoRepresentante) {
-		this.codigoRepresentante = codigoRepresentante;
-	}
+	
 	
 	
 

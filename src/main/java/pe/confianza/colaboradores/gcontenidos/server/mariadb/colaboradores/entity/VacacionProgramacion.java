@@ -122,6 +122,19 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 	
 	private boolean vacacionesAdelantadas;
 	
+	private boolean interrupcion;
+	
+	private boolean anulacion;
+	
+	private int diasGozados;
+	
+	private int diasPendientesGozar;
+	
+	private int diasAnulados;
+	
+	private int diasReprogramados;
+	
+	
 	public Integer getNumeroReprogramaciones() {
 		return numeroReprogramaciones;
 	}
@@ -263,6 +276,56 @@ public class VacacionProgramacion extends EntidadAuditoria implements Serializab
 		return "VacacionProgramacion [id=" + id + ", fechaInicio=" + fechaInicio + ", fechaFin=" + fechaFin
 				+ ", numeroDias=" + numeroDias + ", idEstado=" + idEstado + ", periodo=" + periodo + "]";
 	}
+
+	public boolean isInterrupcion() {
+		return interrupcion;
+	}
+
+	public void setInterrupcion(boolean interrupcion) {
+		this.interrupcion = interrupcion;
+	}
+
+	public boolean isAnulacion() {
+		return anulacion;
+	}
+
+	public void setAnulacion(boolean anulacion) {
+		this.anulacion = anulacion;
+	}
+
+	public int getDiasGozados() {
+		return diasGozados;
+	}
+
+	public void setDiasGozados(int diasGozados) {
+		this.diasGozados = diasGozados;
+	}
+
+	public int getDiasPendientesGozar() {
+		return diasPendientesGozar;
+	}
+
+	public void setDiasPendientesGozar(int diasPendientesGozar) {
+		this.diasPendientesGozar = diasPendientesGozar;
+	}
+
+	public int getDiasAnulados() {
+		return diasAnulados;
+	}
+
+	public void setDiasAnulados(int diasAnulados) {
+		this.diasAnulados = diasAnulados;
+	}
+
+	public int getDiasReprogramados() {
+		return diasReprogramados;
+	}
+
+	public void setDiasReprogramados(int diasReprogramados) {
+		this.diasReprogramados = diasReprogramados;
+	}
+	
+	
 	
 	
 	

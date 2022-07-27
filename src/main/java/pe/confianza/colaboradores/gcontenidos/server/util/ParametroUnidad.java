@@ -9,11 +9,12 @@ public enum ParametroUnidad {
 	ANIO("ANIO", "años", Integer.class),
 	DIA_MES_FECHA("DIA_MES_FECHA","Dia/Mes", String.class),
 	INTERVALO_DIAS("INTERVALO_DIAS", "Días", Integer.class),
-	HORA("HORA", "hora", Integer.class),
+	HORA("HORA", "hora(s)", Integer.class),
 	DIA_MES("DIA_MES", "de cada mes", Integer.class),
 	ESTADO_VACACION("ESTADO_VACACION", "", String.class),
 	TEXTO_GENERAL("TEXTO_GENERAL", "", String.class ),
-	NUMERO_GENERAL("NUMERO_GENERAL", "", String.class ),
+	NUMERO_MES("NUMERO_MES", "", Integer.class ),
+	NUMERO_GENERAL("NUMERO_GENERAL", "", Integer.class ),
 	PORCENTAJE("PORCENTAJE", "%", Double.class),
 	MENSAJE_UN_PARAMETRO("MENSAJE_UN_PARAMETRO", "TEXT", String.class),
 	MENSAJE_DOS_PARAMETROS("MENSAJE_DOS_PARAMETROS", "TEXT", String.class),
@@ -50,6 +51,10 @@ public enum ParametroUnidad {
 		if(Integer.class == unidad.clazz) {
 			try {
 				int intValor = Integer.parseInt(valor);
+				if(ParametroUnidad.NUMERO_GENERAL.codigo.equals(valor)) {
+					if(intValor < 1)
+						return false;
+				}
 				if(ParametroUnidad.HORA.codigo.equals(valor)) {
 					if(intValor < 0 || intValor > 23)
 						return false;
@@ -68,6 +73,10 @@ public enum ParametroUnidad {
 				}
 				if(ParametroUnidad.MESES.codigo.equals(valor)) {
 					if(intValor < 0)
+						return false;
+				}
+				if(ParametroUnidad.NUMERO_MES.codigo.equals(valor)) {
+					if(intValor < 1 || intValor > 12)
 						return false;
 				}
 				return true;
@@ -100,7 +109,11 @@ public enum ParametroUnidad {
 					return false;
 				try {
 					int dia = Integer.parseInt(fecha[0]);
+					if(dia < 1 && dia > 31)
+						return false;
 					int mes = Integer.parseInt(fecha[1]);
+					if(mes < 1 && mes > 12)
+						return false;
 					String diaMes = (dia < 10 ? "0"+dia : dia) + "/" + ( mes < 10 ? "0"+mes : mes) + "/2020";
 					new SimpleDateFormat("dd/MM/yyyy").parse(diaMes);
 					return true;
