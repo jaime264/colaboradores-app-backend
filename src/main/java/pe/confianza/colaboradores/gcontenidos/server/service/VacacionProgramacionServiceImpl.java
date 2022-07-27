@@ -427,54 +427,68 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	@Override
 	public List<Map<String, String>> listFilstrosVacacion(RequestProgramacionEmpleado reqFiltros) {
 		List<EmplVacPerRes> listEmpByProgramacion = listEmpleadoProgramacionFilter(reqFiltros);
-
 		List<Map<String, String>> datos = new ArrayList<>();
+
 		switch (reqFiltros.getTipoFiltro().toUpperCase().trim()) {
 		case "NOMBRE":
-			for (Integer i = 1; i <= listEmpByProgramacion.size(); i++) {
-				Map<String, String> nombres = new HashMap<>();
-				nombres.put("id", i.toString());
-				nombres.put("descripcion", listEmpByProgramacion.get(i).getNombres());
-
-				datos.add(nombres);
-			}
+			datos = listafiltrosvacacion(listEmpByProgramacion, reqFiltros.getTipoFiltro());
 			break;
 		case "CARGO":
-			for (Integer i = 1; i <= listEmpByProgramacion.size(); i++) {
-				Map<String, String> nombres = new HashMap<>();
-				nombres.put("id", i.toString());
-				nombres.put("descripcion", listEmpByProgramacion.get(i).getPuesto());
-				datos.add(nombres);
-			}
+			datos = listafiltrosvacacion(listEmpByProgramacion, reqFiltros.getTipoFiltro());
 			break;
 		case "AGENCIA":
-			for (Integer i = 1; i <= listEmpByProgramacion.size(); i++) {
-				Map<String, String> nombres = new HashMap<>();
-				nombres.put("id", i.toString());
-				nombres.put("descripcion", listEmpByProgramacion.get(i).getAgencia());
-				datos.add(nombres);
-			}
+			datos = listafiltrosvacacion(listEmpByProgramacion, reqFiltros.getTipoFiltro());
 			break;
 		case "TERRITORIO":
-			for (Integer i = 1; i <= listEmpByProgramacion.size(); i++) {
-				Map<String, String> nombres = new HashMap<>();
-				nombres.put("id", i.toString());
-				nombres.put("descripcion", listEmpByProgramacion.get(i).getTerritorio());
-
-				datos.add(nombres);
-			}
+			datos = listafiltrosvacacion(listEmpByProgramacion, reqFiltros.getTipoFiltro());
 			break;
 		case "CORREDOR":
-			for (Integer i = 1; i <= listEmpByProgramacion.size(); i++) {
-				Map<String, String> nombres = new HashMap<>();
-				nombres.put("id", i.toString());
-				nombres.put("descripcion", listEmpByProgramacion.get(i).getCorredor());
-				datos.add(nombres);
-			}
+			datos = listafiltrosvacacion(listEmpByProgramacion, reqFiltros.getTipoFiltro());
 			break;
 		default:
 			break;
 		}
+		return datos;
+	}
+
+	private List<Map<String, String>> listafiltrosvacacion(List<EmplVacPerRes> listEmpByProgramacion, String filtro) {
+
+		List<Map<String, String>> datos = new ArrayList<>();
+		List<String> valores = new ArrayList<>();
+
+		for (EmplVacPerRes e : listEmpByProgramacion) {
+			switch (filtro.toUpperCase()) {
+			case "NOMBRE":
+				valores.add(e.getNombres());
+				break;
+			case "CARGO":
+				valores.add(e.getPuesto());
+				break;
+			case "AGENCIA":
+				valores.add(e.getAgencia());
+				break;
+			case "TERRITORIO":
+				valores.add(e.getTerritorio());
+				break;
+			case "CORREDOR":
+				valores.add(e.getCorredor());
+				break;
+			default:
+				break;
+			}
+		}
+
+		valores = valores.stream().distinct().collect(Collectors.toList());
+
+		for (Integer i = 0; i <= valores.size() - 1; i++) {
+			Map<String, String> nombres = new HashMap<>();
+
+			nombres.put("id", (i).toString());
+			nombres.put("descripcion", valores.get(i));
+
+			datos.add(nombres);
+		}
+		
 		return datos;
 	}
 
