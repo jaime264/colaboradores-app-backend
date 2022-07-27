@@ -41,6 +41,7 @@ public class VacacionMetaResumenServiceImpl implements VacacionMetaResumenServic
 			response.setId(m.getMetaId());
 			response.setEmpleado(m.getEmpleadoNombreCompleto());
 			response.setFechaIngreso(m.getEmpleadoFechaIngreso());
+			response.setPuesto(m.getPuestoDescripcion());
 			response.setMeta(m.getMetaInicial());
 			response.setDiasProgramados(m.getMetaInicial() - m.getMeta());
 			return response;
