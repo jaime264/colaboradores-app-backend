@@ -1,5 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.util;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public enum ParametroUnidad {
@@ -115,9 +117,11 @@ public enum ParametroUnidad {
 					if(mes < 1 || mes > 12)
 						return false;
 					String diaMes = (dia < 10 ? "0"+dia : dia) + "/" + ( mes < 10 ? "0"+mes : mes) + "/2020";
-					new SimpleDateFormat("dd/MM/yyyy").parse(diaMes);
+					DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+					df.setLenient(false);
+					df.parse(diaMes);
 					return true;
-				} catch (Exception e) {
+				} catch (ParseException  e) {
 					return false;
 				}
 			}
