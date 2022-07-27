@@ -31,6 +31,9 @@ public class Territorio extends EntidadAuditoria {
 	@Column(nullable = false)
 	private String estado;
 	
+	@Column(nullable = true)
+	private String codigoRepresentante;
+	
 	@OneToMany(mappedBy = "territorio", fetch = FetchType.LAZY)
 	@JsonIgnore
 	@Transient
@@ -66,6 +69,14 @@ public class Territorio extends EntidadAuditoria {
 
 	public void setEstado(String estado) {
 		this.estado = estado;
+	}
+
+	public String getCodigoRepresentante() {
+		return codigoRepresentante;
+	}
+
+	public void setCodigoRepresentante(String codigoRepresentante) {
+		this.codigoRepresentante = codigoRepresentante;
 	}
 	
 	
