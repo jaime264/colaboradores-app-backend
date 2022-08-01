@@ -1,12 +1,11 @@
 package pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.dao;
 
-import java.util.List;
-
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
-
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Nivel3;
+
+import java.util.List;
 
 @Repository
 public interface Nivel3Dao extends MongoRepository<Nivel3, Long>{

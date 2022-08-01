@@ -1,14 +1,8 @@
 package pe.confianza.colaboradores.gcontenidos.server.util;
 
+import com.google.firebase.messaging.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.firebase.messaging.BatchResponse;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.MulticastMessage;
-import com.google.firebase.messaging.WebpushConfig;
-import com.google.firebase.messaging.WebpushNotification;
-
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFirebaseMessaging;
 
 public class FirebaseCloudMessagingClient {

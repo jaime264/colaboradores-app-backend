@@ -1,10 +1,10 @@
 package pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity;
 
-import java.io.Serializable;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.io.Serializable;
 
 @Document(collection= "aplicaciones")
 public class Aplicacion implements Serializable {

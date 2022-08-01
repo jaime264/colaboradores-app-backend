@@ -1,15 +1,14 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.dao.DispositivoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Dispositivo;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DispositivoServiceImpl implements DispositivoService {

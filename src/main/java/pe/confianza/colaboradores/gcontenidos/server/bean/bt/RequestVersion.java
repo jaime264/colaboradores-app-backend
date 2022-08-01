@@ -1,8 +1,8 @@
 package pe.confianza.colaboradores.gcontenidos.server.bean.bt;
 
-import java.io.Serializable;
-
 import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
+
+import java.io.Serializable;
 
 public class RequestVersion implements Serializable{	
 	private String aplicativo;

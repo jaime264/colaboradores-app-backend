@@ -15,8 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
-import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
+import org.springframework.security.oauth2.provider.token.*;
 
 @Configuration
 @ConditionalOnProperty(prefix = "security.basic", name = "enabled", havingValue = "true", matchIfMissing = true)
@@ -24,30 +23,21 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class ResourceServerCfg extends ResourceServerConfigurerAdapter {
 	
-	private static Logger logger = LoggerFactory.getLogger(ResourceServerCfg.class);
+	private static final Logger logger = LoggerFactory.getLogger(ResourceServerCfg.class);
 
 	@Autowired
 	Environment env;
-	
+
 	RemoteTokenServices tokenServices;
-	
+
 	@Value("${spring.security.oauth2.client.provider.jwk-set-uri}")
 	private String urlCheckToken;
-	
+
 	@Value("${spring.security.oauth2.client.provider.client-id}")
 	private String clientId;
-	
+
 	@Value("${spring.security.oauth2.client.provider.client-secret}")
 	private String clientSecret;
-	
-	@Bean
-    public ResourceServerTokenServices tokenService() {
-        tokenServices = new RemoteTokenServices();
-        tokenServices.setClientId(clientId);
-        tokenServices.setClientSecret(clientSecret);
-        tokenServices.setCheckTokenEndpointUrl(urlCheckToken);
-        return tokenServices;
-    }
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
@@ -56,9 +46,8 @@ public class ResourceServerCfg extends ResourceServerConfigurerAdapter {
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
 				.antMatchers(HttpMethod.GET, "/messages/**").access("#oauth2.hasScope('read')")
 				.antMatchers(HttpMethod.POST, "/messages/**").access("#oauth2.hasScope('write')");
-		
+
 		configureH2Console(http);
-		
 		logger.info("[RESOURCESERV-CONF] Configuración de seguridad del servidor de recursos finalizada");
 	}
 	
@@ -73,7 +62,7 @@ public class ResourceServerCfg extends ResourceServerConfigurerAdapter {
 	 */
 	private void configureH2Console(HttpSecurity http) throws Exception {
 
-		if (Boolean.valueOf(env.getProperty("spring.h2.console.enabled"))) {
+		if (Boolean.parseBoolean(env.getProperty("spring.h2.console.enabled"))) {
 			logger.debug("Aplicando reglas de seguridad para H2 console");
 			http.authorizeRequests().antMatchers("/").permitAll().and().authorizeRequests()
 					.antMatchers("/h2-console/**").permitAll();
@@ -82,6 +71,28 @@ public class ResourceServerCfg extends ResourceServerConfigurerAdapter {
 			http.csrf().disable();
 			http.headers().frameOptions().disable();
 		}
+	}
+
+	@Bean
+	public UserAuthenticationConverter userAuthenticationConverter() {
+		return new CustomerAuthenticationConverter();
+	}
+
+	@Bean
+	public AccessTokenConverter accessTokenConverter() {
+		DefaultAccessTokenConverter datc = new DefaultAccessTokenConverter();
+		datc.setUserTokenConverter(userAuthenticationConverter());
+		return datc;
+	}
+
+	@Bean
+	public ResourceServerTokenServices tokenService() {
+		tokenServices = new RemoteTokenServices();
+		tokenServices.setClientId(clientId);
+		tokenServices.setClientSecret(clientSecret);
+		tokenServices.setCheckTokenEndpointUrl(urlCheckToken);
+		tokenServices.setAccessTokenConverter(accessTokenConverter());
+		return tokenServices;
 	}
 
 	@Override

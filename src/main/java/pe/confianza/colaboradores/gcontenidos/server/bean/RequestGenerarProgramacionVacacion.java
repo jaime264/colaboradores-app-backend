@@ -1,8 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.bean;
 
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class RequestGenerarProgramacionVacacion extends RequestAuditoria {
 	

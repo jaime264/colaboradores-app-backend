@@ -1,14 +1,13 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.dao.Nivel1Dao;
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Nivel1;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class Nivel1ServiceImpl implements Nivel1Service{
