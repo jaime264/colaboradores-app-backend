@@ -59,14 +59,13 @@ public class GestorContenidosServerApplication {
 	}
 	
 	private static void iniciarVacacionesActualizacion(ApplicationContext applicationContext) {
-		VacacionesTareas vacacionTareasProgramadas = applicationContext.getBean(VacacionesTareas.class);
-		vacacionTareasProgramadas.vacacionesAutomaticas();
-		
 		VacacionesTareasProgramadasNegocio vacacioneTareas = applicationContext.getBean(VacacionesTareasProgramadasNegocioImpl.class);
 		vacacioneTareas.actualizarEstadoProgramaciones();
 		vacacioneTareas.actualizarPeriodos();
 		vacacioneTareas.consolidarMetasAnuales(false);
 		
+		VacacionesTareas vacacionTareasProgramadas = applicationContext.getBean(VacacionesTareas.class);
+		vacacionTareasProgramadas.vacacionesAutomaticas();
 		
 	}
 

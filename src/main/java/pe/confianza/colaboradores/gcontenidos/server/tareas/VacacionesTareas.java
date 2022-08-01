@@ -89,7 +89,7 @@ public class VacacionesTareas {
 				programacion.setUsuarioOperacion("TAREA PROGRAMADA");
 				try {
 					List<ResponseProgramacionVacacion> listProgramacion = programacionVacacionNegocio
-							.registro(programacion);
+							.registroAutomatico(programacion);
 					count++;
 					
 					for(ResponseProgramacionVacacion v: listProgramacion) {
