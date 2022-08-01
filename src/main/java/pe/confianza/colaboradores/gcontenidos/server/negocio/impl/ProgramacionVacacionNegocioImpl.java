@@ -75,6 +75,46 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 
 	@Autowired
 	private VacacionProgramacionDao vacacionProgramacionDao;
+	
+	@Transactional
+	@Override
+	public List<ResponseProgramacionVacacion> registroAutomatico(RequestProgramacionVacacion programacion) {
+		LOGGER.info("[BEGIN] registro: {} - {} - {}", new Object[] { programacion.getUsuarioBT(), programacion.getFechaInicio(), programacion.getFechaFin() });
+		LocalDate fechaActual = LocalDate.now();
+		LocalDate fechaGeneracionAutomatica = parametrosConstants.getFechaMaximaAprobacionProgramaciones().plusDays(1);
+		if(fechaActual.getDayOfMonth() != fechaGeneracionAutomatica.getMonthValue() && fechaActual.getDayOfMonth() != fechaGeneracionAutomatica.getDayOfMonth())
+			throw new AppException("La fecha geneeración auntomática es " + fechaGeneracionAutomatica);
+		Empleado empleado = empleadoService.buscarPorUsuarioBT(programacion.getUsuarioBT().trim());
+		VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(programacion);
+		vacacionProgramacion.setEstado(EstadoVacacion.REGISTRADO);
+		validarRangoFechas(vacacionProgramacion);
+		List<VacacionProgramacion> programaciones = obtenerPeriodo(empleado, vacacionProgramacion);
+		programaciones.forEach(prog -> {
+			prog.setEstado(EstadoVacacion.REGISTRADO);
+			prog.setCodigoEmpleado(empleado.getCodigo());
+			validarPoliticasRegulatorias(prog);
+			validarPoliticaBolsa(prog);
+			obtenerOrden(prog, programacion.getUsuarioOperacion());
+		});
+		List<VacacionProgramacion> programacionesRegistradas = vacacionProgramacionService.registrar(programaciones, programacion.getUsuarioOperacion());
+		List<Long> idsProgRegistradas = programacionesRegistradas.stream().map(prog -> prog.getId()).collect(Collectors.toList());
+		List<Long> idsPeriodosModificados = programacionesRegistradas.stream().map(prog -> prog.getPeriodo().getId()).distinct().collect(Collectors.toList());
+		idsPeriodosModificados.forEach(periodoId -> {
+			actualizarPeriodo(empleado, periodoId, programacion.getUsuarioOperacion());
+		});
+		programacionesRegistradas.forEach(p -> {
+			actualizarMeta(parametrosConstants.getMetaVacacionAnio(), p, false, programacion.getUsuarioOperacion());
+		});
+
+		programacionesRegistradas = new ArrayList<>();
+		for (Long idProgramacion : idsProgRegistradas) {
+			programacionesRegistradas.add(vacacionProgramacionService.buscarPorId(idProgramacion));
+		}
+		LOGGER.info("[END] registro");
+		return programacionesRegistradas.stream().map(p -> {
+			return VacacionProgramacionMapper.convert(p, parametrosConstants);
+		}).collect(Collectors.toList());
+	}
 
 	@Transactional
 	@Override
