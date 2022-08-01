@@ -15,6 +15,8 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 
 public interface ProgramacionVacacionNegocio {
+	
+	List<ResponseProgramacionVacacion> registroAutomatico(RequestProgramacionVacacion programacion);
 
 	List<ResponseProgramacionVacacion> registro(RequestProgramacionVacacion programacion);
 	
