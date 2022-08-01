@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "imp_unidad_operativa")
-public class MigracionUnidadOperativa {
+public class MigracionUnidadOperativa extends MigracionBase {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

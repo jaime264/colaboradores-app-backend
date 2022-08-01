@@ -18,6 +18,8 @@ import java.util.stream.Stream;
 
 import org.springframework.context.MessageSource;
 
+import com.ibm.icu.text.MessageFormat;
+
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 
@@ -288,7 +290,7 @@ public class Utilitario {
 		}
 	}
 	
-	public static String generarMensajeNotificacion(MessageSource source, String mensaje, Object ...valores) {
+	public static String generarMensajeNotificacion(String mensaje, Object ...valores) {
 		valores = valores == null ? new String[] {} : valores;
 		try {
 			StringBuilder mensajeSb = new StringBuilder();
@@ -303,7 +305,7 @@ public class Utilitario {
 					mensajeSb.append(string).append(" ");
 				}
 			}
-			return source.getMessage(mensajeSb.toString().trim(), valores, Constantes.LOCALE_PER);
+			return MessageFormat.format(mensajeSb.toString().trim(), valores);
 		} catch (Exception e) {
 			return "Error en generar mensaje";
 		}
