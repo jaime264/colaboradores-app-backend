@@ -80,7 +80,7 @@ public class VacacionesTareas {
 			while (vacacionMeta.getMeta() > 0) {
 
 				LocalDate fechaInicio = ahora.plusDays(count);
-				LocalDate fechaFin = fechaInicio.plusDays(7);
+				LocalDate fechaFin = vacacionMeta.getMeta() < 8 ? fechaInicio.plusDays((int) vacacionMeta.getMeta()) : fechaInicio.plusDays(8);;
 
 				RequestProgramacionVacacion programacion = new RequestProgramacionVacacion();
 				programacion.setUsuarioBT(empleado.getUsuarioBT());
