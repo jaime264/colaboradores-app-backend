@@ -103,5 +103,9 @@ public class ReporteColaboradores {
 	
 	@Transient
 	private double porcentajeAvance;
+	
+	public String getNombreCompleto(){
+		return this.nombres + " "+ this.apellidoPaterno +" " + this.apellidoMaterno;
+	}
 
 }

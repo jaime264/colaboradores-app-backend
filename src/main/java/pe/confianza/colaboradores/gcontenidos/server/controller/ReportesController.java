@@ -1,6 +1,8 @@
 package pe.confianza.colaboradores.gcontenidos.server.controller;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFiltroVacacionesAprobacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarReportes;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.ReporteColaboradores;
@@ -45,5 +48,17 @@ public class ReportesController {
 		responseStatus.setMsgStatus(Constantes.OK);
 		responseStatus.setResultObj(reportesService.listarColaboradores(request));
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+	
+	@ApiOperation(notes = "Consulta de reporte de colaboradores", value = "url proxy /reportecolaboradores")
+
+	@PostMapping("/obtener-filtros")
+	public ResponseEntity<?> getFitrosVacAprobador(@RequestBody RequestFiltroVacacionesAprobacion reqFiltros) throws IOException {
+		
+		logger.info("RequestFiltroVacacionesAprobacion: " + reqFiltros.toString());
+		
+		List<Map<String, String>> vacpro = reportesService.liistarFiltrosReporteColaborador(reqFiltros);
+		
+		return new ResponseEntity<List<Map<String, String>>>(vacpro, HttpStatus.OK);
 	}
 }

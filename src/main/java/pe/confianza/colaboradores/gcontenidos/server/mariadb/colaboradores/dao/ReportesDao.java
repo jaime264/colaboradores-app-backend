@@ -1,5 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +14,7 @@ public interface ReportesDao extends JpaRepository<ReporteColaboradores, Long> {
 	
 	@Query("Select c from ReporteColaboradores c where c.codigoNivel1 = ?1 or c.codigoNivel2 = ?1 ")
 	Page<ReporteColaboradores> reporteColaboradores(String codigoNivel, Pageable pageable);
+	
+	@Query("Select c from ReporteColaboradores c where c.codigoNivel1 = ?1 or c.codigoNivel2 = ?1 ")
+	List<ReporteColaboradores> reporteColaboradoresList(String codigoNivel);
 }

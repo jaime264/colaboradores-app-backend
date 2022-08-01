@@ -24,24 +24,24 @@ import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 @Service
 public class VacacionMetaServiceImpl implements VacacionMetaService {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(VacacionMetaServiceImpl.class);
-	
+
 	@Autowired
 	private VacacionMetaDao vacacionMetaDao;
-	
+
 	@Autowired
 	private PeriodoVacacionService periodoVacacionService;
-	
+
 	@Autowired
 	private CargaParametros cargaParametros;
-	
+
 	@Override
 	public VacacionMeta obtenerVacacionPorAnio(int anio, long idEmpleado) {
 		LOGGER.info("[BEGIN] obtenerVacacionPorAnio");
 		List<VacacionMeta> metas = vacacionMetaDao.findByAnioAndIdEmpleado(anio, idEmpleado);
 		metas = metas == null ? new ArrayList<>() : metas;
-		if(metas.isEmpty())
+		if (metas.isEmpty())
 			return null;
 		LOGGER.info("[END] obtenerVacacionPorAnio");
 		return metas.get(0);
@@ -49,11 +49,11 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 
 	@Override
 	public VacacionMeta consolidarMetaAnual(Empleado empleado, int anio, String usuarioOperacion) {
-		LOGGER.info("[BEGIN] consolidarMetaAnual {} - {}" , new Object[] {empleado.getUsuarioBT(), anio});
+		LOGGER.info("[BEGIN] consolidarMetaAnual {} - {}", new Object[] { empleado.getUsuarioBT(), anio });
 		LocalDate fechaCorte = cargaParametros.getFechaCorteMeta();
 		LocalDate fechaIngreso = empleado.getFechaIngreso();
 		VacacionMeta meta = obtenerVacacionPorAnio(anio, empleado.getId());
-		if(meta != null) {
+		if (meta != null) {
 			meta.setFechaModifica(LocalDateTime.now());
 			meta.setUsuarioModifica(usuarioOperacion);
 		} else {
@@ -68,60 +68,70 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 		meta.setDiasVencidos(0);
 		List<PeriodoVacacion> periodos = periodoVacacionService.consultar(empleado);
 		LocalDate[] limitePeriodoVencido = Utilitario.rangoPeriodoVencido(empleado.getFechaIngreso());
-		if(limitePeriodoVencido != null) {
+		if (limitePeriodoVencido != null) {
 			LOGGER.info("Limite periodo vencido {}", Arrays.toString(limitePeriodoVencido));
-			Optional<PeriodoVacacion> optVencido = periodos.stream().filter(p -> p.getAnio() == limitePeriodoVencido[0].getYear()).findFirst();
-			if(optVencido.isPresent()) {
+			Optional<PeriodoVacacion> optVencido = periodos.stream()
+					.filter(p -> p.getAnio() == limitePeriodoVencido[0].getYear()).findFirst();
+			if (optVencido.isPresent()) {
 				PeriodoVacacion periodo = optVencido.get();
 				meta.setPeriodoVencido(periodo);
-				double diasVencidos = periodo.getDerecho() - periodo.getDiasGozados() - periodo.getDiasRegistradosGozar() - periodo.getDiasGeneradosGozar() - periodo.getDiasAprobadosGozar();
-				if(fechaIngreso.getYear() == fechaCorte.getYear() - 1 && fechaIngreso.getMonthValue() > fechaCorte.getMonthValue()) {
-					diasVencidos = 30 - periodo.getDiasGozados() - periodo.getDiasRegistradosGozar() - periodo.getDiasGeneradosGozar() - periodo.getDiasAprobadosGozar();
+				double diasVencidos = periodo.getDerecho() - periodo.getDiasGozados()
+						- periodo.getDiasRegistradosGozar() - periodo.getDiasGeneradosGozar()
+						- periodo.getDiasAprobadosGozar();
+				if (fechaIngreso.getYear() == fechaCorte.getYear() - 1
+						&& fechaIngreso.getMonthValue() > fechaCorte.getMonthValue()) {
+					diasVencidos = 30 - periodo.getDiasGozados() - periodo.getDiasRegistradosGozar()
+							- periodo.getDiasGeneradosGozar() - periodo.getDiasAprobadosGozar();
 				}
 				meta.setDiasVencidos(diasVencidos);
 			}
 		}
 		LocalDate[] limitePeriodoTrunco = Utilitario.rangoPeriodoTrunco(empleado.getFechaIngreso());
-		if(limitePeriodoTrunco != null) {
+		if (limitePeriodoTrunco != null) {
 			LOGGER.info("Limite periodo trunco {}", Arrays.toString(limitePeriodoTrunco));
-			Optional<PeriodoVacacion> optTrunco = periodos.stream().filter(p -> p.getAnio() == limitePeriodoTrunco[0].getYear()).findFirst();
-			if(optTrunco.isPresent()) {
+			Optional<PeriodoVacacion> optTrunco = periodos.stream()
+					.filter(p -> p.getAnio() == limitePeriodoTrunco[0].getYear()).findFirst();
+			if (optTrunco.isPresent()) {
 				PeriodoVacacion periodo = optTrunco.get();
 				double derechoPeriodo = Utilitario.calcularDerechoVacaciones(fechaIngreso, fechaCorte);
-				if(limitePeriodoVencido == null && fechaIngreso.getMonthValue() >= fechaCorte.getMonthValue()) {
+				if (limitePeriodoVencido == null && fechaIngreso.getMonthValue() >= fechaCorte.getMonthValue()) {
 					derechoPeriodo = 30; // Empleado ingreso después del corte del año pasado
 				}
 				meta.setPeriodoTrunco(periodo);
-				meta.setDiasTruncos(derechoPeriodo - periodo.getDiasGozados() - periodo.getDiasRegistradosGozar() - periodo.getDiasGeneradosGozar() - periodo.getDiasAprobadosGozar());
+				meta.setDiasTruncos(derechoPeriodo - periodo.getDiasGozados() - periodo.getDiasRegistradosGozar()
+						- periodo.getDiasGeneradosGozar() - periodo.getDiasAprobadosGozar());
 			}
 		}
-		meta.setMetaInicial(Utilitario.calcularMetaVacaciones(empleado.getFechaIngreso(), limitePeriodoVencido == null ? 0 : meta.getDiasVencidos()));
-		meta.setMeta(meta.getMetaInicial());		
+		meta.setMetaInicial(Utilitario.calcularMetaVacaciones(empleado.getFechaIngreso(),
+				limitePeriodoVencido == null ? 0 : meta.getDiasVencidos()));
+		meta.setMeta(meta.getMetaInicial());
 		meta.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
 		meta.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
 		meta = vacacionMetaDao.saveAndFlush(meta);
 		LOGGER.info("[END] consolidarMetaAnual");
 		return meta;
 	}
-	
+
 	@Override
-	public VacacionMeta actualizarMeta(int anio, VacacionProgramacion programacion,  boolean cancelarProgramcion, String usuarioOperacion) {
-		LOGGER.info("[BEGIN] actualizarMeta {} - {}" , new Object[] {programacion.getPeriodo().getEmpleado().getUsuarioBT(), anio});	
+	public VacacionMeta actualizarMeta(int anio, VacacionProgramacion programacion, boolean cancelarProgramcion,
+			String usuarioOperacion) {
+		LOGGER.info("[BEGIN] actualizarMeta {} - {}",
+				new Object[] { programacion.getPeriodo().getEmpleado().getUsuarioBT(), anio });
 		VacacionMeta meta = obtenerVacacionPorAnio(anio, programacion.getPeriodo().getEmpleado().getId());
-		if(cancelarProgramcion) {
+		if (cancelarProgramcion) {
 			meta.setMeta(meta.getMeta() + programacion.getNumeroDias());
 		} else {
 			meta.setMeta(meta.getMeta() - programacion.getNumeroDias());
 		}
-		if(meta.getPeriodoVencido().getId() == programacion.getPeriodo().getId()) {
-			if(cancelarProgramcion) {
+		if (meta.getPeriodoVencido().getId() == programacion.getPeriodo().getId()) {
+			if (cancelarProgramcion) {
 				meta.setDiasVencidos(meta.getDiasVencidos() + programacion.getNumeroDias());
 			} else {
 				meta.setDiasVencidos(meta.getDiasVencidos() - programacion.getNumeroDias());
 			}
 		}
-		if(meta.getPeriodoTrunco().getId() == programacion.getPeriodo().getId()) {
-			if(cancelarProgramcion) {
+		if (meta.getPeriodoTrunco().getId() == programacion.getPeriodo().getId()) {
+			if (cancelarProgramcion) {
 				meta.setDiasTruncos(meta.getDiasTruncos() + programacion.getNumeroDias());
 			} else {
 				meta.setDiasTruncos(meta.getDiasTruncos() - programacion.getNumeroDias());
@@ -143,11 +153,5 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 		meta.setUsuarioModifica(usuarioOperacion);
 		return vacacionMetaDao.save(meta);
 	}
-
-	
-
-	
-	
-
 
 }

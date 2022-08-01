@@ -39,7 +39,6 @@ public interface VacacionMetaService {
 	
 	VacacionMeta actualizarMeta(VacacionMeta meta, String usuarioOperacion);
 	
-	Optional<VacacionMeta> obtenerMeta(long id);
-	
+	Optional<VacacionMeta> obtenerMeta(long id);	
 
 }

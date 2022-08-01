@@ -3,7 +3,6 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,6 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,12 +29,16 @@ import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundExce
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VacacionProgramacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Notificacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.NotificacionTipo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.negocio.EnvioNotificacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.util.TipoNotificacion;
 
 @Service
 public class VacacionProgramacionServiceImpl implements VacacionProgramacionService {
@@ -50,13 +52,13 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	private EmpleadoDao empleadoDao;
 
 	@Autowired
-	private EmpleadoService empleadoService;
-
-	@Autowired
 	private CargaParametros cargaParametros;
 
 	@Autowired
-	private MessageSource messageSource;
+	private NotificacionService notificacionService;
+
+	@Autowired
+	private EnvioNotificacionNegocio envioNotificacionNegocio;
 
 	@Override
 	public void actualizarEstadoProgramaciones() {
@@ -188,14 +190,37 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 		LocalDate fechaMaxima = cargaParametros.getFechaMaximaAprobacionProgramaciones();
 		LocalDate hoy = LocalDate.now();
-		if (fechaMaxima.compareTo(hoy) <= 0) {			
-			String formattedDate = fechaMaxima.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-			throw new AppException("La fecha máxima de aprobación es " + formattedDate);
+		if (fechaMaxima.compareTo(hoy) <= 0) {
+			throw new AppException("La fecha máxima de aprobación es " + fechaMaxima.getDayOfMonth() +"/" + fechaMaxima.getMonth() +"/"+ fechaMaxima.getYear());
 		}
-			
+
 		try {
-			vacacionPeriodos.forEach(e -> {
-				vacacionProgramacionDao.aprobarVacacionByPeriodo(e.getIdEstado(), e.getIdProgramacion());
+			vacacionPeriodos.forEach(v -> {
+				vacacionProgramacionDao.aprobarVacacionByPeriodo(v.getIdEstado(), v.getIdProgramacion());
+
+				Optional<VacacionProgramacion> vp = vacacionProgramacionDao.findById(v.getIdProgramacion());
+				List<Empleado> emp = empleadoDao.findByCodigo(vp.get().getCodigoEmpleado());
+				Optional<NotificacionTipo> tipoNot = notificacionService
+						.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
+
+				if(v.getIdEstado() == 3) {
+					Notificacion notificacion = notificacionService.registrar("Vacación Aprobada",
+							"Vacacion con fecha inicio " + vp.get().getFechaInicio() + " y fecha fin " + vp.get().getFechaFin()
+									+ "fue aprobada",
+							v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
+
+					notificacionService.enviarNotificacionApp(notificacion);
+					notificacionService.enviarNotificacionCorreo(notificacion);
+				}else if(v.getIdEstado() == 4)  {
+					Notificacion notificacion = notificacionService.registrar("Vacación Rechazada",
+							"Vacación con fecha inicio " + vp.get().getFechaInicio() + " y fecha fin " + vp.get().getFechaFin()
+									+ "fue rechazada",
+							v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
+
+					notificacionService.enviarNotificacionApp(notificacion);
+					notificacionService.enviarNotificacionCorreo(notificacion);
+				}
+				
 			});
 		} catch (Exception e2) {
 			logger.info(e2.getMessage());
