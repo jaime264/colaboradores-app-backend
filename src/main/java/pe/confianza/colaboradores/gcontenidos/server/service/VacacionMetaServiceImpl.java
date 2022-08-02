@@ -123,20 +123,25 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 		} else {
 			meta.setMeta(meta.getMeta() - programacion.getNumeroDias());
 		}
-		if (meta.getPeriodoVencido().getId() == programacion.getPeriodo().getId()) {
-			if (cancelarProgramcion) {
-				meta.setDiasVencidos(meta.getDiasVencidos() + programacion.getNumeroDias());
-			} else {
-				meta.setDiasVencidos(meta.getDiasVencidos() - programacion.getNumeroDias());
+		if(meta.getPeriodoTrunco() != null) {
+			if (meta.getPeriodoVencido().getId() == programacion.getPeriodo().getId()) {
+				if (cancelarProgramcion) {
+					meta.setDiasVencidos(meta.getDiasVencidos() + programacion.getNumeroDias());
+				} else {
+					meta.setDiasVencidos(meta.getDiasVencidos() - programacion.getNumeroDias());
+				}
 			}
 		}
-		if (meta.getPeriodoTrunco().getId() == programacion.getPeriodo().getId()) {
-			if (cancelarProgramcion) {
-				meta.setDiasTruncos(meta.getDiasTruncos() + programacion.getNumeroDias());
-			} else {
-				meta.setDiasTruncos(meta.getDiasTruncos() - programacion.getNumeroDias());
+		if(meta.getPeriodoTrunco() != null) {
+			if (meta.getPeriodoTrunco().getId() == programacion.getPeriodo().getId()) {
+				if (cancelarProgramcion) {
+					meta.setDiasTruncos(meta.getDiasTruncos() + programacion.getNumeroDias());
+				} else {
+					meta.setDiasTruncos(meta.getDiasTruncos() - programacion.getNumeroDias());
+				}
 			}
 		}
+		
 		meta = vacacionMetaDao.saveAndFlush(meta);
 		LOGGER.info("[END] actualizarMeta");
 		return meta;

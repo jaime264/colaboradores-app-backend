@@ -86,7 +86,7 @@ public class VacacionesTareas {
 				programacion.setUsuarioBT(empleado.getUsuarioBT());
 				programacion.setFechaInicio(fechaInicio);
 				programacion.setFechaFin(fechaFin);
-				programacion.setUsuarioOperacion("TAREA PROGRAMADA");
+				programacion.setUsuarioOperacion("GENERACION_AUTOMATICA");
 				try {
 					List<ResponseProgramacionVacacion> listProgramacion = programacionVacacionNegocio
 							.registroAutomatico(programacion);

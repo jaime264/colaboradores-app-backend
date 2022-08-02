@@ -64,8 +64,12 @@ public class GestorContenidosServerApplication {
 		vacacioneTareas.actualizarPeriodos();
 		vacacioneTareas.consolidarMetasAnuales(false);
 		
-		VacacionesTareas vacacionTareasProgramadas = applicationContext.getBean(VacacionesTareas.class);
-		vacacionTareasProgramadas.vacacionesAutomaticas();
+		try {
+			VacacionesTareas vacacionTareasProgramadas = applicationContext.getBean(VacacionesTareas.class);
+			vacacionTareasProgramadas.vacacionesAutomaticas();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 	}
 
