@@ -66,15 +66,15 @@ public enum ParametroUnidad {
 						return false;
 				}
 				if(ParametroUnidad.INTERVALO_DIAS.codigo.equals(valor)) {
-					if(intValor < 0)
+					if(intValor < 1)
 						return false;
 				}
 				if(ParametroUnidad.DIAS.codigo.equals(valor)) {
-					if(intValor < 0)
+					if(intValor < 1)
 						return false;
 				}
 				if(ParametroUnidad.MESES.codigo.equals(valor)) {
-					if(intValor < 0)
+					if(intValor < 1)
 						return false;
 				}
 				if(ParametroUnidad.NUMERO_MES.codigo.equals(valor)) {
