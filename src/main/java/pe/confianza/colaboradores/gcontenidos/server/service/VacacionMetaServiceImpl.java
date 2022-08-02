@@ -123,7 +123,7 @@ public class VacacionMetaServiceImpl implements VacacionMetaService {
 		} else {
 			meta.setMeta(meta.getMeta() - programacion.getNumeroDias());
 		}
-		if(meta.getPeriodoTrunco() != null) {
+		if(meta.getPeriodoVencido() != null) {
 			if (meta.getPeriodoVencido().getId() == programacion.getPeriodo().getId()) {
 				if (cancelarProgramcion) {
 					meta.setDiasVencidos(meta.getDiasVencidos() + programacion.getNumeroDias());
