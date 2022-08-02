@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +13,9 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarVacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VacacionProgramacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionMeta;
@@ -22,7 +24,6 @@ import pe.confianza.colaboradores.gcontenidos.server.negocio.VacacionesTareasPro
 import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionMetaService;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
-import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 
 @Component
 @PropertySource("classpath:tareas-programadas.properties")
@@ -44,7 +45,7 @@ public class VacacionesTareas {
 
 	@Autowired
 	ProgramacionVacacionNegocio programacionVacacionNegocio;
-	
+
 	@Autowired
 	VacacionProgramacionDao vacacionProgramacionDao;
 
@@ -68,11 +69,13 @@ public class VacacionesTareas {
 		LOGGER.info("[END] enviarNotificacionesVacaciones " + LocalDateTime.now());
 	}
 
-	//@Scheduled(cron = "0 0 24 13 12 ?") // 24 horas del 13 de diciembre
+	// @Scheduled(cron = "0 0 24 13 12 ?") // 24 horas del 13 de diciembre
+	@Transactional(dontRollbackOn = AppException.class)
 	public void vacacionesAutomaticas() {
 
 		Empleado empleado = empleadoService.buscarPorUsuarioBT("TRNAT001");
-		VacacionMeta vacacionMeta = vacacionMetaService.obtenerVacacionPorAnio(cargaParametros.getAnioPresente()+1, empleado.getId());
+		VacacionMeta vacacionMeta = vacacionMetaService.obtenerVacacionPorAnio(cargaParametros.getAnioPresente() + 1,
+				empleado.getId());
 
 		if (vacacionMeta.getMeta() > 0) {
 			LocalDate ahora = LocalDate.now();
@@ -80,7 +83,9 @@ public class VacacionesTareas {
 			while (vacacionMeta.getMeta() > 0) {
 
 				LocalDate fechaInicio = ahora.plusDays(count);
-				LocalDate fechaFin = vacacionMeta.getMeta() < 8 ? fechaInicio.plusDays((int) vacacionMeta.getMeta()) : fechaInicio.plusDays(8);;
+				LocalDate fechaFin = vacacionMeta.getMeta() < 8 ? fechaInicio.plusDays((int) vacacionMeta.getMeta() - 1)
+						: fechaInicio.plusDays(7);
+				;
 
 				RequestProgramacionVacacion programacion = new RequestProgramacionVacacion();
 				programacion.setUsuarioBT(empleado.getUsuarioBT());
@@ -91,13 +96,13 @@ public class VacacionesTareas {
 					List<ResponseProgramacionVacacion> listProgramacion = programacionVacacionNegocio
 							.registroAutomatico(programacion);
 					count++;
-					
-					for(ResponseProgramacionVacacion v: listProgramacion) {
-						vacacionProgramacionDao.aprobarVacacionByPeriodo(EstadoVacacion.APROBADO.id, v.getId());
-					}
-					vacacionMeta = vacacionMetaService.obtenerVacacionPorAnio(cargaParametros.getAnioPresente()+1, empleado.getId());
-					
-				} catch (Exception e) {
+
+					vacacionMeta = vacacionMetaService.obtenerVacacionPorAnio(cargaParametros.getAnioPresente() + 1,
+							empleado.getId());
+
+				}
+
+				catch (Exception e) {
 					e.printStackTrace();
 					count++;
 				}

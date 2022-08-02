@@ -40,11 +40,11 @@ import pe.confianza.colaboradores.gcontenidos.server.service.PeriodoVacacionServ
 import pe.confianza.colaboradores.gcontenidos.server.service.UnidadNegocioService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionMetaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
+import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.MesesAnio;
-import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 @Service
@@ -76,7 +76,7 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 	@Autowired
 	private VacacionProgramacionDao vacacionProgramacionDao;
 	
-	@Transactional
+	@Transactional(dontRollbackOn=AppException.class)
 	@Override
 	public List<ResponseProgramacionVacacion> registroAutomatico(RequestProgramacionVacacion programacion) {
 		LOGGER.info("[BEGIN] registro: {} - {} - {}", new Object[] { programacion.getUsuarioBT(), programacion.getFechaInicio(), programacion.getFechaFin() });
@@ -86,11 +86,11 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			throw new AppException("La fecha geneeración auntomática es " + fechaGeneracionAutomatica);
 		Empleado empleado = empleadoService.buscarPorUsuarioBT(programacion.getUsuarioBT().trim());
 		VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(programacion);
-		vacacionProgramacion.setEstado(EstadoVacacion.REGISTRADO);
+		vacacionProgramacion.setEstado(EstadoVacacion.APROBADO);
 		validarRangoFechas(vacacionProgramacion);
 		List<VacacionProgramacion> programaciones = obtenerPeriodo(empleado, vacacionProgramacion);
 		programaciones.forEach(prog -> {
-			prog.setEstado(EstadoVacacion.REGISTRADO);
+			prog.setEstado(EstadoVacacion.APROBADO);
 			prog.setCodigoEmpleado(empleado.getCodigo());
 			validarPoliticasRegulatorias(prog);
 			validarPoliticaBolsa(prog);
