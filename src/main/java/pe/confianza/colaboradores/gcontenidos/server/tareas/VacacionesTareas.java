@@ -54,6 +54,7 @@ public class VacacionesTareas {
 		actualizarEstadoProgramaciones();
 		actualizarPeridos();
 		calcularMetaAnual();
+		vacacionesAutomaticas();
 	}
 
 	@Scheduled(cron = "0 0/50 * * * ?") // Verificacion cada 50 minutos

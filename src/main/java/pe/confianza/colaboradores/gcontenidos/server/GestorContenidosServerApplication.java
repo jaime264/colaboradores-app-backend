@@ -5,7 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
@@ -22,7 +21,6 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import pe.confianza.colaboradores.gcontenidos.server.negocio.VacacionesTareasProgramadasNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.impl.VacacionesTareasProgramadasNegocioImpl;
-import pe.confianza.colaboradores.gcontenidos.server.tareas.VacacionesTareas;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 
 @SpringBootApplication
@@ -63,14 +61,6 @@ public class GestorContenidosServerApplication {
 		vacacioneTareas.actualizarEstadoProgramaciones();
 		vacacioneTareas.actualizarPeriodos();
 		vacacioneTareas.consolidarMetasAnuales(false);
-		
-		try {
-			VacacionesTareas vacacionTareasProgramadas = applicationContext.getBean(VacacionesTareas.class);
-			vacacionTareasProgramadas.vacacionesAutomaticas();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
 	}
 
 }
