@@ -82,8 +82,8 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[BEGIN] registro: {} - {} - {}", new Object[] { programacion.getUsuarioBT(), programacion.getFechaInicio(), programacion.getFechaFin() });
 		LocalDate fechaActual = LocalDate.now();
 		LocalDate fechaGeneracionAutomatica = parametrosConstants.getFechaMaximaAprobacionProgramaciones().plusDays(1);
-		if(fechaActual.getDayOfMonth() != fechaGeneracionAutomatica.getMonthValue() && fechaActual.getDayOfMonth() != fechaGeneracionAutomatica.getDayOfMonth())
-			throw new AppException("La fecha geneeración auntomática es " + fechaGeneracionAutomatica);
+		if(fechaActual.getMonthValue() != fechaGeneracionAutomatica.getMonthValue() && fechaActual.getDayOfMonth() != fechaGeneracionAutomatica.getDayOfMonth())
+			throw new AppException("La fecha generación auntomática es " + fechaGeneracionAutomatica);
 		Empleado empleado = empleadoService.buscarPorUsuarioBT(programacion.getUsuarioBT().trim());
 		VacacionProgramacion vacacionProgramacion = VacacionProgramacionMapper.convert(programacion);
 		vacacionProgramacion.setEstado(EstadoVacacion.APROBADO);

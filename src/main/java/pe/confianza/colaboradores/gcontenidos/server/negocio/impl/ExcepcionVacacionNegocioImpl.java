@@ -77,7 +77,7 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 				}
 			}
 			if(!tienePermiso)
-				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.sin_permiso", reprogramacion.getUsuarioOperacion()));
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.excepciones.sin_permiso", reprogramacion.getUsuarioOperacion()));
 			VacacionProgramacion programacionOriginal = vacacionProgramacionService.buscarPorId(reprogramacion.getIdProgramacion());
 			
 			validarDiasReprogramados(programacionOriginal, reprogramacion);
