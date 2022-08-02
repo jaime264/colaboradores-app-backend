@@ -1,5 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.negocio.impl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,15 +17,16 @@ import org.springframework.stereotype.Service;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionExcepcion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionesExcepcion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramacionTramo;
-import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramarVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacionResumen;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.VacacionProgramacionMapper;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ExcepcionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
+import pe.confianza.colaboradores.gcontenidos.server.service.PeriodoVacacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
@@ -41,6 +43,9 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 	
 	@Autowired
 	private EmpleadoService empleadoService;
+	
+	@Autowired
+	private PeriodoVacacionService periodoVacacionService;
 	
 	@Autowired
 	private CargaParametros cargaParametros;
@@ -84,20 +89,35 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 			
 			List<VacacionProgramacion> programaciones = reprogramacion.getTramos().stream().map(t -> {
 				VacacionProgramacion prog = VacacionProgramacionMapper.convert(t, programacionOriginal);
-				prog.setIdEstado(EstadoVacacion.GENERADO.id);
+				prog.setIdEstado(EstadoVacacion.APROBADO.id);
 				prog.setPeriodo(programacionOriginal.getPeriodo());
 				prog.setNumeroPeriodo((long)programacionOriginal.getPeriodo().getNumero());
 				prog.setUsuarioCrea(reprogramacion.getUsuarioOperacion());
 				prog.setFechaCrea(LocalDateTime.now());
 				prog.calcularDias();
+				prog.setIdProgramacionOriginal(programacionOriginal.getId());
 				return prog;
 			}).collect(Collectors.toList());
+			int totalDiasReprogramados = programaciones.stream().map(p -> p.getNumeroDias()).reduce(0, Integer::sum);
 			
 			if(programacionOriginal.getIdEstado() == EstadoVacacion.GOZANDO.id) { //INTERRUPCION DE VACACIONES
-				
-			} else { // ANULACION Y REPROGRAMACION
-				
+				programacionOriginal.setInterrupcion(true);
+				programacionOriginal.setDiasGozados(programacionOriginal.getNumeroDias() - totalDiasReprogramados);
+				programacionOriginal.setDiasPendientesGozar(totalDiasReprogramados);
+			} else if(programacionOriginal.getIdEstado() == EstadoVacacion.APROBADO.id) { // ANULACION Y REPROGRAMACION
+				programacionOriginal.setAnulacion(true);
+				programacionOriginal.setDiasAnulados(programacionOriginal.getNumeroDias());
+				programacionOriginal.setDiasPendientesGozar(programacionOriginal.getNumeroDias());
+			} else {
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.excepciones.estado_error"));
 			}
+			programacionOriginal.setDiasReprogramados(totalDiasReprogramados);
+			vacacionProgramacionService.actualizar(programacionOriginal, reprogramacion.getUsuarioOperacion());
+			List<VacacionProgramacion> programacionesReprogramadas = vacacionProgramacionService.modificar(programaciones, reprogramacion.getUsuarioOperacion());
+			List<Long> idsPeriodosModificados = programacionesReprogramadas.stream().map(prog -> prog.getPeriodo().getId()).distinct().collect(Collectors.toList());
+			idsPeriodosModificados.forEach(periodoId -> {
+				actualizarPeriodo(programacionOriginal.getPeriodo().getEmpleado(), periodoId, reprogramacion.getUsuarioOperacion());
+			});
 		} catch (ModelNotFoundException e) {
 			logger.error("[ERROR] actualizarParametroVacaciones", e);
 			throw new ModelNotFoundException(e.getMessage()); 
@@ -120,11 +140,30 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.validacion.rango_error"));
 			if(!programacion.getPeriodo().programacionDentroPeriodoGoce(tramo.getFechaInicio(), tramo.getFechaFin()))
 				throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.validacion.fuera_limite_goce", programacion.getPeriodo().getDescripcion()));
+			if(programacion.getIdEstado() == EstadoVacacion.GOZANDO.id) {
+				if(tramo.getFechaInicio().isBefore(LocalDate.now()))
+					throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.excepciones.interrupcion.fecha_inicio_error"));
+			}
 			diasReprogramados += Utilitario.obtenerDiferenciaDias(tramo.getFechaInicio(), tramo.getFechaFin());
 		}
-		if(diasProgramados != diasReprogramados)
-			throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.reprogramacion.dias_error"));
+		if(programacion.getIdEstado() == EstadoVacacion.GOZANDO.id) { //INTERRUPCION
+			if(diasProgramados < diasReprogramados)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.excepciones.interrupcion.dias_error"));
+		}
+		if(programacion.getIdEstado() == EstadoVacacion.APROBADO.id) { //ANULACION
+			if(diasProgramados != diasReprogramados)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.excepciones.anulacion.dias_error"));
+		}
+		
 		logger.info("[END] validarDiasReprogramados");
+	}
+	
+	@Override
+	public void actualizarPeriodo(Empleado empleado, long idPeriodo, String usuarioOperacion) {
+		logger.info("[BEGIN] actualizarPeriodo {}", idPeriodo);
+		periodoVacacionService.consolidarResumenDias(idPeriodo, usuarioOperacion);
+		periodoVacacionService.actualizarPeriodo(empleado, idPeriodo, usuarioOperacion);
+		logger.info("[END] actualizarPeriodo");
 	}
 
 }
