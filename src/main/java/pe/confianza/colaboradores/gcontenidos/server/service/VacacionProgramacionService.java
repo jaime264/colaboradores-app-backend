@@ -76,4 +76,6 @@ public interface VacacionProgramacionService {
 
 	
 	Page<VacacionProgramacion> listarProgramacionesDiferenteRegistrado(String nombre, Pageable pageable);
+	
+	List<EmplVacPerRes> listEmpleadoProgramacionFilter(RequestProgramacionEmpleado reqPrograEmp);
 }

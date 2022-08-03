@@ -23,15 +23,15 @@ public class ReportesServiceImpl implements ReportesService {
 
 	@Autowired
 	ReportesDao reporteDao;
-	
+
 	@Override
 	public List<ReporteColaboradores> obtenerTodos() {
 		// TODO Auto-generated method stub
 		List<ReporteColaboradores> reportes = new ArrayList<>();
 		try {
-			reportes = reporteDao.findAll();
+			// reportes = reporteDao.findAll();
 		} catch (Exception e) {
-			
+
 			System.out.println(e.getMessage());
 		}
 		return reportes;
@@ -41,15 +41,48 @@ public class ReportesServiceImpl implements ReportesService {
 	public Page<ReporteColaboradores> listarColaboradores(RequestListarReportes request) {
 		// TODO Auto-generated method stub
 		Pageable paginacion = PageRequest.of(request.getNumeroPagina(), request.getTamanioPagina());
-		
-		Page<ReporteColaboradores> reporteColaboradores = reporteDao.reporteColaboradores(request.getCodigoUsuario(), paginacion);
-		
-		reporteColaboradores.getContent().stream().forEach(c ->{
+
+		Page<ReporteColaboradores> reporteColaboradores = null;
+
+		switch (request.getTipoFiltro().trim().toUpperCase()) {
+		case "CODIGO":
+			reporteColaboradores = reporteDao.reporteColaboradoresCodigo(request.getCodigoUsuario(),
+					request.getFiltro(), paginacion);
+			break;
+		case "NOMBRE":
+			reporteColaboradores = reporteDao.reporteColaboradoresNombre(request.getCodigoUsuario(),
+					request.getFiltro(), paginacion);
+			break;
+		case "CARGO":
+			reporteColaboradores = reporteDao.reporteColaboradoresPuesto(request.getCodigoUsuario(),
+					request.getFiltro(), paginacion);
+			break;
+		case "AGENCIA":
+			reporteColaboradores = reporteDao.reporteColaboradoresAgencia(request.getCodigoUsuario(),
+					request.getFiltro(), paginacion);
+			break;
+		case "TERRITORIO":
+			reporteColaboradores = reporteDao.reporteColaboradoresTerritorio(request.getCodigoUsuario(),
+					request.getFiltro(), paginacion);
+			break;
+		case "CORREDOR":
+			reporteColaboradores = reporteDao.reporteColaboradoresCorredor(request.getCodigoUsuario(),
+					request.getFiltro(), paginacion);
+			break;
+		case "INGRESO":
+			reporteColaboradores = reporteDao.reporteColaboradoresIngreso(request.getCodigoUsuario(),
+					request.getFechaInicio(), request.getFechaFin(), paginacion);
+			break;
+		default:
+			reporteColaboradores = reporteDao.reporteColaboradores(request.getCodigoUsuario(), paginacion);
+			break;
+		}
+
+		reporteColaboradores.getContent().stream().forEach(c -> {
 			Double valor = 0.0;
-			if(c.getDiasGozados()>0) {
-				valor = (double) (c.getDiasGozados() / c.getMeta()) *100;
-				
-				
+			if (c.getDiasGozados() > 0) {
+				valor = (double) (c.getDiasGozados() / c.getMeta()) * 100;
+
 			}
 			c.setPorcentajeAvance(valor);
 			c.setDiasProgramados(c.getDiasAprobadosGozar());
@@ -58,7 +91,7 @@ public class ReportesServiceImpl implements ReportesService {
 
 		return reporteColaboradores;
 	}
-	
+
 	@Override
 	public List<Map<String, String>> liistarFiltrosReporteColaborador(RequestFiltroVacacionesAprobacion reqFiltros) {
 		// TODO Auto-generated method stub
@@ -66,14 +99,14 @@ public class ReportesServiceImpl implements ReportesService {
 
 		List<Map<String, String>> datos = new ArrayList<>();
 		List<String> valores = new ArrayList<>();
-		
+
 		for (ReporteColaboradores r : reporteColaboradores) {
 			switch (reqFiltros.getFiltro().toUpperCase().trim()) {
 			case "CODIGO":
 				valores.add(r.getCodigo().toString());
 				break;
 			case "NOMBRE":
-				valores.add(r.getNombreCompleto());
+				valores.add(r.getNombreCompleo());
 				break;
 			case "CARGO":
 				valores.add(r.getPuesto());
@@ -91,7 +124,7 @@ public class ReportesServiceImpl implements ReportesService {
 				break;
 			}
 		}
-		
+
 		valores = valores.stream().distinct().collect(Collectors.toList());
 
 		for (Integer i = 0; i <= valores.size() - 1; i++) {
@@ -102,7 +135,7 @@ public class ReportesServiceImpl implements ReportesService {
 
 			datos.add(nombres);
 		}
-		
+
 		return datos;
 	}
 }

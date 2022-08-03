@@ -13,6 +13,9 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 
 @Repository
 public interface EmpleadoDao extends JpaRepository<Empleado, Long> {
+	
+	@Query("SELECT em FROM Empleado em WHERE em.estadoRegistro = 'A'")
+	public List<Empleado> listarActivo();
 
 	Optional<Empleado> findOneByUsuarioBT(String usuarioBT);
 

@@ -25,6 +25,7 @@ import lombok.Setter;
 		+ "nombres, "
 		+ "apellido_materno, "
 		+ "apellido_paterno, "
+		+ "nombre_completo, "
 		+ "codigo_nivel1, "
 		+ "codigo_nivel2, "
 		+ "puesto, "
@@ -56,6 +57,9 @@ public class ReporteColaboradores {
 	
 	@Column(name = "apellido_paterno")
 	private String apellidoPaterno;
+	
+	@Column(name = "nombre_completo")
+	private String nombreCompleo;
 	
 	@Column(name = "codigo_nivel1")
 	@JsonIgnore
@@ -104,8 +108,5 @@ public class ReporteColaboradores {
 	@Transient
 	private double porcentajeAvance;
 	
-	public String getNombreCompleto(){
-		return this.nombres + " "+ this.apellidoPaterno +" " + this.apellidoMaterno;
-	}
 
 }
