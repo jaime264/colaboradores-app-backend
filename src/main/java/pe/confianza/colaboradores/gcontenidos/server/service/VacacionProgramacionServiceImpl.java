@@ -243,7 +243,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 				
 			});
 		} catch (Exception e2) {
-			logger.info(e2.getMessage());
+			logger.error("[ERROR] aprobarVacacionPeriodos", e2);
 		}
 
 	}
