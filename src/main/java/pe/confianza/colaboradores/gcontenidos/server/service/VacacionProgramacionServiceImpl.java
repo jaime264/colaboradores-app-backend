@@ -418,7 +418,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		return listEmp;
 	}
 
-	private List<EmplVacPerRes> listEmpleadoProgramacionFilter(RequestProgramacionEmpleado reqPrograEmp) {
+	@Override
+	public List<EmplVacPerRes> listEmpleadoProgramacionFilter(RequestProgramacionEmpleado reqPrograEmp) {
 
 		List<EmplVacPerRes> listEmp = new ArrayList<EmplVacPerRes>();
 

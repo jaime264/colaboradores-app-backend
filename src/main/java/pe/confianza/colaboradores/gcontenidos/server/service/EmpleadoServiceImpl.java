@@ -128,7 +128,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
 	@Override
 	public List<Empleado> listar() {
-		return empleadoDao.findAll();
+		return empleadoDao.listarActivo();
 	}
 
 	@Override
