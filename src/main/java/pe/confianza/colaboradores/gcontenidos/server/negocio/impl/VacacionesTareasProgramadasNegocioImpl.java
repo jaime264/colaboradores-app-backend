@@ -38,6 +38,7 @@ import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.MesesAnio;
+import pe.confianza.colaboradores.gcontenidos.server.util.ParametrosConstantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.TipoNotificacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 import pe.confianza.colaboradores.gcontenidos.server.util.file.collection.Row;
@@ -81,11 +82,24 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 	@Autowired
 	private EnvioNotificacionNegocio envioNotificacionNegocio;
 	
+	
 	@Autowired
 	private MessageSource messageSource;
 	
 	@Autowired
 	private ReportFactory reportFactory;
+	
+	private static final String USUARIO_OPERACION = "TAREA_PROGRAMADA";
+	
+	@Override
+	public void actualizarAnioPresente() {
+		LOGGER.info("[BEGIN] actualizarAnioPresente " + LocalDate.now());
+		int anioPresente = cargaParametros.getAnioPresente();
+		if(LocalDate.now().getYear() != anioPresente)
+			cargaParametros.actualizarParametro(ParametrosConstantes.Genericos.ANIO_PRESENTE, LocalDate.now().getYear() + "", null, USUARIO_OPERACION);
+		LOGGER.info("[END] actualizarAnioPresente " + LocalDate.now());
+		
+	}
 
 	@Override
 	public void actualizarEstadoProgramaciones() {
@@ -99,7 +113,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 		LOGGER.info("[BEGIN] actualizarPeridos " + LocalDate.now());
 		List<Empleado> lstEmpleado = empleadoService.listar();
 		for (Empleado empleado : lstEmpleado) {
-			periodoVacacionService.actualizarPeriodos(empleado, "TAREA_PROGRAMADA");
+			periodoVacacionService.actualizarPeriodos(empleado, USUARIO_OPERACION);
 		}
 		LOGGER.info("[END] actualizarPeridos " + LocalDate.now());
 	}
@@ -113,13 +127,13 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 			if(fechaActual.getDayOfMonth() == fechaCorte.getDayOfMonth() && fechaActual.getMonthValue() == fechaCorte.getMonthValue()) {
 				List<Empleado> lstEmpleado = empleadoService.listar();
 				lstEmpleado.forEach(e -> {
-					vacacionMetaService.consolidarMetaAnual(e, fechaCorte.getYear() + 1, "TAREA_PROGRAMADA");
+					vacacionMetaService.consolidarMetaAnual(e, fechaCorte.getYear() + 1, USUARIO_OPERACION);
 				});
 			}
 		} else {
 			List<Empleado> lstEmpleado = empleadoService.listar();
 			lstEmpleado.forEach(e -> {
-				vacacionMetaService.consolidarMetaAnual(e, fechaCorte.getYear() + 1, "TAREA_PROGRAMADA");
+				vacacionMetaService.consolidarMetaAnual(e, fechaCorte.getYear() + 1, USUARIO_OPERACION);
 			});
 		}
 		LOGGER.info("[END] consolidarMetasAnuales " + LocalDate.now());
@@ -141,7 +155,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 			if(opt.isPresent()) {
 				List<Empleado> lstEmpleado = empleadoService.listar();
 				for (Empleado empleado : lstEmpleado) {
-					notificacionService.registrar(titulo, descripcion, "", opt.get(), empleado, "TAREA_PROGRAMADA");
+					notificacionService.registrar(titulo, descripcion, "", opt.get(), empleado, USUARIO_OPERACION);
 				}
 			}
 		}
@@ -171,7 +185,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 											cargaParametros.MENSAJE_COLABORDOR_META_INCOMPLETA,resumen.getMeta(), anio);
 									Optional<Empleado> optEmpleado = empleadoService.buscarPorId(resumen.getEmpleadoId());
 									if(optEmpleado.isPresent()) {
-										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), "TAREA_PROGRAMADA");
+										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), USUARIO_OPERACION);
 									}
 								}
 							}
@@ -210,7 +224,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 										String descripcion = Utilitario.generarMensajeNotificacion( 
 												cargaParametros.MENSAJE_COLABORDOR_SIN_REGISTRO,
 												 cargaParametros.getFechaFinRegistroProgramacion());
-										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), "TAREA_PROGRAMADA");
+										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), USUARIO_OPERACION);
 									}
 								}
 							}
@@ -260,7 +274,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 										String descripcion = Utilitario.generarMensajeNotificacion(
 												cargaParametros.MENSAJE_JEFE_SIN_REGISTRO_PROGRAMACIONES,
 												new Object[] { String.join(", ", aprobador.getValue()) });
-										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), "TAREA_PROGRAMADA");
+										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), USUARIO_OPERACION);
 									}
 								}
 							}
@@ -310,7 +324,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 									int empleadosAprobados = aprobador.getValue().size();
 									String descripcion = Utilitario.generarMensajeNotificacion(
 											cargaParametros.MENSAJE_JEFE_PENDIENTE_APROBACION, empleadosAprobados);
-									notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), "TAREA_PROGRAMADA");
+									notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), USUARIO_OPERACION);
 								}
 							}
 						}
@@ -393,11 +407,11 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 							try {
 								IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
 								excel.build();
-								Notificacion not = notificacionService.registrar(titulo, descripcion, "", opt.get(), empleado, "TAREA_PROGRAMADA");
+								Notificacion not = notificacionService.registrar(titulo, descripcion, "", opt.get(), empleado, USUARIO_OPERACION);
 								notificacionService.enviarCorreoReporte("REPORTE VACACIONES", "", empleado.getEmail(), empleado.getNombreCompleto(),
 										"vacaciones.xlsx", "application/octet-stream", IOUtils.toByteArray(excel.getReult()));
 								not.setEnviadoCorreo(true);
-								notificacionService.actualizar(not, "TAREA_PROGRAMADA");
+								notificacionService.actualizar(not, USUARIO_OPERACION);
 							} catch (Exception e) {
 								LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
 							}
@@ -469,5 +483,6 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 		// TODO Auto-generated method stub
 		
 	}
+
 
 }

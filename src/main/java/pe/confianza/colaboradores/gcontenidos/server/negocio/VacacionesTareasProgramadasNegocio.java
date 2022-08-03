@@ -2,6 +2,8 @@ package pe.confianza.colaboradores.gcontenidos.server.negocio;
 
 public interface VacacionesTareasProgramadasNegocio {
 	
+	void actualizarAnioPresente();
+	
 	void actualizarEstadoProgramaciones();
 	
 	void actualizarPeriodos();
