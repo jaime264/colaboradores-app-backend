@@ -68,6 +68,7 @@ public class VacacionesTareas {
 
 	@Scheduled(cron = "${vacaciones.programacion.actualizaciones}")
 	public void actualizacionesVacaciones() {
+		actualizarAnio();
 		actualizarEstadoProgramaciones();
 		actualizarPeridos();
 		calcularMetaAnual();
@@ -164,6 +165,12 @@ public class VacacionesTareas {
 			}
 		});
 
+	}
+	
+	private void actualizarAnio() {
+		LOGGER.info("[BEGIN] actualizarAnio " + LocalDateTime.now());
+		vacacionesTareasProgramadasService.actualizarAnioPresente();
+		LOGGER.info("[END] actualizarAnio " + LocalDateTime.now());
 	}
 
 	private void actualizarEstadoProgramaciones() {
