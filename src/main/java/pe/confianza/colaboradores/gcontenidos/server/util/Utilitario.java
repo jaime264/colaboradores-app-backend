@@ -297,7 +297,7 @@ public class Utilitario {
 			String[] mensajeeArray = mensaje.split(" ");
 			int contadorParametro = 0;
 			for (String string : mensajeeArray) {
-				if(string.equals("XX")) {
+				if(string.contains("XX")) {
 					mensajeSb.append("{").append(contadorParametro).append("}")
 					.append(" ");
 					contadorParametro++;
@@ -307,6 +307,7 @@ public class Utilitario {
 			}
 			return MessageFormat.format(mensajeSb.toString().trim(), valores);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return "Error en generar mensaje";
 		}
 	}

@@ -29,6 +29,9 @@ public class MigracionUnidadOperativa extends MigracionBase {
 	
 	@Column(nullable = true)
 	private String codigoAgencia;
+	
+	@Column(nullable = true)
+	private String codigoDivision;
 
 	public long getId() {
 		return id;
@@ -76,6 +79,14 @@ public class MigracionUnidadOperativa extends MigracionBase {
 
 	public void setCodigoAgencia(String codigoAgencia) {
 		this.codigoAgencia = codigoAgencia;
+	}
+
+	public String getCodigoDivision() {
+		return codigoDivision;
+	}
+
+	public void setCodigoDivision(String codigoDivision) {
+		this.codigoDivision = codigoDivision;
 	}
 	
 	

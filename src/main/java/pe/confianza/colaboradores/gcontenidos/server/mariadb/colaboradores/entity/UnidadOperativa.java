@@ -46,6 +46,9 @@ public class UnidadOperativa extends EntidadAuditoria {
 	@Column(nullable = true)
 	private String def;
 	
+	@Column(nullable = true)
+	private String codigoDivision;
+	
 
 	public long getId() {
 		return id;
@@ -125,7 +128,17 @@ public class UnidadOperativa extends EntidadAuditoria {
 
 	public void setDef(String def) {
 		this.def = def;
+	}
+
+	public String getCodigoDivision() {
+		return codigoDivision;
+	}
+
+	public void setCodigoDivision(String codigoDivision) {
+		this.codigoDivision = codigoDivision;
 	}	
+	
+	
 	
 
 }

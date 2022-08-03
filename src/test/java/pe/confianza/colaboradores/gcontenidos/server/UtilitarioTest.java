@@ -11,6 +11,7 @@ import java.util.Arrays;
 import org.apache.poi.util.IOUtils;
 import org.junit.jupiter.api.Test;
 
+import pe.confianza.colaboradores.gcontenidos.server.util.MesesAnio;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 import pe.confianza.colaboradores.gcontenidos.server.util.file.collection.Row;
 import pe.confianza.colaboradores.gcontenidos.server.util.file.read.ColumnType;
@@ -107,6 +108,13 @@ public class UtilitarioTest {
 		LocalDate fecha = LocalDate.parse("31/08/2022", formatter);
 		LocalDate fecha2 = LocalDate.parse("19/09/2022", formatter);
 		System.out.println(Utilitario.fechaEntrePeriodo(fechaInicio, fechaFIn, fecha2));
+	}
+	
+	@Test
+	public void mensaje() {
+		String mensaje = "Estimado Colaborador, Ud puede reprogramar sus vacaciones del mes XX.";
+		String res = Utilitario.generarMensajeNotificacion(mensaje, MesesAnio.buscarPorValor(LocalDate.now().getMonthValue() + 1).descripcion);
+		System.out.println(res);
 	}
 	
 	/*@Test
