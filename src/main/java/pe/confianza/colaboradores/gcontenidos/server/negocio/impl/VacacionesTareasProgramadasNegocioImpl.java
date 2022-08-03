@@ -104,7 +104,23 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 	@Override
 	public void actualizarEstadoProgramaciones() {
 		LOGGER.info("[BEGIN] actualizarEstadoProgramaciones " + LocalDate.now());
-		vacacionProgramacionService.actualizarEstadoProgramaciones();
+		List<VacacionProgramacion> programacionesActualizadas = vacacionProgramacionService.actualizarEstadoProgramaciones();
+		Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
+		List<Notificacion> notificaciones = new ArrayList<>();
+		for (VacacionProgramacion vacacionProgramacion : programacionesActualizadas) {
+			if(vacacionProgramacion.getIdEstado() == EstadoVacacion.GOZANDO.id) {
+				String titulo = "INICIO DE PERIODO DE VACACIONES";
+				String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.inicio", vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin());
+				notificaciones.add(notificacionService.registrar(titulo, descripcion, "", opt.get(), vacacionProgramacion.getPeriodo().getEmpleado(), USUARIO_OPERACION));
+			}
+			if(vacacionProgramacion.getIdEstado() == EstadoVacacion.GOZADO.id) {
+				String titulo = "FIN DE PERIODO DE VACACIONES";
+				String descripcion = Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.fin", vacacionProgramacion.getFechaInicio(), vacacionProgramacion.getFechaFin());
+				notificaciones.add(notificacionService.registrar(titulo, descripcion, "", opt.get(), vacacionProgramacion.getPeriodo().getEmpleado(), USUARIO_OPERACION));
+			}
+		}
+		envioNotificacionNegocio.enviarNotificacionesCorreo(notificaciones);
+		envioNotificacionNegocio.enviarNotificacionesApp(notificaciones);
 		LOGGER.info("[END] actualizarEstadoProgramaciones " + LocalDate.now());
 	}
 

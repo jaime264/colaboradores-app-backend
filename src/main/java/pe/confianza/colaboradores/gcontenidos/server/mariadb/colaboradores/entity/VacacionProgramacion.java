@@ -75,6 +75,10 @@ import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 			@StoredProcedureParameter(mode = ParameterMode.IN, name = "strFechaFinProgramacion", type = String.class),
 			@StoredProcedureParameter(mode = ParameterMode.IN, name = "idProgReprogramar", type = Long.class),
 			@StoredProcedureParameter(mode = ParameterMode.OUT, name = "cantidad", type = Long.class)
+	}),
+	@NamedStoredProcedureQuery(name = "VacacionProgramacion.programacionActualizarEstado",
+	procedureName = "proc_vacacion_programacion_actualizar_estado",  parameters = {
+			@StoredProcedureParameter(mode = ParameterMode.OUT, name = "programacionesModificadas", type = String.class)
 	})
 })
 public class VacacionProgramacion extends EntidadAuditoria implements Serializable{

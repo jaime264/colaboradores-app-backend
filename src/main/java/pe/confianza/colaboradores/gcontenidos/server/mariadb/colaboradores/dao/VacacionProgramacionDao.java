@@ -44,7 +44,7 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	List<VacacionProgramacion> findByPeriodoAndEstado(long idPeriodo, int idEstado);
 	
 	@Procedure(procedureName =  "proc_vacacion_programacion_actualizar_estado")
-	void actualizarEstadoProgramaciones();
+	String actualizarEstadoProgramaciones();
 	
 	@Modifying
 	@Query("update VacacionProgramacion v set v.idEstado = ?1 where v.id = ?2")

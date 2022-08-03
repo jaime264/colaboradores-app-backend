@@ -40,7 +40,7 @@ public interface VacacionProgramacionService {
 	
 	List<VacacionProgramacion> buscarPorUsuarioBT(String usuarioBT);
 	
-	void actualizarEstadoProgramaciones();
+	List<VacacionProgramacion> actualizarEstadoProgramaciones();
 	
 	public void aprobarVacacionPeriodos(List<VacacionPeriodo> vacacionPeriodos);
 	

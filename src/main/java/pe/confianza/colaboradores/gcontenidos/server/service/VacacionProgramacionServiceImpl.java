@@ -61,10 +61,30 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	private EnvioNotificacionNegocio envioNotificacionNegocio;
 
 	@Override
-	public void actualizarEstadoProgramaciones() {
+	public List<VacacionProgramacion> actualizarEstadoProgramaciones() {
 		logger.info("[BEGIN] actualizarEstadoProgramaciones");
-		vacacionProgramacionDao.actualizarEstadoProgramaciones();
+		List<Long> idsProgramaciones = new ArrayList<>();
+		String programacionesActualizadas = vacacionProgramacionDao.actualizarEstadoProgramaciones().trim();
+		String[] programacionesArray = programacionesActualizadas.split(",");
+		for (String prog : programacionesArray) {
+			if(!prog.isEmpty()) {
+				try {
+					idsProgramaciones.add(Long.parseLong(prog));
+				} catch (Exception e) {
+					logger.error("[ERROR] actualizarEstadoProgramaciones", e);
+				}
+			}
+		}
+		List<VacacionProgramacion> programaciones = new ArrayList<>();
+		for (Long id : idsProgramaciones) {
+			try {
+				programaciones.add(buscarPorId(id));
+			} catch (Exception e) {
+				logger.error("[ERROR] actualizarEstadoProgramaciones", e);
+			}
+		}
 		logger.info("[END] actualizarEstadoProgramaciones");
+		return programaciones;
 	}
 
 	@Override
