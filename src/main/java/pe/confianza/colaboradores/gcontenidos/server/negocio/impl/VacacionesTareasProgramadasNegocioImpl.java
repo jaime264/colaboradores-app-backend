@@ -18,6 +18,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Notificacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.NotificacionTipo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionAprobadorNivelI;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionMetaResumen;
@@ -372,7 +373,35 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 								.collect(Collectors.toList());
 						programaciones = programaciones == null ? new ArrayList<>() : programaciones;
 						if(!programaciones.isEmpty()) {
-							notificacionService.registrar(titulo, descripcion, "", opt.get(), empleado, "TAREA_PROGRAMADA");
+							Report reporte = new Report();
+							reporte.setType("XLSX");
+							reporte.setTitle("REPORTE VACACIONES");
+							reporte.getCollection().addHeader("Fecha inicio", ColumnType.LOCALDATE);
+							reporte.getCollection().addHeader("Fecha fin", ColumnType.LOCALDATE);
+							reporte.getCollection().addHeader("Días", ColumnType.INTEGER);
+							for (VacacionProgramacion prog : programaciones) {
+								LocalDate fechaInicio = prog.getFechaInicio();
+								LocalDate fechaFin = prog.getFechaFin();
+								int cantidadDias = prog.getNumeroDias();
+								Row row = new Row();
+								row.addCell("Fecha inicio", fechaInicio);
+								row.addCell("Fecha fin", fechaFin);
+								row.addCell("Días", cantidadDias);
+								reporte.getCollection().setCurrentRow(row);
+								reporte.getCollection().addRow();
+							}
+							try {
+								IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
+								excel.build();
+								Notificacion not = notificacionService.registrar(titulo, descripcion, "", opt.get(), empleado, "TAREA_PROGRAMADA");
+								notificacionService.enviarCorreoReporte("REPORTE VACACIONES", "", empleado.getEmail(), empleado.getNombreCompleto(),
+										"vacaciones.xlsx", "application/octet-stream", IOUtils.toByteArray(excel.getReult()));
+								not.setEnviadoCorreo(true);
+								notificacionService.actualizar(not, "TAREA_PROGRAMADA");
+							} catch (Exception e) {
+								LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
+							}
+							
 						}
 					}
 				}
