@@ -226,7 +226,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 				if(v.getIdEstado() == 3) {
 					Notificacion notificacion = notificacionService.registrar("Vacación Aprobada",
 							"Vacacion con fecha inicio " + vp.get().getFechaInicio() + " y fecha fin " + vp.get().getFechaFin()
-									+ "fue aprobada",
+									+ " fue aprobada",
 							v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
 
 					notificacionService.enviarNotificacionApp(notificacion);
@@ -234,7 +234,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 				}else if(v.getIdEstado() == 4)  {
 					Notificacion notificacion = notificacionService.registrar("Vacación Rechazada",
 							"Vacación con fecha inicio " + vp.get().getFechaInicio() + " y fecha fin " + vp.get().getFechaFin()
-									+ "fue rechazada",
+									+ " fue rechazada",
 							v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
 
 					notificacionService.enviarNotificacionApp(notificacion);
