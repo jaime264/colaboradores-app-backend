@@ -20,20 +20,33 @@ public class Constantes {
 	
 	public final static String TIME_ZONE = "America/Bogota";
 	
+	//RED COMERCIAL
 	public final static String ASESOR_NEGOCIO = "ASESOR DE NEGOCIO";
 	public final static String ASESOR_NEGOCIO_INDIVIDUAL = "ASESOR DE NEGOCIO INCLUSIVO INDIVIDUAL";
 	public final static String ASESOR_NEGOCIO_GRUPAL = "ASESOR DE NEGOCIO INCLUSIVO GRUPAL";
 	public final static String GERENTE_CORREDOR = "GERENTE DE CORREDOR";
 	public final static String ADMINISTRADOR_NEGOCIO = "ADMINISTRADOR DE NEGOCIO";
 	
+	//OPERACIONES
 	public final static String ASESOR_SERVICIO = "ASESOR DE SERVICIO";
 	public final static String SUPERVISOR_OFICINA = "SUPERVISOR DE OFICINA";
 	public final static String ASESOR_PLATAFORMA = "ASESOR DE PLATAFORMA";
 	
+	
+	//RECUPERACIONES
 	public final static String ANALISTA_COBRANZA = "ANALISTA DE COBRANZA";
 	public final static String ANALISTA_RECUPERACIONES = "ANALISTA DE RECUPERACIONES";
 	public final static String RESPONSABLE_DEPARTAMENTO_COBRANZA = "RESPONSABLE DE DEPARTAMENTO DE COBRANZA";
 
+	//STAF LOS QUE SOBRAN
+	
+	//TERRITORIOS
+	public final static String CENTRO_SUR = "CENTRO SUR";
+	public final static String LIMA_ORIENTE = "LIMA ORIENTE";
+	public final static String NOR_ANDINO = "NOR ANDINO";
+	public final static String CORPORATIVO = "CORPORATIVO";
+
+	
 	public class POSICION_EXCEL {
 		public static final int POSICION_CABECERA = 0;
 		public static final int POSICION_CODIGO_SPRING = 1;
