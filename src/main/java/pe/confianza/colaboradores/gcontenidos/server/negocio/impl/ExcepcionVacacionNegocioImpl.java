@@ -3,6 +3,7 @@ package pe.confianza.colaboradores.gcontenidos.server.negocio.impl;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -23,14 +24,18 @@ import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.VacacionProgramacionMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Notificacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.NotificacionTipo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ExcepcionVacacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
+import pe.confianza.colaboradores.gcontenidos.server.service.NotificacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.PeriodoVacacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.FuncionalidadApp;
+import pe.confianza.colaboradores.gcontenidos.server.util.TipoNotificacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 @Service
@@ -52,6 +57,9 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 	
 	@Autowired
 	private MessageSource messageSource;
+	
+	@Autowired
+	private NotificacionService notificacionService;
 
 	@Override
 	public Page<ResponseProgramacionVacacionResumen> resumenProgramaciones(RequestProgramacionesExcepcion filtro) {
@@ -100,14 +108,23 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 			}).collect(Collectors.toList());
 			int totalDiasReprogramados = programaciones.stream().map(p -> p.getNumeroDias()).reduce(0, Integer::sum);
 			
+			String tituloNotificacion = "";
+			StringBuilder mensajeNotificacion =  new StringBuilder("Estimado Colaborador, De acuerdo a tu solicitud, se confirma la programación de tus vacaciones de acuerdo al siguiente detalle: ");
 			if(programacionOriginal.getIdEstado() == EstadoVacacion.GOZANDO.id) { //INTERRUPCION DE VACACIONES
 				programacionOriginal.setInterrupcion(true);
 				programacionOriginal.setDiasGozados(programacionOriginal.getNumeroDias() - totalDiasReprogramados);
 				programacionOriginal.setDiasPendientesGozar(totalDiasReprogramados);
+				tituloNotificacion = "VACACION INTERRUMPIDA";
+				mensajeNotificacion.append(" DEl ").append(programacionOriginal.getFechaInicio())
+				.append(" -AL ").append(programacionOriginal.getFechaFin()).append(" / VACACIONES INTERRUMPIDAS");
 			} else if(programacionOriginal.getIdEstado() == EstadoVacacion.APROBADO.id) { // ANULACION Y REPROGRAMACION
 				programacionOriginal.setAnulacion(true);
 				programacionOriginal.setDiasAnulados(programacionOriginal.getNumeroDias());
 				programacionOriginal.setDiasPendientesGozar(programacionOriginal.getNumeroDias());
+				tituloNotificacion = "VACACION ANULADA";
+				mensajeNotificacion.append(" DEl ").append(programacionOriginal.getFechaInicio())
+				.append(" -AL ").append(programacionOriginal.getFechaFin()).append(" / VACACIONES ANULADAS")
+				.append("\n");
 			} else {
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.excepciones.estado_error"));
 			}
@@ -118,6 +135,18 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 			idsPeriodosModificados.forEach(periodoId -> {
 				actualizarPeriodo(programacionOriginal.getPeriodo().getEmpleado(), periodoId, reprogramacion.getUsuarioOperacion());
 			});
+			for (VacacionProgramacion prog : programacionesReprogramadas) {
+				mensajeNotificacion.append(" DEL ").append(prog.getFechaInicio()).append(" -AL ")
+				.append(prog.getFechaFin()).append(" /VACACION REPROGRAMADA")
+				.append("\n");
+			}
+			Optional<NotificacionTipo> tipoNot = notificacionService
+					.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
+			Notificacion notificacion = notificacionService.registrar(tituloNotificacion, mensajeNotificacion.toString(),
+					null, tipoNot.get(), programacionOriginal.getPeriodo().getEmpleado(), 
+					reprogramacion.getUsuarioOperacion());
+			notificacionService.enviarNotificacionApp(notificacion);
+			notificacionService.enviarNotificacionCorreo(notificacion);
 		} catch (ModelNotFoundException e) {
 			logger.error("[ERROR] actualizarParametroVacaciones", e);
 			throw new ModelNotFoundException(e.getMessage()); 
