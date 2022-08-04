@@ -92,10 +92,10 @@ public class Empleado extends EntidadAuditoria {
 
 	private LocalDateTime fechaAceptacionTc;
 
-	private String codigoPerfilSpring;
-	
 	@Column(nullable = true)
 	private Long codigoGerenteDivision;
+	
+	private String codigoPerfilSpring;
 
 	@ManyToOne
 	@JoinColumn(nullable = true, name = "idPerfilSpring")
