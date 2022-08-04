@@ -20,6 +20,12 @@ public class Constantes {
 	
 	public final static String TIME_ZONE = "America/Bogota";
 	
+	public final static String VACACIONES_PROCESO = "020";
+	public final static String VACACIONES_APROBACIONES_PROCESO = "021";
+	public final static String VACACIONES_REPROGRAMACIONES_PROCESO = "022";
+	public final static String VACACIONES_EXCEPCIONES_PROCESO = "023";
+	public final static String VACACIONES_PARAMETRIA_PROCESO = "024";
+	
 	//RED COMERCIAL
 	public final static String ASESOR_NEGOCIO = "ASESOR DE NEGOCIO";
 	public final static String ASESOR_NEGOCIO_INDIVIDUAL = "ASESOR DE NEGOCIO INCLUSIVO INDIVIDUAL";

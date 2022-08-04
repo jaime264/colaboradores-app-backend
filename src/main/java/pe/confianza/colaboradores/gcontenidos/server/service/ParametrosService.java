@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ReponseReporteTipo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestModificarMetaVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseEmpleadoMeta;
@@ -34,5 +35,9 @@ public interface ParametrosService {
 	Page<ResponseEmpleadoMeta> listarVacacionMeta(RequestFiltroEmpleadoMeta filtro);
 	
 	void actualizarMeta(RequestModificarMetaVacacion actualizacion);
+	
+	List<ReponseReporteTipo> listarTiposReporte();
+	
+	void registrarAuditoria(int status, String mensaje, Object data);
 
 }

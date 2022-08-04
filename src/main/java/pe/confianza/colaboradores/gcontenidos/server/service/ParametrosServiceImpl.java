@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.bson.BsonDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
+
 import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ReponseReporteTipo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestModificarMetaVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAcceso;
@@ -26,6 +30,7 @@ import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundExce
 import pe.confianza.colaboradores.gcontenidos.server.mapper.ParametroMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
+import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.FuncionalidadApp;
 import pe.confianza.colaboradores.gcontenidos.server.util.ParametroUnidad;
 import pe.confianza.colaboradores.gcontenidos.server.util.TipoParametro;
@@ -49,6 +54,12 @@ public class ParametrosServiceImpl implements ParametrosService {
 	
 	@Autowired
 	private ProgramacionVacacionNegocio ProgramacionVacacionNegocio;
+	
+	@Autowired
+	private ReporteTipoService reporteTipoService;
+	
+	@Autowired
+	private AuditoriaService auditoriaService;
 	
 	@Autowired
 	private MessageSource messageSource;
@@ -126,15 +137,19 @@ public class ParametrosServiceImpl implements ParametrosService {
 					descripcionParametro, parametro.getUsuarioOperacion());
 			if(parametroNuevo == null)
 				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.no_encontrado", parametro.getCodigo()));
+			registrarAuditoria(Constantes.COD_OK, Constantes.OK, parametro);
 			return ParametroMapper.convert(parametroNuevo);
 		} catch (ModelNotFoundException e) {
 			logger.error("[ERROR] actualizarParametroVacaciones", e);
+			registrarAuditoria(Constantes.COD_EMPTY, Constantes.DATA_EMPTY, parametro);
 			throw new ModelNotFoundException(e.getMessage()); 
 		} catch (AppException e) {
 			logger.error("[ERROR] actualizarParametroVacaciones", e);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), parametro);
 			throw new AppException(e.getMessage(), e);
 		} catch (Exception e) {
 			logger.error("[ERROR] actualizarParametroVacaciones", e);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), parametro);
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
 		}
 	}
@@ -181,15 +196,42 @@ public class ParametrosServiceImpl implements ParametrosService {
 			if(fechaActual.isAfter(parametrosConstants.getFechaMaximaAprobacionProgramaciones()))
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.meta.fuera_fecha"));
 			ProgramacionVacacionNegocio.actualizarMeta(actualizacion.getIdMeta(), actualizacion.getNuevaMeta(), actualizacion.getUsuarioOperacion().trim());
+			registrarAuditoria(Constantes.COD_OK, Constantes.OK, actualizacion);
 		} catch (ModelNotFoundException e) {
 			logger.error("[ERROR] actualizarParametroVacaciones", e);
+			registrarAuditoria(Constantes.COD_EMPTY, Constantes.DATA_EMPTY, actualizacion);
 			throw new ModelNotFoundException(e.getMessage()); 
 		} catch (AppException e) {
 			logger.error("[ERROR] actualizarParametroVacaciones", e);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), actualizacion);
 			throw new AppException(e.getMessage(), e);
 		} catch (Exception e) {
 			logger.error("[ERROR] actualizarParametroVacaciones", e);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), actualizacion);
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
+		}
+		
+	}
+
+	@Override
+	public List<ReponseReporteTipo> listarTiposReporte() {
+		return reporteTipoService.listarActivos().stream().map(t -> {
+			ReponseReporteTipo tipo = new ReponseReporteTipo();
+			tipo.setCodigo(t.getCodigo());
+			tipo.setDescripcion(t.getDescripcion());
+			return tipo;
+		}).collect(Collectors.toList());
+	}
+
+	@Override
+	public void registrarAuditoria(int status, String mensaje, Object data) {
+		Gson gson = new Gson();
+		try {
+			String jsonData = gson.toJson(data);
+			auditoriaService.createAuditoria("002", Constantes.VACACIONES_PARAMETRIA_PROCESO,
+					status, mensaje, BsonDocument.parse(jsonData));
+		} catch (Exception e) {
+			logger.error("[ERROR] registrarAuditoria", e);
 		}
 		
 	}

@@ -41,6 +41,7 @@ public class ParametrosController {
 	@Autowired
 	private ParametrosService parametrosService;
 	
+	
 	@PostMapping("/parametro/list")
 	public ResponseEntity<?> showParams() {
 		List<Parametro> listParams = null;
