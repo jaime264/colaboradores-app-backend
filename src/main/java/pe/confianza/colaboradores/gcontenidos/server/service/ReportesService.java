@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFiltroVacacionesAprobacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarReportes;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReporteMeta;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseReporteMeta;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.ReporteColaboradores;
 
 public interface ReportesService {
@@ -15,5 +17,7 @@ public interface ReportesService {
 	
 	Page<ReporteColaboradores> listarColaboradores(RequestListarReportes request);
 
-	List<Map<String, String>> liistarFiltrosReporteColaborador(RequestFiltroVacacionesAprobacion reqFiltros);
+	List<Map<String, String>> listarFiltrosReporteColaborador(RequestFiltroVacacionesAprobacion reqFiltros);
+	
+	List<ResponseReporteMeta> listarReporteMeta(RequestReporteMeta request);
 }
