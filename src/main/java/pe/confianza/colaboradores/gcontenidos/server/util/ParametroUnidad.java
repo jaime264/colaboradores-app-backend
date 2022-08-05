@@ -12,7 +12,7 @@ public enum ParametroUnidad {
 	DIA_MES_FECHA("DIA_MES_FECHA","Dia/Mes", String.class),
 	INTERVALO_DIAS("INTERVALO_DIAS", "Días", Integer.class),
 	HORA("HORA", "hora(s)", Integer.class),
-	DIA_MES("DIA_MES", "de cada mes", Integer.class),
+	DIA_MES("DIA_MES", "de c/mes", Integer.class),
 	ESTADO_VACACION("ESTADO_VACACION", "", String.class),
 	TEXTO_GENERAL("TEXTO_GENERAL", "", String.class ),
 	NUMERO_MES("NUMERO_MES", "", Integer.class ),
