@@ -2,6 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,15 @@ public class ReporteTipoServiceImpl implements ReporteTipoService {
 		List<ReporteTipo> tipos = reporteTipoDao.listarActivos();
 		tipos = tipos == null ? new ArrayList<>() : tipos;
 		return tipos;
+	}
+
+
+	@Override
+	public ReporteTipo buscarPorCodigo(String codigo) {
+		Optional<ReporteTipo> optReporte = reporteTipoDao.findOneByCodigo(codigo);
+		if(optReporte.isPresent())
+			return optReporte.get();
+		return null;
 	}
 
 }

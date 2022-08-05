@@ -2,6 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,14 @@ public class PuestoServiceImpl implements PuestoService {
 			response.setDescripcion(p.getDescripcion().toUpperCase());
 			return response;
 		}).collect(Collectors.toList());
+	}
+
+	@Override
+	public Puesto buscarPorId(long id) {
+		Optional<Puesto> optPuesto = dao.findById(id);
+		if(optPuesto.isPresent())
+			return optPuesto.get();
+		return null;
 	}
 
 }

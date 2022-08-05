@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteActualizacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestBuscarPorId;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestModificarMetaVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
@@ -144,6 +146,36 @@ public class ParametrosController {
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);
 		parametrosService.actualizarMeta(modificacion);
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+	
+	@ApiOperation(notes = "Consultar tipos de reportes", value = "url proxy /parametros/vacaciones/reportes/tipos")
+	@GetMapping("/parametros/vacaciones/reportes/tipos")
+	public ResponseEntity<ResponseStatus> tiposResportes() {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(parametrosService.listarTiposReporte());
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+	
+	@ApiOperation(notes = "Registrar acceso a reporte por puesto", value = "url proxy /parametros/vacaciones/reportes")
+	@PostMapping("/parametros/vacaciones/reportes")
+	public ResponseEntity<ResponseStatus> registrarAccesoReporte(@Valid @RequestBody RequestAccesoReporteRegistro registro) {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		parametrosService.registrarAccesoReporte(registro);
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+	
+	@ApiOperation(notes = "Actualizar acceso a reporte por puesto", value = "url proxy /parametros/vacaciones/reportes")
+	@PutMapping("/parametros/vacaciones/reportes")
+	public ResponseEntity<ResponseStatus> actualizarAccesoReporte(@Valid @RequestBody RequestAccesoReporteActualizacion actualziacion) {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		parametrosService.actualizarAccesoReporte(actualziacion);
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	

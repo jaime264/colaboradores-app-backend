@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 
 import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ReponseReporteTipo;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteActualizacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestModificarMetaVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseEmpleadoMeta;
@@ -38,6 +40,11 @@ public interface ParametrosService {
 	
 	List<ReponseReporteTipo> listarTiposReporte();
 	
+	void registrarAccesoReporte(RequestAccesoReporteRegistro acceso);
+	
+	void actualizarAccesoReporte(RequestAccesoReporteActualizacion acceso);
+	
 	void registrarAuditoria(int status, String mensaje, Object data);
+	
 
 }

@@ -18,6 +18,8 @@ import com.google.gson.Gson;
 
 import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ReponseReporteTipo;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteActualizacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestModificarMetaVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAcceso;
@@ -29,6 +31,9 @@ import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.ParametroMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Puesto;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.ReporteAcceso;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.ReporteTipo;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.FuncionalidadApp;
@@ -57,6 +62,12 @@ public class ParametrosServiceImpl implements ParametrosService {
 	
 	@Autowired
 	private ReporteTipoService reporteTipoService;
+	
+	@Autowired
+	private ReporteAccesoService reporteAccesoService;
+	
+	@Autowired
+	private PuestoService puestoService;
 	
 	@Autowired
 	private AuditoriaService auditoriaService;
@@ -222,6 +233,79 @@ public class ParametrosServiceImpl implements ParametrosService {
 			return tipo;
 		}).collect(Collectors.toList());
 	}
+	
+	@Override
+	public void registrarAccesoReporte(RequestAccesoReporteRegistro accesoRequest) {
+		try {
+			String usuarioOperacion = accesoRequest.getLogAuditoria().getUsuario();
+			List<ResponseAcceso> accesos = empleadoService.consultaAccesos(usuarioOperacion);
+			boolean tienePermiso = false;
+			for (ResponseAcceso acceso : accesos) {
+				if(FuncionalidadApp.PARAMETRIA_VACACIONES.codigo.equals(acceso.getFuncionalidadCodigo()) && acceso.isModificar()) {
+					tienePermiso = true;
+				}
+			}
+			if(!tienePermiso)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.sin_permiso", usuarioOperacion));
+			ReporteTipo tipo = reporteTipoService.buscarPorCodigo(accesoRequest.getCodigoReporte());
+			if(tipo == null)
+				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.reporte.codigo_not_found", accesoRequest.getCodigoReporte()));
+			Puesto puesto = puestoService.buscarPorId(accesoRequest.getIdPuesto());
+			if(puesto == null)
+				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.reporte.puesto_not_found", accesoRequest.getIdPuesto()));
+			ReporteAcceso acceso = new ReporteAcceso();
+			acceso.setPuesto(puesto);
+			acceso.setTipo(tipo);
+			acceso.setFechaEnvio(accesoRequest.getFechaEnvio());
+			acceso = reporteAccesoService.registrar(acceso, usuarioOperacion);
+			registrarAuditoria(Constantes.COD_OK, Constantes.OK, accesoRequest);
+		} catch (ModelNotFoundException e) {
+			logger.error("[ERROR] registrarAccesoReporte", e);
+			registrarAuditoria(Constantes.COD_EMPTY, Constantes.DATA_EMPTY, accesoRequest);
+			throw new ModelNotFoundException(e.getMessage()); 
+		} catch (AppException e) {
+			logger.error("[ERROR] registrarAccesoReporte", e);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), accesoRequest);
+			throw new AppException(e.getMessage(), e);
+		} catch (Exception e) {
+			logger.error("[ERROR] registrarAccesoReporte", e);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), accesoRequest);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
+		}
+		
+	}
+	
+	@Override
+	public void actualizarAccesoReporte(RequestAccesoReporteActualizacion accesoRequest) {
+		try {
+			String usuarioOperacion = accesoRequest.getLogAuditoria().getUsuario();
+			List<ResponseAcceso> accesos = empleadoService.consultaAccesos(usuarioOperacion);
+			boolean tienePermiso = false;
+			for (ResponseAcceso acceso : accesos) {
+				if(FuncionalidadApp.PARAMETRIA_VACACIONES.codigo.equals(acceso.getFuncionalidadCodigo()) && acceso.isModificar()) {
+					tienePermiso = true;
+				}
+			}
+			if(!tienePermiso)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.sin_permiso", usuarioOperacion));
+			ReporteAcceso acceso  = reporteAccesoService.actualizar(accesoRequest.getIdAcceso(), accesoRequest.getFechaEnvio(), usuarioOperacion);
+			if(acceso == null)
+				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "app.error.objeto_no_encontrado"));
+		} catch (ModelNotFoundException e) {
+			logger.error("[ERROR] registrarAccesoReporte", e);
+			registrarAuditoria(Constantes.COD_EMPTY, Constantes.DATA_EMPTY, accesoRequest);
+			throw new ModelNotFoundException(e.getMessage()); 
+		} catch (AppException e) {
+			logger.error("[ERROR] registrarAccesoReporte", e);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), accesoRequest);
+			throw new AppException(e.getMessage(), e);
+		} catch (Exception e) {
+			logger.error("[ERROR] registrarAccesoReporte", e);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), accesoRequest);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
+		}
+		
+	}
 
 	@Override
 	public void registrarAuditoria(int status, String mensaje, Object data) {
@@ -235,6 +319,10 @@ public class ParametrosServiceImpl implements ParametrosService {
 		}
 		
 	}
+
+
+
+
 	
 
 }
