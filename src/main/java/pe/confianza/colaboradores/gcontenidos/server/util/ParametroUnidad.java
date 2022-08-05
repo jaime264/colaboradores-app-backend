@@ -53,31 +53,32 @@ public enum ParametroUnidad {
 		if(Integer.class == unidad.clazz) {
 			try {
 				int intValor = Integer.parseInt(valor);
-				if(ParametroUnidad.NUMERO_GENERAL.codigo.equals(valor)) {
+				System.out.println(intValor);
+				if(ParametroUnidad.NUMERO_GENERAL.codigo.equals(unidad.codigo)) {
 					if(intValor < 1)
 						return false;
 				}
-				if(ParametroUnidad.HORA.codigo.equals(valor)) {
+				if(ParametroUnidad.HORA.codigo.equals(unidad.codigo)) {
 					if(intValor < 0 || intValor > 23)
 						return false;
 				}
-				if(ParametroUnidad.DIA_MES.codigo.equals(valor)) {
+				if(ParametroUnidad.DIA_MES.codigo.equals(unidad.codigo)) {
 					if(intValor < 1 || intValor > 30)
 						return false;
 				}
-				if(ParametroUnidad.INTERVALO_DIAS.codigo.equals(valor)) {
+				if(ParametroUnidad.INTERVALO_DIAS.codigo.equals(unidad.codigo)) {
 					if(intValor < 1)
 						return false;
 				}
-				if(ParametroUnidad.DIAS.codigo.equals(valor)) {
+				if(ParametroUnidad.DIAS.codigo.equals(unidad.codigo)) {
 					if(intValor < 1)
 						return false;
 				}
-				if(ParametroUnidad.MESES.codigo.equals(valor)) {
+				if(ParametroUnidad.MESES.codigo.equals(unidad.codigo)) {
 					if(intValor < 1)
 						return false;
 				}
-				if(ParametroUnidad.NUMERO_MES.codigo.equals(valor)) {
+				if(ParametroUnidad.NUMERO_MES.codigo.equals(unidad.codigo)) {
 					if(intValor < 1 || intValor > 12)
 						return false;
 				}
@@ -89,7 +90,7 @@ public enum ParametroUnidad {
 		if(Double.class == unidad.clazz) {
 			try {
 				double dValor = Double.parseDouble(valor);
-				if(ParametroUnidad.PORCENTAJE.codigo.equals(valor)) {
+				if(ParametroUnidad.PORCENTAJE.codigo.equals(unidad.codigo)) {
 					if(dValor < 0 || dValor > 100)
 						return false;
 				}

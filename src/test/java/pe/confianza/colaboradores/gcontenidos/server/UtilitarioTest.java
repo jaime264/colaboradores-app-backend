@@ -12,6 +12,7 @@ import org.apache.poi.util.IOUtils;
 import org.junit.jupiter.api.Test;
 
 import pe.confianza.colaboradores.gcontenidos.server.util.MesesAnio;
+import pe.confianza.colaboradores.gcontenidos.server.util.ParametroUnidad;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 import pe.confianza.colaboradores.gcontenidos.server.util.file.collection.Row;
 import pe.confianza.colaboradores.gcontenidos.server.util.file.read.ColumnType;
@@ -115,6 +116,12 @@ public class UtilitarioTest {
 		String mensaje = "Estimado Colaborador, Ud puede reprogramar sus vacaciones del mes XX.";
 		String res = Utilitario.generarMensajeNotificacion(mensaje, MesesAnio.buscarPorValor(LocalDate.now().getMonthValue() + 1).descripcion);
 		System.out.println(res);
+	}
+	
+	@Test
+	public void validarParam() {
+		boolean es =ParametroUnidad.esValidoValor(ParametroUnidad.NUMERO_GENERAL, "-1");
+		System.out.println(es);
 	}
 	
 	/*@Test
