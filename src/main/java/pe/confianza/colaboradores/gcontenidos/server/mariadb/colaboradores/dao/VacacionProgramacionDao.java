@@ -87,11 +87,11 @@ public interface VacacionProgramacionDao extends JpaRepository<VacacionProgramac
 	@Query("SELECT e FROM VacacionProgramacion vp INNER JOIN vp.periodo p INNER JOIN p.empleado e where (e.codigoNivel1 = ?1 OR e.codigoNivel1 = ?1) AND vp.idEstado = 2 AND vp.estadoRegistro = 'A' AND e.estadoRegistro = 'A'")
 	List<Empleado> listarEmpleadosPorAprobar(long codigoAprobador);
 	
-	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.idEstado > 1 AND vp.estadoRegistro = 'A' order by vp.periodo.empleado.nombres ASC ")
-	Page<VacacionProgramacion> listarProgramacionesDiferenteRegistrado(Pageable pageable);
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE (vp.idEstado = 3 OR vp.idEstado = 5) AND vp.estadoRegistro = 'A' order by vp.periodo.empleado.nombres ASC ")
+	Page<VacacionProgramacion> listarProgramacionesPorInterrumpirYAnular(Pageable pageable);
 	
-	@Query("SELECT vp FROM VacacionProgramacion vp WHERE UPPER(CONCAT(vp.periodo.empleado.nombres, ' ', vp.periodo.empleado.apellidoPaterno, ' ', vp.periodo.empleado.apellidoMaterno)) LIKE CONCAT('%', ?1, '%') AND  vp.idEstado > 1 AND vp.estadoRegistro = 'A' order by vp.periodo.empleado.nombres ASC ")
-	Page<VacacionProgramacion> listarProgramacionesDiferenteRegistrado(String nombre, Pageable pageable);
+	@Query("SELECT vp FROM VacacionProgramacion vp WHERE UPPER(CONCAT(vp.periodo.empleado.nombres, ' ', vp.periodo.empleado.apellidoPaterno, ' ', vp.periodo.empleado.apellidoMaterno)) LIKE CONCAT('%', ?1, '%') AND  (vp.idEstado = 3 OR vp.idEstado = 5) AND vp.estadoRegistro = 'A' order by vp.periodo.empleado.nombres ASC ")
+	Page<VacacionProgramacion> listarProgramacionesPorInterrumpirYAnular(String nombre, Pageable pageable);
 	
 	@Query("SELECT vp FROM VacacionProgramacion vp WHERE vp.idEstado = ?1")
 	List<VacacionProgramacion> listarPorEstado(int idEstado);

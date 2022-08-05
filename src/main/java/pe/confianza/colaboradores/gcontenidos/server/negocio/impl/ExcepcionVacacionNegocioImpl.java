@@ -68,7 +68,7 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 			Pageable paginacion = PageRequest.of(filtro.getNumeroPagina(), filtro.getTamanioPagina());
 			if(filtro.getFiltro() == null)
 				filtro.setFiltro("");
-			Page<VacacionProgramacion> page = vacacionProgramacionService.listarProgramacionesDiferenteRegistrado(filtro.getFiltro(), paginacion);
+			Page<VacacionProgramacion> page = vacacionProgramacionService.listarProgramacionesPorInterrumpirYAnular(filtro.getFiltro(), paginacion);
 			logger.info("[END] resumenProgramaciones");
 			return page.map(p -> {
 				return VacacionProgramacionMapper.convertResumen(p, cargaParametros);

@@ -630,10 +630,10 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	}
 
 	@Override
-	public Page<VacacionProgramacion> listarProgramacionesDiferenteRegistrado(String nombre, Pageable pageable) {
+	public Page<VacacionProgramacion> listarProgramacionesPorInterrumpirYAnular(String nombre, Pageable pageable) {
 		if (nombre.isEmpty())
-			return vacacionProgramacionDao.listarProgramacionesDiferenteRegistrado(pageable);
-		return vacacionProgramacionDao.listarProgramacionesDiferenteRegistrado(nombre, pageable);
+			return vacacionProgramacionDao.listarProgramacionesPorInterrumpirYAnular(pageable);
+		return vacacionProgramacionDao.listarProgramacionesPorInterrumpirYAnular(nombre, pageable);
 	}
 
 }

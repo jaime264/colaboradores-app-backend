@@ -75,7 +75,7 @@ public interface VacacionProgramacionService {
 	Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelII(int anio, long codigoAprobador);
 
 	
-	Page<VacacionProgramacion> listarProgramacionesDiferenteRegistrado(String nombre, Pageable pageable);
+	Page<VacacionProgramacion> listarProgramacionesPorInterrumpirYAnular(String nombre, Pageable pageable);
 	
 	List<EmplVacPerRes> listEmpleadoProgramacionFilter(RequestProgramacionEmpleado reqPrograEmp);
 }
