@@ -143,7 +143,7 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 			Optional<NotificacionTipo> tipoNot = notificacionService
 					.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
 			Notificacion notificacion = notificacionService.registrar(tituloNotificacion, mensajeNotificacion.toString(),
-					null, tipoNot.get(), programacionOriginal.getPeriodo().getEmpleado(), 
+					"", tipoNot.get(), programacionOriginal.getPeriodo().getEmpleado(), 
 					reprogramacion.getUsuarioOperacion());
 			notificacionService.enviarNotificacionApp(notificacion);
 			notificacionService.enviarNotificacionCorreo(notificacion);
