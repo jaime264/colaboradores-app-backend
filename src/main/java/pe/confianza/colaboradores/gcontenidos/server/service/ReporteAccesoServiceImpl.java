@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAccesoReporte;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ReporteAccesoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.ReporteAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
@@ -54,6 +57,13 @@ public class ReporteAccesoServiceImpl implements ReporteAccesoService {
 	@Override
 	public void eliminar(long id) {
 		reporteAccesoDao.deleteById(id);
+	}
+
+	@Override
+	public Page<ReporteAcceso> listar(Long idPuesto, Pageable pageable) {
+		if(idPuesto == null)
+			return reporteAccesoDao.listar(pageable);
+		return reporteAccesoDao.listar(idPuesto, pageable);
 	}
 
 }

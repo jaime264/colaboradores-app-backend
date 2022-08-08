@@ -26,6 +26,7 @@ import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizaci
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteActualizacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestBuscarPorId;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarReporteAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestModificarMetaVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
@@ -171,11 +172,21 @@ public class ParametrosController {
 	
 	@ApiOperation(notes = "Actualizar acceso a reporte por puesto", value = "url proxy /parametros/vacaciones/reportes")
 	@PutMapping("/parametros/vacaciones/reportes")
-	public ResponseEntity<ResponseStatus> actualizarAccesoReporte(@Valid @RequestBody RequestAccesoReporteActualizacion actualziacion) {
+	public ResponseEntity<ResponseStatus> actualizarAccesoReporte(@Valid @RequestBody RequestAccesoReporteActualizacion actualizacion) {
 		ResponseStatus responseStatus = new ResponseStatus();
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);
-		parametrosService.actualizarAccesoReporte(actualziacion);
+		parametrosService.actualizarAccesoReporte(actualizacion);
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+	
+	@ApiOperation(notes = "Conuslta de accesos a reportes", value = "url proxy /parametros/vacaciones/reportes/consulta")
+	@PostMapping("/parametros/vacaciones/reportes/consulta")
+	public ResponseEntity<ResponseStatus> actualizarAccesoReporte(@Valid @RequestBody RequestListarReporteAcceso request) {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(parametrosService.listarReporteAcceso(request));
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	

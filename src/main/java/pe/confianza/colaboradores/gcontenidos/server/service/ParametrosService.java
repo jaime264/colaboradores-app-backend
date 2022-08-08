@@ -8,8 +8,10 @@ import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizaci
 import pe.confianza.colaboradores.gcontenidos.server.bean.ReponseReporteTipo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteActualizacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteRegistro;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarReporteAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestModificarMetaVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAccesoReporte;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseEmpleadoMeta;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametroTipo;
@@ -45,6 +47,8 @@ public interface ParametrosService {
 	void actualizarAccesoReporte(RequestAccesoReporteActualizacion acceso);
 	
 	void registrarAuditoria(int status, String mensaje, Object data);
+	
+	Page<ResponseAccesoReporte> listarReporteAcceso(RequestListarReporteAcceso request);
 	
 
 }

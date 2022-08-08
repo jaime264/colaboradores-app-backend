@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
@@ -20,12 +22,15 @@ import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizaci
 import pe.confianza.colaboradores.gcontenidos.server.bean.ReponseReporteTipo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteActualizacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteRegistro;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarReporteAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestModificarMetaVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAcceso;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAccesoReporte;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseEmpleadoMeta;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseParametroTipo;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponsePuesto;
 import pe.confianza.colaboradores.gcontenidos.server.controller.RequestFiltroEmpleadoMeta;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
@@ -291,6 +296,7 @@ public class ParametrosServiceImpl implements ParametrosService {
 			ReporteAcceso acceso  = reporteAccesoService.actualizar(accesoRequest.getIdAcceso(), accesoRequest.getFechaEnvio(), usuarioOperacion);
 			if(acceso == null)
 				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "app.error.objeto_no_encontrado"));
+			registrarAuditoria(Constantes.COD_OK, Constantes.OK, accesoRequest);
 		} catch (ModelNotFoundException e) {
 			logger.error("[ERROR] registrarAccesoReporte", e);
 			registrarAuditoria(Constantes.COD_EMPTY, Constantes.DATA_EMPTY, accesoRequest);
@@ -306,6 +312,32 @@ public class ParametrosServiceImpl implements ParametrosService {
 		}
 		
 	}
+	
+	@Override
+	public Page<ResponseAccesoReporte> listarReporteAcceso(RequestListarReporteAcceso filtro) {
+		try {
+			Pageable paginacion = PageRequest.of(filtro.getNumeroPagina(), filtro.getTamanioPagina());
+			Page<ReporteAcceso> page = reporteAccesoService.listar(filtro.getIdPuesto(), paginacion);
+			registrarAuditoria(Constantes.COD_OK, Constantes.OK, filtro);
+			return page.map( r -> {
+				ResponseAccesoReporte res = new ResponseAccesoReporte();
+				res.setId(r.getId());
+				ReponseReporteTipo tipo = new ReponseReporteTipo();
+				tipo.setCodigo(r.getTipo().getCodigo());
+				tipo.setDescripcion(r.getTipo().getDescripcion());
+				ResponsePuesto puesto = new ResponsePuesto();
+				puesto.setId(r.getPuesto().getId());
+				puesto.setDescripcion(r.getPuesto().getDescripcion());
+				res.setTipoReporte(tipo);
+				res.setPuesto(puesto);
+				return res;
+			});
+		} catch (Exception e) {
+			logger.error("[ERROR] listarReporteAcceso", e);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), filtro);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
+		}
+	}
 
 	@Override
 	public void registrarAuditoria(int status, String mensaje, Object data) {
@@ -318,11 +350,6 @@ public class ParametrosServiceImpl implements ParametrosService {
 			logger.error("[ERROR] registrarAuditoria", e);
 		}
 		
-	}
-
-
-
-
-	
+	}	
 
 }
