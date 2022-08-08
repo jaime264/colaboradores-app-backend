@@ -18,6 +18,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.V
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
@@ -33,6 +34,9 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 	
 	@Autowired
 	private VacacionProgramacionDao vacacionProgramacionDao;
+	
+	@Autowired
+	private CargaParametros cargaParametros;
 
 	@Override
 	public void actualizarPeriodos(Empleado empleado, String usuarioOperacion) {
@@ -147,7 +151,7 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 		periodo.setNumero(numero);
 		periodo.setFechaInicioPeriodo(empleado.getFechaIngreso().plusYears(anio - empleado.getFechaIngreso().getYear()));
 		periodo.setFechaFinPeriodo(empleado.getFechaIngreso().plusYears(anio - empleado.getFechaIngreso().getYear() + 1).plusDays(-1));
-		periodo.setFechaLimiteIndemnizacion(empleado.getFechaIngreso().plusYears(anio - empleado.getFechaIngreso().getYear() + 2).plusDays(-1));
+		periodo.setFechaLimiteIndemnizacion(empleado.getFechaIngreso().plusYears(anio - empleado.getFechaIngreso().getYear()).plusMonths(cargaParametros.getMesesParaIndemnizacion()) .plusDays(-1));
 		periodo.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
 		periodo.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
 		periodo = periodoVacacionDao.saveAndFlush(periodo);
