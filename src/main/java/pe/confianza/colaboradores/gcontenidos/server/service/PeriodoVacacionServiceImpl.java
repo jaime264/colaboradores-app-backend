@@ -150,8 +150,8 @@ public class PeriodoVacacionServiceImpl implements PeriodoVacacionService {
 		periodo.setMes(empleado.getFechaIngreso().getMonthValue());
 		periodo.setNumero(numero);
 		periodo.setFechaInicioPeriodo(empleado.getFechaIngreso().plusYears(anio - empleado.getFechaIngreso().getYear()));
-		periodo.setFechaFinPeriodo(empleado.getFechaIngreso().plusYears(anio - empleado.getFechaIngreso().getYear() + 1).plusDays(-1));
-		periodo.setFechaLimiteIndemnizacion(empleado.getFechaIngreso().plusYears(anio - empleado.getFechaIngreso().getYear()).plusMonths(cargaParametros.getMesesParaIndemnizacion()) .plusDays(-1));
+		periodo.setFechaFinPeriodo(empleado.getFechaIngreso().plusYears(anio - empleado.getFechaIngreso().getYear() + 1).minusDays(1));
+		periodo.setFechaLimiteIndemnizacion(empleado.getFechaIngreso().plusYears(anio - empleado.getFechaIngreso().getYear()).plusMonths(cargaParametros.getMesesParaIndemnizacion()).minusDays(1));
 		periodo.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
 		periodo.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
 		periodo = periodoVacacionDao.saveAndFlush(periodo);
