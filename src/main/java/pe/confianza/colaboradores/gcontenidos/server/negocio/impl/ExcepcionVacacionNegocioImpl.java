@@ -20,6 +20,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionesE
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramacionTramo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacionResumen;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.VacacionProgramacionMapper;
@@ -33,6 +34,7 @@ import pe.confianza.colaboradores.gcontenidos.server.service.NotificacionService
 import pe.confianza.colaboradores.gcontenidos.server.service.PeriodoVacacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
+import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.FuncionalidadApp;
 import pe.confianza.colaboradores.gcontenidos.server.util.TipoNotificacion;
@@ -80,7 +82,7 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 	}
 	
 	@Override
-	public void reprogramar(RequestProgramacionExcepcion reprogramacion) {
+	public ResponseStatus reprogramar(RequestProgramacionExcepcion reprogramacion) {
 		try {
 			List<ResponseAcceso> accesos = empleadoService.consultaAccesos(reprogramacion.getUsuarioOperacion());
 			boolean tienePermiso = false;
@@ -110,6 +112,7 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 			
 			String tituloNotificacion = "";
 			StringBuilder mensajeNotificacion =  new StringBuilder("Estimado Colaborador, De acuerdo a tu solicitud, se confirma la programación de tus vacaciones de acuerdo al siguiente detalle: ");
+			String mensajeRespuesta = "";
 			if(programacionOriginal.getIdEstado() == EstadoVacacion.GOZANDO.id) { //INTERRUPCION DE VACACIONES
 				programacionOriginal.setInterrupcion(true);
 				programacionOriginal.setDiasGozados(programacionOriginal.getNumeroDias() - totalDiasReprogramados);
@@ -117,6 +120,7 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 				tituloNotificacion = "VACACION INTERRUMPIDA";
 				mensajeNotificacion.append(" DEl ").append(programacionOriginal.getFechaInicio())
 				.append(" -AL ").append(programacionOriginal.getFechaFin()).append(" / VACACIONES INTERRUMPIDAS");
+				mensajeRespuesta = Utilitario.obtenerMensaje(messageSource, "vacaciones.excepciones.interrupcion.ok");
 			} else if(programacionOriginal.getIdEstado() == EstadoVacacion.APROBADO.id) { // ANULACION Y REPROGRAMACION
 				programacionOriginal.setAnulacion(true);
 				programacionOriginal.setDiasAnulados(programacionOriginal.getNumeroDias());
@@ -125,6 +129,7 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 				mensajeNotificacion.append(" DEl ").append(programacionOriginal.getFechaInicio())
 				.append(" -AL ").append(programacionOriginal.getFechaFin()).append(" / VACACIONES ANULADAS")
 				.append("\n");
+				mensajeRespuesta = Utilitario.obtenerMensaje(messageSource, "vacaciones.excepciones.anulacion.ok");
 			} else {
 				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.excepciones.estado_error"));
 			}
@@ -147,6 +152,10 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 					reprogramacion.getUsuarioOperacion());
 			notificacionService.enviarNotificacionApp(notificacion);
 			notificacionService.enviarNotificacionCorreo(notificacion);
+			ResponseStatus responseStatus = new ResponseStatus();
+			responseStatus.setCodeStatus(Constantes.COD_OK);
+			responseStatus.setMsgStatus(mensajeRespuesta);
+			return responseStatus;
 		} catch (ModelNotFoundException e) {
 			logger.error("[ERROR] actualizarParametroVacaciones", e);
 			throw new ModelNotFoundException(e.getMessage()); 
