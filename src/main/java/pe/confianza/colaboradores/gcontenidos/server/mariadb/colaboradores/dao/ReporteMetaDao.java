@@ -14,8 +14,9 @@ public interface ReporteMetaDao extends JpaRepository<VacacionMeta, Long> {
 	@Query(value = "select 'META' as categoria, SUM(vm.meta) as meta, "
 			+ "	SUM(vm.meta_inicial) as metainicial, SUM(vp.dias_gozados) as diasgozados, 'opcional' as opcional from "
 			+ "	vacacion_meta vm inner join vacacion_periodo vp on 	vm.id_empleado = vp.id_empleado "
-			+ "where 	(e.codigo_nivel1 like %:codigo "
-			+ " or e.codigo_nivel2 like %:codigo) and vm.anio = :anio", nativeQuery = true)
+			+ "inner join empleado e on e.id = vm.id_empleado "
+			+ "where vm.anio = :anio and ( e.codigo_nivel1 like %:codigo "
+			+ " or e.codigo_nivel2 like %:codigo ) ", nativeQuery = true)
 	List<IReporteMeta> reporteMeta(@Param("codigo") String codigoNivel, @Param("anio") int anio);
 
 	@Query(value = "select " + "	t.descripcion as categoria, " + "	SUM(vm.meta) as meta, "

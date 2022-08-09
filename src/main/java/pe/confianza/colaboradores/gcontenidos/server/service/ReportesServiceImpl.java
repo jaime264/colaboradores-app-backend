@@ -101,11 +101,11 @@ public class ReportesServiceImpl implements ReportesService {
 					request.getFiltro(), paginacion, anio);
 			break;
 		case "DIVISION":
-			reporteColaboradores = reporteDao.reporteColaboradoresCorredor(request.getCodigoUsuario(),
+			reporteColaboradores = reporteDao.reporteColaboradoresDivision(request.getCodigoUsuario(),
 					request.getFiltro(), paginacion, anio);
 			break;
 		case "COLECTIVO":
-			reporteColaboradores = reporteDao.reporteColaboradoresCorredor(request.getCodigoUsuario(),
+			reporteColaboradores = reporteDao.reporteColaboradoresColectivo(request.getCodigoUsuario(),
 					request.getFiltro(), paginacion, anio);
 			break;
 		case "INGRESO":
