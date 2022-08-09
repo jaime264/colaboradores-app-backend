@@ -8,6 +8,8 @@ import lombok.Setter;
 public class RequestReporteMeta {
 
 	private String codigoUsuario;
+	private String usuarioBt;
 	private String tipoReporte;
+	private String Filtro;
 	
 }

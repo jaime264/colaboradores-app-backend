@@ -1,12 +1,15 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.poi.util.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,16 +24,33 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseReporteMeta;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ReporteMetaDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ReportesDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.ReporteColaboradores;
-import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
+import pe.confianza.colaboradores.gcontenidos.server.negocio.impl.VacacionesTareasProgramadasNegocioImpl;
+import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.collection.Row;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.read.ColumnType;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.write.IReport;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.write.Report;
+import pe.confianza.colaboradores.gcontenidos.server.util.file.write.ReportFactory;
 
 @Service
 public class ReportesServiceImpl implements ReportesService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(VacacionesTareasProgramadasNegocioImpl.class);
 
 	@Autowired
 	ReportesDao reporteDao;
 
 	@Autowired
 	ReporteMetaDao reporteMetaDao;
+
+	@Autowired
+	private ReportFactory reportFactory;
+
+	@Autowired
+	private CargaParametros cargaParametros;
+	
+	@Autowired
+	ReporteAccesoService reporteAccesoService;
 
 	@Override
 	public List<ReporteColaboradores> obtenerTodos() {
@@ -47,42 +67,53 @@ public class ReportesServiceImpl implements ReportesService {
 
 	@Override
 	public Page<ReporteColaboradores> listarColaboradores(RequestListarReportes request) {
-		// TODO Auto-generated method stub
-		Pageable paginacion = PageRequest.of(request.getNumeroPagina(), request.getTamanioPagina());
 
+		int empleadoAprob = reporteAccesoService.cantidadEmpleadosAcceso(request.getCodigoUsuario());
+		if(empleadoAprob > 0) request.setCodigoUsuario("");
+		
+		int anio = cargaParametros.getMetaVacacionAnio();
+		Pageable paginacion = PageRequest.of(request.getNumeroPagina(), request.getTamanioPagina());
 		Page<ReporteColaboradores> reporteColaboradores = null;
 
 		switch (request.getTipoFiltro().trim().toUpperCase()) {
 		case "CODIGO":
 			reporteColaboradores = reporteDao.reporteColaboradoresCodigo(request.getCodigoUsuario(),
-					request.getFiltro(), paginacion);
+					request.getFiltro(), paginacion, anio);
 			break;
 		case "NOMBRE":
 			reporteColaboradores = reporteDao.reporteColaboradoresNombre(request.getCodigoUsuario(),
-					request.getFiltro(), paginacion);
+					request.getFiltro(), paginacion, anio);
 			break;
 		case "CARGO":
 			reporteColaboradores = reporteDao.reporteColaboradoresPuesto(request.getCodigoUsuario(),
-					request.getFiltro(), paginacion);
+					request.getFiltro(), paginacion, anio);
 			break;
 		case "AGENCIA":
 			reporteColaboradores = reporteDao.reporteColaboradoresAgencia(request.getCodigoUsuario(),
-					request.getFiltro(), paginacion);
+					request.getFiltro(), paginacion, anio);
 			break;
 		case "TERRITORIO":
 			reporteColaboradores = reporteDao.reporteColaboradoresTerritorio(request.getCodigoUsuario(),
-					request.getFiltro(), paginacion);
+					request.getFiltro(), paginacion, anio);
 			break;
 		case "CORREDOR":
 			reporteColaboradores = reporteDao.reporteColaboradoresCorredor(request.getCodigoUsuario(),
-					request.getFiltro(), paginacion);
+					request.getFiltro(), paginacion, anio);
+			break;
+		case "DIVISION":
+			reporteColaboradores = reporteDao.reporteColaboradoresCorredor(request.getCodigoUsuario(),
+					request.getFiltro(), paginacion, anio);
+			break;
+		case "COLECTIVO":
+			reporteColaboradores = reporteDao.reporteColaboradoresCorredor(request.getCodigoUsuario(),
+					request.getFiltro(), paginacion, anio);
 			break;
 		case "INGRESO":
 			reporteColaboradores = reporteDao.reporteColaboradoresIngreso(request.getCodigoUsuario(),
-					request.getFechaInicio(), request.getFechaFin(), paginacion);
+					request.getFechaInicio(), request.getFechaFin(), paginacion, anio);
 			break;
 		default:
-			reporteColaboradores = reporteDao.reporteColaboradores(request.getCodigoUsuario(), paginacion);
+			reporteColaboradores = reporteDao.reporteColaboradores(request.getCodigoUsuario(), paginacion, anio);
 			break;
 		}
 
@@ -103,8 +134,12 @@ public class ReportesServiceImpl implements ReportesService {
 	@Override
 	public List<Map<String, String>> listarFiltrosReporteColaborador(RequestFiltroVacacionesAprobacion reqFiltros) {
 		// TODO Auto-generated method stub
-		List<ReporteColaboradores> reporteColaboradores = reporteDao.reporteColaboradoresList(reqFiltros.getCodigo());
-
+		
+		int empleadoAprob = reporteAccesoService.cantidadEmpleadosAcceso(reqFiltros.getCodigo());
+		if(empleadoAprob > 0) reqFiltros.setCodigo("");
+		
+		int anio = cargaParametros.getMetaVacacionAnio();
+		List<ReporteColaboradores> reporteColaboradores = reporteDao.reporteColaboradoresList(reqFiltros.getCodigo(), anio);
 		List<Map<String, String>> datos = new ArrayList<>();
 		List<String> valores = new ArrayList<>();
 
@@ -128,6 +163,12 @@ public class ReportesServiceImpl implements ReportesService {
 			case "CORREDOR":
 				valores.add(r.getCorredor());
 				break;
+			case "DIVISION":
+				valores.add(r.getDivision());
+				break;
+			case "COLECTIVO":
+				valores.add(r.getColectivo());
+				break;
 			default:
 				break;
 			}
@@ -150,17 +191,16 @@ public class ReportesServiceImpl implements ReportesService {
 	@Override
 	public List<ResponseReporteMeta> listarReporteMeta(RequestReporteMeta request) {
 		// TODO Auto-generated method stub
+		int empleadoAprob = reporteAccesoService.cantidadEmpleadosAcceso(request.getCodigoUsuario());
+		if(empleadoAprob > 0) request.setCodigoUsuario("");
+		
 		List<ResponseReporteMeta> listResponse = new ArrayList<ResponseReporteMeta>();
-		ResponseReporteMeta reporteRedComecial = new ResponseReporteMeta();
-		ResponseReporteMeta reporteOperaciones = new ResponseReporteMeta();
-		ResponseReporteMeta reporteRecuperaciones = new ResponseReporteMeta();
-		ResponseReporteMeta reporteStaf = new ResponseReporteMeta();
-		int meta = 0;
-		int diasGozados = 0;
+		int anio = cargaParametros.getMetaVacacionAnio();
 
 		switch (request.getTipoReporte().trim().toUpperCase()) {
 		case "TOTALDIASMETA":
-			List<IReporteMeta> list = reporteMetaDao.reporteMeta();
+
+			List<IReporteMeta> list = reporteMetaDao.reporteMeta(request.getCodigoUsuario(), anio);
 
 			list.stream().forEach(m -> {
 				ResponseReporteMeta reporte = new ResponseReporteMeta();
@@ -168,89 +208,14 @@ public class ReportesServiceImpl implements ReportesService {
 				reporte.setMeta(m.getMeta());
 				reporte.setDiasGozados(m.getDiasgozados());
 				reporte.setDiasPendientes(m.getMeta() - m.getDiasgozados());
-				reporte.setPorcentajeAvance(Double.parseDouble(String.format("%.2f", (double)m.getDiasgozados() / m.getMeta())));
+				reporte.setPorcentajeAvance(
+						Double.parseDouble(String.format("%.2f", (double) m.getDiasgozados() / m.getMeta() * 100)));
 				listResponse.add(reporte);
 			});
-			break;
-		case "REDCOMERCIALIZACION":
 
 			break;
-
-		case "REDPRODUCCIONTECNOLOGIA":
-
-			break;
-
-		case "STAF":
-
-			break;
-
-		case "TOTALCOLECTIVOS":
-			List<IReporteMeta> listColectivos = reporteMetaDao.reporteMetaColectivo();
-
-			for (IReporteMeta m : listColectivos) {
-
-				// RED COMERCIAL
-				if (Constantes.ASESOR_NEGOCIO.equals(m.getCategoria())
-						|| Constantes.ASESOR_NEGOCIO_INDIVIDUAL.equals(m.getCategoria())
-						|| Constantes.ASESOR_NEGOCIO_GRUPAL.equals(m.getCategoria())
-						|| Constantes.GERENTE_CORREDOR.equals(m.getCategoria())
-						|| Constantes.ADMINISTRADOR_NEGOCIO.equals(m.getCategoria())) {
-
-					meta += m.getMeta();
-					diasGozados += m.getDiasgozados();
-
-					reporteRedComecial.setCategoria("RED COMERCIAL");
-					reporteRedComecial.setMeta(meta);
-					reporteRedComecial.setDiasGozados(diasGozados);
-
-				}
-				// OPERACIONES
-				else if (Constantes.ASESOR_SERVICIO.equals(m.getCategoria())
-						|| Constantes.SUPERVISOR_OFICINA.equals(m.getCategoria())
-						|| Constantes.ASESOR_PLATAFORMA.equals(m.getCategoria())) {
-					meta += m.getMeta();
-					diasGozados += m.getDiasgozados();
-
-					reporteOperaciones.setCategoria("OPERACIONES");
-					reporteOperaciones.setMeta(meta);
-					reporteOperaciones.setDiasGozados(diasGozados);
-				}
-				// RECUPERACIONES
-				else if (Constantes.ANALISTA_COBRANZA.equals(m.getCategoria())
-						|| Constantes.ANALISTA_RECUPERACIONES.equals(m.getCategoria())
-						|| Constantes.RESPONSABLE_DEPARTAMENTO_COBRANZA.equals(m.getCategoria())) {
-					meta += m.getMeta();
-					diasGozados += m.getDiasgozados();
-
-					reporteRecuperaciones.setCategoria("RECUPERACIONES");
-					reporteRecuperaciones.setMeta(meta);
-					reporteRecuperaciones.setDiasGozados(diasGozados);
-				}
-				// STAF
-				else {
-					meta += m.getMeta();
-					diasGozados += m.getDiasgozados();
-
-					reporteStaf.setCategoria("STAFF");
-					reporteStaf.setMeta(meta);
-					reporteStaf.setDiasGozados(diasGozados);
-				}
-
-			}
-			listResponse.add(reporteRedComecial);
-			listResponse.add(reporteOperaciones);
-			listResponse.add(reporteRecuperaciones);
-			listResponse.add(reporteStaf);
-
-			listResponse.stream().forEach(r -> {
-				r.setDiasPendientes(r.getMeta() - r.getDiasGozados());
-				r.setPorcentajeAvance(Double.parseDouble(String.format("%.2f", (double) r.getDiasGozados() / r.getMeta())));
-			});
-
-			break;
-
 		case "TOTALTERRITORIOS":
-			List<IReporteMeta> listTerritorios = reporteMetaDao.reporteMetaTerritorio();
+			List<IReporteMeta> listTerritorios = reporteMetaDao.reporteMetaTerritorio(request.getCodigoUsuario(), anio);
 
 			listTerritorios.stream().forEach(m -> {
 				ResponseReporteMeta reporte = new ResponseReporteMeta();
@@ -258,210 +223,258 @@ public class ReportesServiceImpl implements ReportesService {
 				reporte.setMeta(m.getMeta());
 				reporte.setDiasGozados(m.getDiasgozados());
 				reporte.setDiasPendientes(m.getMeta() - m.getDiasgozados());
-				reporte.setPorcentajeAvance(Double.parseDouble(String.format("%.2f", (double)m.getDiasgozados() / m.getMeta())));
+				reporte.setPorcentajeAvance(
+						Double.parseDouble(String.format("%.2f", (double) m.getDiasgozados() / m.getMeta() * 100)));
+				listResponse.add(reporte);
+			});
+			break;
+		case "TOTALCOLECTIVOS":
+			List<IReporteMeta> listColectivos = reporteMetaDao.reporteMetaColectivo(request.getCodigoUsuario(), anio);
+
+			listColectivos.stream().forEach(m -> {
+				ResponseReporteMeta reporte = new ResponseReporteMeta();
+				reporte.setCategoria(m.getCategoria());
+				reporte.setMeta(m.getMeta());
+				reporte.setDiasGozados(m.getDiasgozados());
+				reporte.setDiasPendientes(m.getMeta() - m.getDiasgozados());
+				reporte.setPorcentajeAvance(
+						Double.parseDouble(String.format("%.2f", (double) m.getDiasgozados() / m.getMeta() * 100)));
 				listResponse.add(reporte);
 			});
 			break;
 
-		case "TERRITORIOCENTROSUR":
-			List<IReporteMeta> listTerritorioCentroSur = reporteMetaDao.reporteMetaTerritorioColectivo();
-
-			for (IReporteMeta m : listTerritorioCentroSur) {
-				if (Constantes.CENTRO_SUR.equals(m.getOpcional())) {
-					// RED COMERCIAL
-					if (Constantes.ASESOR_NEGOCIO.equals(m.getCategoria())
-							|| Constantes.ASESOR_NEGOCIO_INDIVIDUAL.equals(m.getCategoria())
-							|| Constantes.ASESOR_NEGOCIO_GRUPAL.equals(m.getCategoria())
-							|| Constantes.GERENTE_CORREDOR.equals(m.getCategoria())
-							|| Constantes.ADMINISTRADOR_NEGOCIO.equals(m.getCategoria())) {
-
-						meta += m.getMeta();
-						diasGozados += m.getDiasgozados();
-
-						reporteRedComecial.setCategoria("RED COMERCIAL");
-						reporteRedComecial.setMeta(meta);
-						reporteRedComecial.setDiasGozados(diasGozados);
-
-					}
-					// OPERACIONES
-					else if (Constantes.ASESOR_SERVICIO.equals(m.getCategoria())
-							|| Constantes.SUPERVISOR_OFICINA.equals(m.getCategoria())
-							|| Constantes.ASESOR_PLATAFORMA.equals(m.getCategoria())) {
-						meta += m.getMeta();
-						diasGozados += m.getDiasgozados();
-
-						reporteOperaciones.setCategoria("OPERACIONES");
-						reporteOperaciones.setMeta(meta);
-						reporteOperaciones.setDiasGozados(diasGozados);
-					}
-					// RECUPERACIONES
-					else if (Constantes.ANALISTA_COBRANZA.equals(m.getCategoria())
-							|| Constantes.ANALISTA_RECUPERACIONES.equals(m.getCategoria())
-							|| Constantes.RESPONSABLE_DEPARTAMENTO_COBRANZA.equals(m.getCategoria())) {
-						meta += m.getMeta();
-						diasGozados += m.getDiasgozados();
-
-						reporteRecuperaciones.setCategoria("RECUPERACIONES");
-						reporteRecuperaciones.setMeta(meta);
-						reporteRecuperaciones.setDiasGozados(diasGozados);
-					}
-					// STAF
-					else {
-						meta += m.getMeta();
-						diasGozados += m.getDiasgozados();
-
-						reporteStaf.setCategoria("STAFF");
-						reporteStaf.setMeta(meta);
-						reporteStaf.setDiasGozados(diasGozados);
-					}
-				}
-			}
-
-			listResponse.add(reporteRedComecial);
-			listResponse.add(reporteOperaciones);
-			listResponse.add(reporteRecuperaciones);
-			listResponse.add(reporteStaf);
-
-			listResponse.stream().forEach(r -> {
-				r.setDiasPendientes(r.getMeta() - r.getDiasGozados());
-				r.setPorcentajeAvance(Double.parseDouble(String.format("%.2f", (double) r.getDiasGozados() / r.getMeta())));
-			});
-
+		default:
 			break;
+		}
+		return listResponse;
+	}
 
-		case "TERRITORIOLIMAORIENTE":
-			List<IReporteMeta> listTerritorioLimaOriente = reporteMetaDao.reporteMetaTerritorioColectivo();
-			for (IReporteMeta m : listTerritorioLimaOriente) {
-				if (Constantes.LIMA_ORIENTE.equals(m.getOpcional())) {
-					// RED COMERCIAL
-					if (Constantes.ASESOR_NEGOCIO.equals(m.getCategoria())
-							|| Constantes.ASESOR_NEGOCIO_INDIVIDUAL.equals(m.getCategoria())
-							|| Constantes.ASESOR_NEGOCIO_GRUPAL.equals(m.getCategoria())
-							|| Constantes.GERENTE_CORREDOR.equals(m.getCategoria())
-							|| Constantes.ADMINISTRADOR_NEGOCIO.equals(m.getCategoria())) {
+	@Override
+	public List<ResponseReporteMeta> listarReporteColectivos(RequestReporteMeta request) {
 
-						meta += m.getMeta();
-						diasGozados += m.getDiasgozados();
+		int empleadoAprob = reporteAccesoService.cantidadEmpleadosAcceso(request.getCodigoUsuario());
+		if(empleadoAprob > 0) request.setCodigoUsuario("");
+		
+		List<ResponseReporteMeta> listResponse = new ArrayList<ResponseReporteMeta>();
+		int anio = cargaParametros.getMetaVacacionAnio();
+		List<IReporteMeta> listColectivoDivisiones = reporteMetaDao.reporteMetaColectivoDivision(request.getCodigoUsuario(), anio, request.getFiltro());
+		
+		listColectivoDivisiones.stream().forEach(m -> {
+			ResponseReporteMeta reporte = new ResponseReporteMeta();
+			reporte.setCategoria(m.getCategoria());
+			reporte.setMeta(m.getMeta());
+			reporte.setDiasGozados(m.getDiasgozados());
+			reporte.setDiasPendientes(m.getMeta() - m.getDiasgozados());
+			reporte.setPorcentajeAvance(
+					Double.parseDouble(String.format("%.2f", (double) m.getDiasgozados() / m.getMeta() * 100)));
+			listResponse.add(reporte);
+		});
 
-						reporteRedComecial.setCategoria("RED COMERCIAL");
-						reporteRedComecial.setMeta(meta);
-						reporteRedComecial.setDiasGozados(diasGozados);
+		return listResponse;
+	}
 
-					}
-					// OPERACIONES
-					else if (Constantes.ASESOR_SERVICIO.equals(m.getCategoria())
-							|| Constantes.SUPERVISOR_OFICINA.equals(m.getCategoria())
-							|| Constantes.ASESOR_PLATAFORMA.equals(m.getCategoria())) {
-						meta += m.getMeta();
-						diasGozados += m.getDiasgozados();
+	@Override
+	public List<ResponseReporteMeta> listarReporteTerritorios(RequestReporteMeta request) {
+		
+		int empleadoAprob = reporteAccesoService.cantidadEmpleadosAcceso(request.getCodigoUsuario());
+		if(empleadoAprob > 0) request.setCodigoUsuario("");
+		
+		List<ResponseReporteMeta> listResponse = new ArrayList<ResponseReporteMeta>();
+		int anio = cargaParametros.getMetaVacacionAnio();
+		List<IReporteMeta> listTerritorioColectivos = reporteMetaDao.reporteMetaTerritorioColectivo(request.getCodigoUsuario(), anio, request.getFiltro());
+		
+		listTerritorioColectivos.stream().forEach(m -> {
+			ResponseReporteMeta reporte = new ResponseReporteMeta();
+			reporte.setCategoria(m.getCategoria());
+			reporte.setMeta(m.getMeta());
+			reporte.setDiasGozados(m.getDiasgozados());
+			reporte.setDiasPendientes(m.getMeta() - m.getDiasgozados());
+			reporte.setPorcentajeAvance(
+					Double.parseDouble(String.format("%.2f", (double) m.getDiasgozados() / m.getMeta() * 100)));
+			listResponse.add(reporte);
+		});
 
-						reporteOperaciones.setCategoria("OPERACIONES");
-						reporteOperaciones.setMeta(meta);
-						reporteOperaciones.setDiasGozados(diasGozados);
-					}
-					// RECUPERACIONES
-					else if (Constantes.ANALISTA_COBRANZA.equals(m.getCategoria())
-							|| Constantes.ANALISTA_RECUPERACIONES.equals(m.getCategoria())
-							|| Constantes.RESPONSABLE_DEPARTAMENTO_COBRANZA.equals(m.getCategoria())) {
-						meta += m.getMeta();
-						diasGozados += m.getDiasgozados();
+		return listResponse;
+	}
 
-						reporteRecuperaciones.setCategoria("RECUPERACIONES");
-						reporteRecuperaciones.setMeta(meta);
-						reporteRecuperaciones.setDiasGozados(diasGozados);
-					}
-					// STAF
-					else {
-						meta += m.getMeta();
-						diasGozados += m.getDiasgozados();
+	@Override
+	public byte[] reporteColaboradores(RequestListarReportes req) {
 
-						reporteStaf.setCategoria("STAFF");
-						reporteStaf.setMeta(meta);
-						reporteStaf.setDiasGozados(diasGozados);
-					}
-				}
-			}
+		List<ReporteColaboradores> listReporte = new ArrayList<>();
+		Page<ReporteColaboradores> reporteColaboradores = listarColaboradores(req);
+		listReporte.addAll(reporteColaboradores.getContent());
 
-			listResponse.add(reporteRedComecial);
-			listResponse.add(reporteOperaciones);
-			listResponse.add(reporteRecuperaciones);
-			listResponse.add(reporteStaf);
+		for (int i = 1; i < reporteColaboradores.getTotalPages(); i++) {
+			req.setCodigoUsuario("222");
+			req.setNumeroPagina(0);
+			req.setTamanioPagina(100);
+			reporteColaboradores = listarColaboradores(req);
+			listReporte.addAll(reporteColaboradores.getContent());
 
-			listResponse.stream().forEach(r -> {
-				r.setDiasPendientes(r.getMeta() - r.getDiasGozados());
-				r.setPorcentajeAvance(Double.parseDouble(String.format("%.2f", (double) r.getDiasGozados() / r.getMeta())));
-			});
+		}
 
+		Report reporte = new Report();
+		reporte.setType("XLSX");
+		reporte.setTitle("REPORTE COLABORADORES");
+		reporte.getCollection().addHeader("Numero", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Codigo", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Nombres y Apellidos", ColumnType.STRING);
+		reporte.getCollection().addHeader("Puesto", ColumnType.STRING);
+		reporte.getCollection().addHeader("Fecha de Ingreso", ColumnType.LOCALDATE);
+		reporte.getCollection().addHeader("División", ColumnType.STRING);
+		reporte.getCollection().addHeader("Área", ColumnType.STRING);
+		reporte.getCollection().addHeader("Corredor", ColumnType.STRING);
+		reporte.getCollection().addHeader("Territorio", ColumnType.STRING);
+		reporte.getCollection().addHeader("Agencia", ColumnType.STRING);
+		reporte.getCollection().addHeader("Colectivo", ColumnType.STRING);
+		reporte.getCollection().addHeader("Meta de ia", ColumnType.STRING);
+		reporte.getCollection().addHeader("Colectivo", ColumnType.STRING);
+		reporte.getCollection().addHeader("Colectivo", ColumnType.STRING);
+		reporte.getCollection().addHeader("Colectivo", ColumnType.STRING);
+
+		int count = 1;
+		for (ReporteColaboradores repColaboradores : listReporte) {
+
+			Row row = new Row();
+			row.addCell("Numero", count);
+			row.addCell("Codigo", repColaboradores.getCodigo());
+			row.addCell("Nombres y Apellidos", repColaboradores.getNombreCompleo());
+			row.addCell("Puesto", repColaboradores.getPuesto());
+			row.addCell("Fecha de Ingreso", repColaboradores.getFechaIngreso());
+			row.addCell("División", repColaboradores.getDivision());
+			row.addCell("Corredor", repColaboradores.getCorredor());
+			row.addCell("Territorio", repColaboradores.getTerritorio());
+			row.addCell("Agencia", repColaboradores.getAgencia());
+			row.addCell("Colectivo", repColaboradores.getColectivo());
+			row.addCell("Meta de días", repColaboradores.getMeta());
+			row.addCell("Dias Gozados", repColaboradores.getDiasGozados());
+			row.addCell("Porcentaje Avance", repColaboradores.getPorcentajeAvance());
+			row.addCell("Dias Programados", repColaboradores.getDiasProgramados());
+			reporte.getCollection().setCurrentRow(row);
+			reporte.getCollection().addRow();
+
+			count++;
+		}
+
+		try {
+			IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
+			excel.build();
+			return IOUtils.toByteArray(excel.getReult());
+		} catch (Exception e) {
+			LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
+		}
+		return null;
+
+	}
+
+	@Override
+	public byte[] reporteMeta(RequestReporteMeta req) {
+
+		List<ResponseReporteMeta> listReport = listarReporteMeta(req);
+
+		Report reporte = new Report();
+		reporte.setType("XLSX");
+		reporte.setTitle("REPORTE META");
+		reporte.getCollection().addHeader("Numero", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Meta", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Días gozados", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Porcentaje de avance", ColumnType.DOUBLE);
+		reporte.getCollection().addHeader("Días pendientes", ColumnType.INTEGER);
+
+		int count = 1;
+		for (ResponseReporteMeta repMeta : listReport) {
+
+			Row row = new Row();
+			row.addCell("Numero", count);
+			row.addCell("Meta", repMeta.getMeta());
+			row.addCell("Días gozados", repMeta.getDiasGozados());
+			row.addCell("Porcentaje de avance", repMeta.getPorcentajeAvance());
+			row.addCell("Días pendientes", repMeta.getDiasPendientes());
+
+			reporte.getCollection().setCurrentRow(row);
+			reporte.getCollection().addRow();
+
+			count++;
+		}
+
+		try {
+			IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
+			excel.build();
+			return IOUtils.toByteArray(excel.getReult());
+		} catch (Exception e) {
+			LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
+		}
+
+		return null;
+	}
+
+	@Override
+	public byte[] reporteMetaVariosFiltro(RequestReporteMeta req) {
+
+		List<ResponseReporteMeta> list = new ArrayList<>();
+		
+		switch (req.getTipoReporte()) {
+		case "TERRITORIOS":
+			list = listarReporteMeta(req);
 			break;
-		case "TERRITORIONORANDINO":
-			List<IReporteMeta> listTerritorioNorAndino = reporteMetaDao.reporteMetaTerritorioColectivo();
-			for (IReporteMeta m : listTerritorioNorAndino) {
-				if (Constantes.NOR_ANDINO.equals(m.getOpcional())) {
-					// RED COMERCIAL
-					if (Constantes.ASESOR_NEGOCIO.equals(m.getCategoria())
-							|| Constantes.ASESOR_NEGOCIO_INDIVIDUAL.equals(m.getCategoria())
-							|| Constantes.ASESOR_NEGOCIO_GRUPAL.equals(m.getCategoria())
-							|| Constantes.GERENTE_CORREDOR.equals(m.getCategoria())
-							|| Constantes.ADMINISTRADOR_NEGOCIO.equals(m.getCategoria())) {
-
-						meta += m.getMeta();
-						diasGozados += m.getDiasgozados();
-
-						reporteRedComecial.setCategoria("RED COMERCIAL");
-						reporteRedComecial.setMeta(meta);
-						reporteRedComecial.setDiasGozados(diasGozados);
-
-					}
-					// OPERACIONES
-					else if (Constantes.ASESOR_SERVICIO.equals(m.getCategoria())
-							|| Constantes.SUPERVISOR_OFICINA.equals(m.getCategoria())
-							|| Constantes.ASESOR_PLATAFORMA.equals(m.getCategoria())) {
-						meta += m.getMeta();
-						diasGozados += m.getDiasgozados();
-
-						reporteOperaciones.setCategoria("OPERACIONES");
-						reporteOperaciones.setMeta(meta);
-						reporteOperaciones.setDiasGozados(diasGozados);
-					}
-					// RECUPERACIONES
-					else if (Constantes.ANALISTA_COBRANZA.equals(m.getCategoria())
-							|| Constantes.ANALISTA_RECUPERACIONES.equals(m.getCategoria())
-							|| Constantes.RESPONSABLE_DEPARTAMENTO_COBRANZA.equals(m.getCategoria())) {
-						meta += m.getMeta();
-						diasGozados += m.getDiasgozados();
-
-						reporteRecuperaciones.setCategoria("RECUPERACIONES");
-						reporteRecuperaciones.setMeta(meta);
-						reporteRecuperaciones.setDiasGozados(diasGozados);
-					}
-					// STAF
-					else {
-						meta += m.getMeta();
-						diasGozados += m.getDiasgozados();
-
-						reporteStaf.setCategoria("STAFF");
-						reporteStaf.setMeta(meta);
-						reporteStaf.setDiasGozados(diasGozados);
-					}
-				}
-			}
-
-			listResponse.add(reporteRedComecial);
-			listResponse.add(reporteOperaciones);
-			listResponse.add(reporteRecuperaciones);
-			listResponse.add(reporteStaf);
-
-			listResponse.stream().forEach(r -> {
-				r.setDiasPendientes(r.getMeta() - r.getDiasGozados());
-				r.setPorcentajeAvance(Double.parseDouble(String.format("%.2f", (double) r.getDiasGozados() / r.getMeta())));
-			});
-
+		case "COLECTIVOS":
+			list = listarReporteMeta(req);
+			break;
+		case "TERRITORIOSVARIOS":
+			list = listarReporteTerritorios(req);
+			break;
+		case "COLECTIVOSVARIOS":
+			list = listarReporteColectivos(req);
 			break;
 
 		default:
 			break;
 		}
 
-		return listResponse;
+		byte[] reportExcel = reporeteMetaVarios(list, req.getTipoReporte() + "" +req.getFiltro());
+
+		return reportExcel;
 	}
+
+	private byte[] reporeteMetaVarios(List<ResponseReporteMeta> list ,String Titulo) {
+
+		Report reporte = new Report();
+		reporte.setType("XLSX");
+		reporte.setTitle("REPORTE " + Titulo);
+		reporte.getCollection().addHeader("Numero", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Descripcion", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Meta", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Días gozados", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Porcentaje de avance", ColumnType.DOUBLE);
+		reporte.getCollection().addHeader("Días pendientes", ColumnType.INTEGER);
+
+		int count = 1;
+		for (ResponseReporteMeta repMeta : list) {
+
+			Row row = new Row();
+			row.addCell("Numero", count);
+			row.addCell("Descripcion", repMeta.getCategoria());
+			row.addCell("Meta", repMeta.getMeta());
+			row.addCell("Días gozados", repMeta.getDiasGozados());
+			row.addCell("Porcentaje de avance", repMeta.getPorcentajeAvance());
+			row.addCell("Días pendientes", repMeta.getDiasPendientes());
+
+			reporte.getCollection().setCurrentRow(row);
+			reporte.getCollection().addRow();
+
+			count++;
+		}
+
+		try {
+			IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
+			excel.build();
+			return IOUtils.toByteArray(excel.getReult());
+		} catch (Exception e) {
+			LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
+		}
+
+		return null;
+
+	}
+
 }
