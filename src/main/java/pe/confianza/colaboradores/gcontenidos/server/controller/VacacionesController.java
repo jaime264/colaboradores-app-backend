@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,6 +31,7 @@ import net.sf.jasperreports.engine.JRException;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmplVacPerRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCancelarProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestEditarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFiltroVacacionesAprobacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGenerarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarVacacionProgramacion;
@@ -123,6 +125,13 @@ public class VacacionesController {
 			responseStatus.setMsgStatus(e.getMessage());
 			return new ResponseEntity<>(responseStatus, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+	
+	@ApiOperation(notes = "Edita una programación rechazada empleado", value = "url proxy /vacacionesadd")
+	@PutMapping("/vacaciones/modificacion-programacion")
+	public ResponseEntity<ResponseStatus> modificarRechazados(@Valid @RequestBody RequestEditarProgramacionVacacion programacionRequest) {
+		
+		return null;
 	}
 	
 	@ApiOperation(notes = "Cancela una programación de vacación de un empleado", value = "url proxy /vacacionescancelar")

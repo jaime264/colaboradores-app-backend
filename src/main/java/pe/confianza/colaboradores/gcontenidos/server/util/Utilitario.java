@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -327,6 +328,17 @@ public class Utilitario {
 			return intPart + 1;
 		}
 		return intPart;
+	}
+	
+	public static String fechaToStringPer(String patron, LocalDate fecha) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(patron); 
+		formatter = formatter.withLocale ( Constantes.LOCALE_PER );
+		return fecha.format(formatter);
+	}
+	
+	public static String numeroEnteroToString(long numero) {
+		String cadena = numero + "";
+		return cadena.replace(",", "");
 	}
 	
 	private static Calendar getCalendarWithoutTime(Date date) {

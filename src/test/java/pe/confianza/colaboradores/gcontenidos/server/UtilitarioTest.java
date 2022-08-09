@@ -5,12 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Arrays;
 
 import org.apache.poi.util.IOUtils;
 import org.junit.jupiter.api.Test;
 
+import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.MesesAnio;
 import pe.confianza.colaboradores.gcontenidos.server.util.ParametroUnidad;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
@@ -120,8 +123,10 @@ public class UtilitarioTest {
 	
 	@Test
 	public void validarParam() {
-		boolean es =ParametroUnidad.esValidoValor(ParametroUnidad.NUMERO_GENERAL, "-1");
-		System.out.println(es);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd 'de' MMMM"); 
+		formatter = formatter.withLocale ( Constantes.LOCALE_PER );
+		LocalDate hoy = LocalDate.now();
+		System.out.println(hoy.format(formatter));
 	}
 	
 	/*@Test

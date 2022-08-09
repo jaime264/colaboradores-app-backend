@@ -1,5 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.mapper;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestEditarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReprogramacionTramo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseProgramacionVacacion;
@@ -10,6 +11,25 @@ import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 public class VacacionProgramacionMapper {
+	
+	public static VacacionProgramacion convert(final RequestEditarProgramacionVacacion source) {
+		VacacionProgramacion destination = new VacacionProgramacion();
+		destination.setFechaInicio(source.getFechaInicio());
+		destination.setFechaFin(source.getFechaFin());
+		destination.setNumeroDias(Utilitario.obtenerDiferenciaDias(source.getFechaInicio(), source.getFechaFin()));
+		destination.setNumeroSabados(Utilitario.obtenerCantidadSabados(source.getFechaInicio(), source.getFechaFin()));
+		destination.setNumeroDomingos(Utilitario.obtenerCantidadDomingos(source.getFechaInicio(), source.getFechaFin()));
+		destination.setNumeroReprogramaciones(0);
+		destination.setIdProgramacionOriginal(null);
+		destination.setVacacionesAdelantadas(false);
+		destination.setInterrupcion(false);
+		destination.setAnulacion(false);
+		destination.setDiasGozados(0);
+		destination.setDiasPendientesGozar(destination.getNumeroDias());
+		destination.setDiasAnulados(0);
+		destination.setDiasReprogramados(0);
+		return destination;
+	}
 	
 	public static VacacionProgramacion convert(final RequestProgramacionVacacion source) {
 		VacacionProgramacion destination = new VacacionProgramacion();
