@@ -107,7 +107,7 @@ public class ReporteColaboradores {
 	
 	@Column(name = "anio")
 	@JsonIgnore
-	private String anio;
+	private int anio;
 	
 	@Transient	
 	private int diasProgramados;

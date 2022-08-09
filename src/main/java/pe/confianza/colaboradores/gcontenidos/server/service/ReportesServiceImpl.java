@@ -48,6 +48,9 @@ public class ReportesServiceImpl implements ReportesService {
 
 	@Autowired
 	private CargaParametros cargaParametros;
+	
+	@Autowired
+	ReporteAccesoService reporteAccesoService;
 
 	@Override
 	public List<ReporteColaboradores> obtenerTodos() {
@@ -65,10 +68,11 @@ public class ReportesServiceImpl implements ReportesService {
 	@Override
 	public Page<ReporteColaboradores> listarColaboradores(RequestListarReportes request) {
 
+		int empleadoAprob = reporteAccesoService.cantidadEmpleadosAcceso(request.getCodigoUsuario());
+		if(empleadoAprob > 0) request.setCodigoUsuario("");
+		
 		int anio = cargaParametros.getMetaVacacionAnio();
-		// TODO Auto-generated method stub
 		Pageable paginacion = PageRequest.of(request.getNumeroPagina(), request.getTamanioPagina());
-
 		Page<ReporteColaboradores> reporteColaboradores = null;
 
 		switch (request.getTipoFiltro().trim().toUpperCase()) {
@@ -130,10 +134,12 @@ public class ReportesServiceImpl implements ReportesService {
 	@Override
 	public List<Map<String, String>> listarFiltrosReporteColaborador(RequestFiltroVacacionesAprobacion reqFiltros) {
 		// TODO Auto-generated method stub
+		
+		int empleadoAprob = reporteAccesoService.cantidadEmpleadosAcceso(reqFiltros.getCodigo());
+		if(empleadoAprob > 0) reqFiltros.setCodigo("");
+		
 		int anio = cargaParametros.getMetaVacacionAnio();
-
 		List<ReporteColaboradores> reporteColaboradores = reporteDao.reporteColaboradoresList(reqFiltros.getCodigo(), anio);
-
 		List<Map<String, String>> datos = new ArrayList<>();
 		List<String> valores = new ArrayList<>();
 
@@ -185,6 +191,9 @@ public class ReportesServiceImpl implements ReportesService {
 	@Override
 	public List<ResponseReporteMeta> listarReporteMeta(RequestReporteMeta request) {
 		// TODO Auto-generated method stub
+		int empleadoAprob = reporteAccesoService.cantidadEmpleadosAcceso(request.getCodigoUsuario());
+		if(empleadoAprob > 0) request.setCodigoUsuario("");
+		
 		List<ResponseReporteMeta> listResponse = new ArrayList<ResponseReporteMeta>();
 		int anio = cargaParametros.getMetaVacacionAnio();
 
@@ -243,9 +252,11 @@ public class ReportesServiceImpl implements ReportesService {
 	@Override
 	public List<ResponseReporteMeta> listarReporteColectivos(RequestReporteMeta request) {
 
+		int empleadoAprob = reporteAccesoService.cantidadEmpleadosAcceso(request.getCodigoUsuario());
+		if(empleadoAprob > 0) request.setCodigoUsuario("");
+		
 		List<ResponseReporteMeta> listResponse = new ArrayList<ResponseReporteMeta>();
 		int anio = cargaParametros.getMetaVacacionAnio();
-		
 		List<IReporteMeta> listColectivoDivisiones = reporteMetaDao.reporteMetaColectivoDivision(request.getCodigoUsuario(), anio, request.getFiltro());
 		
 		listColectivoDivisiones.stream().forEach(m -> {
@@ -264,9 +275,12 @@ public class ReportesServiceImpl implements ReportesService {
 
 	@Override
 	public List<ResponseReporteMeta> listarReporteTerritorios(RequestReporteMeta request) {
+		
+		int empleadoAprob = reporteAccesoService.cantidadEmpleadosAcceso(request.getCodigoUsuario());
+		if(empleadoAprob > 0) request.setCodigoUsuario("");
+		
 		List<ResponseReporteMeta> listResponse = new ArrayList<ResponseReporteMeta>();
 		int anio = cargaParametros.getMetaVacacionAnio();
-		
 		List<IReporteMeta> listTerritorioColectivos = reporteMetaDao.reporteMetaTerritorioColectivo(request.getCodigoUsuario(), anio, request.getFiltro());
 		
 		listTerritorioColectivos.stream().forEach(m -> {
@@ -287,7 +301,6 @@ public class ReportesServiceImpl implements ReportesService {
 	public byte[] reporteColaboradores(RequestListarReportes req) {
 
 		List<ReporteColaboradores> listReporte = new ArrayList<>();
-
 		Page<ReporteColaboradores> reporteColaboradores = listarColaboradores(req);
 		listReporte.addAll(reporteColaboradores.getContent());
 
@@ -399,12 +412,7 @@ public class ReportesServiceImpl implements ReportesService {
 	public byte[] reporteMetaVariosFiltro(RequestReporteMeta req) {
 
 		List<ResponseReporteMeta> list = new ArrayList<>();
-
-//		RequestReporteMeta req = new RequestReporteMeta();
-//		req.setCodigoUsuario("222");
-//		req.setTipoReporte("TERRITORIOS");
-//		req.setFiltro(null);
-
+		
 		switch (req.getTipoReporte()) {
 		case "TERRITORIOS":
 			list = listarReporteMeta(req);

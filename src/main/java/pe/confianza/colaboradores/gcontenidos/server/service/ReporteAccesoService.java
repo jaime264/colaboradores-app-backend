@@ -18,5 +18,7 @@ public interface ReporteAccesoService {
 	void eliminar(long id);
 	
 	Page<ReporteAcceso> listar(Long idPuesto, Pageable pageable);
+	
+	int cantidadEmpleadosAcceso(String codigoEmpleado);
 
 }

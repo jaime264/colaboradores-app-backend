@@ -66,4 +66,13 @@ public class ReporteAccesoServiceImpl implements ReporteAccesoService {
 		return reporteAccesoDao.listar(idPuesto, pageable);
 	}
 
+	@Override
+	public int cantidadEmpleadosAcceso(String codigoEmpleado) {
+		// TODO Auto-generated method stub
+		
+		int cantidadEmpleados = reporteAccesoDao.cantidadEmpleadosAcceso(codigoEmpleado);
+
+		return cantidadEmpleados;
+	}
+
 }
