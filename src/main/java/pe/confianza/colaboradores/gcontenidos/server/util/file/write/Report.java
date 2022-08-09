@@ -4,6 +4,11 @@ import java.io.InputStream;
 
 import pe.confianza.colaboradores.gcontenidos.server.util.file.collection.Collection;
 
+/**
+ * 
+ * @author kenyo.pecho
+ *
+ */
 public class Report {
 	
 	private String type;

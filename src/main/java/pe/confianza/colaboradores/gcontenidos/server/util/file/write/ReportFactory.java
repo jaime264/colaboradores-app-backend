@@ -4,6 +4,11 @@ import org.springframework.stereotype.Component;
 
 import pe.confianza.colaboradores.gcontenidos.server.util.file.write.xlsx.XlsxReport;
 
+/**
+ * 
+ * @author kenyo.pecho
+ *
+ */
 @Component
 public class ReportFactory {
 	

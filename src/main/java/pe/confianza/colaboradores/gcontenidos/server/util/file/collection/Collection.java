@@ -8,7 +8,11 @@ import java.util.Map;
 
 import pe.confianza.colaboradores.gcontenidos.server.util.file.read.ColumnType;
 
-
+/**
+ * 
+ * @author kenyo.pecho
+ *
+ */
 public class Collection {
 
 	private Map<String, ColumnType> headers;
