@@ -330,6 +330,7 @@ public class ParametrosServiceImpl implements ParametrosService {
 				puesto.setDescripcion(r.getPuesto().getDescripcion());
 				res.setTipoReporte(tipo);
 				res.setPuesto(puesto);
+				res.setFechaEnvio(r.getFechaEnvio());
 				return res;
 			});
 		} catch (Exception e) {
