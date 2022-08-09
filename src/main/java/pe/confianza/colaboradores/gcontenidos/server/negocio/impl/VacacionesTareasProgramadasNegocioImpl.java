@@ -35,6 +35,7 @@ import pe.confianza.colaboradores.gcontenidos.server.service.VacacionMetaService
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionPeriodoResumenService;
 import pe.confianza.colaboradores.gcontenidos.server.service.VacacionProgramacionService;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
+import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.MesesAnio;
@@ -167,7 +168,8 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 			Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
 			String titulo = "VACACIONES - INICIO PROGRAMACION";
 			String descripcion = Utilitario.generarMensajeNotificacion(cargaParametros.MENSAJE_COLABORDOR_INICIO_PROGRAMACION, 
-					anio, fechaInicioProgramacion.toString(), fechaFinProgramacion.toString());
+					Utilitario.numeroEnteroToString(anio), Utilitario.fechaToStringPer(Constantes.FORMATO_DIA_MES_LITERAL, fechaInicioProgramacion),
+					Utilitario.fechaToStringPer(Constantes.FORMATO_DIA_MES_LITERAL, fechaFinProgramacion));
 			if(opt.isPresent()) {
 				List<Empleado> lstEmpleado = empleadoService.listar();
 				for (Empleado empleado : lstEmpleado) {

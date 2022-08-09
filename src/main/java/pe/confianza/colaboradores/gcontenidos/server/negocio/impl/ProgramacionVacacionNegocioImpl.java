@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.bson.BsonDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.google.gson.Gson;
+
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCancelarProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestEditarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGenerarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarVacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
@@ -35,6 +39,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionMeta;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacionNegocio;
+import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 import pe.confianza.colaboradores.gcontenidos.server.service.PeriodoVacacionService;
 import pe.confianza.colaboradores.gcontenidos.server.service.UnidadNegocioService;
@@ -75,6 +80,9 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 
 	@Autowired
 	private VacacionProgramacionDao vacacionProgramacionDao;
+	
+	@Autowired
+	private AuditoriaService auditoriaService;
 	
 	@Transactional(dontRollbackOn=AppException.class)
 	@Override
@@ -168,6 +176,56 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 			throw new AppException(e.getMessage(), e);
 		} catch (Exception e) {
 			LOGGER.error("[ERROR] registro", e);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
+		}
+	}
+	
+	@Override
+	public void modificarRechazados(RequestEditarProgramacionVacacion request) {
+		LOGGER.info("[BEGIN] modificarRechazados: {} - {} - {}", request.getLogAuditoria().getUsuario(), request.getFechaInicio(), request.getFechaFin());
+		try {
+			String usuarioOperacion = request.getLogAuditoria().getUsuario().trim();
+			VacacionProgramacion programacion = vacacionProgramacionService.buscarPorId(request.getIdProgramacion());
+			if(programacion.getEstado().id != EstadoVacacion.RECHAZADO.id)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.programacion.edicion.estado_error", parametrosConstants.getEstadoProgramacionDescripcion(EstadoVacacion.APROBADO.id)[0]));
+			int diasProgramados = Utilitario.obtenerDiferenciaDias(request.getFechaInicio(), request.getFechaFin());
+			if(diasProgramados != programacion.getNumeroDias())
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.programacion.edicion.cantidad_dias.error"));
+			Empleado empleado = empleadoService.buscarPorUsuarioBT(usuarioOperacion);
+			if (empleado == null)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "empleado.no_existe", usuarioOperacion));
+			
+			programacion.setFechaInicio(request.getFechaInicio());
+			programacion.setFechaFin(request.getFechaFin());
+			validarDiasReprogramadosEdicion(programacion);
+			validarRangoFechas(programacion);
+			programacion.setEstado(EstadoVacacion.GENERADO);
+			validarPoliticasRegulatorias(programacion);
+			validarPoliticaBolsa(programacion);
+			obtenerOrden(programacion, usuarioOperacion);
+			List<VacacionProgramacion> programacionesModificadas = new ArrayList<>();
+			programacionesModificadas.add(programacion);
+			programacionesModificadas = vacacionProgramacionService.modificar(programacionesModificadas, usuarioOperacion);
+			
+			List<Long> idsPeriodosModificados = programacionesModificadas.stream().map(prog -> prog.getPeriodo().getId()).distinct().collect(Collectors.toList());
+			idsPeriodosModificados.forEach(periodoId -> {
+				actualizarPeriodo(empleado, periodoId, usuarioOperacion);
+			});
+			programacionesModificadas.forEach(p -> {
+				actualizarMeta(parametrosConstants.getMetaVacacionAnio(), p, false, usuarioOperacion);
+			});			
+			registrarAuditoria(Constantes.COD_OK, Constantes.OK, request);
+		} catch (ModelNotFoundException e) {
+			LOGGER.error("[ERROR] modificarRechazados", e);
+			registrarAuditoria(Constantes.COD_EMPTY, Constantes.DATA_EMPTY, request);
+			throw new ModelNotFoundException(e.getMessage()); 
+		} catch (AppException e) {
+			LOGGER.error("[ERROR] modificarRechazados", e);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), request);
+			throw new AppException(e.getMessage(), e);
+		} catch (Exception e) {
+			LOGGER.error("[ERROR] modificarRechazados", e);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), request);
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
 		}
 	}
@@ -753,6 +811,12 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		LOGGER.info("[END] validarPoliticaBolsa");
 
 	}
+	
+	@Override
+	public void validarDiasReprogramadosEdicion(VacacionProgramacion programacion) {
+		if(!programacion.getPeriodo().programacionDentroPeriodoGoce(programacion))
+			throw new AppException(Utilitario.obtenerMensaje(messageSource,	"vacaciones.validacion.fuera_limite_goce", programacion.getPeriodo().getDescripcion()));
+	}
 
 	@Override
 	public void validarPoliticaBolsaOperaciones(VacacionProgramacion programacion) {
@@ -930,6 +994,19 @@ public class ProgramacionVacacionNegocioImpl implements ProgramacionVacacionNego
 		meta = vacacionMetaService.actualizarMeta(meta, usuarioModifica);
 		
 		LOGGER.info("[END] actualizarMeta");
+	}
+
+	@Override
+	public void registrarAuditoria(int status, String mensaje, Object data) {
+		Gson gson = new Gson();
+		try {
+			String jsonData = gson.toJson(data);
+			auditoriaService.createAuditoria("002", Constantes.VACACIONES_PARAMETRIA_PROCESO,
+					status, mensaje, BsonDocument.parse(jsonData));
+		} catch (Exception e) {
+			LOGGER.error("[ERROR] registrarAuditoria", e);
+		}
+		
 	}
 
 }

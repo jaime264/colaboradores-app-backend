@@ -17,6 +17,7 @@ public class Constantes {
 	public final static String FORMATO_FECHA_HORA = "dd/MM/yyyy HH:mm:ss";
 	public final static String FORMATO_FECHA_ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 	public static final Locale LOCALE_PER = new Locale("es", "PE");
+	public final static String FORMATO_DIA_MES_LITERAL = "dd 'de' MMMM";
 	
 	public final static String TIME_ZONE = "America/Bogota";
 	

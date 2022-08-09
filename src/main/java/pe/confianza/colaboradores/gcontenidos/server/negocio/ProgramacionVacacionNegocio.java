@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCancelarProgramacionVacacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestEditarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGenerarProgramacionVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarVacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionVacacion;
@@ -19,6 +20,8 @@ public interface ProgramacionVacacionNegocio {
 	List<ResponseProgramacionVacacion> registroAutomatico(RequestProgramacionVacacion programacion);
 
 	List<ResponseProgramacionVacacion> registro(RequestProgramacionVacacion programacion);
+	
+	void modificarRechazados(RequestEditarProgramacionVacacion programacion);
 	
 	void cancelar(RequestCancelarProgramacionVacacion cancelacion);
 	
@@ -65,5 +68,9 @@ public interface ProgramacionVacacionNegocio {
 	VacacionProgramacion reprogramacionAprobador(RequestReprogramacionAprobador reqAprobador);
 	
 	void actualizarMeta(long idMeta, double nuevaMeta, String usuarioModifica);
+	
+	void validarDiasReprogramadosEdicion(VacacionProgramacion programacion);
+	
+	void registrarAuditoria(int status, String mensaje, Object data);
 
 }
