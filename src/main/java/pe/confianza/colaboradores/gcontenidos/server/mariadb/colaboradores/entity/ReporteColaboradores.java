@@ -29,14 +29,17 @@ import lombok.Setter;
 		+ "codigo_nivel1, "
 		+ "codigo_nivel2, "
 		+ "puesto, "
-		+ "colectivo, "
+		+ "colectivocod, "
 		+ "fecha_ingreso, "
 		+ "agencia, "
 		+ "corredor, "
 		+ "territorio, "
 		+ "meta, "
 		+ "dias_gozados, "
-		+ "dias_aprobados_gozar "
+		+ "dias_aprobados_gozar, "
+		+ "division, "
+		+ "colectivo, "
+		+ "anio "
 		+ "FROM vacaciones.reporte_seguimiento" + "")
 public class ReporteColaboradores {
 
@@ -72,8 +75,8 @@ public class ReporteColaboradores {
 	@Column(name = "puesto")
 	private String puesto;
 	
-	@Column(name = "colectivo")
-	private String colectivo;
+	@Column(name = "colectivocod")
+	private String colectivoCod;
 	
 	@Column(name = "fecha_ingreso")
 	private LocalDate fechaIngreso;
@@ -96,8 +99,15 @@ public class ReporteColaboradores {
 	@Column(name = "dias_aprobados_gozar")
 	private int diasAprobadosGozar;
 	
-	@Transient
+	@Column(name = "division")
 	private String division;
+	
+	@Column(name = "colectivo")
+	private String colectivo;
+	
+	@Column(name = "anio")
+	@JsonIgnore
+	private String anio;
 	
 	@Transient	
 	private int diasProgramados;

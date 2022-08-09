@@ -1,21 +1,32 @@
 package pe.confianza.colaboradores.gcontenidos.server.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.google.api.client.http.HttpHeaders;
+import com.google.cloud.storage.Acl.User;
+import com.google.common.net.MediaType;
+import com.google.rpc.context.AttributeContext.Response;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import net.sf.jasperreports.repo.InputStreamResource;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFiltroVacacionesAprobacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarReportes;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReporteMeta;
@@ -64,13 +75,33 @@ public class ReportesController {
 	}
 
 	@ApiOperation(notes = "Consulta de reporte de la meta de los colaboradoes", value = "url proxy /reportecolaboradoresmeta")
-	@PostMapping("/reporte-meta")
-	public ResponseEntity<?> getReortesMeta(@RequestBody RequestReporteMeta request)
-			throws IOException {
+	@PostMapping("/meta")
+	public ResponseEntity<?> getReortesMeta(@RequestBody RequestReporteMeta request) throws IOException {
 		ResponseStatus responseStatus = new ResponseStatus();
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);
 		responseStatus.setResultObj(reportesService.listarReporteMeta(request));
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
+
+	@ApiOperation(notes = "Consulta de reporte de la meta de los colaboradoes", value = "url proxy /reportecolaboradorescolectivo")
+	@PostMapping("/colectivos")
+	public ResponseEntity<?> getReortesColectivos(@RequestBody RequestReporteMeta request) throws IOException {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(reportesService.listarReporteColectivos(request));
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+
+	@ApiOperation(notes = "Consulta de reporte de la meta de los colaboradoes", value = "url proxy /reportecolaboradoresterritorio")
+	@PostMapping("/territorios")
+	public ResponseEntity<?> getReortesTerritorios(@RequestBody RequestReporteMeta request) throws IOException {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(reportesService.listarReporteTerritorios(request));
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+
 }

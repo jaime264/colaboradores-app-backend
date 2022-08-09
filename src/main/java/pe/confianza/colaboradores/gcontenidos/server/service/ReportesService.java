@@ -20,4 +20,16 @@ public interface ReportesService {
 	List<Map<String, String>> listarFiltrosReporteColaborador(RequestFiltroVacacionesAprobacion reqFiltros);
 	
 	List<ResponseReporteMeta> listarReporteMeta(RequestReporteMeta request);
+	
+	List<ResponseReporteMeta> listarReporteColectivos(RequestReporteMeta request);
+	
+	List<ResponseReporteMeta> listarReporteTerritorios(RequestReporteMeta request);
+	
+	byte[] reporteColaboradores(RequestListarReportes req);
+	
+	byte[] reporteMeta(RequestReporteMeta req);
+	
+	byte[] reporteMetaVariosFiltro(RequestReporteMeta req);
+
+
 }
