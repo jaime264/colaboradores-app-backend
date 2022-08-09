@@ -1,5 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public interface ReportesService {
 	
 	List<ResponseReporteMeta> listarReporteTerritorios(RequestReporteMeta request);
 	
-	byte[] reporteColaboradores(RequestListarReportes req);
+	ByteArrayInputStream reporteColaboradores(RequestListarReportes req);
 	
 	byte[] reporteMeta(RequestReporteMeta req);
 	

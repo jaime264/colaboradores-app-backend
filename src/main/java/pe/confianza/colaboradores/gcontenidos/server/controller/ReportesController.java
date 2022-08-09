@@ -9,8 +9,11 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.InputStreamSource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,14 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.api.client.http.HttpHeaders;
-import com.google.cloud.storage.Acl.User;
-import com.google.common.net.MediaType;
-import com.google.rpc.context.AttributeContext.Response;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import net.sf.jasperreports.repo.InputStreamResource;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFiltroVacacionesAprobacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarReportes;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReporteMeta;
@@ -102,6 +99,15 @@ public class ReportesController {
 		responseStatus.setMsgStatus(Constantes.OK);
 		responseStatus.setResultObj(reportesService.listarReporteTerritorios(request));
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+	
+	@PostMapping(value = "/colaboradores/excel", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public ResponseEntity<InputStreamResource> excelReporteColaboradores(@RequestBody RequestListarReportes req) {
+		 HttpHeaders headers = new HttpHeaders();
+		 headers.add("Content-Disposition", "inline; filename=reporte.xlsx");
+		 return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_OCTET_STREAM)
+				 .body(new InputStreamResource(reportesService.reporteColaboradores(req)));
+		
 	}
 
 }
