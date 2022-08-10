@@ -244,14 +244,14 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 					} else {
 						if(esAdelantada) {
 							StringBuilder mensaje = new StringBuilder();
-							mensaje.append(Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.reprogramacion.aceptada"))
+							mensaje.append(Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.reprogramacion.adelantada.aceptada"))
 							.append(" Del ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaInicio()))
 							.append(" al ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaFin()))
 							.append(" - ").append(vp.get().getNumeroDias()).append(" Dias - vacaciones adelantadas");
 							notificacion = notificacionService.registrar("VACACIÓN APROBADA", mensaje.toString(),
 									v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
 						} else {
-							notificacion = notificacionService.registrar("Vacación Aprobada",
+							notificacion = notificacionService.registrar("VACACIÓN APROBADA",
 									"Vacacion con fecha inicio " + Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaInicio()) + " y fecha fin " 
 							+ Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaFin())
 											+ " fue aprobada",
