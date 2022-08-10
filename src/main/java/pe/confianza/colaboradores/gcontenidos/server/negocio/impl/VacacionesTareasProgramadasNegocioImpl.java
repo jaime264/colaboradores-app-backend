@@ -458,9 +458,10 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 					reporte.getCollection().addHeader("Colaborador", ColumnType.STRING);
 					reporte.getCollection().addHeader("Agencia", ColumnType.STRING);
 					reporte.getCollection().addHeader("Cargo", ColumnType.STRING);
-					reporte.getCollection().addHeader("Fecha inicio", ColumnType.LOCALDATE);
-					reporte.getCollection().addHeader("Fecha fin", ColumnType.LOCALDATE);
-					reporte.getCollection().addHeader("Días", ColumnType.INTEGER);
+					reporte.getCollection().addHeader("Fecha de Inicio de Vacaciones", ColumnType.LOCALDATE);
+					reporte.getCollection().addHeader("Fecha de Fin de Vacaciones", ColumnType.LOCALDATE);
+					reporte.getCollection().addHeader("Número de días", ColumnType.INTEGER);
+					reporte.getCollection().addHeader("Fecha de Vencimiento de Vacaciones", ColumnType.LOCALDATE);
 					Map<Empleado, List<VacacionProgramacion>> empleadoProg = vacacionProgramacionService.listarProgramacionesPorAnioYAprobadorNivelI(LocalDate.now().getYear(), aprobador.getCodigo());
 					for (Map.Entry<Empleado, List<VacacionProgramacion>> programacionesEmpl : empleadoProg.entrySet()) {
 						for (VacacionProgramacion programacion : programacionesEmpl.getValue()) {
@@ -475,9 +476,10 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 								row.addCell("Colaborador", colaborador);
 								row.addCell("Agencia", agencia);
 								row.addCell("Cargo", cargo);
-								row.addCell("Fecha inicio", fechaInicio);
-								row.addCell("Fecha fin", fechaFin);
-								row.addCell("Días", cantidadDias);
+								row.addCell("Fecha de Inicio de Vacaciones", fechaInicio);
+								row.addCell("Fecha de Fin de Vacaciones", fechaFin);
+								row.addCell("Número de días", cantidadDias);
+								row.addCell("Fecha de Vencimiento de Vacaciones", fechaFin);
 								reporte.getCollection().setCurrentRow(row);
 								reporte.getCollection().addRow();
 							}
