@@ -28,9 +28,9 @@ public interface ReportesService {
 	
 	ByteArrayInputStream reporteColaboradores(RequestListarReportes req);
 	
-	byte[] reporteMeta(RequestReporteMeta req);
+	ByteArrayInputStream reporteMeta(RequestReporteMeta req);
 	
-	byte[] reporteMetaVariosFiltro(RequestReporteMeta req);
+	ByteArrayInputStream reporteMetaVariosFiltro(RequestReporteMeta req);
 
 
 }
