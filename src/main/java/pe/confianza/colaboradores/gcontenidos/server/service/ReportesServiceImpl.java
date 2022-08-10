@@ -291,13 +291,10 @@ public class ReportesServiceImpl implements ReportesService {
 		Page<ReporteColaboradores> reporteColaboradores = listarColaboradores(req);
 		listReporte.addAll(reporteColaboradores.getContent());
 
-		for (int i = 1; i < reporteColaboradores.getTotalPages(); i++) {
-			req.setCodigoUsuario("222");
-			req.setNumeroPagina(0);
-			req.setTamanioPagina(100);
+		for (int i = 1; i < reporteColaboradores.getTotalPages()-1; i++) {
+			req.setNumeroPagina(i);
 			reporteColaboradores = listarColaboradores(req);
 			listReporte.addAll(reporteColaboradores.getContent());
-
 		}
 
 		Report reporte = new Report();
