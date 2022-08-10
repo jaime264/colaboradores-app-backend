@@ -2,6 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class ReportesServiceImpl implements ReportesService {
 
 	@Autowired
 	private CargaParametros cargaParametros;
-	
+
 	@Autowired
 	ReporteAccesoService reporteAccesoService;
 
@@ -131,9 +132,10 @@ public class ReportesServiceImpl implements ReportesService {
 	@Override
 	public List<Map<String, String>> listarFiltrosReporteColaborador(RequestFiltroVacacionesAprobacion reqFiltros) {
 		// TODO Auto-generated method stub
-		
+
 		int anio = cargaParametros.getMetaVacacionAnio();
-		List<ReporteColaboradores> reporteColaboradores = reporteDao.reporteColaboradoresList(reqFiltros.getCodigo(), anio);
+		List<ReporteColaboradores> reporteColaboradores = reporteDao.reporteColaboradoresList(reqFiltros.getCodigo(),
+				anio);
 		List<Map<String, String>> datos = new ArrayList<>();
 		List<String> valores = new ArrayList<>();
 
@@ -184,7 +186,7 @@ public class ReportesServiceImpl implements ReportesService {
 
 	@Override
 	public List<ResponseReporteMeta> listarReporteMeta(RequestReporteMeta request) {
-		// TODO Auto-generated method stu		
+		// TODO Auto-generated method stu
 		List<ResponseReporteMeta> listResponse = new ArrayList<ResponseReporteMeta>();
 		int anio = cargaParametros.getMetaVacacionAnio();
 
@@ -193,8 +195,9 @@ public class ReportesServiceImpl implements ReportesService {
 
 			List<IReporteMeta> list = reporteMetaDao.reporteMeta(request.getCodigoUsuario(), anio);
 
-			if(list.get(0).getMeta() == null) return listResponse;
-			
+			if (list.get(0).getMeta() == null)
+				return listResponse;
+
 			list.stream().forEach(m -> {
 				ResponseReporteMeta reporte = new ResponseReporteMeta();
 				reporte.setCategoria("Meta");
@@ -209,7 +212,7 @@ public class ReportesServiceImpl implements ReportesService {
 			break;
 		case "TOTALTERRITORIOS":
 			List<IReporteMeta> listTerritorios = reporteMetaDao.reporteMetaTerritorio(request.getCodigoUsuario(), anio);
-			
+
 			listTerritorios.stream().forEach(m -> {
 				ResponseReporteMeta reporte = new ResponseReporteMeta();
 				reporte.setCategoria(m.getCategoria());
@@ -247,8 +250,9 @@ public class ReportesServiceImpl implements ReportesService {
 
 		List<ResponseReporteMeta> listResponse = new ArrayList<ResponseReporteMeta>();
 		int anio = cargaParametros.getMetaVacacionAnio();
-		List<IReporteMeta> listColectivoDivisiones = reporteMetaDao.reporteMetaColectivoDivision(request.getCodigoUsuario(), anio, request.getFiltro());
-		
+		List<IReporteMeta> listColectivoDivisiones = reporteMetaDao
+				.reporteMetaColectivoDivision(request.getCodigoUsuario(), anio, request.getFiltro());
+
 		listColectivoDivisiones.stream().forEach(m -> {
 			ResponseReporteMeta reporte = new ResponseReporteMeta();
 			reporte.setCategoria(m.getCategoria());
@@ -265,11 +269,12 @@ public class ReportesServiceImpl implements ReportesService {
 
 	@Override
 	public List<ResponseReporteMeta> listarReporteTerritorios(RequestReporteMeta request) {
-		
+
 		List<ResponseReporteMeta> listResponse = new ArrayList<ResponseReporteMeta>();
 		int anio = cargaParametros.getMetaVacacionAnio();
-		List<IReporteMeta> listTerritorioColectivos = reporteMetaDao.reporteMetaTerritorioColectivo(request.getCodigoUsuario(), anio, request.getFiltro());
-		
+		List<IReporteMeta> listTerritorioColectivos = reporteMetaDao
+				.reporteMetaTerritorioColectivo(request.getCodigoUsuario(), anio, request.getFiltro());
+
 		listTerritorioColectivos.stream().forEach(m -> {
 			ResponseReporteMeta reporte = new ResponseReporteMeta();
 			reporte.setCategoria(m.getCategoria());
@@ -285,13 +290,13 @@ public class ReportesServiceImpl implements ReportesService {
 	}
 
 	@Override
-	public ByteArrayInputStream reporteColaboradores(RequestListarReportes req) {
+	public String reporteColaboradores(RequestListarReportes req) {
 
 		List<ReporteColaboradores> listReporte = new ArrayList<>();
 		Page<ReporteColaboradores> reporteColaboradores = listarColaboradores(req);
 		listReporte.addAll(reporteColaboradores.getContent());
 
-		for (int i = 1; i < reporteColaboradores.getTotalPages()-1; i++) {
+		for (int i = 1; i < reporteColaboradores.getTotalPages() - 1; i++) {
 			req.setNumeroPagina(i);
 			reporteColaboradores = listarColaboradores(req);
 			listReporte.addAll(reporteColaboradores.getContent());
@@ -344,7 +349,12 @@ public class ReportesServiceImpl implements ReportesService {
 		try {
 			IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
 			excel.build();
-			return excel.getReult();
+			byte[] bytes = IOUtils.toByteArray(excel.getReult());
+
+			String encoded = Base64.getEncoder().encodeToString(bytes);
+			Map<Integer, String> exc = new HashMap<>();
+			exc.put(1, encoded);
+			return encoded;
 		} catch (Exception e) {
 			LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
 		}
@@ -353,7 +363,7 @@ public class ReportesServiceImpl implements ReportesService {
 	}
 
 	@Override
-	public ByteArrayInputStream reporteMeta(RequestReporteMeta req) {
+	public String reporteMeta(RequestReporteMeta req) {
 
 		List<ResponseReporteMeta> listReport = listarReporteMeta(req);
 
@@ -385,7 +395,11 @@ public class ReportesServiceImpl implements ReportesService {
 		try {
 			IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
 			excel.build();
-			return excel.getReult();
+			byte[] bytes = IOUtils.toByteArray(excel.getReult());
+
+			String encoded = Base64.getEncoder().encodeToString(bytes);
+
+			return encoded;
 		} catch (Exception e) {
 			LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
 		}
@@ -394,10 +408,10 @@ public class ReportesServiceImpl implements ReportesService {
 	}
 
 	@Override
-	public ByteArrayInputStream reporteMetaVariosFiltro(RequestReporteMeta req) {
+	public String reporteMetaVariosFiltro(RequestReporteMeta req) {
 
 		List<ResponseReporteMeta> list = new ArrayList<>();
-		
+
 		switch (req.getTipoReporte()) {
 		case "TOTALTERRITORIOS":
 			list = listarReporteMeta(req);
@@ -416,18 +430,18 @@ public class ReportesServiceImpl implements ReportesService {
 			break;
 		}
 
-		ByteArrayInputStream reportExcel = reporeteMetaVarios(list, req.getTipoReporte() + "" +req.getFiltro());
+		String reportExcel = reporeteMetaVarios(list, req.getTipoReporte() + "" + req.getFiltro());
 
 		return reportExcel;
 	}
 
-	private ByteArrayInputStream reporeteMetaVarios(List<ResponseReporteMeta> list ,String Titulo) {
+	private String reporeteMetaVarios(List<ResponseReporteMeta> list, String Titulo) {
 
 		Report reporte = new Report();
 		reporte.setType("XLSX");
 		reporte.setTitle("REPORTE " + Titulo);
 		reporte.getCollection().addHeader("Numero", ColumnType.INTEGER);
-		reporte.getCollection().addHeader("Descripcion", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Descripcion", ColumnType.STRING);
 		reporte.getCollection().addHeader("Meta", ColumnType.INTEGER);
 		reporte.getCollection().addHeader("Días gozados", ColumnType.INTEGER);
 		reporte.getCollection().addHeader("Porcentaje de avance", ColumnType.DOUBLE);
@@ -453,7 +467,11 @@ public class ReportesServiceImpl implements ReportesService {
 		try {
 			IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
 			excel.build();
-			return excel.getReult();
+			byte[] bytes = IOUtils.toByteArray(excel.getReult());
+
+			String encoded = Base64.getEncoder().encodeToString(bytes);
+
+			return encoded;
 		} catch (Exception e) {
 			LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
 		}

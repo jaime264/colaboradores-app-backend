@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,35 +103,41 @@ public class ReportesController {
 		responseStatus.setResultObj(reportesService.listarReporteTerritorios(request));
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
-	
+
 	@ApiOperation(notes = "Reporte en excel de los colaboradores vacacion meta", value = "url proxy /reportecolaboradoresexcel")
-	@PostMapping(value = "/excel-colaboradores", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public ResponseEntity<InputStreamResource> excelReporteColaboradores(@RequestBody RequestListarReportes req) {
-		 HttpHeaders headers = new HttpHeaders();
-		 headers.add("Content-Disposition", "inline; filename=reporte.xlsx");
-		 return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_OCTET_STREAM)
-				 .body(new InputStreamResource(reportesService.reporteColaboradores(req)));
-		
+	@RequestMapping("/excel-colaboradores")
+	public ResponseEntity<?> excelReporteColaboradores(HttpServletRequest httpServletRequest,
+			HttpServletResponse response, @RequestBody RequestListarReportes req) throws IOException {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(reportesService.reporteColaboradores(req));
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+
 	}
-	
+
 	@ApiOperation(notes = "Reporte excel de la meta en general", value = "url proxy /reportemetasexcel")
-	@PostMapping(value = "/excel-meta", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public ResponseEntity<InputStreamResource> excelReporteMeta(@RequestBody RequestReporteMeta req) {
-		 HttpHeaders headers = new HttpHeaders();
-		 headers.add("Content-Disposition", "inline; filename=reporte.xlsx");
-		 return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_OCTET_STREAM)
-				 .body(new InputStreamResource(reportesService.reporteMeta(req)));
-		
+	@RequestMapping("/excel-meta")
+	public ResponseEntity<?> excelReporteMeta(HttpServletRequest httpServletRequest,
+			HttpServletResponse response, @RequestBody RequestReporteMeta req) {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(reportesService.reporteMeta(req));
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+
 	}
-	
+
 	@ApiOperation(notes = "Reporte excel de territorio y colectivo", value = "url proxy /reporteterritoriocolectivoexcel")
-	@PostMapping(value = "/excel-varios", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public ResponseEntity<InputStreamResource> excelReporteVarios(@RequestBody RequestReporteMeta req) {
-		 HttpHeaders headers = new HttpHeaders();
-		 headers.add("Content-Disposition", "inline; filename=reporte.xlsx");
-		 return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_OCTET_STREAM)
-				 .body(new InputStreamResource(reportesService.reporteMetaVariosFiltro(req)));
-		
+	@RequestMapping("/excel-varios")
+	public ResponseEntity<?> excelReporteVarios(HttpServletRequest httpServletRequest,
+			HttpServletResponse response, @RequestBody RequestReporteMeta req) {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(reportesService.reporteMetaVariosFiltro(req));
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+
 	}
 
 }

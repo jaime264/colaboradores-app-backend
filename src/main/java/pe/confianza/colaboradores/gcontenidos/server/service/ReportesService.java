@@ -26,11 +26,11 @@ public interface ReportesService {
 	
 	List<ResponseReporteMeta> listarReporteTerritorios(RequestReporteMeta request);
 	
-	ByteArrayInputStream reporteColaboradores(RequestListarReportes req);
+	String reporteColaboradores(RequestListarReportes req);
 	
-	ByteArrayInputStream reporteMeta(RequestReporteMeta req);
+	String reporteMeta(RequestReporteMeta req);
 	
-	ByteArrayInputStream reporteMetaVariosFiltro(RequestReporteMeta req);
+	String reporteMetaVariosFiltro(RequestReporteMeta req);
 
 
 }
