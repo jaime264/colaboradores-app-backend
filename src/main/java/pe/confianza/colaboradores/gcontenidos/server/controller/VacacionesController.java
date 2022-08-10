@@ -127,11 +127,14 @@ public class VacacionesController {
 		}
 	}
 	
-	@ApiOperation(notes = "Edita una programación rechazada empleado", value = "url proxy /vacacionesadd")
+	@ApiOperation(notes = "Edita una programación rechazada empleado", value = "url proxy /vacacionesupdate")
 	@PutMapping("/vacaciones/modificacion-programacion")
 	public ResponseEntity<ResponseStatus> modificarRechazados(@Valid @RequestBody RequestEditarProgramacionVacacion programacionRequest) {
-		
-		return null;
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		programacionVacacionNegocio.modificarRechazados(programacionRequest);
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	
 	@ApiOperation(notes = "Cancela una programación de vacación de un empleado", value = "url proxy /vacacionescancelar")

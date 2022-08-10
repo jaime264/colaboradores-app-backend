@@ -298,7 +298,7 @@ public class ReportesServiceImpl implements ReportesService {
 	}
 
 	@Override
-	public byte[] reporteColaboradores(RequestListarReportes req) {
+	public ByteArrayInputStream reporteColaboradores(RequestListarReportes req) {
 
 		List<ReporteColaboradores> listReporte = new ArrayList<>();
 		Page<ReporteColaboradores> reporteColaboradores = listarColaboradores(req);
@@ -359,7 +359,7 @@ public class ReportesServiceImpl implements ReportesService {
 		try {
 			IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
 			excel.build();
-			return IOUtils.toByteArray(excel.getReult());
+			return excel.getReult();
 		} catch (Exception e) {
 			LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
 		}

@@ -30,6 +30,11 @@ import pe.confianza.colaboradores.gcontenidos.server.util.file.read.ColumnType;
 import pe.confianza.colaboradores.gcontenidos.server.util.file.write.IReport;
 import pe.confianza.colaboradores.gcontenidos.server.util.file.write.Report;
 
+/**
+ * 
+ * @author kenyo.pecho
+ *
+ */
 public class XlsxReport implements IReport<ByteArrayInputStream> {
 	
 	private static Logger logger = LoggerFactory.getLogger(XlsxReport.class);

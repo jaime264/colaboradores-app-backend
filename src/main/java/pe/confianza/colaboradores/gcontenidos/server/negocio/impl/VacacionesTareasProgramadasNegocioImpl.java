@@ -168,7 +168,8 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 			Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
 			String titulo = "VACACIONES - INICIO PROGRAMACION";
 			String descripcion = Utilitario.generarMensajeNotificacion(cargaParametros.MENSAJE_COLABORDOR_INICIO_PROGRAMACION, 
-					Utilitario.numeroEnteroToString(anio), Utilitario.fechaToStringPer(Constantes.FORMATO_DIA_MES_LITERAL, fechaInicioProgramacion),
+					Utilitario.fechaToStringPer(Constantes.FORMATO_DIA_MES_LITERAL, fechaInicioProgramacion),
+					Utilitario.numeroEnteroToString(anio),
 					Utilitario.fechaToStringPer(Constantes.FORMATO_DIA_MES_LITERAL, fechaFinProgramacion));
 			if(opt.isPresent()) {
 				List<Empleado> lstEmpleado = empleadoService.listar();
@@ -200,7 +201,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 							for (VacacionMetaResumen resumen : resumenes) {
 								if(resumen.getMeta() > 0) {
 									String descripcion = Utilitario.generarMensajeNotificacion(
-											cargaParametros.MENSAJE_COLABORDOR_META_INCOMPLETA,resumen.getMeta(), anio);
+											cargaParametros.MENSAJE_COLABORDOR_META_INCOMPLETA,resumen.getMeta(), Utilitario.numeroEnteroToString(anio));
 									Optional<Empleado> optEmpleado = empleadoService.buscarPorId(resumen.getEmpleadoId());
 									if(optEmpleado.isPresent()) {
 										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), USUARIO_OPERACION);
@@ -241,7 +242,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 									if(optEmpleado.isPresent()) {
 										String descripcion = Utilitario.generarMensajeNotificacion( 
 												cargaParametros.MENSAJE_COLABORDOR_SIN_REGISTRO,
-												 cargaParametros.getFechaFinRegistroProgramacion());
+												 Utilitario.fechaToStringPer(Constantes.FORMATO_DIA_MES_LITERAL, cargaParametros.getFechaFinRegistroProgramacion()));
 										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), USUARIO_OPERACION);
 									}
 								}

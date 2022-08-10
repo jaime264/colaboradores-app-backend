@@ -3,6 +3,11 @@ package pe.confianza.colaboradores.gcontenidos.server.util.file.collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * 
+ * @author kenyo.pecho
+ *
+ */
 public class Row {
 	
 	private Map<String, Object> row;
