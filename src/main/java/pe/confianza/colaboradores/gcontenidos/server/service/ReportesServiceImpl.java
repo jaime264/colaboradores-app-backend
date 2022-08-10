@@ -401,10 +401,10 @@ public class ReportesServiceImpl implements ReportesService {
 		List<ResponseReporteMeta> list = new ArrayList<>();
 		
 		switch (req.getTipoReporte()) {
-		case "TERRITORIOS":
+		case "TOTALTERRITORIOS":
 			list = listarReporteMeta(req);
 			break;
-		case "COLECTIVOS":
+		case "TOTALCOLECTIVOS":
 			list = listarReporteMeta(req);
 			break;
 		case "TERRITORIOSVARIOS":
