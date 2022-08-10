@@ -296,7 +296,7 @@ public class ReportesServiceImpl implements ReportesService {
 		Page<ReporteColaboradores> reporteColaboradores = listarColaboradores(req);
 		listReporte.addAll(reporteColaboradores.getContent());
 
-		for (int i = 1; i < reporteColaboradores.getTotalPages() - 1; i++) {
+		for (int i = 1; i < reporteColaboradores.getTotalPages(); i++) {
 			req.setNumeroPagina(i);
 			reporteColaboradores = listarColaboradores(req);
 			listReporte.addAll(reporteColaboradores.getContent());
@@ -374,17 +374,17 @@ public class ReportesServiceImpl implements ReportesService {
 		reporte.getCollection().addHeader("Meta", ColumnType.INTEGER);
 		reporte.getCollection().addHeader("Días gozados", ColumnType.INTEGER);
 		reporte.getCollection().addHeader("Porcentaje de avance", ColumnType.DOUBLE);
-		reporte.getCollection().addHeader("Días pendientes", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Días pendientes de goce", ColumnType.INTEGER);
 
 		int count = 1;
 		for (ResponseReporteMeta repMeta : listReport) {
 
 			Row row = new Row();
 			row.addCell("Numero", count);
-			row.addCell("Meta", repMeta.getMeta());
+			row.addCell("Meta de días", repMeta.getMeta());
 			row.addCell("Días gozados", repMeta.getDiasGozados());
 			row.addCell("Porcentaje de avance", repMeta.getPorcentajeAvance());
-			row.addCell("Días pendientes", repMeta.getDiasPendientes());
+			row.addCell("Días pendientes de goce", repMeta.getDiasPendientes());
 
 			reporte.getCollection().setCurrentRow(row);
 			reporte.getCollection().addRow();
@@ -430,11 +430,11 @@ public class ReportesServiceImpl implements ReportesService {
 			break;
 		}
 
-		String reportExcel = reporeteMetaVarios(list, req.getTipoReporte() + "" + req.getFiltro());
+		String reportExcel = reporeteMetaVarios(list, req.getTipoReporte() + " " + req.getFiltro());
 
 		return reportExcel;
 	}
-
+	
 	private String reporeteMetaVarios(List<ResponseReporteMeta> list, String Titulo) {
 
 		Report reporte = new Report();
@@ -442,10 +442,10 @@ public class ReportesServiceImpl implements ReportesService {
 		reporte.setTitle("REPORTE " + Titulo);
 		reporte.getCollection().addHeader("Numero", ColumnType.INTEGER);
 		reporte.getCollection().addHeader("Descripcion", ColumnType.STRING);
-		reporte.getCollection().addHeader("Meta", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Meta de días", ColumnType.INTEGER);
 		reporte.getCollection().addHeader("Días gozados", ColumnType.INTEGER);
 		reporte.getCollection().addHeader("Porcentaje de avance", ColumnType.DOUBLE);
-		reporte.getCollection().addHeader("Días pendientes", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Días pendientes de goce", ColumnType.INTEGER);
 
 		int count = 1;
 		for (ResponseReporteMeta repMeta : list) {
@@ -453,10 +453,10 @@ public class ReportesServiceImpl implements ReportesService {
 			Row row = new Row();
 			row.addCell("Numero", count);
 			row.addCell("Descripcion", repMeta.getCategoria());
-			row.addCell("Meta", repMeta.getMeta());
+			row.addCell("Meta de días", repMeta.getMeta());
 			row.addCell("Días gozados", repMeta.getDiasGozados());
 			row.addCell("Porcentaje de avance", repMeta.getPorcentajeAvance());
-			row.addCell("Días pendientes", repMeta.getDiasPendientes());
+			row.addCell("Días pendientes de goce", repMeta.getDiasPendientes());
 
 			reporte.getCollection().setCurrentRow(row);
 			reporte.getCollection().addRow();

@@ -33,6 +33,8 @@ public class EmplVacPerRes {
 	private String territorio;
 	@JsonIgnore
 	private String corredor;
+	@JsonIgnore
+	private String division;
 	
 	private boolean adelantada;
 

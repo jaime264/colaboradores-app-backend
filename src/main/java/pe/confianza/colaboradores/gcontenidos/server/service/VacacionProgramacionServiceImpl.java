@@ -27,6 +27,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFiltroVacacione
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestProgramacionEmpleado;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.DivisionDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.EmpleadoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.VacacionProgramacionDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
@@ -34,6 +35,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.NotificacionTipo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PeriodoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Division;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.EnvioNotificacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
@@ -65,6 +67,9 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 	
 	@Autowired
 	private MessageSource messageSource;
+	
+	@Autowired
+	private DivisionDao divisionDao;
 
 	@Override
 	public List<VacacionProgramacion> actualizarEstadoProgramaciones() {
@@ -511,6 +516,9 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 					emp.setTerritorio(e.getAgencia().getCorredor().getTerritorio().getDescripcion());
 					emp.setCorredor(e.getAgencia().getCorredor().getDescripcion());
 					emp.setAdelantada(v.isVacacionesAdelantadas());
+					
+					List<Division> divisiones =  divisionDao.listDivisionByCodigoSpring(e.getCodigoGerenteDivision());
+					emp.setDivision(divisiones.get(0).getDescripcion());
 
 					listEmp.add(emp);
 				}
@@ -540,6 +548,9 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		case "CORREDOR":
 			datos = listafiltrosvacacion(listEmpByProgramacion, reqFiltros.getTipoFiltro());
 			break;
+		case "DIVISION":
+			datos = listafiltrosvacacion(listEmpByProgramacion, reqFiltros.getTipoFiltro());
+			break;
 		default:
 			break;
 		}
@@ -567,6 +578,9 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 				break;
 			case "CORREDOR":
 				valores.add(e.getCorredor());
+				break;
+			case "DIVISION":
+				valores.add(e.getDivision());
 				break;
 			default:
 				break;
