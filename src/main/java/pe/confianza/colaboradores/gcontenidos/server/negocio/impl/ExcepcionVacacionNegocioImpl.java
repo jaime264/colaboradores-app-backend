@@ -113,6 +113,7 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 			String tituloNotificacion = "";
 			StringBuilder mensajeNotificacion =  new StringBuilder("Estimado Colaborador, De acuerdo a tu solicitud, se confirma la programación de tus vacaciones de acuerdo al siguiente detalle: ");
 			String mensajeRespuesta = "";
+			boolean esAdelantada = programacionOriginal.isVacacionesAdelantadas();
 			if(programacionOriginal.getIdEstado() == EstadoVacacion.GOZANDO.id) { //INTERRUPCION DE VACACIONES
 				programacionOriginal.setInterrupcion(true);
 				programacionOriginal.setDiasGozados(programacionOriginal.getNumeroDias() - totalDiasReprogramados);
@@ -144,7 +145,7 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 				mensajeNotificacion.append(" DEL ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, prog.getFechaInicio())).append(" - AL ")
 				.append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, prog.getFechaFin()))
 				.append(" / ").append(prog.getNumeroDias()).append(" Días")
-				.append(" / VACACION REPROGRAMADA")
+				.append(" / ").append(esAdelantada ? "VACACIONES ADELANTADAS" : "VACACIONES REPROGRAMADA")
 				.append("\n");
 			}
 			Optional<NotificacionTipo> tipoNot = notificacionService
