@@ -101,12 +101,33 @@ public class ReportesController {
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	
-	@PostMapping(value = "/colaboradores/excel", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	@ApiOperation(notes = "Reporte en excel de los colaboradores vacacion meta", value = "url proxy /reportecolaboradoresexcel")
+	@PostMapping(value = "/excel-colaboradores", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public ResponseEntity<InputStreamResource> excelReporteColaboradores(@RequestBody RequestListarReportes req) {
 		 HttpHeaders headers = new HttpHeaders();
 		 headers.add("Content-Disposition", "inline; filename=reporte.xlsx");
 		 return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_OCTET_STREAM)
 				 .body(new InputStreamResource(reportesService.reporteColaboradores(req)));
+		
+	}
+	
+	@ApiOperation(notes = "Reporte excel de la meta en general", value = "url proxy /reportemetasexcel")
+	@PostMapping(value = "/excel-meta", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public ResponseEntity<InputStreamResource> excelReporteMeta(@RequestBody RequestReporteMeta req) {
+		 HttpHeaders headers = new HttpHeaders();
+		 headers.add("Content-Disposition", "inline; filename=reporte.xlsx");
+		 return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_OCTET_STREAM)
+				 .body(new InputStreamResource(reportesService.reporteMeta(req)));
+		
+	}
+	
+	@ApiOperation(notes = "Reporte excel de territorio y colectivo", value = "url proxy /reporteterritoriocolectivoexcel")
+	@PostMapping(value = "/excel-varios", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public ResponseEntity<InputStreamResource> excelReporteVarios(@RequestBody RequestReporteMeta req) {
+		 HttpHeaders headers = new HttpHeaders();
+		 headers.add("Content-Disposition", "inline; filename=reporte.xlsx");
+		 return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_OCTET_STREAM)
+				 .body(new InputStreamResource(reportesService.reporteMetaVariosFiltro(req)));
 		
 	}
 

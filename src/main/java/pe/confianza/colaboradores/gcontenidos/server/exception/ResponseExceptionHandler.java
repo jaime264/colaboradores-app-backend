@@ -52,6 +52,8 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
+
+
 	@ExceptionHandler(AppException.class)
 	public final ResponseEntity<ResponseStatus> manejarExcepciones(Exception ex, WebRequest request) {
 		ResponseStatus response = new ResponseStatus();

@@ -68,9 +68,6 @@ public class ReportesServiceImpl implements ReportesService {
 	@Override
 	public Page<ReporteColaboradores> listarColaboradores(RequestListarReportes request) {
 
-		int empleadoAprob = reporteAccesoService.cantidadEmpleadosAcceso(request.getCodigoUsuario());
-		if(empleadoAprob > 0) request.setCodigoUsuario("");
-		
 		int anio = cargaParametros.getMetaVacacionAnio();
 		Pageable paginacion = PageRequest.of(request.getNumeroPagina(), request.getTamanioPagina());
 		Page<ReporteColaboradores> reporteColaboradores = null;
@@ -135,9 +132,6 @@ public class ReportesServiceImpl implements ReportesService {
 	public List<Map<String, String>> listarFiltrosReporteColaborador(RequestFiltroVacacionesAprobacion reqFiltros) {
 		// TODO Auto-generated method stub
 		
-		int empleadoAprob = reporteAccesoService.cantidadEmpleadosAcceso(reqFiltros.getCodigo());
-		if(empleadoAprob > 0) reqFiltros.setCodigo("");
-		
 		int anio = cargaParametros.getMetaVacacionAnio();
 		List<ReporteColaboradores> reporteColaboradores = reporteDao.reporteColaboradoresList(reqFiltros.getCodigo(), anio);
 		List<Map<String, String>> datos = new ArrayList<>();
@@ -190,10 +184,7 @@ public class ReportesServiceImpl implements ReportesService {
 
 	@Override
 	public List<ResponseReporteMeta> listarReporteMeta(RequestReporteMeta request) {
-		// TODO Auto-generated method stub
-		int empleadoAprob = reporteAccesoService.cantidadEmpleadosAcceso(request.getCodigoUsuario());
-		if(empleadoAprob > 0) request.setCodigoUsuario("");
-		
+		// TODO Auto-generated method stu		
 		List<ResponseReporteMeta> listResponse = new ArrayList<ResponseReporteMeta>();
 		int anio = cargaParametros.getMetaVacacionAnio();
 
@@ -252,9 +243,6 @@ public class ReportesServiceImpl implements ReportesService {
 	@Override
 	public List<ResponseReporteMeta> listarReporteColectivos(RequestReporteMeta request) {
 
-		int empleadoAprob = reporteAccesoService.cantidadEmpleadosAcceso(request.getCodigoUsuario());
-		if(empleadoAprob > 0) request.setCodigoUsuario("");
-		
 		List<ResponseReporteMeta> listResponse = new ArrayList<ResponseReporteMeta>();
 		int anio = cargaParametros.getMetaVacacionAnio();
 		List<IReporteMeta> listColectivoDivisiones = reporteMetaDao.reporteMetaColectivoDivision(request.getCodigoUsuario(), anio, request.getFiltro());
@@ -275,9 +263,6 @@ public class ReportesServiceImpl implements ReportesService {
 
 	@Override
 	public List<ResponseReporteMeta> listarReporteTerritorios(RequestReporteMeta request) {
-		
-		int empleadoAprob = reporteAccesoService.cantidadEmpleadosAcceso(request.getCodigoUsuario());
-		if(empleadoAprob > 0) request.setCodigoUsuario("");
 		
 		List<ResponseReporteMeta> listResponse = new ArrayList<ResponseReporteMeta>();
 		int anio = cargaParametros.getMetaVacacionAnio();
@@ -368,7 +353,7 @@ public class ReportesServiceImpl implements ReportesService {
 	}
 
 	@Override
-	public byte[] reporteMeta(RequestReporteMeta req) {
+	public ByteArrayInputStream reporteMeta(RequestReporteMeta req) {
 
 		List<ResponseReporteMeta> listReport = listarReporteMeta(req);
 
@@ -400,7 +385,7 @@ public class ReportesServiceImpl implements ReportesService {
 		try {
 			IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
 			excel.build();
-			return IOUtils.toByteArray(excel.getReult());
+			return excel.getReult();
 		} catch (Exception e) {
 			LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
 		}
@@ -409,7 +394,7 @@ public class ReportesServiceImpl implements ReportesService {
 	}
 
 	@Override
-	public byte[] reporteMetaVariosFiltro(RequestReporteMeta req) {
+	public ByteArrayInputStream reporteMetaVariosFiltro(RequestReporteMeta req) {
 
 		List<ResponseReporteMeta> list = new ArrayList<>();
 		
@@ -431,12 +416,12 @@ public class ReportesServiceImpl implements ReportesService {
 			break;
 		}
 
-		byte[] reportExcel = reporeteMetaVarios(list, req.getTipoReporte() + "" +req.getFiltro());
+		ByteArrayInputStream reportExcel = reporeteMetaVarios(list, req.getTipoReporte() + "" +req.getFiltro());
 
 		return reportExcel;
 	}
 
-	private byte[] reporeteMetaVarios(List<ResponseReporteMeta> list ,String Titulo) {
+	private ByteArrayInputStream reporeteMetaVarios(List<ResponseReporteMeta> list ,String Titulo) {
 
 		Report reporte = new Report();
 		reporte.setType("XLSX");
@@ -468,7 +453,7 @@ public class ReportesServiceImpl implements ReportesService {
 		try {
 			IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
 			excel.build();
-			return IOUtils.toByteArray(excel.getReult());
+			return excel.getReult();
 		} catch (Exception e) {
 			LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
 		}
