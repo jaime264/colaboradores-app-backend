@@ -193,6 +193,8 @@ public class ReportesServiceImpl implements ReportesService {
 
 			List<IReporteMeta> list = reporteMetaDao.reporteMeta(request.getCodigoUsuario(), anio);
 
+			if(list.get(0).getMeta() == null) return listResponse;
+			
 			list.stream().forEach(m -> {
 				ResponseReporteMeta reporte = new ResponseReporteMeta();
 				reporte.setCategoria("Meta");
@@ -207,7 +209,7 @@ public class ReportesServiceImpl implements ReportesService {
 			break;
 		case "TOTALTERRITORIOS":
 			List<IReporteMeta> listTerritorios = reporteMetaDao.reporteMetaTerritorio(request.getCodigoUsuario(), anio);
-
+			
 			listTerritorios.stream().forEach(m -> {
 				ResponseReporteMeta reporte = new ResponseReporteMeta();
 				reporte.setCategoria(m.getCategoria());
