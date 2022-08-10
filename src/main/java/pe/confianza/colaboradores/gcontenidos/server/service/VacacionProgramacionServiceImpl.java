@@ -15,6 +15,7 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,10 +36,12 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.VacacionProgramacion;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.EnvioNotificacionNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.util.CargaParametros;
+import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoVacacion;
 import pe.confianza.colaboradores.gcontenidos.server.util.TipoNotificacion;
+import pe.confianza.colaboradores.gcontenidos.server.util.Utilitario;
 
 @Service
 public class VacacionProgramacionServiceImpl implements VacacionProgramacionService {
@@ -59,6 +62,9 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	@Autowired
 	private EnvioNotificacionNegocio envioNotificacionNegocio;
+	
+	@Autowired
+	private MessageSource messageSource;
 
 	@Override
 	public List<VacacionProgramacion> actualizarEstadoProgramaciones() {
@@ -219,26 +225,57 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 				vacacionProgramacionDao.aprobarVacacionByPeriodo(v.getIdEstado(), v.getIdProgramacion());
 
 				Optional<VacacionProgramacion> vp = vacacionProgramacionDao.findById(v.getIdProgramacion());
+				boolean esReprogramacion = vp.get().getIdProgramacionOriginal() == null ? false : true;
+				boolean esAdelantada = vp.get().isVacacionesAdelantadas();
 				List<Empleado> emp = empleadoDao.findByCodigo(vp.get().getCodigoEmpleado());
 				Optional<NotificacionTipo> tipoNot = notificacionService
 						.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
 
 				if(v.getIdEstado() == 3) {
-					Notificacion notificacion = notificacionService.registrar("Vacación Aprobada",
-							"Vacacion con fecha inicio " + vp.get().getFechaInicio() + " y fecha fin " + vp.get().getFechaFin()
-									+ " fue aprobada",
-							v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
-
-					notificacionService.enviarNotificacionApp(notificacion);
-					notificacionService.enviarNotificacionCorreo(notificacion);
+					Notificacion notificacion = null;
+					if(esReprogramacion) {
+						StringBuilder mensaje = new StringBuilder();
+						mensaje.append(Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.reprogramacion.aceptada"))
+						.append(" Del ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaInicio()))
+						.append(" al ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaFin()))
+						.append(" - ").append(vp.get().getNumeroDias()).append(" Dias - vacaciones vigentes");
+						notificacion = notificacionService.registrar("VACACIÓN APROBADA", mensaje.toString(),
+								v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
+					} else {
+						if(esAdelantada) {
+							StringBuilder mensaje = new StringBuilder();
+							mensaje.append(Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.reprogramacion.aceptada"))
+							.append(" Del ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaInicio()))
+							.append(" al ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaFin()))
+							.append(" - ").append(vp.get().getNumeroDias()).append(" Dias - vacaciones adelantadas");
+							notificacion = notificacionService.registrar("VACACIÓN APROBADA", mensaje.toString(),
+									v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
+						} else {
+							notificacion = notificacionService.registrar("Vacación Aprobada",
+									"Vacacion con fecha inicio " + Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaInicio()) + " y fecha fin " 
+							+ Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaFin())
+											+ " fue aprobada",
+									v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
+						}
+						
+					}
+					
+					if(notificacion != null) {
+						notificacionService.enviarNotificacionApp(notificacion);
+						notificacionService.enviarNotificacionCorreo(notificacion);
+					}
+					
 				}else if(v.getIdEstado() == 4)  {
-					Notificacion notificacion = notificacionService.registrar("Vacación Rechazada",
-							"Vacación con fecha inicio " + vp.get().getFechaInicio() + " y fecha fin " + vp.get().getFechaFin()
-									+ " fue rechazada",
-							v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
-
+					Notificacion notificacion  = notificacionService.registrar("VACACIÓN RECHAZADA",
+								"Vacación con fecha inicio " + Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaInicio()) + " y fecha fin " 
+										+ Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaFin())
+										+ " fue rechazada",
+								v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
+					
+					
 					notificacionService.enviarNotificacionApp(notificacion);
 					notificacionService.enviarNotificacionCorreo(notificacion);
+					
 				}
 				
 			});
