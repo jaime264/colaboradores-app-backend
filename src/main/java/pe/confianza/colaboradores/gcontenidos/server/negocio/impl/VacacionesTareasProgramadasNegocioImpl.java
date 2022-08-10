@@ -409,17 +409,17 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 							Report reporte = new Report();
 							reporte.setType("XLSX");
 							reporte.setTitle("REPORTE VACACIONES");
-							reporte.getCollection().addHeader("Fecha inicio", ColumnType.LOCALDATE);
-							reporte.getCollection().addHeader("Fecha fin", ColumnType.LOCALDATE);
-							reporte.getCollection().addHeader("Días", ColumnType.INTEGER);
+							reporte.getCollection().addHeader("Fecha de Inicio de Vacaciones", ColumnType.LOCALDATE);
+							reporte.getCollection().addHeader("Fecha de Fin de Vacaciones", ColumnType.LOCALDATE);
+							reporte.getCollection().addHeader("Número de Días a Gozar", ColumnType.INTEGER);
 							for (VacacionProgramacion prog : programaciones) {
 								LocalDate fechaInicio = prog.getFechaInicio();
 								LocalDate fechaFin = prog.getFechaFin();
 								int cantidadDias = prog.getNumeroDias();
 								Row row = new Row();
-								row.addCell("Fecha inicio", fechaInicio);
-								row.addCell("Fecha fin", fechaFin);
-								row.addCell("Días", cantidadDias);
+								row.addCell("Fecha de Inicio de Vacaciones", fechaInicio);
+								row.addCell("Fecha de Fin de Vacaciones", fechaFin);
+								row.addCell("Número de Días a Gozar", cantidadDias);
 								reporte.getCollection().setCurrentRow(row);
 								reporte.getCollection().addRow();
 							}
@@ -460,7 +460,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 					reporte.getCollection().addHeader("Cargo", ColumnType.STRING);
 					reporte.getCollection().addHeader("Fecha de Inicio de Vacaciones", ColumnType.LOCALDATE);
 					reporte.getCollection().addHeader("Fecha de Fin de Vacaciones", ColumnType.LOCALDATE);
-					reporte.getCollection().addHeader("Número de días", ColumnType.INTEGER);
+					reporte.getCollection().addHeader("Número de días a Gozar", ColumnType.INTEGER);
 					reporte.getCollection().addHeader("Fecha de Vencimiento de Vacaciones", ColumnType.LOCALDATE);
 					Map<Empleado, List<VacacionProgramacion>> empleadoProg = vacacionProgramacionService.listarProgramacionesPorAnioYAprobadorNivelI(LocalDate.now().getYear(), aprobador.getCodigo());
 					for (Map.Entry<Empleado, List<VacacionProgramacion>> programacionesEmpl : empleadoProg.entrySet()) {
@@ -478,7 +478,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 								row.addCell("Cargo", cargo);
 								row.addCell("Fecha de Inicio de Vacaciones", fechaInicio);
 								row.addCell("Fecha de Fin de Vacaciones", fechaFin);
-								row.addCell("Número de días", cantidadDias);
+								row.addCell("Número de días a Gozar", cantidadDias);
 								row.addCell("Fecha de Vencimiento de Vacaciones", fechaFin);
 								reporte.getCollection().setCurrentRow(row);
 								reporte.getCollection().addRow();
