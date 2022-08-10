@@ -47,7 +47,7 @@ public class ReporteColaboradores {
 	private Long id;
 	
 	@Column(name = "codigo")
-	private Long codigo;
+	private Integer codigo;
 	
 	@Column(name = "usuariobt")
 	private String usuarioBt;

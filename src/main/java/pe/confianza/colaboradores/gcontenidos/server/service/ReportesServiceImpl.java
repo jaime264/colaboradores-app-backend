@@ -311,10 +311,10 @@ public class ReportesServiceImpl implements ReportesService {
 		reporte.getCollection().addHeader("Territorio", ColumnType.STRING);
 		reporte.getCollection().addHeader("Agencia", ColumnType.STRING);
 		reporte.getCollection().addHeader("Colectivo", ColumnType.STRING);
-		reporte.getCollection().addHeader("Meta de ia", ColumnType.STRING);
-		reporte.getCollection().addHeader("Colectivo", ColumnType.STRING);
-		reporte.getCollection().addHeader("Colectivo", ColumnType.STRING);
-		reporte.getCollection().addHeader("Colectivo", ColumnType.STRING);
+		reporte.getCollection().addHeader("Meta de días", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Dias Gozados", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Porcentaje Avance", ColumnType.DOUBLE);
+		reporte.getCollection().addHeader("Dias Programados", ColumnType.INTEGER);
 
 		int count = 1;
 		for (ReporteColaboradores repColaboradores : listReporte) {
@@ -326,6 +326,7 @@ public class ReportesServiceImpl implements ReportesService {
 			row.addCell("Puesto", repColaboradores.getPuesto());
 			row.addCell("Fecha de Ingreso", repColaboradores.getFechaIngreso());
 			row.addCell("División", repColaboradores.getDivision());
+			row.addCell("Área", repColaboradores.getPuesto());
 			row.addCell("Corredor", repColaboradores.getCorredor());
 			row.addCell("Territorio", repColaboradores.getTerritorio());
 			row.addCell("Agencia", repColaboradores.getAgencia());
