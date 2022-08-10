@@ -488,7 +488,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 					try {
 						IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
 						excel.build();
-						notificacionService.enviarCorreoReporte("REPORTE VACACIONES", "", aprobador.getEmail(), aprobador.getNombreCompleto(),
+						notificacionService.enviarCorreoReporte("REPORTE VACACIONES", "Estimado Responsable, se adjunta reporte de colaboradores que saldrán de vacaciones el mes siguiente.", aprobador.getEmail(), aprobador.getNombreCompleto(),
 								"coloboradores_vacaciones.xlsx", "application/octet-stream", IOUtils.toByteArray(excel.getReult()));
 					} catch (Exception e) {
 						LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
