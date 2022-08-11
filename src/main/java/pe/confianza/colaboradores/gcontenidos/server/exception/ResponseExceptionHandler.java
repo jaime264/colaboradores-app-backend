@@ -73,6 +73,18 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 	}
 	
+	@ExceptionHandler(NotAuthorizedException.class)
+	public final ResponseEntity<ResponseStatus> manejarExcepcionesAutorizacion(Exception ex, WebRequest request) {
+		ResponseStatus response = new ResponseStatus();
+		response.setMsgStatus(ex.getMessage());
+		response.setCodeStatus(Constantes.COD_NO_AUTORIZADO);
+		log.error("ERROR NOT_FOUND: {}", ex.getMessage());
+		log.error(ex.getMessage(), ex);
+		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+	}
+	
+	
+	
 	public ResponseStatus getResponse(String msgError) {
 		ObjectMapper objectMapper;
 		ResponseStatus response;
