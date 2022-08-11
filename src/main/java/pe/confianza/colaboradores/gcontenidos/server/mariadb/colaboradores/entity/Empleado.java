@@ -93,7 +93,7 @@ public class Empleado extends EntidadAuditoria {
 	private LocalDateTime fechaAceptacionTc;
 
 	@Column(nullable = true)
-	private int codigoGerenteDivision;
+	private Integer codigoGerenteDivision;
 	
 	private String codigoPerfilSpring;
 

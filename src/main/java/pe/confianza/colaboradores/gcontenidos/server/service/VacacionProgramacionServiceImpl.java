@@ -453,6 +453,19 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		case "TRAMO":
 			listEmp = listEmpByFecha(listEmpByProgramacion, reqPrograEmp);
 			break;
+		case "DIVISION":
+			listEmp = listEmpByProgramacion.stream().filter(e -> {
+				boolean encontrado = false;
+				if(e.getDivision() != null) {
+					for (String filtro : reqPrograEmp.getFiltro()) {
+						if (filtro.equalsIgnoreCase(e.getDivision()))
+							encontrado = true;
+					}
+					
+				}
+				return encontrado;
+			}).collect(Collectors.toList());
+			break;
 		default:
 			listEmp = listEmpByProgramacion;
 			break;
@@ -621,6 +634,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		case "CORREDOR":
 			datos = empleadoDao.findCorredorByCodigoN1(reqFiltros.getCodigo(), reqFiltros.getCodigo());
 			break;
+		case "DIVISION":
+			datos = empleadoDao.findDivisionByCodigoN1(reqFiltros.getCodigo(), reqFiltros.getCodigo());
 		default:
 			break;
 		}

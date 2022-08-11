@@ -79,6 +79,12 @@ public interface EmpleadoDao extends JpaRepository<Empleado, Long> {
 			+ "  INNER JOIN vacacion_periodo p on p.id_empleado = e.id INNER JOIN vacacion_programacion vp on vp.id_periodo = p.id "
 			+ "where e.codigo_nivel1 = ?1 or e.codigo_nivel2 = ?2", nativeQuery = true)
 	List<Map<String, String>> findAreaByCodigoN1(String codigoNivel1, String codigoNivel2);
+	
+	@Query(value = "select DISTINCT c.id, c.descripcion from empleado e "
+			+ " INNER JOIN division d on d.codigo_spring = e.codigo_gerente_division "
+			+ " INNER JOIN vacacion_periodo p on p.id_empleado = e.id INNER JOIN vacacion_programacion vp on vp.id_periodo = p.id "
+			+ "where e.codigo_nivel1 = ?1 or e.codigo_nivel2 = ?2", nativeQuery = true)
+	List<Map<String, String>> findDivisionByCodigoN1(String codigoNivel1, String codigoNivel2);
 
 	
 	@Query(value = "select (CASE WHEN SUM(cantidad_subordinados) IS NULL THEN 0 ELSE SUM(cantidad_subordinados) end)  from  vacaciones.aprobador_vacaciones_primer_nivel where id = ?1", nativeQuery = true)
