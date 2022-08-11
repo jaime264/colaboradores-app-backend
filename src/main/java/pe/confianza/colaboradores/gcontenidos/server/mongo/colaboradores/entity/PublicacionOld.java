@@ -1,17 +1,13 @@
 package pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity;
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import pe.confianza.colaboradores.gcontenidos.server.bean.ImagenOld;
-import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
-import pe.confianza.colaboradores.gcontenidos.server.bean.ReaccionPost;
 import pe.confianza.colaboradores.gcontenidos.server.bean.Usuario;
-import pe.confianza.colaboradores.gcontenidos.server.bean.VideoOld;
+import pe.confianza.colaboradores.gcontenidos.server.bean.*;
+
+import java.io.Serializable;
+import java.util.List;
 
 @Document(collection= "publicacion")
 public class PublicacionOld implements Serializable{

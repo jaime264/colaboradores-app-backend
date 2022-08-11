@@ -1,11 +1,11 @@
 package pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity;
 
-import java.io.Serializable;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.io.Serializable;
 
 @Document(collection= "nivel2")
 public class Nivel2 implements Serializable{

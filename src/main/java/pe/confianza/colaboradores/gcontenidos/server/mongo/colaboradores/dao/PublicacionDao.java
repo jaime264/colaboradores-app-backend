@@ -1,14 +1,13 @@
 package pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.dao;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
-
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.PublicacionOld;
+
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PublicacionDao extends MongoRepository<PublicacionOld, Long> {

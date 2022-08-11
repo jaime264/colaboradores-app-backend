@@ -1,13 +1,11 @@
 package pe.confianza.colaboradores.gcontenidos.server.bean;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
+import java.time.LocalDate;
 
 public class RequestProgramacionVacacion extends RequestAuditoria {
 	

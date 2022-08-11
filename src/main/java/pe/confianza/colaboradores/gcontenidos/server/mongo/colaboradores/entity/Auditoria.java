@@ -1,12 +1,12 @@
 package pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import org.bson.BsonDocument;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.io.Serializable;
+import java.util.Date;
 
 @Document(collection= "auditoria")
 public class Auditoria implements Serializable {

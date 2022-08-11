@@ -4,7 +4,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.VacacionRes;
 
 @Component
