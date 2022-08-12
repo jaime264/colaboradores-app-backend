@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ReponseReporteTipo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteActualizacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteEliminar;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarReporteAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestModificarMetaVacacion;
@@ -34,6 +35,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.ResponsePuesto;
 import pe.confianza.colaboradores.gcontenidos.server.controller.RequestFiltroEmpleadoMeta;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
+import pe.confianza.colaboradores.gcontenidos.server.exception.NotAuthorizedException;
 import pe.confianza.colaboradores.gcontenidos.server.mapper.ParametroMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Parametro;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Puesto;
@@ -52,6 +54,9 @@ import pe.confianza.colaboradores.gcontenidos.server.negocio.ProgramacionVacacio
 public class ParametrosServiceImpl implements ParametrosService {
 	
 	private static Logger logger = LoggerFactory.getLogger(ParametrosServiceImpl.class);
+	
+	@Autowired
+	private SeguridadService seguridadService;
 
 	@Autowired
 	private CargaParametros parametrosConstants;
@@ -349,6 +354,44 @@ public class ParametrosServiceImpl implements ParametrosService {
 					status, mensaje, BsonDocument.parse(jsonData));
 		} catch (Exception e) {
 			logger.error("[ERROR] registrarAuditoria", e);
+		}
+		
+	}
+
+	@Override
+	public void eliminarAccesoReporte(RequestAccesoReporteEliminar request) {
+		try {
+			seguridadService.validarLogAuditoria(request.getLogAuditoria());
+			String usuarioOperacion = request.getLogAuditoria().getUsuario();
+			List<ResponseAcceso> accesos = empleadoService.consultaAccesos(usuarioOperacion);
+			boolean tienePermiso = false;
+			for (ResponseAcceso acceso : accesos) {
+				if(FuncionalidadApp.PARAMETRIA_VACACIONES.codigo.equals(acceso.getFuncionalidadCodigo()) && acceso.isModificar()) {
+					tienePermiso = true;
+				}
+			}
+			if(!tienePermiso)
+				throw new AppException(Utilitario.obtenerMensaje(messageSource, "vacaciones.parametros.sin_permiso", usuarioOperacion));
+			ReporteAcceso acceso = reporteAccesoService.buscarPorId(request.getIdAcceso());
+			if(acceso == null)
+				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "app.error.objeto_no_encontrado"));
+			reporteAccesoService.eliminar(request.getIdAcceso());
+		} catch (ModelNotFoundException e) {
+			logger.error("[ERROR] eliminarAccesoReporte", e);
+			registrarAuditoria(Constantes.COD_EMPTY, Constantes.DATA_EMPTY, request);
+			throw new ModelNotFoundException(e.getMessage()); 
+		} catch (NotAuthorizedException e) {
+			logger.error("[ERROR] eliminarAccesoReporte", e);
+			registrarAuditoria(Constantes.COD_NO_AUTORIZADO, e.getMessage(), request);
+			throw new NotAuthorizedException(e.getMessage());
+		} catch (AppException e) {
+			logger.error("[ERROR] eliminarAccesoReporte", e);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), request);
+			throw new AppException(e.getMessage(), e);
+		} catch (Exception e) {
+			logger.error("[ERROR] eliminarAccesoReporte", e);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), request);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
 		}
 		
 	}	

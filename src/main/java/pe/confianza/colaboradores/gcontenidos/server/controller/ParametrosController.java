@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 //import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.ApiOperation;
 import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteActualizacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteEliminar;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestBuscarPorId;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarReporteAcceso;
@@ -180,7 +182,7 @@ public class ParametrosController {
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	
-	@ApiOperation(notes = "Conuslta de accesos a reportes", value = "url proxy /parametros/vacaciones/reportes/consulta")
+	@ApiOperation(notes = "Consulta de accesos a reportes", value = "url proxy /parametros/vacaciones/reportes/consulta")
 	@PostMapping("/parametros/vacaciones/reportes/consulta")
 	public ResponseEntity<ResponseStatus> actualizarAccesoReporte(@Valid @RequestBody RequestListarReporteAcceso request) {
 		ResponseStatus responseStatus = new ResponseStatus();
@@ -188,6 +190,17 @@ public class ParametrosController {
 		responseStatus.setMsgStatus(Constantes.OK);
 		responseStatus.setResultObj(parametrosService.listarReporteAcceso(request));
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+	
+	@ApiOperation(notes = "Eliminar de acceso a reportes", value = "url proxy /parametros/vacaciones/reportes")
+	@DeleteMapping("/parametros/vacaciones/reporte")
+	public ResponseEntity<ResponseStatus> eliminarAccesoReporte(@Valid @RequestBody RequestAccesoReporteEliminar request) {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		parametrosService.eliminarAccesoReporte(request);
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+		
 	}
 	
 	
