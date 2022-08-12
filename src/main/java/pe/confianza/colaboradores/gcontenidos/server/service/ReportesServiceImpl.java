@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.IReporteMeta;
@@ -70,7 +71,18 @@ public class ReportesServiceImpl implements ReportesService {
 	public Page<ReporteColaboradores> listarColaboradores(RequestListarReportes request) {
 
 		int anio = cargaParametros.getMetaVacacionAnio();
-		Pageable paginacion = PageRequest.of(request.getNumeroPagina(), request.getTamanioPagina());
+		Pageable paginacion;
+
+		if (request.getOrden().equals("desc")) {
+			paginacion = PageRequest.of(request.getNumeroPagina(), request.getTamanioPagina(),
+					Sort.by(request.getOrdenFiltro()).descending());
+
+		} else {
+			paginacion = PageRequest.of(request.getNumeroPagina(), request.getTamanioPagina(),
+					Sort.by(request.getOrdenFiltro()).ascending());
+
+		}
+
 		Page<ReporteColaboradores> reporteColaboradores = null;
 
 		switch (request.getTipoFiltro().trim().toUpperCase()) {
@@ -430,11 +442,13 @@ public class ReportesServiceImpl implements ReportesService {
 			break;
 		}
 
-		String reportExcel = reporeteMetaVarios(list, req.getTipoReporte() + " " + req.getFiltro());
+		String titulo = req.getTipoReporte().substring(5);
+
+		String reportExcel = reporeteMetaVarios(list, titulo + " " + req.getFiltro());
 
 		return reportExcel;
 	}
-	
+
 	private String reporeteMetaVarios(List<ResponseReporteMeta> list, String Titulo) {
 
 		Report reporte = new Report();

@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -135,17 +137,21 @@ public class VacacionesTareas {
 
 	}
 
-	private void notificacionVacacionesPorAprobar() {
+	//@Scheduled(cron = "0 0/1 * * * ?")
+	public void notificacionVacacionesPorAprobar() {
 
 		List<VacacionAprobadorNivelI> listAprobadorNivel = vacacionAprobadorService.listarAprobadoresNivelI();
 		List<VacacionAprobadorNivelII> listAprobadorNivelII = vacacionAprobadorService.listarAprobadoresNivelII();
-
-		listAprobadorNivelII.stream().forEach(v -> {
-			VacacionAprobadorNivelI aprobNivelI = new VacacionAprobadorNivelI();
-			aprobNivelI.setUsuariobt(v.getUsuariobt());
-			aprobNivelI.setCodigo(v.getCodigo());
-			listAprobadorNivel.add(aprobNivelI);
-		});
+		
+		VacacionAprobadorNivelI aprobNivelI = new VacacionAprobadorNivelI();
+		
+		for(VacacionAprobadorNivelII v : listAprobadorNivelII) {
+					aprobNivelI.setUsuariobt(v.getUsuariobt());
+					aprobNivelI.setCodigo(v.getCodigo());
+					listAprobadorNivel.add(aprobNivelI);
+		}
+				
+		listAprobadorNivel = listAprobadorNivel.stream().distinct().collect(Collectors.toList());
 
 		listAprobadorNivel.stream().forEach(aprobador -> {
 			RequestProgramacionEmpleado req = new RequestProgramacionEmpleado();
@@ -164,7 +170,6 @@ public class VacacionesTareas {
 				notificacionService.enviarNotificacionCorreo(notificacion);
 			}
 		});
-
 	}
 	
 	private void actualizarAnio() {

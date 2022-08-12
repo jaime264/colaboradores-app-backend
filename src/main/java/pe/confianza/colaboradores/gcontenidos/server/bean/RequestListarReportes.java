@@ -17,6 +17,8 @@ public class RequestListarReportes extends RequestPaginacion {
 	private String usuarioBT;
 	private String codigoUsuario;
 	private String tipoFiltro;
+	private String orden;
+	private String ordenFiltro;
 	private List<String> filtro;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constantes.FORMATO_FECHA, timezone = "America/Bogota")
