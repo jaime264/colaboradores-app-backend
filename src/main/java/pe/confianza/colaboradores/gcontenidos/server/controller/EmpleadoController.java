@@ -136,6 +136,7 @@ public class EmpleadoController {
 		return new ResponseEntity<RequestEmpleado>(empleadoOut, HttpStatus.OK);
 	}
 
+	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
 	@RequestMapping("/empleado/instruccionacademica")
 	public ResponseEntity<?> instruccionAcademica(@RequestBody RequestEmpleado empleado) throws IOException {
 		Gson gson = new Gson();

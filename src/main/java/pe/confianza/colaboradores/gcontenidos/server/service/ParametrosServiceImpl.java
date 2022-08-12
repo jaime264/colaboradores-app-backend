@@ -321,6 +321,7 @@ public class ParametrosServiceImpl implements ParametrosService {
 	@Override
 	public Page<ResponseAccesoReporte> listarReporteAcceso(RequestListarReporteAcceso filtro) {
 		try {
+			seguridadService.validarLogAuditoria(filtro.getLogAuditoria());
 			Pageable paginacion = PageRequest.of(filtro.getNumeroPagina(), filtro.getTamanioPagina());
 			Page<ReporteAcceso> page = reporteAccesoService.listar(filtro.getIdPuesto(), paginacion);
 			registrarAuditoria(Constantes.COD_OK, Constantes.OK, filtro);
@@ -338,6 +339,10 @@ public class ParametrosServiceImpl implements ParametrosService {
 				res.setFechaEnvio(r.getFechaEnvio());
 				return res;
 			});
+		}  catch (NotAuthorizedException e) {
+			logger.error("[ERROR] listarReporteAcceso", e);
+			registrarAuditoria(Constantes.COD_NO_AUTORIZADO, e.getMessage(), filtro);
+			throw new NotAuthorizedException(e.getMessage());
 		} catch (Exception e) {
 			logger.error("[ERROR] listarReporteAcceso", e);
 			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), filtro);
