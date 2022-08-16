@@ -238,7 +238,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 						.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
 				Optional<Empleado> empAprobador = empleadoDao.findOneByUsuarioBT(v.getAprobadorBt());
 				String[] emails = { "vacaciones@confianza.pe", empAprobador.get().getEmail() };
-
+				
+				//Confirmación de programación de vacaciones - App Familia Confianza 
 				if (v.getIdEstado() == 3) {
 					Notificacion notificacion = null;
 					if (esReprogramacion) {
@@ -251,7 +252,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 								.append(" al ")
 								.append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaFin()))
 								.append(" - ").append(vp.get().getNumeroDias()).append(" Dias - vacaciones vigentes");
-						notificacion = notificacionService.registrar("VACACIÓN APROBADA", mensaje.toString(),
+						notificacion = notificacionService.registrar("Confirmación de programación de vacaciones - App Familia Confianza", mensaje.toString(),
 								v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
 
 						notificacionService.enviarNotificacionCorreo(notificacion, emails);
@@ -268,10 +269,10 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 											vp.get().getFechaFin()))
 									.append(" - ").append(vp.get().getNumeroDias())
 									.append(" Dias - vacaciones adelantadas");
-							notificacion = notificacionService.registrar("VACACIÓN APROBADA", mensaje.toString(),
+							notificacion = notificacionService.registrar("Confirmación de programación de vacaciones - App Familia Confianza", mensaje.toString(),
 									v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
 						} else {
-							notificacion = notificacionService.registrar("VACACIÓN APROBADA",
+							notificacion = notificacionService.registrar("Confirmación de programación de vacaciones - App Familia Confianza",
 									"Vacacion con fecha inicio "
 											+ Utilitario.fechaToStringPer(
 													Constantes.FORMATO_FECHA, vp.get().getFechaInicio())
