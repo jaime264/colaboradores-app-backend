@@ -310,12 +310,12 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 										+ " del empleado: " + emp.get(0).getNombreCompleto()+" fue aprobado",
 								v.getIdEstado().toString(), tipoNot.get(), empAprobador.get(), empAprobador.get().getUsuarioBT());
 
-				notificacionService.enviarNotificacionApp(notificacionAprob);
 				notificacionService.enviarNotificacionCorreo(notificacionAprob);
 
 			});
 		} catch (Exception e2) {
 			logger.error("[ERROR] aprobarVacacionPeriodos", e2);
+			throw new AppException("Error al aprobar vacaciones");
 		}
 
 	}

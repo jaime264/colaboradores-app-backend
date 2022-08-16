@@ -139,19 +139,7 @@ public class VacacionesTareas {
 
 	//@Scheduled(cron = "0 0/1 * * * ?")
 	public void notificacionVacacionesPorAprobar() {
-
 		List<VacacionAprobadorNivelI> listAprobadorNivel = vacacionAprobadorService.listarAprobadoresNivelI();
-		List<VacacionAprobadorNivelII> listAprobadorNivelII = vacacionAprobadorService.listarAprobadoresNivelII();
-		
-		VacacionAprobadorNivelI aprobNivelI = new VacacionAprobadorNivelI();
-		
-		for(VacacionAprobadorNivelII v : listAprobadorNivelII) {
-					aprobNivelI.setUsuariobt(v.getUsuariobt());
-					aprobNivelI.setCodigo(v.getCodigo());
-					listAprobadorNivel.add(aprobNivelI);
-		}
-				
-		listAprobadorNivel = listAprobadorNivel.stream().distinct().collect(Collectors.toList());
 
 		listAprobadorNivel.stream().forEach(aprobador -> {
 			RequestProgramacionEmpleado req = new RequestProgramacionEmpleado();

@@ -75,11 +75,12 @@ public class ReportesServiceImpl implements ReportesService {
 
 		if (request.getOrden().equals("desc")) {
 			paginacion = PageRequest.of(request.getNumeroPagina(), request.getTamanioPagina(),
-					Sort.by(request.getOrdenFiltro()).descending());
+					Sort.by(Sort.Direction.DESC, "id")
+					);
 
 		} else {
 			paginacion = PageRequest.of(request.getNumeroPagina(), request.getTamanioPagina(),
-					Sort.by(request.getOrdenFiltro()).ascending());
+					Sort.by("id").ascending());
 
 		}
 
