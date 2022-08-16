@@ -142,6 +142,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 			mail.getContenido().put("mensaje", notificacion.getDescripcion());
 			mail.setReceptor(notificacion.getEmpleado().getEmail().trim());
 			mail.setEmisor("desarrollofc@confianza.pe");
+			
 			if(emailUtil.enviarEmail(mail)) {
 				notificacion.setEnviadoCorreo(true);
 				actualizar(notificacion, "APP");
@@ -151,6 +152,30 @@ public class NotificacionServiceImpl implements NotificacionService {
 		}
 		logger.info("[END] enviarNotificacionCorreo");
 	}
+	
+	@Override
+	public void enviarNotificacionCorreo(Notificacion notificacion, String[] receptorCC) {
+		logger.info("[BEGIN] enviarNotificacionCorreo");
+		try {
+			Mail mail = new Mail();
+			mail.setAsunto(notificacion.getTitulo());
+			mail.setContenido(new HashMap<>());
+			mail.getContenido().put("empleado", "Hola, " + notificacion.getEmpleado().getNombres() + " " + notificacion.getEmpleado().getApellidoPaterno());
+			mail.getContenido().put("mensaje", notificacion.getDescripcion());
+			mail.setReceptor(notificacion.getEmpleado().getEmail().trim());
+			mail.setEmisor("desarrollofc@confianza.pe");
+			mail.setReceptorCC(receptorCC);
+			
+			if(emailUtil.enviarEmail(mail)) {
+				notificacion.setEnviadoCorreo(true);
+				actualizar(notificacion, "APP");
+			}
+		} catch (Exception e) {
+			logger.error("[ERROR] enviarNotificacionCorreo", e);
+		}
+		logger.info("[END] enviarNotificacionCorreo");
+	}
+
 
 	@Override
 	public Notificacion registrar(String titulo, String descripcion, String extraData, NotificacionTipo tipo,

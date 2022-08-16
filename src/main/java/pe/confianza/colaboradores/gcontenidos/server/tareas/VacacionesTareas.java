@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -72,8 +74,8 @@ public class VacacionesTareas {
 		actualizarEstadoProgramaciones();
 		actualizarPeridos();
 		calcularMetaAnual();
-		vacacionesAutomaticas();
 		notificacionVacacionesPorAprobar();
+		vacacionesAutomaticas();
 	}
 
 	@Scheduled(cron = "0 0/50 * * * ?") // Verificacion cada 50 minutos
@@ -93,8 +95,7 @@ public class VacacionesTareas {
 	public void vacacionesAutomaticas() {
 		LocalDate fechaActual = LocalDate.now();
 		LocalDate fechaGeneracionAutomatica = cargaParametros.getFechaMaximaAprobacionProgramaciones().plusDays(1);
-		if (fechaActual.getMonthValue() != fechaGeneracionAutomatica.getMonthValue()
-				&& fechaActual.getDayOfMonth() != fechaGeneracionAutomatica.getDayOfMonth())
+		if (!fechaActual.isEqual(fechaGeneracionAutomatica))
 			throw new AppException("La fecha generación auntomática es " + fechaGeneracionAutomatica);
 
 		// Empleado empleado = empleadoService.buscarPorUsuarioBT("TRNAT001");
@@ -135,17 +136,9 @@ public class VacacionesTareas {
 
 	}
 
-	private void notificacionVacacionesPorAprobar() {
-
+	//@Scheduled(cron = "0 0/1 * * * ?")
+	public void notificacionVacacionesPorAprobar() {
 		List<VacacionAprobadorNivelI> listAprobadorNivel = vacacionAprobadorService.listarAprobadoresNivelI();
-		List<VacacionAprobadorNivelII> listAprobadorNivelII = vacacionAprobadorService.listarAprobadoresNivelII();
-
-		listAprobadorNivelII.stream().forEach(v -> {
-			VacacionAprobadorNivelI aprobNivelI = new VacacionAprobadorNivelI();
-			aprobNivelI.setUsuariobt(v.getUsuariobt());
-			aprobNivelI.setCodigo(v.getCodigo());
-			listAprobadorNivel.add(aprobNivelI);
-		});
 
 		listAprobadorNivel.stream().forEach(aprobador -> {
 			RequestProgramacionEmpleado req = new RequestProgramacionEmpleado();
@@ -164,7 +157,6 @@ public class VacacionesTareas {
 				notificacionService.enviarNotificacionCorreo(notificacion);
 			}
 		});
-
 	}
 	
 	private void actualizarAnio() {

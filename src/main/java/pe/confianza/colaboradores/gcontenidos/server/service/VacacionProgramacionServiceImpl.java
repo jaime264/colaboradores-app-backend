@@ -64,10 +64,10 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 
 	@Autowired
 	private EnvioNotificacionNegocio envioNotificacionNegocio;
-	
+
 	@Autowired
 	private MessageSource messageSource;
-	
+
 	@Autowired
 	private DivisionDao divisionDao;
 
@@ -78,7 +78,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		String programacionesActualizadas = vacacionProgramacionDao.actualizarEstadoProgramaciones().trim();
 		String[] programacionesArray = programacionesActualizadas.split(",");
 		for (String prog : programacionesArray) {
-			if(!prog.isEmpty()) {
+			if (!prog.isEmpty()) {
 				try {
 					idsProgramaciones.add(Long.parseLong(prog));
 				} catch (Exception e) {
@@ -222,7 +222,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		LocalDate fechaMaxima = cargaParametros.getFechaMaximaAprobacionProgramaciones();
 		LocalDate hoy = LocalDate.now();
 		if (fechaMaxima.compareTo(hoy) <= 0) {
-			throw new AppException("La fecha máxima de aprobación es " + fechaMaxima.getDayOfMonth() +"/" + fechaMaxima.getMonth() +"/"+ fechaMaxima.getYear());
+			throw new AppException("La fecha máxima de aprobación es " + fechaMaxima.getDayOfMonth() + "/"
+					+ fechaMaxima.getMonth() + "/" + fechaMaxima.getYear());
 		}
 
 		try {
@@ -235,57 +236,79 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 				List<Empleado> emp = empleadoDao.findByCodigo(vp.get().getCodigoEmpleado());
 				Optional<NotificacionTipo> tipoNot = notificacionService
 						.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
+				Optional<Empleado> empAprobador = empleadoDao.findOneByUsuarioBT(v.getAprobadorBt());
+				String[] emails = { "vacaciones@confianza.pe", empAprobador.get().getEmail() };
 
-				if(v.getIdEstado() == 3) {
+				if (v.getIdEstado() == 3) {
 					Notificacion notificacion = null;
-					if(esReprogramacion) {
+					if (esReprogramacion) {
 						StringBuilder mensaje = new StringBuilder();
-						mensaje.append(Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.reprogramacion.aceptada"))
-						.append(" Del ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaInicio()))
-						.append(" al ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaFin()))
-						.append(" - ").append(vp.get().getNumeroDias()).append(" Dias - vacaciones vigentes");
+						mensaje.append(Utilitario
+								.obtenerMensaje(messageSource, "vacaciones.notificacion.reprogramacion.aceptada"))
+								.append(" Del ")
+								.append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA,
+										vp.get().getFechaInicio()))
+								.append(" al ")
+								.append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaFin()))
+								.append(" - ").append(vp.get().getNumeroDias()).append(" Dias - vacaciones vigentes");
 						notificacion = notificacionService.registrar("VACACIÓN APROBADA", mensaje.toString(),
 								v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
+
+						notificacionService.enviarNotificacionCorreo(notificacion, emails);
+
 					} else {
-						if(esAdelantada) {
+						if (esAdelantada) {
 							StringBuilder mensaje = new StringBuilder();
-							mensaje.append(Utilitario.obtenerMensaje(messageSource, "vacaciones.notificacion.reprogramacion.adelantada.aceptada"))
-							.append(" Del ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaInicio()))
-							.append(" al ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaFin()))
-							.append(" - ").append(vp.get().getNumeroDias()).append(" Dias - vacaciones adelantadas");
+							mensaje.append(Utilitario.obtenerMensaje(messageSource,
+									"vacaciones.notificacion.reprogramacion.adelantada.aceptada")).append(" Del ")
+									.append(Utilitario
+											.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaInicio()))
+									.append(" al ")
+									.append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA,
+											vp.get().getFechaFin()))
+									.append(" - ").append(vp.get().getNumeroDias())
+									.append(" Dias - vacaciones adelantadas");
 							notificacion = notificacionService.registrar("VACACIÓN APROBADA", mensaje.toString(),
 									v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
 						} else {
 							notificacion = notificacionService.registrar("VACACIÓN APROBADA",
-									"Vacacion con fecha inicio " + Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaInicio()) + " y fecha fin " 
-							+ Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaFin())
+									"Vacacion con fecha inicio "
+											+ Utilitario.fechaToStringPer(
+													Constantes.FORMATO_FECHA, vp.get().getFechaInicio())
+											+ " y fecha fin "
+											+ Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA,
+													vp.get().getFechaFin())
 											+ " fue aprobada",
 									v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
 						}
-						
+
 					}
-					
-					if(notificacion != null) {
+
+					if (notificacion != null) {
+
 						notificacionService.enviarNotificacionApp(notificacion);
-						notificacionService.enviarNotificacionCorreo(notificacion);
+						notificacionService.enviarNotificacionCorreo(notificacion, emails);
+
 					}
-					
-				}else if(v.getIdEstado() == 4)  {
-					Notificacion notificacion  = notificacionService.registrar("VACACIÓN RECHAZADA",
-								"Vacación con fecha inicio " + Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaInicio()) + " y fecha fin " 
-										+ Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaFin())
-										+ " fue rechazada",
-								v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
-					
-					
+
+				} else if (v.getIdEstado() == 4) {
+					Notificacion notificacion = notificacionService.registrar("VACACIÓN RECHAZADA",
+							"Vacación con fecha inicio "
+									+ Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaInicio())
+									+ " y fecha fin "
+									+ Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaFin())
+									+ " fue rechazada",
+							v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
+
 					notificacionService.enviarNotificacionApp(notificacion);
 					notificacionService.enviarNotificacionCorreo(notificacion);
-					
+
 				}
-				
+
 			});
 		} catch (Exception e2) {
 			logger.error("[ERROR] aprobarVacacionPeriodos", e2);
+			throw new AppException("Error al aprobar vacaciones");
 		}
 
 	}
@@ -456,12 +479,12 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		case "DIVISION":
 			listEmp = listEmpByProgramacion.stream().filter(e -> {
 				boolean encontrado = false;
-				if(e.getDivision() != null) {
+				if (e.getDivision() != null) {
 					for (String filtro : reqPrograEmp.getFiltro()) {
 						if (filtro.equalsIgnoreCase(e.getDivision()))
 							encontrado = true;
 					}
-					
+
 				}
 				return encontrado;
 			}).collect(Collectors.toList());
@@ -529,8 +552,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 					emp.setTerritorio(e.getAgencia().getCorredor().getTerritorio().getDescripcion());
 					emp.setCorredor(e.getAgencia().getCorredor().getDescripcion());
 					emp.setAdelantada(v.isVacacionesAdelantadas());
-					
-					List<Division> divisiones =  divisionDao.listDivisionByCodigoSpring(e.getCodigoGerenteDivision());
+
+					List<Division> divisiones = divisionDao.listDivisionByCodigoSpring(e.getCodigoGerenteDivision());
 					emp.setDivision(divisiones.get(0).getDescripcion());
 
 					listEmp.add(emp);
