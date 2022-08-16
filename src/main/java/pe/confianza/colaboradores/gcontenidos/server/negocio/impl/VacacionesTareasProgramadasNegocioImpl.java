@@ -232,7 +232,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 			if(fechaRecordatorio.getDayOfWeek() != DayOfWeek.SATURDAY && fechaRecordatorio.getDayOfWeek() != DayOfWeek.SUNDAY) {
 				if(fechaActual.getDayOfMonth() == fechaRecordatorio.getDayOfMonth() && fechaActual.getMonthValue() == fechaRecordatorio.getMonthValue()) {
 					Optional<NotificacionTipo> opt = notificacionService.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
-					String titulo = "VACACIONES - NO HA REGISTRADO VACACIONES";
+					String titulo = "Programación pendiente de vacaciones - App Familia Confianza";
 					if(opt.isPresent()) {
 						
 							List<VacacionMetaResumen> resumenes = vacacionMetaResumenService.listarResumenAnio(anio);
@@ -242,7 +242,7 @@ public class VacacionesTareasProgramadasNegocioImpl implements VacacionesTareasP
 									if(optEmpleado.isPresent()) {
 										String descripcion = Utilitario.generarMensajeNotificacion( 
 												cargaParametros.MENSAJE_COLABORDOR_SIN_REGISTRO,
-												 Utilitario.fechaToStringPer(Constantes.FORMATO_DIA_MES_LITERAL, cargaParametros.getFechaFinRegistroProgramacion()));
+												 Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, cargaParametros.getFechaFinRegistroProgramacion()));
 										notificacionService.registrar(titulo, descripcion, "", opt.get(), optEmpleado.get(), USUARIO_OPERACION);
 									}
 								}
