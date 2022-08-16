@@ -278,6 +278,8 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 				acceso.setFuncionalidadDescripcion(a.getFuncionalidadDescripcion());
 				if(a.getFuncionalidadCodigo().equals(FuncionalidadApp.VACACIONES_PROGRAMACION.codigo) && ((cantidadSubordinadosNivel1 + cantidadSubordinadosNivel2 ) > 0) ) {
 					acceso.setAprobar(true);
+				} else if(a.getFuncionalidadCodigo().equals(FuncionalidadApp.REPORTE_VACACIONES.codigo) && ((cantidadSubordinadosNivel1 + cantidadSubordinadosNivel2 ) > 0)) {
+					acceso.setConsultar(true);
 				} else {
 					acceso.setAprobar(a.isFuncionalidadAccesoAprobar());
 				}

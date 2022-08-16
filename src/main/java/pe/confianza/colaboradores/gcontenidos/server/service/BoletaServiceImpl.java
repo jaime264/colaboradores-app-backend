@@ -1,22 +1,16 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.BoletaModel;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.BoletaModel;
 
 @Service("boletaService")
 public class BoletaServiceImpl implements BoletaService {

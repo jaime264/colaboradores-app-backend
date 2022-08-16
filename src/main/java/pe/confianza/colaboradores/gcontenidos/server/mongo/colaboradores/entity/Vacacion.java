@@ -1,16 +1,14 @@
 package pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity;
 
-import java.io.Serializable;
-import java.util.Date;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import pe.confianza.colaboradores.gcontenidos.server.bean.LogAuditoria;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
+
+import java.io.Serializable;
+import java.util.Date;
 
 @Document(collection= "vacaciones")
 public class Vacacion implements Serializable{

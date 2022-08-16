@@ -1,10 +1,9 @@
 package pe.confianza.colaboradores.gcontenidos.server.api.entity;
 
-import java.time.LocalDate;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
+
+import java.time.LocalDate;
 
 public class ProgramacionVacacionesRes {
 	
