@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import pe.confianza.colaboradores.gcontenidos.server.RequestParametroActualizacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ReponseReporteTipo;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteActualizacion;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteEliminar;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAccesoReporteRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarReporteAcceso;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestModificarMetaVacacion;
@@ -49,6 +50,8 @@ public interface ParametrosService {
 	void registrarAuditoria(int status, String mensaje, Object data);
 	
 	Page<ResponseAccesoReporte> listarReporteAcceso(RequestListarReporteAcceso request);
+	
+	void eliminarAccesoReporte(RequestAccesoReporteEliminar request);
 	
 
 }

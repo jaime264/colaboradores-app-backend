@@ -1,7 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.exception;
 
-import java.io.IOException;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -14,11 +13,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
+
+import java.io.IOException;
 
 @ControllerAdvice
 @RestController
@@ -74,6 +72,18 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 		log.error(ex.getMessage(), ex);
 		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 	}
+	
+	@ExceptionHandler(NotAuthorizedException.class)
+	public final ResponseEntity<ResponseStatus> manejarExcepcionesAutorizacion(Exception ex, WebRequest request) {
+		ResponseStatus response = new ResponseStatus();
+		response.setMsgStatus(ex.getMessage());
+		response.setCodeStatus(Constantes.COD_NO_AUTORIZADO);
+		log.error("ERROR NOT_FOUND: {}", ex.getMessage());
+		log.error(ex.getMessage(), ex);
+		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+	}
+	
+	
 	
 	public ResponseStatus getResponse(String msgError) {
 		ObjectMapper objectMapper;

@@ -1,10 +1,10 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
-import java.util.List;
-import java.util.Optional;
-
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mongo.colaboradores.entity.Dispositivo;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface DispositivoService {
 
