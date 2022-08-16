@@ -236,6 +236,8 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 				List<Empleado> emp = empleadoDao.findByCodigo(vp.get().getCodigoEmpleado());
 				Optional<NotificacionTipo> tipoNot = notificacionService
 						.obtenerTipoNotificacion(TipoNotificacion.VACACIONES_COLABORADOR.valor);
+				Optional<Empleado> empAprobador = empleadoDao.findOneByUsuarioBT(v.getAprobadorBt());
+				String[] emails = { "vacaciones@confianza.pe", empAprobador.get().getEmail() };
 
 				if (v.getIdEstado() == 3) {
 					Notificacion notificacion = null;
@@ -251,6 +253,9 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 								.append(" - ").append(vp.get().getNumeroDias()).append(" Dias - vacaciones vigentes");
 						notificacion = notificacionService.registrar("VACACIÓN APROBADA", mensaje.toString(),
 								v.getIdEstado().toString(), tipoNot.get(), emp.get(0), emp.get(0).getUsuarioBT());
+
+						notificacionService.enviarNotificacionCorreo(notificacion, emails);
+
 					} else {
 						if (esAdelantada) {
 							StringBuilder mensaje = new StringBuilder();
@@ -280,8 +285,10 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 					}
 
 					if (notificacion != null) {
+
 						notificacionService.enviarNotificacionApp(notificacion);
-						notificacionService.enviarNotificacionCorreo(notificacion);
+						notificacionService.enviarNotificacionCorreo(notificacion, emails);
+
 					}
 
 				} else if (v.getIdEstado() == 4) {
@@ -297,20 +304,6 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 					notificacionService.enviarNotificacionCorreo(notificacion);
 
 				}
-
-				Optional<Empleado> empAprobador = empleadoDao.findOneByUsuarioBT(v.getAprobadorBt());
-				
-				Notificacion notificacionAprob = notificacionService
-						.registrar("VACACIÓN APROBADA",
-								"Vacación con fecha inicio "
-										+ Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA,
-												vp.get().getFechaInicio())
-										+ " y fecha fin "
-										+ Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaFin())
-										+ " del empleado: " + emp.get(0).getNombreCompleto()+" fue aprobado",
-								v.getIdEstado().toString(), tipoNot.get(), empAprobador.get(), empAprobador.get().getUsuarioBT());
-
-				notificacionService.enviarNotificacionCorreo(notificacionAprob);
 
 			});
 		} catch (Exception e2) {
@@ -486,12 +479,12 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		case "DIVISION":
 			listEmp = listEmpByProgramacion.stream().filter(e -> {
 				boolean encontrado = false;
-				if(e.getDivision() != null) {
+				if (e.getDivision() != null) {
 					for (String filtro : reqPrograEmp.getFiltro()) {
 						if (filtro.equalsIgnoreCase(e.getDivision()))
 							encontrado = true;
 					}
-					
+
 				}
 				return encontrado;
 			}).collect(Collectors.toList());
