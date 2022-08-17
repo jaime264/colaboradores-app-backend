@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +49,9 @@ public class NotificacionServiceImpl implements NotificacionService {
 	
 	@Autowired
 	private EmailUtil emailUtil;
+	
+	@Value("${spring.mail.username}")
+	private String emailEmisor;
 	
 	@Override
 	public List<NotificacionTipo> obtenerTipos() {
@@ -141,7 +145,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 			mail.getContenido().put("empleado", "Hola, " + notificacion.getEmpleado().getNombres() + " " + notificacion.getEmpleado().getApellidoPaterno());
 			mail.getContenido().put("mensaje", notificacion.getDescripcion());
 			mail.setReceptor(notificacion.getEmpleado().getEmail().trim());
-			mail.setEmisor("desarrollofc@confianza.pe");
+			mail.setEmisor(emailEmisor);
 			
 			if(emailUtil.enviarEmail(mail)) {
 				notificacion.setEnviadoCorreo(true);
@@ -163,7 +167,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 			mail.getContenido().put("empleado", "Hola, " + notificacion.getEmpleado().getNombres() + " " + notificacion.getEmpleado().getApellidoPaterno());
 			mail.getContenido().put("mensaje", notificacion.getDescripcion());
 			mail.setReceptor(notificacion.getEmpleado().getEmail().trim());
-			mail.setEmisor("desarrollofc@confianza.pe");
+			mail.setEmisor(emailEmisor);
 			mail.setReceptorCC(receptorCC);
 			
 			if(emailUtil.enviarEmail(mail)) {
@@ -252,7 +256,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 		mail.getContenido().put("empleado", "Hola, " + receptorNombre);
 		mail.getContenido().put("mensaje", descripcion);
 		mail.setReceptor(receptorEmail.toString());
-		mail.setEmisor("desarrollofc@confianza.pe");
+		mail.setEmisor(emailEmisor);
 		logger.error("archivo " + archivo.length);
 		mail.getAdjuntos().add(new MailFile(nombreArchivo, contentType, archivo));
 		emailUtil.enviarEmail(mail);
