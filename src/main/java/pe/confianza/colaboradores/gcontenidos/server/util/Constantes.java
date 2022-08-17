@@ -30,6 +30,7 @@ public class Constantes {
 	public final static String VACACIONES_REPROGRAMACIONES_PROCESO = "022";
 	public final static String VACACIONES_EXCEPCIONES_PROCESO = "023";
 	public final static String VACACIONES_PARAMETRIA_PROCESO = "024";
+	public final static String GASTOS_GESTIONAR_PRESUPUESTO = "025";
 	
 	//RED COMERCIAL
 	public final static String ASESOR_NEGOCIO = "ASESOR DE NEGOCIO";
