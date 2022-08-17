@@ -28,7 +28,7 @@ public class GastosController {
 	private GestionarPresupuestoNegocio gestionarPresupuestoNegocio;
 	
 	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
-	@ApiOperation(notes = "Consulta de presupuestos anueales", value = "url proxy /gastos/prespuestos-anuales")
+	@ApiOperation(notes = "Consulta de presupuestos anuales", value = "url proxy /gastos/prespuestos-anuales")
 	@PostMapping("/prespuestos-anuales")
 	public ResponseEntity<ResponseStatus> listarPresupuestosAnuales(@Valid @RequestBody  RequestAuditoriaBase peticion) {
 		ResponseStatus responseStatus = new ResponseStatus();
