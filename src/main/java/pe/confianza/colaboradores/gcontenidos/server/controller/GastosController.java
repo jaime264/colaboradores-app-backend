@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.GestionarPresupuestoNegocio;
+import pe.confianza.colaboradores.gcontenidos.server.negocio.SolictudGastoNegocio;
 
 @RestController
 @RequestMapping("/api/gastos")
@@ -14,5 +15,10 @@ public class GastosController {
 	
 	@Autowired
 	private GestionarPresupuestoNegocio gestionarPresupuestoNegocio;
+	
+	private SolictudGastoNegocio solictudGastoNegocio;
+	
+	
+	
 
 }
