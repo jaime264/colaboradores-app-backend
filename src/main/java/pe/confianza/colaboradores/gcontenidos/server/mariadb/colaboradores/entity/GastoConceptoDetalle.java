@@ -28,6 +28,9 @@ public class GastoConceptoDetalle extends EntidadAuditoria {
 	@Column(nullable = false, columnDefinition = "TEXT")
 	private String descripcion;
 	
+	@Column(nullable = false, columnDefinition = "TEXT")
+	private String conceptoPresupuestal;
+	
 	@JsonIgnore
 	@ManyToOne 
 	@JoinColumn(nullable = true, name = "id_concepto")
@@ -71,6 +74,14 @@ public class GastoConceptoDetalle extends EntidadAuditoria {
 
 	public void setConcepto(GastoConcepto concepto) {
 		this.concepto = concepto;
+	}
+
+	public String getConceptoPresupuestal() {
+		return conceptoPresupuestal;
+	}
+
+	public void setConceptoPresupuestal(String conceptoPresupuestal) {
+		this.conceptoPresupuestal = conceptoPresupuestal;
 	}
 	
 	
