@@ -7,5 +7,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 public interface GastoPresupuestoAnualService {
 	
 	List<GastoPresupuestoAnual> listarHabilitados();
+	
+	GastoPresupuestoAnual buscarPorCodigo(long codigo);
 
 }

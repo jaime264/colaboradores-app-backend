@@ -205,7 +205,7 @@ public class ParametrosController {
 	
 	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
 	@ApiOperation(notes = "Eliminar de acceso a reportes", value = "url proxy /parametros/vacaciones/reportes")
-	@DeleteMapping("/parametros/vacaciones/reporte")
+	@DeleteMapping("/parametros/vacaciones/reportes")
 	public ResponseEntity<ResponseStatus> eliminarAccesoReporte(@Valid @RequestBody RequestAccesoReporteEliminar request) {
 		ResponseStatus responseStatus = new ResponseStatus();
 		responseStatus.setCodeStatus(Constantes.COD_OK);

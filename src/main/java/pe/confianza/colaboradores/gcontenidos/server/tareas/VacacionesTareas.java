@@ -74,8 +74,8 @@ public class VacacionesTareas {
 		actualizarEstadoProgramaciones();
 		actualizarPeridos();
 		calcularMetaAnual();
-		vacacionesAutomaticas();
 		notificacionVacacionesPorAprobar();
+		vacacionesAutomaticas();
 	}
 
 	@Scheduled(cron = "0 0/50 * * * ?") // Verificacion cada 50 minutos
@@ -95,8 +95,7 @@ public class VacacionesTareas {
 	public void vacacionesAutomaticas() {
 		LocalDate fechaActual = LocalDate.now();
 		LocalDate fechaGeneracionAutomatica = cargaParametros.getFechaMaximaAprobacionProgramaciones().plusDays(1);
-		if (fechaActual.getMonthValue() != fechaGeneracionAutomatica.getMonthValue()
-				&& fechaActual.getDayOfMonth() != fechaGeneracionAutomatica.getDayOfMonth())
+		if (!fechaActual.isEqual(fechaGeneracionAutomatica))
 			throw new AppException("La fecha generación auntomática es " + fechaGeneracionAutomatica);
 
 		// Empleado empleado = empleadoService.buscarPorUsuarioBT("TRNAT001");

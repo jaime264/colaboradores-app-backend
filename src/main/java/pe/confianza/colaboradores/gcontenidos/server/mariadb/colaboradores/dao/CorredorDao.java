@@ -14,4 +14,10 @@ public interface CorredorDao extends JpaRepository<Corredor, Long>  {
 	
 	@Query("SELECT e FROM Empleado e inner join e.agencia a inner join a.corredor c WHERE e.id = ?1")
 	Corredor corredorEmpledo(Long idEmpleado);
+	
+	@Query("SELECT c FROM Corredor c WHERE c.estadoRegistro = 'A' AND c.codigoTerritorio = ?1 ORDER BY c.descripcion ASC ")
+	List<Corredor> listarhabilitadosPorTerritorio(String codigoTerritorio);
+	
+	@Query("SELECT c FROM Corredor c WHERE c.estadoRegistro = 'A' AND c.codigo = ?1 ORDER BY c.descripcion ASC ")
+	List<Corredor> listarhabilitadosPorCodigo(String codigo);
 }
