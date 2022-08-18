@@ -30,7 +30,9 @@ public interface NotificacionService {
 	
 	void enviarNotificacionApp(Notificacion notificacion);
 	
-	void enviarNotificacionCorreo(Notificacion notificacion);
+	public void enviarNotificacionCorreo(Notificacion notificacion);
+	
+	void enviarNotificacionCorreo(Notificacion notificacion, String[] receptorCC);
 	
 	Optional<NotificacionTipo> obtenerTipoNotificacion(String codigo);
 	

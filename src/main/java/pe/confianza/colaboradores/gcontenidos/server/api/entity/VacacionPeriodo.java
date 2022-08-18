@@ -2,6 +2,11 @@ package pe.confianza.colaboradores.gcontenidos.server.api.entity;
 
 import java.time.LocalDate;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class VacacionPeriodo {
 
 
@@ -10,45 +15,8 @@ public class VacacionPeriodo {
 	private LocalDate fechaInicio;
 	private LocalDate fechaFin;
 	private Integer idEstado;
+	private String aprobadorBt;
 
-	public String getPeriodo() {
-		return periodo;
-	}
-
-	public void setPeriodo(String periodo) {
-		this.periodo = periodo;
-	}
-
-	public LocalDate getFechaInicio() {
-		return fechaInicio;
-	}
-
-	public void setFechaInicio(LocalDate fechaInicio) {
-		this.fechaInicio = fechaInicio;
-	}
-
-	public LocalDate getFechaFin() {
-		return fechaFin;
-	}
-
-	public void setFechaFin(LocalDate fechaFin) {
-		this.fechaFin = fechaFin;
-	}
-
-	public Long getIdProgramacion() {
-		return idProgramacion;
-	}
-
-	public void setIdProgramacion(Long idProgramacion) {
-		this.idProgramacion = idProgramacion;
-	}
-
-	public Integer getIdEstado() {
-		return idEstado;
-	}
-
-	public void setIdEstado(Integer idEstado) {
-		this.idEstado = idEstado;
-	}
+	
 
 }

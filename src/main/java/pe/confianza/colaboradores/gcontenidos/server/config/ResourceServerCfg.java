@@ -66,7 +66,7 @@ public class ResourceServerCfg extends ResourceServerConfigurerAdapter {
 			logger.debug("Aplicando reglas de seguridad para H2 console");
 			http.authorizeRequests().antMatchers("/").permitAll().and().authorizeRequests()
 					.antMatchers("/h2-console/**").permitAll()
-					.antMatchers("/api/**").authenticated()
+					.antMatchers("/api//**").authenticated()
 					.and().csrf().disable();
 			http.headers().frameOptions().disable();
 		}

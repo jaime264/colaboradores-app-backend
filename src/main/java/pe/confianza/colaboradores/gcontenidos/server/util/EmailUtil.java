@@ -63,6 +63,9 @@ public class EmailUtil {
 	            String html = templateEngine.process("email/fc", context);
 
 	            helper.setTo(mail.getReceptor().trim());
+	            if(mail.getReceptorCC() != null && mail.getReceptorCC().length > 0) {
+					helper.setCc(mail.getReceptorCC());
+				}
 	            helper.setText(html, true);
 	            helper.setSubject(mail.getAsunto());
 	            helper.setFrom(mail.getEmisor());

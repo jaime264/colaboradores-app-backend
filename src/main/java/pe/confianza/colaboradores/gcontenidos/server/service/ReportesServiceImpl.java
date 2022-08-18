@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.IReporteMeta;
@@ -70,7 +71,19 @@ public class ReportesServiceImpl implements ReportesService {
 	public Page<ReporteColaboradores> listarColaboradores(RequestListarReportes request) {
 
 		int anio = cargaParametros.getMetaVacacionAnio();
-		Pageable paginacion = PageRequest.of(request.getNumeroPagina(), request.getTamanioPagina());
+		Pageable paginacion;
+
+		if (request.getOrden().equals("desc")) {
+			paginacion = PageRequest.of(request.getNumeroPagina(), request.getTamanioPagina(),
+					Sort.by(Sort.Direction.DESC, "id")
+					);
+
+		} else {
+			paginacion = PageRequest.of(request.getNumeroPagina(), request.getTamanioPagina(),
+					Sort.by("id").ascending());
+
+		}
+
 		Page<ReporteColaboradores> reporteColaboradores = null;
 
 		switch (request.getTipoFiltro().trim().toUpperCase()) {
@@ -311,7 +324,7 @@ public class ReportesServiceImpl implements ReportesService {
 		reporte.getCollection().addHeader("Puesto", ColumnType.STRING);
 		reporte.getCollection().addHeader("Fecha de Ingreso", ColumnType.LOCALDATE);
 		reporte.getCollection().addHeader("División", ColumnType.STRING);
-		reporte.getCollection().addHeader("Área", ColumnType.STRING);
+		reporte.getCollection().addHeader("Área/Corredor", ColumnType.STRING);
 		reporte.getCollection().addHeader("Corredor", ColumnType.STRING);
 		reporte.getCollection().addHeader("Territorio", ColumnType.STRING);
 		reporte.getCollection().addHeader("Agencia", ColumnType.STRING);
@@ -331,8 +344,7 @@ public class ReportesServiceImpl implements ReportesService {
 			row.addCell("Puesto", repColaboradores.getPuesto());
 			row.addCell("Fecha de Ingreso", repColaboradores.getFechaIngreso());
 			row.addCell("División", repColaboradores.getDivision());
-			row.addCell("Área", repColaboradores.getPuesto());
-			row.addCell("Corredor", repColaboradores.getCorredor());
+			row.addCell("Área/Corredor", repColaboradores.getCorredor());
 			row.addCell("Territorio", repColaboradores.getTerritorio());
 			row.addCell("Agencia", repColaboradores.getAgencia());
 			row.addCell("Colectivo", repColaboradores.getColectivo());
@@ -371,7 +383,7 @@ public class ReportesServiceImpl implements ReportesService {
 		reporte.setType("XLSX");
 		reporte.setTitle("REPORTE META");
 		reporte.getCollection().addHeader("Numero", ColumnType.INTEGER);
-		reporte.getCollection().addHeader("Meta", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Meta de días", ColumnType.INTEGER);
 		reporte.getCollection().addHeader("Días gozados", ColumnType.INTEGER);
 		reporte.getCollection().addHeader("Porcentaje de avance", ColumnType.DOUBLE);
 		reporte.getCollection().addHeader("Días pendientes de goce", ColumnType.INTEGER);
@@ -419,10 +431,10 @@ public class ReportesServiceImpl implements ReportesService {
 		case "TOTALCOLECTIVOS":
 			list = listarReporteMeta(req);
 			break;
-		case "TERRITORIOSVARIOS":
+		case "VARIOTERRITORIOS":
 			list = listarReporteTerritorios(req);
 			break;
-		case "COLECTIVOSVARIOS":
+		case "VARIOCOLECTIVOS":
 			list = listarReporteColectivos(req);
 			break;
 
@@ -430,11 +442,13 @@ public class ReportesServiceImpl implements ReportesService {
 			break;
 		}
 
-		String reportExcel = reporeteMetaVarios(list, req.getTipoReporte() + " " + req.getFiltro());
+		String titulo = req.getTipoReporte().substring(5);
+
+		String reportExcel = reporeteMetaVarios(list, titulo + " " + req.getFiltro());
 
 		return reportExcel;
 	}
-	
+
 	private String reporeteMetaVarios(List<ResponseReporteMeta> list, String Titulo) {
 
 		Report reporte = new Report();

@@ -9,6 +9,15 @@ public class Mail {
 	private String emisor;
 	private String receptor;
 	private String asunto;
+	private String[] receptorCC;
+	
+	public String[] getReceptorCC() {
+		return receptorCC;
+	}
+
+	public void setReceptorCC(String[] receptorCC) {
+		this.receptorCC = receptorCC;
+	}
 	private List<MailFile> adjuntos;
 	private Map<String, Object> contenido;
 	

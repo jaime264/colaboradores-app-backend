@@ -2,15 +2,16 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.persistence.Convert;
-
-import org.apache.commons.collections.CollectionUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.google.gson.JsonObject;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ComentarioDao;
@@ -109,7 +110,15 @@ public class ComentarioServiceImpl implements ComentarioService {
 						.obtenerTipoNotificacion(TipoNotificacion.COMENTARIOS_GESTION.valor);
 				
 				Empleado empleado = empleadoService.buscarPorUsuarioBT(com.getUsuarioBt());
-				String extraData = Long.toString(cm.getId());
+				
+				Map<String, Long> informacionAdicional = new HashMap<>();
+				informacionAdicional.put("id", cm.getId());
+				informacionAdicional.put("publicacionId", comentario.getPublicacionId());
+				
+				ObjectMapper objectMapper = new ObjectMapper();				
+				
+				String extraData = objectMapper.writeValueAsString(informacionAdicional);
+						
 				List<Empleado> empleados = new ArrayList<>();
 				
 				empleadosAprobadores.stream().forEach(e ->{
