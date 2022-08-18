@@ -1,20 +1,25 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity;
 
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "gasto_presupuesto_distribucion")
-public class GastoPresupuestoDistribucion  extends EntidadAuditoria {
+@Table(name = "gasto_presupuesto_concepto")
+public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +27,6 @@ public class GastoPresupuestoDistribucion  extends EntidadAuditoria {
 	
 	@Column(nullable = false)
 	private Long codigo;
-	
-	@ManyToOne
-	@JoinColumn(nullable = true, name = "id_agencia")
-	private Agencia agencia;
 	
 	@ManyToOne
 	@JoinColumn(nullable = true, name = "id_glg_asignado")
@@ -38,11 +39,18 @@ public class GastoPresupuestoDistribucion  extends EntidadAuditoria {
 	@Column(nullable = false)
 	private double presupuesto;
 	
+	@Column(nullable = false)
+	private String cuentaContable;
+	
+	private boolean distribuido;
+	
 	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(nullable = true, name = "id_presupuesto_anual")
 	private GastoPresupuestoAnual presupuestoAnual;
 	
+	@OneToMany(mappedBy = "distribucionConcepto", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, fetch = FetchType.LAZY, orphanRemoval = true)
+	private List<GastoPresupuestoDistribucionConceptoAgencia> distribucionesAgencia;
 	
 
 	public Long getId() {
@@ -59,14 +67,6 @@ public class GastoPresupuestoDistribucion  extends EntidadAuditoria {
 
 	public void setCodigo(Long codigo) {
 		this.codigo = codigo;
-	}
-
-	public Agencia getAgencia() {
-		return agencia;
-	}
-
-	public void setAgencia(Agencia agencia) {
-		this.agencia = agencia;
 	}
 
 	public GastoGlgAsignado getGlgAsignado() {
@@ -93,13 +93,41 @@ public class GastoPresupuestoDistribucion  extends EntidadAuditoria {
 		this.presupuesto = presupuesto;
 	}
 
+	public String getCuentaContable() {
+		return cuentaContable;
+	}
+
+	public void setCuentaContable(String cuentaContable) {
+		this.cuentaContable = cuentaContable;
+	}
+
 	public GastoPresupuestoAnual getPresupuestoAnual() {
 		return presupuestoAnual;
 	}
 
 	public void setPresupuestoAnual(GastoPresupuestoAnual presupuestoAnual) {
 		this.presupuestoAnual = presupuestoAnual;
-	}	
+	}
+
+	public List<GastoPresupuestoDistribucionConceptoAgencia> getDistribucionesAgencia() {
+		return distribucionesAgencia;
+	}
+
+	public void setDistribucionesAgencia(List<GastoPresupuestoDistribucionConceptoAgencia> distribucionesAgencia) {
+		this.distribucionesAgencia = distribucionesAgencia;
+	}
+
+	public boolean isDistribuido() {
+		return distribuido;
+	}
+
+	public void setDistribuido(boolean distribuido) {
+		this.distribuido = distribuido;
+	}
+	
+	
+
+	
 	
 
 }
