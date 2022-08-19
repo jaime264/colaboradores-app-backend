@@ -11,7 +11,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 @Repository
 public interface GastoGlgAsignadoDao extends JpaRepository<GastoGlgAsignado, Long> {
 	
-	@Query("SELEC g FROM GastoGlgAsignado g where g.codigoEmpleado = ?1 AND g.estadoRegistro = 'A' ")
+	@Query("SELECT g FROM GastoGlgAsignado g where g.codigoEmpleado = ?1 AND g.estadoRegistro = 'A' ")
 	List<GastoGlgAsignado> buscarPorCodigoEmpleado(long codigoEmpleado);
 
 }
