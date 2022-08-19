@@ -16,10 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
-import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmpleadoRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.CumpleanosRes;
+import pe.confianza.colaboradores.gcontenidos.server.api.entity.EmpleadoRes;
 import pe.confianza.colaboradores.gcontenidos.server.api.spring.EmpleadoApi;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAcceso;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseEmpleadoGastos;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseTerminosCondiciones;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.exception.ModelNotFoundException;
@@ -34,14 +35,9 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.P
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.TerritorioDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.UnidadOperativaDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Agencia;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Corredor;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.EmpleadoAcceso;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.FuncionalidadAcceso;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PerfilSpringApp;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Puesto;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Territorio;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.UnidadOperativa;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoMigracion;
 import pe.confianza.colaboradores.gcontenidos.server.util.EstadoRegistro;
 import pe.confianza.colaboradores.gcontenidos.server.util.FuncionalidadApp;
@@ -72,22 +68,22 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
 	@Autowired
 	private MessageSource messageSource;
-	
+
 	@Autowired
 	private CorredorDao corredorDao;
-	
+
 	@Autowired
 	private TerritorioDao territorioDao;
-	
+
 	@Autowired
 	private UnidadOperativaDao unidadOperativaDao;
-	
+
 	@Autowired
 	private PerfilStringAppDao perfilStringAppDao;
-	
+
 	@Autowired
 	private FuncionalidadAccesoDao funcionalidadAccesoDao;
-	
+
 	@Autowired
 	private EmpleadoAccesoDao empleadoAccesoDao;
 
@@ -120,7 +116,6 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		return empleado;
 	}
 
-
 	public Empleado listEmpleadoById(Long id) {
 
 		return empleadoDao.findById(id).get();
@@ -150,8 +145,45 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 	}
 
 	@Override
+	public ResponseEmpleadoGastos obternerUsuarioBTGastos(String usuarioBT) {
+		LOGGER.info("[BEGIN] buscarPorUsuarioBT {}", usuarioBT);
+		Optional<Empleado> optEmpleado = empleadoDao.findOneByUsuarioBT(usuarioBT.trim());
+		Empleado emp = new Empleado();
+
+		ResponseEmpleadoGastos resEmpleadoGastos = new ResponseEmpleadoGastos();
+		if (!optEmpleado.isPresent()) {
+			try {
+				emp = actualizarInformacionEmpleado(usuarioBT);
+				resEmpleadoGastos.setId(emp.getId());
+				resEmpleadoGastos.setCodigo(emp.getCodigo());
+				resEmpleadoGastos.setUsuarioBt(emp.getUsuarioBT());
+				resEmpleadoGastos.setAgencia(emp.getAgencia().getDescripcion());
+				resEmpleadoGastos.setAngenciaId(emp.getAgencia().getId());
+				resEmpleadoGastos.setNombre(emp.getNombres());
+				resEmpleadoGastos.setApellidoPaterno(emp.getApellidoPaterno());
+				resEmpleadoGastos.setApellidoMaterno(emp.getApellidoMaterno());
+				resEmpleadoGastos.setCuentaAhorro(emp.getCuentaAhorro());
+				return resEmpleadoGastos;
+			} catch (Exception e) {
+				return resEmpleadoGastos;
+			}
+		} else {
+			emp = optEmpleado.get();
+			resEmpleadoGastos.setId(emp.getId());
+			resEmpleadoGastos.setCodigo(emp.getCodigo());
+			resEmpleadoGastos.setUsuarioBt(emp.getUsuarioBT());
+			resEmpleadoGastos.setAgencia(emp.getAgencia().getDescripcion());
+			resEmpleadoGastos.setAngenciaId(emp.getAgencia().getId());
+			resEmpleadoGastos.setNombre(emp.getNombres());
+			resEmpleadoGastos.setApellidoPaterno(emp.getApellidoPaterno());
+			resEmpleadoGastos.setApellidoMaterno(emp.getApellidoMaterno());
+			return resEmpleadoGastos;
+		}
+	}
+
+	@Override
 	public List<CumpleanosRes> findfechaNacimientoDeHoy() {
-		
+
 		List<Empleado> listEmp = new ArrayList<>();
 		List<CumpleanosRes> listCumpleanos = new ArrayList<>();
 
@@ -163,15 +195,15 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
 		try {
 			listEmp = empleadoDao.findfechaNacimientoDeHoy(mes, dia);
-			
-			listEmp.stream().forEach(e ->{
+
+			listEmp.stream().forEach(e -> {
 				CumpleanosRes cumpleanos = new CumpleanosRes();
 				cumpleanos.setIdEmpleado(e.getId());
 				cumpleanos.setNombres(e.getNombreCompleto());
 				cumpleanos.setAgencia(e.getAgencia().getDescripcion());
 				listCumpleanos.add(cumpleanos);
 			});
-			
+
 		} catch (Exception e) {
 			e.getMessage();
 		}
@@ -181,7 +213,8 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
 	@Override
 	public int obtenerCantidadEmpleadosPorPuestoYUnidadNegocio(long codigoUnidadNegocio, String descripcionPuesto) {
-		return empleadoDao.obtenerCantidadEmpleadosPorPuestoYPorUnidadNegocio(codigoUnidadNegocio, descripcionPuesto + "%");
+		return empleadoDao.obtenerCantidadEmpleadosPorPuestoYPorUnidadNegocio(codigoUnidadNegocio,
+				descripcionPuesto + "%");
 	}
 
 	@Override
@@ -239,11 +272,10 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		}
 	}
 
-
 	@Override
 	public Empleado getEmpleadoCorredorTerritorioBt(String usuarioBT) {
 		// TODO Auto-generated method stub
-		Empleado empleado = buscarPorUsuarioBT(usuarioBT);		
+		Empleado empleado = buscarPorUsuarioBT(usuarioBT);
 //		List<Territorio> territorios = new ArrayList<>();
 //		
 //		List<Corredor> corredores = corredorDao.listCorredor(empleado.getId());
@@ -255,10 +287,9 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 //		empleado.setCorredores(corredores);
 //		empleado.setUnidadesOperativa(unidadesOperativas);
 //		empleado.setTerritorios(territorios);		
-		
+
 		return empleado;
 	}
-
 
 	@Override
 	public List<ResponseAcceso> consultaAccesos(String usuarioBT) {
@@ -266,19 +297,22 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 		try {
 			List<ResponseAcceso> accesos = new ArrayList<>();
 			Empleado empleado = buscarPorUsuarioBT(usuarioBT);
-			if(empleado.getId() == null)
+			if (empleado.getId() == null)
 				throw new ModelNotFoundException("No existe el usuario " + usuarioBT);
 			int cantidadSubordinadosNivel1 = empleadoDao.obtenerCantidadSuborninadosNivel1(empleado.getId());
 			int cantidadSubordinadosNivel2 = empleadoDao.obtenerCantidadSuborninadosNivel2(empleado.getId());
-			List<EmpleadoAcceso> accesosConsolidados = empleadoAccesoDao.findByEmpleadoUsuariobt(empleado.getUsuarioBT());
+			List<EmpleadoAcceso> accesosConsolidados = empleadoAccesoDao
+					.findByEmpleadoUsuariobt(empleado.getUsuarioBT());
 			accesosConsolidados = accesosConsolidados == null ? new ArrayList<>() : accesosConsolidados;
 			accesos = accesosConsolidados.stream().map(a -> {
 				ResponseAcceso acceso = new ResponseAcceso();
 				acceso.setFuncionalidadCodigo(a.getFuncionalidadCodigo());
 				acceso.setFuncionalidadDescripcion(a.getFuncionalidadDescripcion());
-				if(a.getFuncionalidadCodigo().equals(FuncionalidadApp.VACACIONES_PROGRAMACION.codigo) && ((cantidadSubordinadosNivel1 + cantidadSubordinadosNivel2 ) > 0) ) {
+				if (a.getFuncionalidadCodigo().equals(FuncionalidadApp.VACACIONES_PROGRAMACION.codigo)
+						&& ((cantidadSubordinadosNivel1 + cantidadSubordinadosNivel2) > 0)) {
 					acceso.setAprobar(true);
-				} else if(a.getFuncionalidadCodigo().equals(FuncionalidadApp.REPORTE_VACACIONES.codigo) && ((cantidadSubordinadosNivel1 + cantidadSubordinadosNivel2 ) > 0)) {
+				} else if (a.getFuncionalidadCodigo().equals(FuncionalidadApp.REPORTE_VACACIONES.codigo)
+						&& ((cantidadSubordinadosNivel1 + cantidadSubordinadosNivel2) > 0)) {
 					acceso.setConsultar(true);
 				} else {
 					acceso.setAprobar(a.isFuncionalidadAccesoAprobar());
@@ -294,22 +328,20 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 			return accesos;
 		} catch (ModelNotFoundException e) {
 			LOGGER.error("[ERROR] consultaAccesos", e);
-			throw new ModelNotFoundException(e.getMessage()); 
+			throw new ModelNotFoundException(e.getMessage());
 		} catch (AppException e) {
 			LOGGER.error("[ERROR] consultaAccesos", e);
-			throw new AppException(e.getMessage(), e); 
+			throw new AppException(e.getMessage(), e);
 		} catch (Exception e) {
 			LOGGER.error("[ERROR] consultaAccesos", e);
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
 		}
 	}
 
-
 	@Override
 	public Optional<Empleado> buscarPorId(long id) {
 		return empleadoDao.findById(id);
 	}
-
 
 	@Override
 	public long obtenerCantidadEmpleadosRedOperaciones() {

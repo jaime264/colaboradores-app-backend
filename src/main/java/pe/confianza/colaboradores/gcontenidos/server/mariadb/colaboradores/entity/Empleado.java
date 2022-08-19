@@ -96,6 +96,8 @@ public class Empleado extends EntidadAuditoria {
 	private Integer codigoGerenteDivision;
 	
 	private String codigoPerfilSpring;
+	
+	private String cuentaAhorro;
 
 	@ManyToOne
 	@JoinColumn(nullable = true, name = "idPerfilSpring")

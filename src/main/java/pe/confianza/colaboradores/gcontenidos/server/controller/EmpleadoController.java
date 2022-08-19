@@ -1,7 +1,14 @@
 package pe.confianza.colaboradores.gcontenidos.server.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -16,35 +23,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
 //import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import io.swagger.annotations.ApiOperation;
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.CumpleanosRes;
 import pe.confianza.colaboradores.gcontenidos.server.bean.InstruccionAcademica;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAuditoria;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestEmpleado;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestUsuarioBt;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseTerminosCondiciones;
+import pe.confianza.colaboradores.gcontenidos.server.config.AuthoritiesConstants;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.EmpleadoService;
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
-
-import org.springframework.security.access.annotation.Secured;
-import pe.confianza.colaboradores.gcontenidos.server.config.AuthoritiesConstants;
 import pe.confianza.colaboradores.gcontenidos.server.util.SecurityUtils;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 //import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -218,12 +220,29 @@ public class EmpleadoController {
 	}
 	
 	@PostMapping("/empleado/get/usuario")
-	public ResponseEntity<?> getEmpleadoByUsuarioBt(String usuariobt) throws IOException {
+	public ResponseEntity<?> getEmpleadoByUsuarioBt(@Valid @RequestBody RequestUsuarioBt peticion) throws IOException {
+		
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(empleadoService.buscarPorUsuarioBT(peticion.getUsuarioBT()));
+		
+		logger.info("empleado: " + empleadoService.buscarPorUsuarioBT(peticion.getUsuarioBT()));
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 
-		Empleado empleado = empleadoService.buscarPorUsuarioBT(usuariobt);
+	}
+	
+	@PostMapping("/empleado/get/usuario/gastos")
+	public ResponseEntity<?> getEmpleadoGastosUsuarioBt(@Valid @RequestBody RequestUsuarioBt peticion) throws IOException {
+		
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(empleadoService.obternerUsuarioBTGastos(peticion.getUsuarioBT()));
+		
+		logger.info("empleado: " + empleadoService.obternerUsuarioBTGastos(peticion.getUsuarioBT()));
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 
-		logger.info("empleado: " + empleado.toString());
-		return new ResponseEntity<Empleado>(empleado, HttpStatus.OK);
 	}
 	
 	@ApiOperation(notes = "Empleado acepta los terminos y conficiones", value = "url proxy /empleadoaceptartc")

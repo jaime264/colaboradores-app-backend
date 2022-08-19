@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "gasto_concepto_tipo")
@@ -19,6 +20,17 @@ public class GastoConceptoTipo extends EntidadAuditoria {
 	private String codigo;
 	
 	private String descripcion;
+	
+	@Transient
+	private Integer montoMaximo;
+
+	public Integer getMontoMaximo() {
+		return montoMaximo;
+	}
+
+	public void setMontoMaximo(Integer montoMaximo) {
+		this.montoMaximo = montoMaximo;
+	}
 
 	public long getId() {
 		return id;

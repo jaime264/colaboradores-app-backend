@@ -2,6 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,13 @@ public class AgenciaServiceImpl implements AgenciaService {
 		if(agencias.size() > 1)
 			return null;
 		return agencias.get(0);
+	}
+	
+	@Override
+	public Agencia buscarPorId(Long id) {
+		Optional<Agencia> agencia = dao.findById(id);
+		
+		return agencia.get();
 	}
 
 }

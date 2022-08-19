@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import pe.confianza.colaboradores.gcontenidos.server.api.entity.CumpleanosRes;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseAcceso;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseEmpleadoGastos;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseTerminosCondiciones;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 
@@ -15,6 +16,8 @@ public interface EmpleadoService {
 	List<Empleado> listar();
 	
 	Empleado buscarPorUsuarioBT(String usuarioBT);
+	
+	ResponseEmpleadoGastos obternerUsuarioBTGastos(String usuarioBT);
 	
 	Empleado buscarPorCodigo(Long codigo);
 		
