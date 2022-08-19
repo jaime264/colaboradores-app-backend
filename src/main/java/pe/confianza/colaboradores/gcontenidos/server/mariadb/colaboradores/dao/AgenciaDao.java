@@ -23,5 +23,8 @@ public interface AgenciaDao extends JpaRepository<Agencia, Long> {
 	@Query("SELECT a FROM Agencia a WHERE a.estadoRegistro = 'A' AND a.codigo = ?1 ORDER BY a.descripcion ASC")
 	List<Agencia> listarAgenciaPorCodigo(String codigo);
 	
+	@Query("SELECT a FROM Agencia a WHERE a.estadoRegistro = 'A' AND a.corredor.territorio.codigo = ?1 ORDER BY a.descripcion ASC")
+	List<Agencia> listarHabilitadosPorTerritorio(String codigoTerritorio);
+	
 	
 }

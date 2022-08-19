@@ -1,5 +1,6 @@
 package pe.confianza.colaboradores.gcontenidos.server.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.Min;
@@ -19,12 +20,24 @@ public class RequestDistribucionConcepto extends RequestAuditoriaBase {
 	
 	private boolean distribucionUniforme;
 	
+	private boolean distribucionVariable;
+	
 	private boolean todasAgencias;
 	
-	private List<String> agenciasCodigo;
+	private List<String> territoriosSeleccionados;
+	
+	private List<String> corredoresSeleccionandos;
+	
+	private List<String> agenciasSeleccionadas;
 	
 	@Min(value = 0, message = "Ingrese código de frecuencia de distribución monto válido")
 	private int codigoFrecuenciaDistribucion;
+	
+	public RequestDistribucionConcepto() {
+		this.territoriosSeleccionados = new ArrayList<>();
+		this.corredoresSeleccionandos = new ArrayList<>();
+		this.agenciasSeleccionadas = new ArrayList<>();
+	}
 
 	public long getCodigoConcepto() {
 		return codigoConcepto;
@@ -66,6 +79,14 @@ public class RequestDistribucionConcepto extends RequestAuditoriaBase {
 		this.distribucionUniforme = distribucionUniforme;
 	}
 
+	public boolean isDistribucionVariable() {
+		return distribucionVariable;
+	}
+
+	public void setDistribucionVariable(boolean distribucionVariable) {
+		this.distribucionVariable = distribucionVariable;
+	}
+
 	public boolean isTodasAgencias() {
 		return todasAgencias;
 	}
@@ -74,12 +95,28 @@ public class RequestDistribucionConcepto extends RequestAuditoriaBase {
 		this.todasAgencias = todasAgencias;
 	}
 
-	public List<String> getAgenciasCodigo() {
-		return agenciasCodigo;
+	public List<String> getTerritoriosSeleccionados() {
+		return territoriosSeleccionados;
 	}
 
-	public void setAgenciasCodigo(List<String> agenciasCodigo) {
-		this.agenciasCodigo = agenciasCodigo;
+	public void setTerritoriosSeleccionados(List<String> territoriosSeleccionados) {
+		this.territoriosSeleccionados = territoriosSeleccionados;
+	}
+
+	public List<String> getCorredoresSeleccionandos() {
+		return corredoresSeleccionandos;
+	}
+
+	public void setCorredoresSeleccionandos(List<String> corredoresSeleccionandos) {
+		this.corredoresSeleccionandos = corredoresSeleccionandos;
+	}
+
+	public List<String> getAgenciasSeleccionadas() {
+		return agenciasSeleccionadas;
+	}
+
+	public void setAgenciasSeleccionadas(List<String> agenciasSeleccionadas) {
+		this.agenciasSeleccionadas = agenciasSeleccionadas;
 	}
 
 	public int getCodigoFrecuenciaDistribucion() {
@@ -89,11 +126,7 @@ public class RequestDistribucionConcepto extends RequestAuditoriaBase {
 	public void setCodigoFrecuenciaDistribucion(int codigoFrecuenciaDistribucion) {
 		this.codigoFrecuenciaDistribucion = codigoFrecuenciaDistribucion;
 	}
-	
-	
 
-	
-	
 	
 
 }
