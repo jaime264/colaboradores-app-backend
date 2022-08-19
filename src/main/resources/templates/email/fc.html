@@ -242,7 +242,7 @@
           background-color: #34495e !important;
           border-color: #34495e !important; } }
         .header-table {
-            background-color: #072146; color: white; font-size: 30px; text-align: center;  padding: 40px 0 40px;
+            background-color: #003a90; color: white; font-size: 30px; text-align: center;  padding: 1px 0 1px; border-radius: 0px 0px 100px 100px;
         }
         .content-message {
             font-size: 20px; text-align: center;  padding: 40px 0 40px;
@@ -254,7 +254,12 @@
             font-size: 12px; text-align: center;  padding: 10px 0 10px; background-color: #1973b8; color: white;
         }
         .footer-copyright {
-            font-size: 12px; text-align: center;  padding: 10px 0 10px; background-color: #072146; color: white;
+            font-size: 12px; text-align: center;  padding: 10px 0 10px; background-color: #fff; color: white;
+        }
+        .line{
+          margin-top: 5px;
+          text-align: center;
+          text-decoration: underline #2894ba;
         }
     </style>
 </head>
@@ -273,16 +278,18 @@
                             <tr>
                                 <td>
                                     <div class="header-table">
-                                        FINANCIERA CONFIANZA
-                                        <h6>(APLICACIÓN DE PRUEBA)</h6>
+                                        <h6 th:text="${asunto}">(APLICACIÓN DE PRUEBA)</h6>
+                                    </div>
+                                    <div class="line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
                                     <div class="content-message">
-                                        <b th:text="${empleado}">Hola, Juan Perez</b>
-                                        <p style=" text-align: justify;" th:text="${mensaje}">Mensaje de prueba para correo de notificaciones.</p>
+                                        <b th:text="${empleado}" style="color: #2894ba;">Hola, Juan Perez</b>
+                                        <p style=" text-align: justify; color: #003a90" th:text="${mensaje}">Mensaje de prueba para correo de notificaciones.</p>
                                     </div>
                                 </td>
                             </tr>
@@ -294,19 +301,10 @@
                                     </div>
                                 </td>
                             </tr>
-
-                            <tr>
-                                <td>
-                                    <div class="footer-address">
-                                        <span class="apple-link">Calle Las Begonias 441, San Isidro, Lima, Perú</span>
-                                    </div>
-                                    
-                                </td>
-                            </tr>
                             <tr>
                                 <td>
                                     <div class="footer-copyright">
-                                        <a href="www.confianza.pe">Copyright © 2022 Financiera Confianza, Derechos Reservados</a>.
+                                      <img src="https://confianza.pe/img/2022/03/logo-financiera.png" height="100px"/>
                                     </div>
                                 </td>
                             </tr>
