@@ -15,4 +15,15 @@ public enum DistribucionPresupuestoFrecuencia {
 		this.valor = valor;
 		this.descripcion = descripcion;
 	}
+	
+	public static DistribucionPresupuestoFrecuencia buscar(int codigo) {
+		DistribucionPresupuestoFrecuencia frecuencia = null;
+		for (DistribucionPresupuestoFrecuencia f : DistribucionPresupuestoFrecuencia.values()) {
+			if(f.codigo == codigo) {
+				frecuencia = f;
+				break;
+			}
+		}
+		return frecuencia;
+	}
 }

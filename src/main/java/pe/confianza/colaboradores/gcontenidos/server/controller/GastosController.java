@@ -76,6 +76,8 @@ public class GastosController {
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	
+
+	
 	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
 	@ApiOperation(notes = "Configurar distribucion de conceptos de un GLG", value = "url proxy /gastos/prespuestos-anuales/distribuciones/conceptos/distribucion-configurar")
 	@PostMapping(value = "/prespuestos-anuales/distribuciones/conceptos/distribucion-configurar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces =  MediaType.APPLICATION_JSON_VALUE)
@@ -83,7 +85,7 @@ public class GastosController {
 		ResponseStatus responseStatus = new ResponseStatus();
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);
-		responseStatus.setResultObj(gestionarPresupuestoNegocio.configurarDistribucionConcepto(peticion, excelDistribucion));
+		gestionarPresupuestoNegocio.configurarDistribucionConcepto(peticion, excelDistribucion);
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	

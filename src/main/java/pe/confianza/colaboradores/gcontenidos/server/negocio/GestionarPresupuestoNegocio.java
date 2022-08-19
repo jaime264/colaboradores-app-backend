@@ -22,7 +22,7 @@ public interface GestionarPresupuestoNegocio {
 	
 	List<Map<String, Object>> listarFrecuenciaDistribucion(RequestAuditoriaBase peticio);
 	
-	ResponsePresupuestoAnualDistribucionConcepto configurarDistribucionConcepto(RequestDistribucionConcepto peticion, MultipartFile excelDistribucion);
+	void configurarDistribucionConcepto(RequestDistribucionConcepto peticion, MultipartFile excelDistribucion);
 	
 	void registrarAuditoria(int status, String mensaje, Object data);
 	

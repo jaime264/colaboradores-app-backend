@@ -11,5 +11,7 @@ public interface AgenciaService {
 	List<Agencia> listarPorCorredor(String codigoCorredor);
 	
 	Agencia buscarPorCodigo(String codigo);
+	
+	List<Agencia> listarPorTerritorio(String codigoTerritorio);
 
 }

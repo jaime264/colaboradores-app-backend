@@ -17,6 +17,9 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import pe.confianza.colaboradores.gcontenidos.server.util.DistribucionPresupuestoFrecuencia;
+import pe.confianza.colaboradores.gcontenidos.server.util.DistribucionPresupuestoTipo;
+
 @Entity
 @Table(name = "gasto_presupuesto_concepto")
 public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
@@ -44,6 +47,24 @@ public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
 	
 	private boolean distribuido;
 	
+	@Column(nullable = false)
+	private Boolean distribucionVariable;
+	
+	@Column(nullable = false)
+	private Boolean distribucionUniforme;
+	
+	@Column(nullable = false)
+	private Integer idTipoDistribucionMonto;
+	
+	@Column(nullable = false)
+	private String descripcionDistribucionMonto;
+	
+	@Column(nullable = false)
+	private Integer idFrecuenciaDistribucion;
+	
+	@Column(nullable = false)
+	private String descripcionFrecuenciaDistribucion;
+	
 	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(nullable = true, name = "id_presupuesto_anual")
@@ -52,7 +73,6 @@ public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
 	@OneToMany(mappedBy = "distribucionConcepto", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<GastoPresupuestoDistribucionConceptoAgencia> distribucionesAgencia;
 	
-
 	public Long getId() {
 		return id;
 	}
@@ -101,6 +121,62 @@ public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
 		this.cuentaContable = cuentaContable;
 	}
 
+	public boolean isDistribuido() {
+		return distribuido;
+	}
+
+	public void setDistribuido(boolean distribuido) {
+		this.distribuido = distribuido;
+	}
+
+	public boolean isDistribucionVariable() {
+		return distribucionVariable;
+	}
+
+	public void setDistribucionVariable(boolean distribucionVariable) {
+		this.distribucionVariable = distribucionVariable;
+	}
+
+	public boolean isDistribucionUniforme() {
+		return distribucionUniforme;
+	}
+
+	public void setDistribucionUniforme(boolean distribucionUniforme) {
+		this.distribucionUniforme = distribucionUniforme;
+	}
+
+	public int getIdTipoDistribucionMonto() {
+		return idTipoDistribucionMonto;
+	}
+
+	public void setIdTipoDistribucionMonto(int idTipoDistribucionMonto) {
+		this.idTipoDistribucionMonto = idTipoDistribucionMonto;
+	}
+
+	public String getDescripcionDistribucionMonto() {
+		return descripcionDistribucionMonto;
+	}
+
+	public void setDescripcionDistribucionMonto(String descripcionDistribucionMonto) {
+		this.descripcionDistribucionMonto = descripcionDistribucionMonto;
+	}
+
+	public int getIdFrecuenciaDistribucion() {
+		return idFrecuenciaDistribucion;
+	}
+
+	public void setIdFrecuenciaDistribucion(int idFrecuenciaDistribucion) {
+		this.idFrecuenciaDistribucion = idFrecuenciaDistribucion;
+	}
+
+	public String getDescripcionFrecuenciaDistribucion() {
+		return descripcionFrecuenciaDistribucion;
+	}
+
+	public void setDescripcionFrecuenciaDistribucion(String descripcionFrecuenciaDistribucion) {
+		this.descripcionFrecuenciaDistribucion = descripcionFrecuenciaDistribucion;
+	}
+
 	public GastoPresupuestoAnual getPresupuestoAnual() {
 		return presupuestoAnual;
 	}
@@ -117,17 +193,22 @@ public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
 		this.distribucionesAgencia = distribucionesAgencia;
 	}
 
-	public boolean isDistribuido() {
-		return distribuido;
-	}
-
-	public void setDistribuido(boolean distribuido) {
-		this.distribuido = distribuido;
+	public void setTipoDistribucionMonto(DistribucionPresupuestoTipo tipo) {
+		this.idTipoDistribucionMonto = tipo.codigo;
+		this.descripcionDistribucionMonto = tipo.descripcion;
 	}
 	
+	public DistribucionPresupuestoTipo tipoDistribucionMonto() {
+		return DistribucionPresupuestoTipo.buscar(this.idTipoDistribucionMonto);
+	}
 	
-
+	public void setFrecuenciaDistribucion(DistribucionPresupuestoFrecuencia frecuencia) {
+		this.idFrecuenciaDistribucion = frecuencia.codigo;
+		this.descripcionFrecuenciaDistribucion = frecuencia.descripcion;
+	}
 	
-	
+	public DistribucionPresupuestoFrecuencia frecuenciaDistribucion() {
+		return DistribucionPresupuestoFrecuencia.buscar(this.idFrecuenciaDistribucion);
+	}
 
 }

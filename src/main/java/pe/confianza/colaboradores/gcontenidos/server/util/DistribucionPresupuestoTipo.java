@@ -33,5 +33,16 @@ public enum DistribucionPresupuestoTipo {
 		}
 		return montoDistribuir;
 	}
+	
+	public static DistribucionPresupuestoTipo buscar(int codigo) {
+		DistribucionPresupuestoTipo tipo = null;
+		for (DistribucionPresupuestoTipo t : DistribucionPresupuestoTipo.values()) {
+			if(t.codigo == codigo) {
+				tipo = t;
+				break;
+			}
+		}
+		return tipo;
+	}
 
 }

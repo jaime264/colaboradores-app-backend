@@ -41,4 +41,11 @@ public class AgenciaServiceImpl implements AgenciaService {
 		return agencias.get(0);
 	}
 
+	@Override
+	public List<Agencia> listarPorTerritorio(String codigoTerritorio) {
+		List<Agencia> agencias = dao.listarHabilitadosPorTerritorio(codigoTerritorio);
+		agencias = agencias == null ? new ArrayList<>() : agencias;
+		return agencias;
+	}
+
 }
