@@ -6,6 +6,8 @@ public class ResponseGastoPresupuestalAnual {
 	private String descripcion;
 	private boolean activo;
 	private double presupuestoUsado;
+	private double presupuesto;
+	private int solicitudes;
 	
 	public long getCodigo() {
 		return codigo;
@@ -30,6 +32,18 @@ public class ResponseGastoPresupuestalAnual {
 	}
 	public void setPresupuestoUsado(double presupuestoUsado) {
 		this.presupuestoUsado = presupuestoUsado;
+	}
+	public double getPresupuesto() {
+		return presupuesto;
+	}
+	public void setPresupuesto(double presupuesto) {
+		this.presupuesto = presupuesto;
+	}
+	public int getSolicitudes() {
+		return solicitudes;
+	}
+	public void setSolicitudes(int solicitudes) {
+		this.solicitudes = solicitudes;
 	}
 	
 	

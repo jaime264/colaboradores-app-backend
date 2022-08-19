@@ -26,10 +26,13 @@ public class GastoPresupuestoAnual extends EntidadAuditoria {
 	@Column(nullable = false, length = 250)
 	private String descripcion;
 	
+	private double presupuesto;
+	
 	private boolean activo;
 	
 	@OneToMany(mappedBy = "presupuestoAnual", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<GastoPresupuestoDistribucionConcepto> distribucionesConcepto;
+	
 
 	public Long getId() {
 		return id;
@@ -69,6 +72,14 @@ public class GastoPresupuestoAnual extends EntidadAuditoria {
 
 	public void setDistribucionesConcepto(List<GastoPresupuestoDistribucionConcepto> distribucionesConcepto) {
 		this.distribucionesConcepto = distribucionesConcepto;
+	}
+
+	public double getPresupuesto() {
+		return presupuesto;
+	}
+
+	public void setPresupuesto(double presupuesto) {
+		this.presupuesto = presupuesto;
 	}
 	
 
