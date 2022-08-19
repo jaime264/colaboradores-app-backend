@@ -18,10 +18,13 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCentroCostos;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestConcepto;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGastoEmpleado;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestTipoGasto;
+import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Agencia;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Empleado;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConcepto;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoDetalle;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoTipo;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoPresupuestoDistribucionConceptoAgenciaPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastosSolicitud;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.SolictudGastoNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.AgenciaService;
@@ -96,15 +99,20 @@ public class SolictudGastoNegocioImpl implements SolictudGastoNegocio {
 		Optional<Empleado> empleado = empleadoService.buscarPorId(gasto.getIdEmpleado());
 		Agencia agencia = agenciaService.buscarPorId(gasto.getIdAgencia());
 		GastoConceptoTipo gastoConceptoTipo = solicitudGastoService.obtenerTipoGastoById(gasto.getIdGastoTipo());
-		GastoConcepto gastoConcepto = solicitudGastoService.obtenerConceptoById(gasto.getIdConcepto());
+		GastoConceptoDetalle gastoConceptodetalle = solicitudGastoService.obtenerPorId(gasto.getIdConceptoDetalle());
+		GastoPresupuestoDistribucionConceptoAgenciaPeriodo periodo = solicitudGastoService.obtenerPeriodoActual(agencia.getId(), gastoConceptodetalle.getId() );
+		if(periodo == null)
+			throw new AppException("Aún no se encuentra distribuido el presupuesto anual");
 		
 		gastosSolicitud.setIdEmpleado(empleado.get());
 		gastosSolicitud.setIdAgencia(agencia);
 		gastosSolicitud.setIdGastoConceptoTipo(gastoConceptoTipo);
-		gastosSolicitud.setIdGastoConcepto(gastoConcepto);
+		gastosSolicitud.setGastoConceptoDetalle(gastoConceptodetalle);
 		gastosSolicitud.setMontoGasto(gasto.getMonto());
 		gastosSolicitud.setTerminosCondiciones(gasto.getTerminosCondiciones());
 		gastosSolicitud.setMotivo(gasto.getMotivo());
+		gastosSolicitud.setPeriodo(periodo);
+		
 		
 		gastosSolicitud.setUsuarioCrea(gasto.getUsuarioBt());
 		gastosSolicitud.setFechaCrea(LocalDateTime.now());

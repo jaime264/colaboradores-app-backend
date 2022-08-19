@@ -10,10 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastoConceptoDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastoConceptoDetalleDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastoConceptoTipoDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastoPresupuestoDistribucionConceptoAgenciaPeriodoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastosSolicitudDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConcepto;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoDetalle;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoTipo;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoPresupuestoDistribucionConceptoAgenciaPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastosSolicitud;
 
 @Service
@@ -29,6 +33,12 @@ public class SolicitudGastoServiceImpl implements SolicitudGastoService {
 	
 	@Autowired
 	GastosSolicitudDao gastosSolicitudDao;
+	
+	@Autowired
+	GastoConceptoDetalleDao gastoConceptoDetalleDao;
+	
+	@Autowired
+	GastoPresupuestoDistribucionConceptoAgenciaPeriodoDao gastoPresupuestoDistribucionConceptoAgenciaPeriodoDao;
 	
 
 	public List<GastoConceptoTipo> listarTipoGastoByEmpleado(){
@@ -67,6 +77,25 @@ public class SolicitudGastoServiceImpl implements SolicitudGastoService {
 		Optional<GastoConcepto> concepto = gastoConceptoDao.findById(id);
 		logger.info("[END] listarTipoGastoByEmpleado");
 		return concepto.get();
+	}
+
+	@Override
+	public GastoConceptoDetalle obtenerPorId(long id) {
+		Optional<GastoConceptoDetalle> opt = gastoConceptoDetalleDao.findById(id);
+		return opt.get();
+	}
+
+	@Override
+	public GastoPresupuestoDistribucionConceptoAgenciaPeriodo obtenerPeriodoActual(long idAgencia,
+			long idConceptodetalle) {
+		List<GastoPresupuestoDistribucionConceptoAgenciaPeriodo> periodosActivos = gastoPresupuestoDistribucionConceptoAgenciaPeriodoDao.buscarPeriodoActual(idAgencia, idConceptodetalle);
+		if(periodosActivos == null)
+			return null;
+		if(periodosActivos.isEmpty())
+			return null;
+		if(periodosActivos.size() > 1)
+			return null;
+		return periodosActivos.get(0);
 	}
 	
 }
