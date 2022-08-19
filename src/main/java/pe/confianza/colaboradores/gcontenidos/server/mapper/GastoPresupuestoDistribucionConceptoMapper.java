@@ -12,6 +12,9 @@ public class GastoPresupuestoDistribucionConceptoMapper {
 		destination.setGlgAsignado(GastoGlgAsignadoMapper.convert(source.getGlgAsignado()));
 		destination.setPresupuesto(source.getPresupuesto());
 		destination.setDistribuido(source.isDistribuido());
+		destination.setConceptoDetalle(ResponseGastoConceptoDetalleMapper.convert(source.getConceptoDetalle()));
+		destination.setPresupuesto(0);
+		destination.setSolicitudes(0);
 		return destination;
 	}
 
