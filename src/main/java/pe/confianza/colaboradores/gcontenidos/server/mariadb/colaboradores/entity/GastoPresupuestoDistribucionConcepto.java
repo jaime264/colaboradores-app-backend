@@ -42,27 +42,27 @@ public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
 	@Column(nullable = false)
 	private double presupuesto;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String cuentaContable;
 	
 	private boolean distribuido;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private Boolean distribucionVariable;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private Boolean distribucionUniforme;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private Integer idTipoDistribucionMonto;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String descripcionDistribucionMonto;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private Integer idFrecuenciaDistribucion;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String descripcionFrecuenciaDistribucion;
 	
 	@JsonIgnore
