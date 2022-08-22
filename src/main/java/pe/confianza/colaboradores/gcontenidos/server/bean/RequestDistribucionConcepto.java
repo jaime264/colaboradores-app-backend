@@ -8,7 +8,7 @@ import javax.validation.constraints.Min;
 public class RequestDistribucionConcepto extends RequestAuditoriaBase {
 	
 	@Min(value = 0, message = "Ingrese un código de concepto válido")
-	private long codigoConcepto;
+	private long codigoPresupuestoConcepto;
 	
 	@Min(value = 0, message = "Ingrese tipo de distribución monto válido")
 	private int tipoDistribucionMonto;
@@ -39,12 +39,12 @@ public class RequestDistribucionConcepto extends RequestAuditoriaBase {
 		this.agenciasSeleccionadas = new ArrayList<>();
 	}
 
-	public long getCodigoConcepto() {
-		return codigoConcepto;
+	public long getCodigoPresupuestoConcepto() {
+		return codigoPresupuestoConcepto;
 	}
 
-	public void setCodigoConcepto(long codigoConcepto) {
-		this.codigoConcepto = codigoConcepto;
+	public void setCodigoPresupuestoConcepto(long codigoPresupuestoConcepto) {
+		this.codigoPresupuestoConcepto = codigoPresupuestoConcepto;
 	}
 
 	public int getTipoDistribucionMonto() {
@@ -127,6 +127,7 @@ public class RequestDistribucionConcepto extends RequestAuditoriaBase {
 		this.codigoFrecuenciaDistribucion = codigoFrecuenciaDistribucion;
 	}
 
+	
 	
 
 }

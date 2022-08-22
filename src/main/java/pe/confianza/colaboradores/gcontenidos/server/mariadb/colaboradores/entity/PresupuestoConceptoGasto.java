@@ -1,6 +1,5 @@
 package pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity;
 
-
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -15,14 +14,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import pe.confianza.colaboradores.gcontenidos.server.util.DistribucionPresupuestoFrecuencia;
 import pe.confianza.colaboradores.gcontenidos.server.util.DistribucionPresupuestoTipo;
 
 @Entity
-@Table(name = "gasto_presupuesto_concepto")
-public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
+@Table(name = "presupuesto_concepto_gasto")
+public class PresupuestoConceptoGasto extends EntidadAuditoria {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +29,10 @@ public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
 	private Long codigo;
 	
 	@ManyToOne
+	@JoinColumn(nullable = false, name = "id_tipo_gasto_presupuesto")
+	private PresupuestoTipoGasto presupuestoTipoGasto;
+	
+	@ManyToOne
 	@JoinColumn(nullable = true, name = "id_glg_asignado")
 	private GastoGlgAsignado glgAsignado;
 	
@@ -39,13 +40,11 @@ public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
 	@JoinColumn(nullable = true, name = "id_concepto_detalle")
 	private GastoConceptoDetalle conceptoDetalle;
 	
-	@Column(nullable = false)
-	private double presupuesto;
-	
-	@Column(nullable = true)
-	private String cuentaContable;
-	
 	private boolean distribuido;
+	
+	private double presupuestoAsignado;
+	
+	private double presupuestoConsumido;
 	
 	@Column(nullable = true)
 	private Boolean distribucionVariable;
@@ -65,14 +64,9 @@ public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
 	@Column(nullable = true)
 	private String descripcionFrecuenciaDistribucion;
 	
-	@JsonIgnore
-	@ManyToOne
-	@JoinColumn(nullable = true, name = "id_presupuesto_anual")
-	private GastoPresupuestoAnual presupuestoAnual;
-	
-	@OneToMany(mappedBy = "distribucionConcepto", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, fetch = FetchType.LAZY, orphanRemoval = true)
-	private List<GastoPresupuestoDistribucionConceptoAgencia> distribucionesAgencia;
-	
+	@OneToMany(mappedBy = "presupuestoConcepto", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, fetch = FetchType.LAZY, orphanRemoval = true)
+	private List<PresupuestoAgenciaGasto> presupuestosAgencia;
+
 	public Long getId() {
 		return id;
 	}
@@ -87,6 +81,14 @@ public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
 
 	public void setCodigo(Long codigo) {
 		this.codigo = codigo;
+	}
+
+	public PresupuestoTipoGasto getPresupuestoTipoGasto() {
+		return presupuestoTipoGasto;
+	}
+
+	public void setPresupuestoTipoGasto(PresupuestoTipoGasto presupuestoTipoGasto) {
+		this.presupuestoTipoGasto = presupuestoTipoGasto;
 	}
 
 	public GastoGlgAsignado getGlgAsignado() {
@@ -105,22 +107,6 @@ public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
 		this.conceptoDetalle = conceptoDetalle;
 	}
 
-	public double getPresupuesto() {
-		return presupuesto;
-	}
-
-	public void setPresupuesto(double presupuesto) {
-		this.presupuesto = presupuesto;
-	}
-
-	public String getCuentaContable() {
-		return cuentaContable;
-	}
-
-	public void setCuentaContable(String cuentaContable) {
-		this.cuentaContable = cuentaContable;
-	}
-
 	public boolean isDistribuido() {
 		return distribuido;
 	}
@@ -129,27 +115,43 @@ public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
 		this.distribuido = distribuido;
 	}
 
-	public boolean isDistribucionVariable() {
+	public double getPresupuestoAsignado() {
+		return presupuestoAsignado;
+	}
+
+	public void setPresupuestoAsignado(double presupuestoAsignado) {
+		this.presupuestoAsignado = presupuestoAsignado;
+	}
+
+	public double getPresupuestoConsumido() {
+		return presupuestoConsumido;
+	}
+
+	public void setPresupuestoConsumido(double presupuestoConsumido) {
+		this.presupuestoConsumido = presupuestoConsumido;
+	}
+
+	public Boolean getDistribucionVariable() {
 		return distribucionVariable;
 	}
 
-	public void setDistribucionVariable(boolean distribucionVariable) {
+	public void setDistribucionVariable(Boolean distribucionVariable) {
 		this.distribucionVariable = distribucionVariable;
 	}
 
-	public boolean isDistribucionUniforme() {
+	public Boolean getDistribucionUniforme() {
 		return distribucionUniforme;
 	}
 
-	public void setDistribucionUniforme(boolean distribucionUniforme) {
+	public void setDistribucionUniforme(Boolean distribucionUniforme) {
 		this.distribucionUniforme = distribucionUniforme;
 	}
 
-	public int getIdTipoDistribucionMonto() {
+	public Integer getIdTipoDistribucionMonto() {
 		return idTipoDistribucionMonto;
 	}
 
-	public void setIdTipoDistribucionMonto(int idTipoDistribucionMonto) {
+	public void setIdTipoDistribucionMonto(Integer idTipoDistribucionMonto) {
 		this.idTipoDistribucionMonto = idTipoDistribucionMonto;
 	}
 
@@ -161,11 +163,11 @@ public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
 		this.descripcionDistribucionMonto = descripcionDistribucionMonto;
 	}
 
-	public int getIdFrecuenciaDistribucion() {
+	public Integer getIdFrecuenciaDistribucion() {
 		return idFrecuenciaDistribucion;
 	}
 
-	public void setIdFrecuenciaDistribucion(int idFrecuenciaDistribucion) {
+	public void setIdFrecuenciaDistribucion(Integer idFrecuenciaDistribucion) {
 		this.idFrecuenciaDistribucion = idFrecuenciaDistribucion;
 	}
 
@@ -177,22 +179,14 @@ public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
 		this.descripcionFrecuenciaDistribucion = descripcionFrecuenciaDistribucion;
 	}
 
-	public GastoPresupuestoAnual getPresupuestoAnual() {
-		return presupuestoAnual;
+	public List<PresupuestoAgenciaGasto> getPresupuestosAgencia() {
+		return presupuestosAgencia;
 	}
 
-	public void setPresupuestoAnual(GastoPresupuestoAnual presupuestoAnual) {
-		this.presupuestoAnual = presupuestoAnual;
+	public void setPresupuestosAgencia(List<PresupuestoAgenciaGasto> presupuestosAgencia) {
+		this.presupuestosAgencia = presupuestosAgencia;
 	}
-
-	public List<GastoPresupuestoDistribucionConceptoAgencia> getDistribucionesAgencia() {
-		return distribucionesAgencia;
-	}
-
-	public void setDistribucionesAgencia(List<GastoPresupuestoDistribucionConceptoAgencia> distribucionesAgencia) {
-		this.distribucionesAgencia = distribucionesAgencia;
-	}
-
+	
 	public void setTipoDistribucionMonto(DistribucionPresupuestoTipo tipo) {
 		this.idTipoDistribucionMonto = tipo.codigo;
 		this.descripcionDistribucionMonto = tipo.descripcion;
@@ -210,5 +204,7 @@ public class GastoPresupuestoDistribucionConcepto  extends EntidadAuditoria {
 	public DistribucionPresupuestoFrecuencia frecuenciaDistribucion() {
 		return DistribucionPresupuestoFrecuencia.buscar(this.idFrecuenciaDistribucion);
 	}
+	
+	
 
 }

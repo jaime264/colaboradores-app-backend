@@ -36,8 +36,8 @@ public class GastosSolicitud extends EntidadAuditoria {
 	private GastoConceptoDetalle gastoConceptoDetalle;
 	
 	@ManyToOne
-	@JoinColumn(nullable = true, name = "id_distribucion_concepto_agencia_periodo")
-	private GastoPresupuestoDistribucionConceptoAgenciaPeriodo periodo;
+	@JoinColumn(nullable = true, name = "id_presupuesto_periodo")
+	private PresupuestoPeriodoGasto periodo;
 	
 	private double montoGasto;
 	

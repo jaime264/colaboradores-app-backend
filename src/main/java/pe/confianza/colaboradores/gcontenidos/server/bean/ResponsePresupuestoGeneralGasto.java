@@ -1,12 +1,12 @@
 package pe.confianza.colaboradores.gcontenidos.server.bean;
 
-public class ResponseGastoPresupuestalAnual {
+public class ResponsePresupuestoGeneralGasto {
 	
 	private long codigo;
 	private String descripcion;
 	private boolean activo;
-	private double presupuestoUsado;
-	private double presupuesto;
+	private double presupuestoAsignado;
+	private double presupuestoConsumido;
 	private int solicitudes;
 	
 	public long getCodigo() {
@@ -27,17 +27,17 @@ public class ResponseGastoPresupuestalAnual {
 	public void setActivo(boolean activo) {
 		this.activo = activo;
 	}
-	public double getPresupuestoUsado() {
-		return presupuestoUsado;
+	public double getPresupuestoAsignado() {
+		return presupuestoAsignado;
 	}
-	public void setPresupuestoUsado(double presupuestoUsado) {
-		this.presupuestoUsado = presupuestoUsado;
+	public void setPresupuestoAsignado(double presupuestoAsignado) {
+		this.presupuestoAsignado = presupuestoAsignado;
 	}
-	public double getPresupuesto() {
-		return presupuesto;
+	public double getPresupuestoConsumido() {
+		return presupuestoConsumido;
 	}
-	public void setPresupuesto(double presupuesto) {
-		this.presupuesto = presupuesto;
+	public void setPresupuestoConsumido(double presupuestoConsumido) {
+		this.presupuestoConsumido = presupuestoConsumido;
 	}
 	public int getSolicitudes() {
 		return solicitudes;
@@ -45,6 +45,8 @@ public class ResponseGastoPresupuestalAnual {
 	public void setSolicitudes(int solicitudes) {
 		this.solicitudes = solicitudes;
 	}
+	
+
 	
 	
 

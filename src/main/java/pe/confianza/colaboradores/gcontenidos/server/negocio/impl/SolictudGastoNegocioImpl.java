@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.bson.BsonDocument;
-import org.bson.codecs.jsr310.LocalDateCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +23,8 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConcepto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoDetalle;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoTipo;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoPresupuestoDistribucionConceptoAgenciaPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastosSolicitud;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PresupuestoPeriodoGasto;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.SolictudGastoNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.AgenciaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
@@ -100,7 +99,7 @@ public class SolictudGastoNegocioImpl implements SolictudGastoNegocio {
 		Agencia agencia = agenciaService.buscarPorId(gasto.getIdAgencia());
 		GastoConceptoTipo gastoConceptoTipo = solicitudGastoService.obtenerTipoGastoById(gasto.getIdGastoTipo());
 		GastoConceptoDetalle gastoConceptodetalle = solicitudGastoService.obtenerPorId(gasto.getIdConceptoDetalle());
-		GastoPresupuestoDistribucionConceptoAgenciaPeriodo periodo = solicitudGastoService.obtenerPeriodoActual(agencia.getId(), gastoConceptodetalle.getId() );
+		PresupuestoPeriodoGasto periodo = solicitudGastoService.obtenerPeriodoActual(agencia.getId(), gastoConceptodetalle.getId() );
 		if(periodo == null)
 			throw new AppException("Aún no se encuentra distribuido el presupuesto anual");
 		
