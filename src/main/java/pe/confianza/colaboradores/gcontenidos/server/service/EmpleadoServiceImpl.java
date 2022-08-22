@@ -86,6 +86,9 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
 	@Autowired
 	private EmpleadoAccesoDao empleadoAccesoDao;
+	
+	@Autowired
+	private GastoGlgAsignadoService gastoGlgAsignadoService;
 
 	@Override
 	public Empleado actualizarInformacionEmpleado(String usuarioBT) {
@@ -301,6 +304,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 				throw new ModelNotFoundException("No existe el usuario " + usuarioBT);
 			int cantidadSubordinadosNivel1 = empleadoDao.obtenerCantidadSuborninadosNivel1(empleado.getId());
 			int cantidadSubordinadosNivel2 = empleadoDao.obtenerCantidadSuborninadosNivel2(empleado.getId());
+			boolean esGLGAsignado = gastoGlgAsignadoService.empleadoEsGlgAsignado(empleado.getCodigo());
 			List<EmpleadoAcceso> accesosConsolidados = empleadoAccesoDao
 					.findByEmpleadoUsuariobt(empleado.getUsuarioBT());
 			accesosConsolidados = accesosConsolidados == null ? new ArrayList<>() : accesosConsolidados;
@@ -314,7 +318,12 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 				} else if (a.getFuncionalidadCodigo().equals(FuncionalidadApp.REPORTE_VACACIONES.codigo)
 						&& ((cantidadSubordinadosNivel1 + cantidadSubordinadosNivel2) > 0)) {
 					acceso.setConsultar(true);
-				} else {
+				} else if(a.getFuncionalidadCodigo().equals(FuncionalidadApp.GASTO_GESTION_PRESUPUESTO.codigo) && esGLGAsignado) {
+					acceso.setConsultar(true);
+					acceso.setRegistrar(true);
+					acceso.setAprobar(true);
+					acceso.setModificar(true);
+				}else {
 					acceso.setAprobar(a.isFuncionalidadAccesoAprobar());
 				}
 				acceso.setConsultar(a.isFuncionalidadAccesoConsultar());

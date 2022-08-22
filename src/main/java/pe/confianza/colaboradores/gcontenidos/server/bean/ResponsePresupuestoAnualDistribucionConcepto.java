@@ -11,11 +11,17 @@ public class ResponsePresupuestoAnualDistribucionConcepto {
 	
 	private double presupuesto;
 	
+	private double presupuestoUsado;
+	
 	private String cuentaContable;
 	
 	private boolean distribuido;
 	
+	private ResponseGastoConceptoDetalle conceptoDetalle;
+	
 	private List<ResponsePresupuestoAnualDistribucionConceptoAgencia> agencias;
+	
+	private int solicitudes;
 	
 	public ResponsePresupuestoAnualDistribucionConcepto() {
 		this.agencias = new ArrayList<>();
@@ -67,6 +73,30 @@ public class ResponsePresupuestoAnualDistribucionConcepto {
 
 	public void setDistribuido(boolean distribuido) {
 		this.distribuido = distribuido;
+	}
+
+	public ResponseGastoConceptoDetalle getConceptoDetalle() {
+		return conceptoDetalle;
+	}
+
+	public void setConceptoDetalle(ResponseGastoConceptoDetalle conceptoDetalle) {
+		this.conceptoDetalle = conceptoDetalle;
+	}
+
+	public double getPresupuestoUsado() {
+		return presupuestoUsado;
+	}
+
+	public void setPresupuestoUsado(double presupuestoUsado) {
+		this.presupuestoUsado = presupuestoUsado;
+	}
+
+	public int getSolicitudes() {
+		return solicitudes;
+	}
+
+	public void setSolicitudes(int solicitudes) {
+		this.solicitudes = solicitudes;
 	}
 
 	

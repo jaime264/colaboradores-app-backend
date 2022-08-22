@@ -22,13 +22,13 @@ public class GastoConceptoTipo extends EntidadAuditoria {
 	private String descripcion;
 	
 	@Transient
-	private Integer montoMaximo;
+	private Double montoMaximo;
 
-	public Integer getMontoMaximo() {
+	public Double getMontoMaximo() {
 		return montoMaximo;
 	}
 
-	public void setMontoMaximo(Integer montoMaximo) {
+	public void setMontoMaximo(Double montoMaximo) {
 		this.montoMaximo = montoMaximo;
 	}
 

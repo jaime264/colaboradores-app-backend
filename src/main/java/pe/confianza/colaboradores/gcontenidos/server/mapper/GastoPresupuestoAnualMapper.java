@@ -10,7 +10,9 @@ public class GastoPresupuestoAnualMapper {
 		destination.setActivo(source.isActivo());
 		destination.setCodigo(source.getCodigo());
 		destination.setDescripcion(source.getDescripcion());
+		destination.setPresupuesto(source.getPresupuesto());
 		destination.setPresupuestoUsado(0);
+		destination.setSolicitudes(0);
 		return destination;
 	}
 

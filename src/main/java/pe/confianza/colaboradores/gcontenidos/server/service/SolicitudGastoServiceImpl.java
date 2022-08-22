@@ -9,13 +9,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.CentroCostoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastoConceptoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastoConceptoDetalleDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastoConceptoTipoDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastoPresupuestoDistribucionConceptoAgenciaPeriodoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastosSolicitudDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.CentroCosto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConcepto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoDetalle;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoTipo;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoPresupuestoDistribucionConceptoAgenciaPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastosSolicitud;
 
 @Service
@@ -31,12 +35,27 @@ public class SolicitudGastoServiceImpl implements SolicitudGastoService {
 	
 	@Autowired
 	GastosSolicitudDao gastosSolicitudDao;
+
+	@Autowired
+	GastoConceptoDetalleDao gastoConceptoDetalleDao;
 	
 	@Autowired
-	GastoConceptoDetalleDao conceptoDetalleDao;
+	CentroCostoDao centroCostoDao;
+	
+	@Autowired
+	GastoPresupuestoDistribucionConceptoAgenciaPeriodoDao gastoPresupuestoDistribucionConceptoAgenciaPeriodoDao;
+
 	
 
-	public List<GastoConceptoTipo> listarTipoGastoByEmpleado(){
+	public List<GastosSolicitud> listarGastoSolicitudByEmpleado(Long idEmpleado){
+		logger.info("[BEGIN] listarTipoGastoByEmpleado");
+		List<GastosSolicitud> gastosSolicitud = gastosSolicitudDao.obtenerTipoGastoByEmpleado(idEmpleado);
+		gastosSolicitud = gastosSolicitud == null ? new ArrayList<>() : gastosSolicitud;
+		logger.info("[END] listarTipoGastoByEmpleado");
+		return gastosSolicitud;
+	}
+	
+	public List<GastoConceptoTipo> listarTipoGasto(){
 		logger.info("[BEGIN] listarTipoGastoByEmpleado");
 		List<GastoConceptoTipo> gastosConceptoTipo = gastoConceptoTipoDao.findAll();
 		gastosConceptoTipo = gastosConceptoTipo == null ? new ArrayList<>() : gastosConceptoTipo;
@@ -72,6 +91,33 @@ public class SolicitudGastoServiceImpl implements SolicitudGastoService {
 		Optional<GastoConcepto> concepto = gastoConceptoDao.findById(id);
 		logger.info("[END] listarTipoGastoByEmpleado");
 		return concepto.get();
+	}
+
+	@Override
+	public GastoConceptoDetalle obtenerPorId(long id) {
+		Optional<GastoConceptoDetalle> opt = gastoConceptoDetalleDao.findById(id);
+		return opt.get();
+	}
+
+	@Override
+	public GastoPresupuestoDistribucionConceptoAgenciaPeriodo obtenerPeriodoActual(long idAgencia,
+			long idConceptodetalle) {
+		List<GastoPresupuestoDistribucionConceptoAgenciaPeriodo> periodosActivos = gastoPresupuestoDistribucionConceptoAgenciaPeriodoDao.buscarPeriodoActual(idAgencia, idConceptodetalle);
+		if(periodosActivos == null)
+			return null;
+		if(periodosActivos.isEmpty())
+			return null;
+		if(periodosActivos.size() > 1)
+			return null;
+		return periodosActivos.get(0);
+	}
+
+	@Override
+	public List<CentroCosto> obtenerCentroCostosByAgencia(String codAgencia) {
+		logger.info("[BEGIN] obtenerCentroCostosByAgencia");
+		List<CentroCosto> listCentroCosto = centroCostoDao.obtenerCentroCostoByAgencia(codAgencia);
+		logger.info("[BEGIN] obtenerCentroCostosByAgencia");
+		return listCentroCosto;
 	}
 	
 }

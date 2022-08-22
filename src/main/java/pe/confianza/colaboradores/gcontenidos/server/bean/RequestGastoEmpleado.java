@@ -12,6 +12,8 @@ public class RequestGastoEmpleado extends RequestAuditoriaBase {
 	private Long idAgencia;
 	private Long idGastoTipo;
 	private Long idConcepto;
+	private Long idConceptoDetalle;
+	private Long idCentroCosto;
 	private Integer monto;
 	private Boolean terminosCondiciones;
 	private String motivo;
