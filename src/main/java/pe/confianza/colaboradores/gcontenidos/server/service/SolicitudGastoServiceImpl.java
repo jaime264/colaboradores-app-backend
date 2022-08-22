@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastoConceptoDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastoConceptoDetalleDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastoConceptoTipoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastosSolicitudDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConcepto;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoDetalle;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoTipo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastosSolicitud;
 
@@ -29,6 +31,9 @@ public class SolicitudGastoServiceImpl implements SolicitudGastoService {
 	
 	@Autowired
 	GastosSolicitudDao gastosSolicitudDao;
+	
+	@Autowired
+	GastoConceptoDetalleDao conceptoDetalleDao;
 	
 
 	public List<GastoConceptoTipo> listarTipoGastoByEmpleado(){

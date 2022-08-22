@@ -113,7 +113,7 @@ public class GastosController {
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	
-	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
+//	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
 	@ApiOperation(notes = "listar concepto por tipo de gasto", value = "url proxy /gastos/conceptos")
 	@PostMapping("/conceptos")
 	public ResponseEntity<ResponseStatus> listarConceptoByTipoGasto(@Valid @RequestBody  RequestConcepto peticion) {
