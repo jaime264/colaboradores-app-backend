@@ -38,6 +38,14 @@ public class GastoConcepto extends EntidadAuditoria {
 	@OneToMany(mappedBy = "concepto", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<GastoConceptoDetalle> detalles;
 
+	public List<GastoConceptoDetalle> getDetalles() {
+		return detalles;
+	}
+
+	public void setDetalles(List<GastoConceptoDetalle> detalles) {
+		this.detalles = detalles;
+	}
+
 	public Long getId() {
 		return id;
 	}

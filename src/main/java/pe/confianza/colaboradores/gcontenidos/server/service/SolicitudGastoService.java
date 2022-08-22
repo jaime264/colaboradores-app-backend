@@ -2,6 +2,7 @@ package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.util.List;
 
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.CentroCosto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConcepto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoDetalle;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoTipo;
@@ -10,7 +11,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 
 public interface SolicitudGastoService {
 
-	public List<GastoConceptoTipo> listarTipoGastoByEmpleado();
+	public List<GastoConceptoTipo> listarTipoGasto();
 	
 	public List<GastoConcepto> listarConceptoByTipoGasto(Long idTipoGasto);
 	
@@ -21,6 +22,10 @@ public interface SolicitudGastoService {
 	public GastoConcepto obtenerConceptoById(Long id);
 	
 	GastoConceptoDetalle obtenerPorId(long id);
+	
+	List<CentroCosto> obtenerCentroCostosByAgencia(String codAgencia);
+	
+	List<GastosSolicitud> listarGastoSolicitudByEmpleado(Long idEmpleado);
 	
 	PresupuestoPeriodoGasto obtenerPeriodoActual(long idAgencia, long idConceptodetalle);
 }

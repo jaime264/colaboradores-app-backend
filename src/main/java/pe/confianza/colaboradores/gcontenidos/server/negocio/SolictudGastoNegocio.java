@@ -6,6 +6,7 @@ import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCentroCostos;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestConcepto;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGastoEmpleado;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestTipoGasto;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.CentroCosto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConcepto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoTipo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastosSolicitud;
@@ -18,7 +19,7 @@ public interface SolictudGastoNegocio {
 
 	List<GastoConcepto> listarConceptoByTipoGasto(RequestConcepto reqConcepto);
 	
-	Object listarCentrosCostoByAgencia(RequestCentroCostos peticion);
-	
+	List<CentroCosto> listarCentrosCostoByAgencia(RequestCentroCostos peticion);
+		
 	GastosSolicitud registrarGastoEmpleado(RequestGastoEmpleado gasto);
 }

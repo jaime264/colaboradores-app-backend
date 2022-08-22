@@ -57,7 +57,9 @@ public class Constantes {
 	public final static String LIMA_ORIENTE = "LIMA ORIENTE";
 	public final static String NOR_ANDINO = "NOR ANDINO";
 	public final static String CORPORATIVO = "CORPORATIVO";
-
+	
+	//GASTOS
+	public final static String GASTOS_MENORES = "GAT001";
 	
 	public class POSICION_EXCEL {
 		public static final int POSICION_CABECERA = 0;

@@ -276,6 +276,12 @@ public class CargaParametros {
 		throw new AppException("No existe el parámetro día límite de aprobación de reprogramación");
 	}
 	
+	public Double getMontoMaximoGastoMenor() {
+		if(GASTO_MENOR_MONTO_MAXIMO != null)
+			return Double.parseDouble(GASTO_MENOR_MONTO_MAXIMO);
+		throw new AppException("No existe el parámetro Monto maximo de gasto menor");
+	}
+	
 	// Parametros genericos
 	public String ANIO_PRESENTE = null;
 	
@@ -306,7 +312,7 @@ public class CargaParametros {
 	public String MENSAJE_JEFE_SIN_REGISTRO_PROGRAMACIONES = null;
 	public String MENSAJE_JEFE_PENDIENTE_APROBACION = null;
 	public String MENSAJE_COLABORDOR_REPROGRAMACION = null;
-	
+	public String GASTO_MENOR_MONTO_MAXIMO = null;
 
 	@PostConstruct
 	protected void initialize() {
@@ -349,6 +355,7 @@ public class CargaParametros {
 		MENSAJE_JEFE_SIN_REGISTRO_PROGRAMACIONES = populateParametro(ParametrosConstantes.VacacionesNotificacion.MENSAJE_JEFE_SIN_REGISTRO_PROGRAMACIONES);
 		MENSAJE_JEFE_PENDIENTE_APROBACION = populateParametro(ParametrosConstantes.VacacionesNotificacion.MENSAJE_JEFE_PENDIENTE_APROBACION);
 		MENSAJE_COLABORDOR_REPROGRAMACION = populateParametro(ParametrosConstantes.VacacionesNotificacion.MENSAJE_COLABORDOR_REPROGRAMACION);
+		GASTO_MENOR_MONTO_MAXIMO = populateParametro(ParametrosConstantes.Gastos.GASTO_MENOR_MONTO_MAXIMO);
 		
 		
 		

@@ -20,16 +20,20 @@ public class GastosSolicitud extends EntidadAuditoria {
 	private long id;
 
 	@ManyToOne
-	@JoinColumn(nullable = true, name = "idAgencia")
-	private Agencia idAgencia;
+	@JoinColumn(nullable = true, name = "id_agencia")
+	private Agencia agencia;
 
 	@ManyToOne
-	@JoinColumn(nullable = true, name = "idEmpleado")
-	private Empleado idEmpleado;
+	@JoinColumn(nullable = true, name = "id_empleado")
+	private Empleado empleado;
 	
 	@ManyToOne
-	@JoinColumn(nullable = true, name = "idGastoConceptoTipo")
-	private GastoConceptoTipo idGastoConceptoTipo;
+	@JoinColumn(nullable = true, name = "id_gasto_tipo")
+	private GastoConceptoTipo gastoConceptoTipo;
+	
+	@ManyToOne
+	@JoinColumn(nullable = true, name = "id_gasto_concepto")
+	private GastoConcepto gastoConcepto;
 	
 	@ManyToOne
 	@JoinColumn(nullable = true, name = "id_gasto_concepto_detalle")
@@ -38,6 +42,10 @@ public class GastosSolicitud extends EntidadAuditoria {
 	@ManyToOne
 	@JoinColumn(nullable = true, name = "id_presupuesto_periodo")
 	private PresupuestoPeriodoGasto periodo;
+
+	@ManyToOne
+	@JoinColumn(nullable = true, name = "id_centro_costo")
+	private CentroCosto centroCosto;
 	
 	private double montoGasto;
 	
@@ -45,7 +53,6 @@ public class GastosSolicitud extends EntidadAuditoria {
 	
 	private String motivo;
 	
-	
-//	private GastoCentroCosto idGastroCentroCosto;
+	private String estadoGasto;
 	
 }

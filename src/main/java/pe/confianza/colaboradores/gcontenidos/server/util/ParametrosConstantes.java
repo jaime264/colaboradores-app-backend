@@ -65,6 +65,10 @@ public class ParametrosConstantes {
 		
 	}
 	
+	public static class Gastos{
+		public static final String GASTO_MENOR_MONTO_MAXIMO = "PARAMVAC047";
+	}
+	
 	/*static {
 		Vacaciones.ESTADOS_PROGRAMACION = new String[]{"", ""};
 	}*/
