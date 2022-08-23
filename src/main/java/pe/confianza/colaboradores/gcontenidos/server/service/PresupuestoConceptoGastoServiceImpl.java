@@ -41,7 +41,7 @@ public class PresupuestoConceptoGastoServiceImpl implements PresupuestoConceptoG
 			String usuarioOperacion) {
 		ZonedDateTime zdt = LocalDateTime.now().atZone(ZoneId.of(Constantes.TIME_ZONE));
 		concepto.setCodigo(zdt.toInstant().toEpochMilli());
-		concepto.setDistribuido(false);
+		//concepto.setDistribuido(false);
 		concepto.setEstadoRegistro(EstadoRegistro.ACTIVO.valor);
 		concepto.setEstadoMigracion(EstadoMigracion.NUEVO.valor);
 		concepto.setFechaCrea(LocalDateTime.now());
@@ -52,7 +52,7 @@ public class PresupuestoConceptoGastoServiceImpl implements PresupuestoConceptoG
 	@Override
 	public PresupuestoConceptoGasto actualizar(PresupuestoConceptoGasto concepto,
 			String usuarioOperacion) {
-		concepto.setDistribuido(false);
+		//concepto.setDistribuido(false);
 		concepto.setFechaModifica(LocalDateTime.now());
 		concepto.setUsuarioModifica(usuarioOperacion);
 		concepto = dao.save(concepto);

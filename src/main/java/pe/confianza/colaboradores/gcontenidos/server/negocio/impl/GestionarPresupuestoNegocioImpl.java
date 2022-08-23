@@ -37,6 +37,7 @@ import pe.confianza.colaboradores.gcontenidos.server.mapper.PresupuestoConceptoG
 import pe.confianza.colaboradores.gcontenidos.server.mapper.PresupuestoGeneralGastoMapper;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Agencia;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PresupuestoAgenciaGasto;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PresupuestoConceptoDistribucionGasto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PresupuestoConceptoGasto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PresupuestoGeneralGasto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PresupuestoPeriodoGasto;
@@ -212,10 +213,14 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "app.error.objeto_no_encontrado"));
 			if(!presupuestoConcepto.getGlgAsignado().getEmpleado().getUsuarioBT().equals(usuarioOperacion))
 				throw new AppException("Ud. no puede administrar este concepto");
+			PresupuestoConceptoDistribucionGasto distribucion = presupuestoConcepto.getDistribucion();
+			
 			List<PresupuestoAgenciaGasto> distribucionXAgencia = new ArrayList<>();
 			if(peticion.isNoDistribuir()) {
 				distribucionXAgencia = noDistribuir(peticion, presupuestoConcepto);
-				presupuestoConcepto.setDistribuido(false);
+				distribucion.setConfigurado(true);
+				distribucion.setNoDistribuir(false);
+				distribucion.setArchivoExcel(null);
 			} else {
 				distribucionXAgencia = new ArrayList<>();
 				DistribucionPresupuestoFrecuencia frecuencia = DistribucionPresupuestoFrecuencia.buscar(peticion.getCodigoFrecuenciaDistribucion());

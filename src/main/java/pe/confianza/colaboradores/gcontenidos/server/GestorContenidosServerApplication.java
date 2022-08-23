@@ -17,7 +17,10 @@ import java.util.Locale;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.support.MultipartFilter;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
@@ -57,6 +60,22 @@ public class GestorContenidosServerApplication {
 		messageSource.setDefaultEncoding(StandardCharsets.ISO_8859_1.name());
 		return messageSource;
 	}
+	
+	@Bean
+	public CommonsMultipartResolver multipartResolver() {
+	    CommonsMultipartResolver multipart = new CommonsMultipartResolver();
+	    multipart.setMaxUploadSize(3 * 1024 * 1024);
+	    return multipart;
+	}
+
+	@Bean
+	@Order(0)
+	public MultipartFilter multipartFilter() {
+	    MultipartFilter multipartFilter = new MultipartFilter();
+	    multipartFilter.setMultipartResolverBeanName("multipartResolver");
+	    return multipartFilter;
+	}
+
 	
 	private static void iniciarVacacionesActualizacion(ApplicationContext applicationContext) {
 		VacacionesTareasProgramadasNegocio vacacioneTareas = applicationContext.getBean(VacacionesTareasProgramadasNegocioImpl.class);

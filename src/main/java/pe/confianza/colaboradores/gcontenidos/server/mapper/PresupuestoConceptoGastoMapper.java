@@ -9,7 +9,7 @@ public class PresupuestoConceptoGastoMapper {
 		ResponsePresupuestoConceptoGasto destination = new ResponsePresupuestoConceptoGasto();
 		destination.setCodigo(source.getCodigo());
 		destination.setConceptoDetalle(GastoConceptoDetalleMapper.convert(source.getConceptoDetalle()));
-		destination.setDistribuido(source.isDistribuido());
+		//destination.setDistribuido(source.isDistribuido());
 		destination.setGlgAsignado(GastoGlgAsignadoMapper.convert(source.getGlgAsignado()));
 		destination.setPresupuestoAsignado(source.getPresupuestoAsignado());
 		destination.setPresupuestoConsumido(source.getPresupuestoConsumido());

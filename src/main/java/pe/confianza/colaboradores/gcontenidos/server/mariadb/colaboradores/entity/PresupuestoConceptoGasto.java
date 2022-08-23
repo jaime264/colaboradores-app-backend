@@ -12,10 +12,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import pe.confianza.colaboradores.gcontenidos.server.util.DistribucionPresupuestoFrecuencia;
-import pe.confianza.colaboradores.gcontenidos.server.util.DistribucionPresupuestoTipo;
 
 @Entity
 @Table(name = "presupuesto_concepto_gasto")
@@ -27,6 +26,12 @@ public class PresupuestoConceptoGasto extends EntidadAuditoria {
 	
 	@Column(nullable = false)
 	private Long codigo;
+	
+	private double presupuestoAsignado;
+	
+	private double presupuestoConsumido;
+	
+	private double presupuestoDistribuido;
 	
 	@ManyToOne
 	@JoinColumn(nullable = false, name = "id_tipo_gasto_presupuesto")
@@ -40,29 +45,9 @@ public class PresupuestoConceptoGasto extends EntidadAuditoria {
 	@JoinColumn(nullable = true, name = "id_concepto_detalle")
 	private GastoConceptoDetalle conceptoDetalle;
 	
-	private boolean distribuido;
-	
-	private double presupuestoAsignado;
-	
-	private double presupuestoConsumido;
-	
-	@Column(nullable = true)
-	private Boolean distribucionVariable;
-	
-	@Column(nullable = true)
-	private Boolean distribucionUniforme;
-	
-	@Column(nullable = true)
-	private Integer idTipoDistribucionMonto;
-	
-	@Column(nullable = true)
-	private String descripcionDistribucionMonto;
-	
-	@Column(nullable = true)
-	private Integer idFrecuenciaDistribucion;
-	
-	@Column(nullable = true)
-	private String descripcionFrecuenciaDistribucion;
+	@OneToOne
+	@JoinColumn(nullable = false, name = "id_distribucion")
+	private PresupuestoConceptoDistribucionGasto distribucion;
 	
 	@OneToMany(mappedBy = "presupuestoConcepto", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<PresupuestoAgenciaGasto> presupuestosAgencia;
@@ -107,12 +92,20 @@ public class PresupuestoConceptoGasto extends EntidadAuditoria {
 		this.conceptoDetalle = conceptoDetalle;
 	}
 
-	public boolean isDistribuido() {
-		return distribuido;
+	public PresupuestoConceptoDistribucionGasto getDistribucion() {
+		return distribucion;
 	}
 
-	public void setDistribuido(boolean distribuido) {
-		this.distribuido = distribuido;
+	public void setDistribucion(PresupuestoConceptoDistribucionGasto distribucion) {
+		this.distribucion = distribucion;
+	}
+
+	public List<PresupuestoAgenciaGasto> getPresupuestosAgencia() {
+		return presupuestosAgencia;
+	}
+
+	public void setPresupuestosAgencia(List<PresupuestoAgenciaGasto> presupuestosAgencia) {
+		this.presupuestosAgencia = presupuestosAgencia;
 	}
 
 	public double getPresupuestoAsignado() {
@@ -131,79 +124,14 @@ public class PresupuestoConceptoGasto extends EntidadAuditoria {
 		this.presupuestoConsumido = presupuestoConsumido;
 	}
 
-	public Boolean getDistribucionVariable() {
-		return distribucionVariable;
+	public double getPresupuestoDistribuido() {
+		return presupuestoDistribuido;
 	}
 
-	public void setDistribucionVariable(Boolean distribucionVariable) {
-		this.distribucionVariable = distribucionVariable;
+	public void setPresupuestoDistribuido(double presupuestoDistribuido) {
+		this.presupuestoDistribuido = presupuestoDistribuido;
 	}
 
-	public Boolean getDistribucionUniforme() {
-		return distribucionUniforme;
-	}
-
-	public void setDistribucionUniforme(Boolean distribucionUniforme) {
-		this.distribucionUniforme = distribucionUniforme;
-	}
-
-	public Integer getIdTipoDistribucionMonto() {
-		return idTipoDistribucionMonto;
-	}
-
-	public void setIdTipoDistribucionMonto(Integer idTipoDistribucionMonto) {
-		this.idTipoDistribucionMonto = idTipoDistribucionMonto;
-	}
-
-	public String getDescripcionDistribucionMonto() {
-		return descripcionDistribucionMonto;
-	}
-
-	public void setDescripcionDistribucionMonto(String descripcionDistribucionMonto) {
-		this.descripcionDistribucionMonto = descripcionDistribucionMonto;
-	}
-
-	public Integer getIdFrecuenciaDistribucion() {
-		return idFrecuenciaDistribucion;
-	}
-
-	public void setIdFrecuenciaDistribucion(Integer idFrecuenciaDistribucion) {
-		this.idFrecuenciaDistribucion = idFrecuenciaDistribucion;
-	}
-
-	public String getDescripcionFrecuenciaDistribucion() {
-		return descripcionFrecuenciaDistribucion;
-	}
-
-	public void setDescripcionFrecuenciaDistribucion(String descripcionFrecuenciaDistribucion) {
-		this.descripcionFrecuenciaDistribucion = descripcionFrecuenciaDistribucion;
-	}
-
-	public List<PresupuestoAgenciaGasto> getPresupuestosAgencia() {
-		return presupuestosAgencia;
-	}
-
-	public void setPresupuestosAgencia(List<PresupuestoAgenciaGasto> presupuestosAgencia) {
-		this.presupuestosAgencia = presupuestosAgencia;
-	}
-	
-	public void setTipoDistribucionMonto(DistribucionPresupuestoTipo tipo) {
-		this.idTipoDistribucionMonto = tipo.codigo;
-		this.descripcionDistribucionMonto = tipo.descripcion;
-	}
-	
-	public DistribucionPresupuestoTipo tipoDistribucionMonto() {
-		return DistribucionPresupuestoTipo.buscar(this.idTipoDistribucionMonto);
-	}
-	
-	public void setFrecuenciaDistribucion(DistribucionPresupuestoFrecuencia frecuencia) {
-		this.idFrecuenciaDistribucion = frecuencia.codigo;
-		this.descripcionFrecuenciaDistribucion = frecuencia.descripcion;
-	}
-	
-	public DistribucionPresupuestoFrecuencia frecuenciaDistribucion() {
-		return DistribucionPresupuestoFrecuencia.buscar(this.idFrecuenciaDistribucion);
-	}
 	
 	
 	
