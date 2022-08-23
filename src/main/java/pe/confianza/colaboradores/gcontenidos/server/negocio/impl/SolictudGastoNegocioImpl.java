@@ -24,8 +24,8 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConcepto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoDetalle;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoTipo;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoPresupuestoDistribucionConceptoAgenciaPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastosSolicitud;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PresupuestoPeriodoGasto;
 import pe.confianza.colaboradores.gcontenidos.server.negocio.SolictudGastoNegocio;
 import pe.confianza.colaboradores.gcontenidos.server.service.AgenciaService;
 import pe.confianza.colaboradores.gcontenidos.server.service.AuditoriaService;
@@ -119,7 +119,7 @@ public class SolictudGastoNegocioImpl implements SolictudGastoNegocio {
 		GastoConceptoTipo gastoTipo = solicitudGastoService.obtenerTipoGastoById(gasto.getIdGastoTipo());
 		GastoConcepto gastoConcepto = solicitudGastoService.obtenerConceptoById(gasto.getIdConcepto());
 		GastoConceptoDetalle gastoConceptodetalle = solicitudGastoService.obtenerPorId(gasto.getIdConceptoDetalle());
-		GastoPresupuestoDistribucionConceptoAgenciaPeriodo periodo = solicitudGastoService.obtenerPeriodoActual(agencia.getId(), gastoConceptodetalle.getId() );
+		PresupuestoPeriodoGasto periodo = solicitudGastoService.obtenerPeriodoActual(agencia.getId(), gastoConceptodetalle.getId() );
 		if(periodo == null)
 			throw new AppException("Aún no se encuentra distribuido el presupuesto anual");
 		

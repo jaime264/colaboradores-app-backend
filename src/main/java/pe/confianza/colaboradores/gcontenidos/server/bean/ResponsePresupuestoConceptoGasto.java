@@ -1,31 +1,26 @@
 package pe.confianza.colaboradores.gcontenidos.server.bean;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class ResponsePresupuestoAnualDistribucionConcepto {
+public class ResponsePresupuestoConceptoGasto {
+	
+	private boolean puedeAdministrar;
 	
 	private long codigo;
 	
 	private ResponseGlgAsignado glgAsignado;
 	
-	private double presupuesto;
+	private double presupuestoAsignado;
 	
-	private double presupuestoUsado;
-	
-	private String cuentaContable;
+	private double presupuestoConsumido;
 	
 	private boolean distribuido;
 	
 	private ResponseGastoConceptoDetalle conceptoDetalle;
 	
-	private List<ResponsePresupuestoAnualDistribucionConceptoAgencia> agencias;
+	private List<ResponsePresupuestoAgenciaGasto> agencias;
 	
 	private int solicitudes;
-	
-	public ResponsePresupuestoAnualDistribucionConcepto() {
-		this.agencias = new ArrayList<>();
-	}
 
 	public long getCodigo() {
 		return codigo;
@@ -43,28 +38,20 @@ public class ResponsePresupuestoAnualDistribucionConcepto {
 		this.glgAsignado = glgAsignado;
 	}
 
-	public double getPresupuesto() {
-		return presupuesto;
+	public double getPresupuestoAsignado() {
+		return presupuestoAsignado;
 	}
 
-	public void setPresupuesto(double presupuesto) {
-		this.presupuesto = presupuesto;
+	public void setPresupuestoAsignado(double presupuestoAsignado) {
+		this.presupuestoAsignado = presupuestoAsignado;
 	}
 
-	public String getCuentaContable() {
-		return cuentaContable;
+	public double getPresupuestoConsumido() {
+		return presupuestoConsumido;
 	}
 
-	public void setCuentaContable(String cuentaContable) {
-		this.cuentaContable = cuentaContable;
-	}
-
-	public List<ResponsePresupuestoAnualDistribucionConceptoAgencia> getAgencias() {
-		return agencias;
-	}
-
-	public void setAgencias(List<ResponsePresupuestoAnualDistribucionConceptoAgencia> agencias) {
-		this.agencias = agencias;
+	public void setPresupuestoConsumido(double presupuestoConsumido) {
+		this.presupuestoConsumido = presupuestoConsumido;
 	}
 
 	public boolean isDistribuido() {
@@ -83,12 +70,12 @@ public class ResponsePresupuestoAnualDistribucionConcepto {
 		this.conceptoDetalle = conceptoDetalle;
 	}
 
-	public double getPresupuestoUsado() {
-		return presupuestoUsado;
+	public List<ResponsePresupuestoAgenciaGasto> getAgencias() {
+		return agencias;
 	}
 
-	public void setPresupuestoUsado(double presupuestoUsado) {
-		this.presupuestoUsado = presupuestoUsado;
+	public void setAgencias(List<ResponsePresupuestoAgenciaGasto> agencias) {
+		this.agencias = agencias;
 	}
 
 	public int getSolicitudes() {
@@ -99,10 +86,13 @@ public class ResponsePresupuestoAnualDistribucionConcepto {
 		this.solicitudes = solicitudes;
 	}
 
-	
+	public boolean isPuedeAdministrar() {
+		return puedeAdministrar;
+	}
 
-	
-	
+	public void setPuedeAdministrar(boolean puedeAdministrar) {
+		this.puedeAdministrar = puedeAdministrar;
+	}
 	
 	
 

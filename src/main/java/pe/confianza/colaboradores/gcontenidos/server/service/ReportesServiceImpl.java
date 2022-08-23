@@ -1,6 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.service;
 
 import java.io.ByteArrayInputStream;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -18,10 +19,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.IReporteExcepcion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.IReporteMeta;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestFiltroVacacionesAprobacion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestListarReportes;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestReporteMeta;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseReporteExcepciones;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseReporteMeta;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ReporteMetaDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.ReportesDao;
@@ -75,8 +78,7 @@ public class ReportesServiceImpl implements ReportesService {
 
 		if (request.getOrden().equals("desc")) {
 			paginacion = PageRequest.of(request.getNumeroPagina(), request.getTamanioPagina(),
-					Sort.by(Sort.Direction.DESC, "id")
-					);
+					Sort.by(Sort.Direction.DESC, "id"));
 
 		} else {
 			paginacion = PageRequest.of(request.getNumeroPagina(), request.getTamanioPagina(),
@@ -492,6 +494,98 @@ public class ReportesServiceImpl implements ReportesService {
 
 		return null;
 
+	}
+
+	@Override
+	public List<ResponseReporteExcepciones> listarReporteExcepciones(RequestListarReportes req) {
+		// TODO Auto-generated method stub
+		int anio = cargaParametros.getMetaVacacionAnio();
+		Pageable pageable = PageRequest.of(req.getNumeroPagina(), req.getTamanioPagina());
+
+		List<ResponseReporteExcepciones> responseExcepciones = new ArrayList<>();
+
+		List<IReporteExcepcion> listarReporteExcepciones = reporteDao.reporteExcepciones(req.getCodigoUsuario(),
+				pageable);
+
+		for (IReporteExcepcion re : listarReporteExcepciones) {
+
+			ResponseReporteExcepciones reporteExcepciones = new ResponseReporteExcepciones();
+			long diasGozar = ChronoUnit.DAYS.between(re.getFechainicio(), re.getFechafin());
+			String tipoExcepcionAnulacion = re.getAnulacion() ? "Anulación" : "";
+			String tipoExcepcionInterrupcion = re.getInterrupcion() ? "Interrupción" : "";
+
+			reporteExcepciones.setCodigo(re.getCodigo());
+			reporteExcepciones.setNombrecompleto(re.getNombrecompleto());
+			reporteExcepciones.setArea(re.getCorredor());
+			reporteExcepciones.setAgencia(re.getAgencia());
+			reporteExcepciones.setPuesto(re.getPuesto());
+			reporteExcepciones.setFechainicio(re.getFechainicio());
+			reporteExcepciones.setFechafin(re.getFechafin());
+			reporteExcepciones.setNumeroDiasGozar(diasGozar);
+			reporteExcepciones.setTipoExcepcion(
+					tipoExcepcionAnulacion == "" ? tipoExcepcionInterrupcion : tipoExcepcionAnulacion);
+			reporteExcepciones.setExcepcion(1);
+			
+			responseExcepciones.add(reporteExcepciones);
+
+		}
+
+		return responseExcepciones;
+	}
+
+	@Override
+	public String reporteExcepciones(RequestListarReportes req) {		
+		// TODO Auto-generated method stub
+		Report reporte = new Report();
+		reporte.setType("XLSX");
+		reporte.setTitle("REPORTE EXCEPCIONES ");
+		reporte.getCollection().addHeader("N°", ColumnType.INTEGER);
+		reporte.getCollection().addHeader("Codigo", ColumnType.STRING);
+		reporte.getCollection().addHeader("Nombre", ColumnType.STRING);
+		reporte.getCollection().addHeader("Area/Corredor", ColumnType.STRING);
+		reporte.getCollection().addHeader("Agencia", ColumnType.STRING);
+		reporte.getCollection().addHeader("Puesto", ColumnType.STRING);
+		reporte.getCollection().addHeader("Fecha inicio", ColumnType.LOCALDATE);
+		reporte.getCollection().addHeader("Fecha fin", ColumnType.LOCALDATE);
+		reporte.getCollection().addHeader("Tipo excepcion", ColumnType.STRING);
+		reporte.getCollection().addHeader("Cantidad Excepcion", ColumnType.INTEGER);
+		
+		List<ResponseReporteExcepciones> list  = listarReporteExcepciones(req);
+
+		int count = 1;
+		for (ResponseReporteExcepciones rExp : list) {
+
+			Row row = new Row();
+			row.addCell("N°", count);
+			row.addCell("Codigo", rExp.getCodigo());
+			row.addCell("Nombre", rExp.getNombrecompleto());
+			row.addCell("Area/Corredor", rExp.getArea());
+			row.addCell("Agencia", rExp.getAgencia());
+			row.addCell("Puesto", rExp.getPuesto());
+			row.addCell("Fecha inicio", rExp.getFechainicio());
+			row.addCell("Fecha fin", rExp.getFechafin());
+			row.addCell("Tipo excepcion", rExp.getTipoExcepcion());
+			row.addCell("Cantidad Excepcion", rExp.getExcepcion());
+
+			reporte.getCollection().setCurrentRow(row);
+			reporte.getCollection().addRow();
+
+			count++;
+		}
+
+		try {
+			IReport<ByteArrayInputStream> excel = reportFactory.createReport(reporte);
+			excel.build();
+			byte[] bytes = IOUtils.toByteArray(excel.getReult());
+
+			String encoded = Base64.getEncoder().encodeToString(bytes);
+
+			return encoded;
+		} catch (Exception e) {
+			LOGGER.error("[ERROR] enviarCorreoReporteAprobadorNivelI", e);
+		}
+
+		return null;
 	}
 
 }

@@ -56,6 +56,7 @@ public class Mail {
 	public void setAdjuntos(List<MailFile> adjuntos) {
 		this.adjuntos = adjuntos;
 	}
+	
 	@Override
 	public String toString() {
 		return "Mail [emisor=" + emisor + ", asunto=" + asunto + "]";

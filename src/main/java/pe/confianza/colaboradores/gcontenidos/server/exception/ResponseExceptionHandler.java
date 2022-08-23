@@ -53,10 +53,12 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
 
 	@ExceptionHandler(AppException.class)
-	public final ResponseEntity<ResponseStatus> manejarExcepciones(Exception ex, WebRequest request) {
+	public final ResponseEntity<ResponseStatus> manejarExcepciones(AppException ex, WebRequest request) {
 		ResponseStatus response = new ResponseStatus();
 		response.setMsgStatus(ex.getMessage());
 		response.setCodeStatus(Constantes.COD_ERR);
+		if(ex.getTitulo() != null)
+			response.setTitleStatus(ex.getTitulo());
 		log.error("ERROR INTERNAL_SERVER_ERROR: {}", ex.getMessage());
 		log.error(ex.getMessage(), ex);
 		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);

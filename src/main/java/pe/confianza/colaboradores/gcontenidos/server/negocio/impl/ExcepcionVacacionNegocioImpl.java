@@ -119,7 +119,7 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 				programacionOriginal.setDiasGozados(programacionOriginal.getNumeroDias() - totalDiasReprogramados);
 				programacionOriginal.setDiasPendientesGozar(totalDiasReprogramados);
 				tituloNotificacion = "VACACION INTERRUMPIDA";
-				mensajeNotificacion.append(" DEl ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, programacionOriginal.getFechaInicio()))
+				mensajeNotificacion.append("\n").append(" DEl ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, programacionOriginal.getFechaInicio()))
 				.append(" - AL ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, programacionOriginal.getFechaFin())).append(" / VACACIONES INTERRUMPIDAS");			
 				mensajeRespuesta = Utilitario.obtenerMensaje(messageSource, "vacaciones.excepciones.interrupcion.ok");
 			} else if(programacionOriginal.getIdEstado() == EstadoVacacion.APROBADO.id) { // ANULACION Y REPROGRAMACION
@@ -127,7 +127,7 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 				programacionOriginal.setDiasAnulados(programacionOriginal.getNumeroDias());
 				programacionOriginal.setDiasPendientesGozar(programacionOriginal.getNumeroDias());
 				tituloNotificacion = "VACACION ANULADA";
-				mensajeNotificacion.append(" DEl ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, programacionOriginal.getFechaInicio()))
+				mensajeNotificacion.append("\n").append(" DEl ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, programacionOriginal.getFechaInicio()))
 				.append(" - AL ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, programacionOriginal.getFechaFin())).append(" / VACACIONES ANULADAS")
 				.append("\n");
 				mensajeRespuesta = Utilitario.obtenerMensaje(messageSource, "vacaciones.excepciones.anulacion.ok");
@@ -142,7 +142,7 @@ public class ExcepcionVacacionNegocioImpl implements ExcepcionVacacionNegocio {
 				actualizarPeriodo(programacionOriginal.getPeriodo().getEmpleado(), periodoId, reprogramacion.getUsuarioOperacion());
 			});
 			for (VacacionProgramacion prog : programacionesReprogramadas) {
-				mensajeNotificacion.append(" DEL ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, prog.getFechaInicio())).append(" - AL ")
+				mensajeNotificacion.append("\n").append(" DEL ").append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, prog.getFechaInicio())).append(" - AL ")
 				.append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA, prog.getFechaFin()))
 				.append(" / ").append(prog.getNumeroDias()).append(" Días")
 				.append(" / ").append(esAdelantada ? "VACACIONES ADELANTADAS" : "VACACIONES REPROGRAMADA")

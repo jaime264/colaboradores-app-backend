@@ -13,14 +13,14 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.C
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastoConceptoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastoConceptoDetalleDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastoConceptoTipoDao;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastoPresupuestoDistribucionConceptoAgenciaPeriodoDao;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.PresupuestoPeriodoGastoDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.dao.GastosSolicitudDao;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.CentroCosto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConcepto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoDetalle;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoTipo;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoPresupuestoDistribucionConceptoAgenciaPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastosSolicitud;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PresupuestoPeriodoGasto;
 
 @Service
 public class SolicitudGastoServiceImpl implements SolicitudGastoService {
@@ -40,11 +40,10 @@ public class SolicitudGastoServiceImpl implements SolicitudGastoService {
 	GastoConceptoDetalleDao gastoConceptoDetalleDao;
 	
 	@Autowired
-	CentroCostoDao centroCostoDao;
-	
-	@Autowired
-	GastoPresupuestoDistribucionConceptoAgenciaPeriodoDao gastoPresupuestoDistribucionConceptoAgenciaPeriodoDao;
+	PresupuestoPeriodoGastoDao presupuestoPeriodoGastoDao;
 
+	@Autowired
+	CentroCostoDao centroCostoDao;
 	
 
 	public List<GastosSolicitud> listarGastoSolicitudByEmpleado(Long idEmpleado){
@@ -100,9 +99,9 @@ public class SolicitudGastoServiceImpl implements SolicitudGastoService {
 	}
 
 	@Override
-	public GastoPresupuestoDistribucionConceptoAgenciaPeriodo obtenerPeriodoActual(long idAgencia,
+	public PresupuestoPeriodoGasto obtenerPeriodoActual(long idAgencia,
 			long idConceptodetalle) {
-		List<GastoPresupuestoDistribucionConceptoAgenciaPeriodo> periodosActivos = gastoPresupuestoDistribucionConceptoAgenciaPeriodoDao.buscarPeriodoActual(idAgencia, idConceptodetalle);
+		List<PresupuestoPeriodoGasto> periodosActivos = presupuestoPeriodoGastoDao.buscarPeriodoActual(idAgencia, idConceptodetalle);
 		if(periodosActivos == null)
 			return null;
 		if(periodosActivos.isEmpty())

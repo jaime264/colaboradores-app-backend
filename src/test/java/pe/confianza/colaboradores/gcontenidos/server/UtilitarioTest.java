@@ -129,6 +129,14 @@ public class UtilitarioTest {
 		System.out.println(hoy.format(formatter));
 	}
 	
+	@Test
+	public void testDate() {
+		DateTimeFormatter fomratter = DateTimeFormatter.ofPattern(Constantes.FORMATO_FECHA);
+		LocalDate fechaInicio = LocalDate.parse("01/01/" + LocalDate.now().getYear(), fomratter);
+		LocalDate fechaFin = fechaInicio.plusMonths(1).minusDays(1);
+		System.out.println(fechaInicio + " " + fechaFin);
+	}
+	
 	/*@Test
 	public void generarReporte() {
 		Report reporte = new Report();

@@ -7,6 +7,7 @@ public class ResponseStatus implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Integer codeStatus;
 	private String msgStatus;
+	private String titleStatus;
 	private Object resultObj;
 	
 	public Integer getCodeStatus() {
@@ -27,5 +28,13 @@ public class ResponseStatus implements Serializable {
 	public void setResultObj(Object resultObj) {
 		this.resultObj = resultObj;
 	}
+	public String getTitleStatus() {
+		return titleStatus;
+	}
+	public void setTitleStatus(String titleStatus) {
+		this.titleStatus = titleStatus;
+	}
+	
+	
 		
 }

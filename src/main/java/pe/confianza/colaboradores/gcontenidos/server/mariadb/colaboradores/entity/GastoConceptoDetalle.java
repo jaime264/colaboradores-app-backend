@@ -38,6 +38,8 @@ public class GastoConceptoDetalle extends EntidadAuditoria {
 	@ManyToOne 
 	@JoinColumn(nullable = true, name = "id_concepto")
 	private GastoConcepto concepto;
+	
+	private String cuentaContable;
 
 	public Long getId() {
 		return id;
@@ -93,6 +95,14 @@ public class GastoConceptoDetalle extends EntidadAuditoria {
 
 	public void setCodigoConcepto(Long codigoConcepto) {
 		this.codigoConcepto = codigoConcepto;
+	}
+
+	public String getCuentaContable() {
+		return cuentaContable;
+	}
+
+	public void setCuentaContable(String cuentaContable) {
+		this.cuentaContable = cuentaContable;
 	}
 	
 	

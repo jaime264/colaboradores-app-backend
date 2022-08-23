@@ -6,8 +6,8 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConcepto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoDetalle;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConceptoTipo;
-import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoPresupuestoDistribucionConceptoAgenciaPeriodo;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastosSolicitud;
+import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.PresupuestoPeriodoGasto;
 
 public interface SolicitudGastoService {
 
@@ -27,5 +27,5 @@ public interface SolicitudGastoService {
 	
 	List<GastosSolicitud> listarGastoSolicitudByEmpleado(Long idEmpleado);
 	
-	GastoPresupuestoDistribucionConceptoAgenciaPeriodo obtenerPeriodoActual(long idAgencia, long idConceptodetalle);
+	PresupuestoPeriodoGasto obtenerPeriodoActual(long idAgencia, long idConceptodetalle);
 }
