@@ -25,7 +25,7 @@ import pe.confianza.colaboradores.gcontenidos.server.negocio.GestionarPresupuest
 import pe.confianza.colaboradores.gcontenidos.server.util.Constantes;
 
 @RestController
-@RequestMapping("/api/prespupuestos")
+@RequestMapping("/api/presupuestos")
 @Api(value = "Gestión de presupuestos API REST Endpoint", description = "Operaciones con prespuestos de gastos")
 public class PrespuestoGastoController {
 
