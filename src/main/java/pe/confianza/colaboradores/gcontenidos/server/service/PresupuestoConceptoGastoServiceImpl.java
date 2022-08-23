@@ -50,13 +50,11 @@ public class PresupuestoConceptoGastoServiceImpl implements PresupuestoConceptoG
 	}
 
 	@Override
-	public PresupuestoConceptoGasto actualizarDistribuido(PresupuestoConceptoGasto concepto,
+	public PresupuestoConceptoGasto actualizar(PresupuestoConceptoGasto concepto,
 			String usuarioOperacion) {
 		concepto.setDistribuido(false);
 		concepto.setFechaModifica(LocalDateTime.now());
 		concepto.setUsuarioModifica(usuarioOperacion);
-		if(!concepto.getPresupuestosAgencia().isEmpty())
-			concepto.setDistribuido(true);
 		concepto = dao.save(concepto);
 		for (PresupuestoAgenciaGasto conceptoAgencia : concepto.getPresupuestosAgencia()) {
 			if(conceptoAgencia.getId() == null) {
