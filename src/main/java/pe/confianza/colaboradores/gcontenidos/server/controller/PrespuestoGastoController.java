@@ -78,7 +78,7 @@ public class PrespuestoGastoController {
 	
 
 	
-	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
+	//@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
 	@ApiOperation(notes = "Configurar distribucion de conceptos de un GLG", value = "url proxy /presupuestos/configurar")
 	@PostMapping(value = "/configurar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces =  MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ResponseStatus> configurarDistribucionConcepto(@RequestPart("peticion") RequestDistribucionConcepto peticion, @RequestPart("excelDistribucion") MultipartFile excelDistribucion) {
