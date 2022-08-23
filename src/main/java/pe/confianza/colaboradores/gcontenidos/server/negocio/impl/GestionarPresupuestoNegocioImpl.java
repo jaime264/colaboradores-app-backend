@@ -68,8 +68,6 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 	@Autowired
 	private PresupuestoConceptoGastoService presupuestoConceptoGastoService;
 	
-	
-	
 	@Autowired
 	private AgenciaService agenciaService;
 	
