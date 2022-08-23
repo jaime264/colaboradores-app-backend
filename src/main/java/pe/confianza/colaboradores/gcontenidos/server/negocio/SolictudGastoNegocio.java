@@ -2,9 +2,12 @@ package pe.confianza.colaboradores.gcontenidos.server.negocio;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCentroCostos;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestConcepto;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGastoEmpleado;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestPresupuestoGasto;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestTipoGasto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.CentroCosto;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.GastoConcepto;
@@ -22,4 +25,6 @@ public interface SolictudGastoNegocio {
 	List<CentroCosto> listarCentrosCostoByAgencia(RequestCentroCostos peticion);
 		
 	GastosSolicitud registrarGastoEmpleado(RequestGastoEmpleado gasto);
+	
+	void configurarPresupuestoGastos(RequestPresupuestoGasto presupuesto, MultipartFile excel);
 }

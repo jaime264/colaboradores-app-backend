@@ -4,18 +4,22 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCentroCostos;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestConcepto;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGastoEmpleado;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestPresupuestoGasto;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestTipoGasto;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponseStatus;
 import pe.confianza.colaboradores.gcontenidos.server.config.AuthoritiesConstants;
@@ -31,12 +35,9 @@ public class GastosController {
 	
 	@Autowired
 	private SolictudGastoNegocio solictudGastoNegocio;
-
 	
-	//SolictudGastoNegocio
-	
-	//@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
-	@ApiOperation(notes = "listar tipo de gasto", value = "url proxy /gastos/tipo-gasto")
+	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
+	@ApiOperation(notes = "listar tipo de gasto", value = "url proxy /tipogastolist")
 	@PostMapping("/tipo-gasto")
 	public ResponseEntity<ResponseStatus> listarTipoGasto(@Valid @RequestBody RequestTipoGasto peticion) {
 		ResponseStatus responseStatus = new ResponseStatus();
@@ -46,8 +47,8 @@ public class GastosController {
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	
-//	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
-	@ApiOperation(notes = "listar concepto por tipo de gasto", value = "url proxy /gastos/conceptos")
+	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
+	@ApiOperation(notes = "listar concepto por tipo de gasto", value = "url proxy /conceptosbytipo")
 	@PostMapping("/conceptos")
 	public ResponseEntity<ResponseStatus> listarConceptoByTipoGasto(@Valid @RequestBody  RequestConcepto peticion) {
 		ResponseStatus responseStatus = new ResponseStatus();
@@ -57,8 +58,8 @@ public class GastosController {
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	
-	//@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
-	@ApiOperation(notes = "Listar centros de costo por agencia", value = "url proxy /gastos/centros-costo")
+	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
+	@ApiOperation(notes = "Listar centros de costo por agencia", value = "url proxy /centrocostobyagencia")
 	@PostMapping("/centros-costo")
 	public ResponseEntity<ResponseStatus> listarCentrosCostoByAgencia(@Valid @RequestBody  RequestCentroCostos peticion) {
 		ResponseStatus responseStatus = new ResponseStatus();
@@ -68,14 +69,25 @@ public class GastosController {
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	
-	//@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
-	@ApiOperation(notes = "Registrar gasto", value = "url proxy /gastos/registrar-gasto")
+	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
+	@ApiOperation(notes = "Registrar gasto", value = "url proxy /registrargasto")
 	@PostMapping("/registrar-gasto")
 	public ResponseEntity<ResponseStatus> registrarGastoEmpleado(@Valid @RequestBody  RequestGastoEmpleado gasto) {
 		ResponseStatus responseStatus = new ResponseStatus();
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);
 		responseStatus.setResultObj(solictudGastoNegocio.registrarGastoEmpleado(gasto));
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+	}
+	
+	//@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
+	@ApiOperation(notes = "Importar excel con los presupuestos de este año", value = "url proxy /importarpresupuestos")
+	@PostMapping(value = "/configurar-presupuesto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces =  MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseStatus> configurarPresupuesto(@Valid @RequestBody RequestPresupuestoGasto peticion, @RequestPart("excelDistribucion") MultipartFile excelDistribucion) {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		solictudGastoNegocio.configurarPresupuestoGastos(peticion, excelDistribucion);
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 

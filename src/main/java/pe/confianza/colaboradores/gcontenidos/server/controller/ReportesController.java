@@ -1,9 +1,7 @@
 package pe.confianza.colaboradores.gcontenidos.server.controller;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,17 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.InputStreamSource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
@@ -142,7 +134,7 @@ public class ReportesController {
 	
 	@ApiOperation(notes = "Reporte de excepciones", value = "url proxy /reportecolaboradorexcepciones")
 	@RequestMapping("/excepciones")
-	public ResponseEntity<?> reporteExcepciones(@RequestBody RequestListarReportes request) {
+	public ResponseEntity<?> reporteExcepciones(@RequestBody RequestReporteMeta request) {
 		ResponseStatus responseStatus = new ResponseStatus();
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);
@@ -153,7 +145,7 @@ public class ReportesController {
 	
 	@ApiOperation(notes = "Reporte excel de excepciones", value = "url proxy /reportecolaboradorexcepcionesexcel")
 	@RequestMapping("/excel-excepciones")
-	public ResponseEntity<?> excelReporteExcepciones(@RequestBody RequestListarReportes request) {
+	public ResponseEntity<?> excelReporteExcepciones(@RequestBody RequestReporteMeta request) {
 		ResponseStatus responseStatus = new ResponseStatus();
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);

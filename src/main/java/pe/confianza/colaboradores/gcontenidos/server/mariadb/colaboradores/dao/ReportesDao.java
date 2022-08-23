@@ -82,5 +82,5 @@ public interface ReportesDao extends JpaRepository<ReporteColaboradores, Long> {
 			+ "		or e.codigo_nivel2 = :codigo)\r\n"
 			+ "	and (vp.anulacion = true\r\n"
 			+ "		or vp.interrupcion = true)" , nativeQuery = true)
-	List<IReporteExcepcion> reporteExcepciones(@Param("codigo") String codigo, Pageable pageable);
+	List<IReporteExcepcion> reporteExcepciones(@Param("codigo") String codigo);
 }
