@@ -151,7 +151,7 @@ public class ReportesController {
 
 	}
 	
-	@ApiOperation(notes = "Reporte de excepciones", value = "url proxy /reportecolaboradorexcepciones")
+	@ApiOperation(notes = "Reporte excel de excepciones", value = "url proxy /reportecolaboradorexcepcionesexcel")
 	@RequestMapping("/excel-excepciones")
 	public ResponseEntity<?> excelReporteExcepciones(@RequestBody RequestListarReportes request) {
 		ResponseStatus responseStatus = new ResponseStatus();
