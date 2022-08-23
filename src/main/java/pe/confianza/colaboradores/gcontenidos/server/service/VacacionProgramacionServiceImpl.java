@@ -246,6 +246,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 						StringBuilder mensaje = new StringBuilder();
 						mensaje.append(Utilitario
 								.obtenerMensaje(messageSource, "vacaciones.notificacion.reprogramacion.aceptada"))
+								.append("\n")
 								.append(" Del ")
 								.append(Utilitario.fechaToStringPer(Constantes.FORMATO_FECHA,
 										vp.get().getFechaInicio()))
@@ -261,7 +262,9 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 						if (esAdelantada) {
 							StringBuilder mensaje = new StringBuilder();
 							mensaje.append(Utilitario.obtenerMensaje(messageSource,
-									"vacaciones.notificacion.reprogramacion.adelantada.aceptada")).append(" Del ")
+									"vacaciones.notificacion.reprogramacion.adelantada.aceptada"))
+									.append("\n")
+									.append(" Del ")
 									.append(Utilitario
 											.fechaToStringPer(Constantes.FORMATO_FECHA, vp.get().getFechaInicio()))
 									.append(" al ")

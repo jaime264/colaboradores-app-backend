@@ -1,6 +1,8 @@
 package pe.confianza.colaboradores.gcontenidos.server.util;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.mail.internet.MimeMessage;
@@ -81,6 +83,15 @@ public class EmailUtil {
 			LOGGER.error("[ERROR] enviarEmail", e);
 			return false;
 		}
+	}
+	
+	public List<String> mensajeToParrafos(String mensaje) {
+		String[] arrayParrafos = mensaje.split("\\n");
+		List<String> parrafos = new ArrayList<>();
+		for (String parrafo : arrayParrafos) {
+			parrafos.add(parrafo.trim());
+		}
+		return parrafos;
 	}
 
 }
