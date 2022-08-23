@@ -134,7 +134,7 @@ public class ReportesController {
 	
 	@ApiOperation(notes = "Reporte de excepciones", value = "url proxy /reportecolaboradorexcepciones")
 	@RequestMapping("/excepciones")
-	public ResponseEntity<?> reporteExcepciones(@RequestBody RequestListarReportes request) {
+	public ResponseEntity<?> reporteExcepciones(@RequestBody RequestReporteMeta request) {
 		ResponseStatus responseStatus = new ResponseStatus();
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);
@@ -145,7 +145,7 @@ public class ReportesController {
 	
 	@ApiOperation(notes = "Reporte excel de excepciones", value = "url proxy /reportecolaboradorexcepcionesexcel")
 	@RequestMapping("/excel-excepciones")
-	public ResponseEntity<?> excelReporteExcepciones(@RequestBody RequestListarReportes request) {
+	public ResponseEntity<?> excelReporteExcepciones(@RequestBody RequestReporteMeta request) {
 		ResponseStatus responseStatus = new ResponseStatus();
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);

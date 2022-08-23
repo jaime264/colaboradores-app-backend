@@ -26,9 +26,9 @@ public interface ReportesService {
 	
 	List<ResponseReporteMeta> listarReporteTerritorios(RequestReporteMeta request);
 	
-	List<ResponseReporteExcepciones> listarReporteExcepciones(RequestListarReportes req);
+	List<ResponseReporteExcepciones> listarReporteExcepciones(RequestReporteMeta req);
 	
-	String reporteExcepciones(RequestListarReportes req);
+	String reporteExcepciones(RequestReporteMeta req);
 	
 	String reporteColaboradores(RequestListarReportes req);
 	

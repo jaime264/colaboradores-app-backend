@@ -497,15 +497,12 @@ public class ReportesServiceImpl implements ReportesService {
 	}
 
 	@Override
-	public List<ResponseReporteExcepciones> listarReporteExcepciones(RequestListarReportes req) {
+	public List<ResponseReporteExcepciones> listarReporteExcepciones(RequestReporteMeta req) {
 		// TODO Auto-generated method stub
 		int anio = cargaParametros.getMetaVacacionAnio();
-		Pageable pageable = PageRequest.of(req.getNumeroPagina(), req.getTamanioPagina());
-
 		List<ResponseReporteExcepciones> responseExcepciones = new ArrayList<>();
 
-		List<IReporteExcepcion> listarReporteExcepciones = reporteDao.reporteExcepciones(req.getCodigoUsuario(),
-				pageable);
+		List<IReporteExcepcion> listarReporteExcepciones = reporteDao.reporteExcepciones(req.getCodigoUsuario());
 
 		for (IReporteExcepcion re : listarReporteExcepciones) {
 
@@ -529,12 +526,15 @@ public class ReportesServiceImpl implements ReportesService {
 			responseExcepciones.add(reporteExcepciones);
 
 		}
-
+				
 		return responseExcepciones;
 	}
 
 	@Override
-	public String reporteExcepciones(RequestListarReportes req) {		
+	public String reporteExcepciones(RequestReporteMeta req) {	
+				
+		List<ResponseReporteExcepciones> listReporte = listarReporteExcepciones(req);
+		
 		// TODO Auto-generated method stub
 		Report reporte = new Report();
 		reporte.setType("XLSX");
@@ -550,10 +550,8 @@ public class ReportesServiceImpl implements ReportesService {
 		reporte.getCollection().addHeader("Tipo excepcion", ColumnType.STRING);
 		reporte.getCollection().addHeader("Cantidad Excepcion", ColumnType.INTEGER);
 		
-		List<ResponseReporteExcepciones> list  = listarReporteExcepciones(req);
-
 		int count = 1;
-		for (ResponseReporteExcepciones rExp : list) {
+		for (ResponseReporteExcepciones rExp : listReporte) {
 
 			Row row = new Row();
 			row.addCell("N°", count);

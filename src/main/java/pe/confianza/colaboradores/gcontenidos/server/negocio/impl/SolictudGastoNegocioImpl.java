@@ -10,12 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestCentroCostos;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestConcepto;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestGastoEmpleado;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestPresupuestoGasto;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestTipoGasto;
 import pe.confianza.colaboradores.gcontenidos.server.exception.AppException;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.Agencia;
@@ -156,6 +158,11 @@ public class SolictudGastoNegocioImpl implements SolictudGastoNegocio {
 
 		return resRastosSolicitud;
 		
+	}
+
+	@Override
+	public void configurarPresupuestoGastos(RequestPresupuestoGasto presupuesto, MultipartFile excel) {
+		// TODO Auto-generated method stub
 	}
 
 }
