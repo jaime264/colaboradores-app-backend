@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import pe.confianza.colaboradores.gcontenidos.server.bean.IReporteExcepcion;
 import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entity.ReporteColaboradores;
 
 public interface ReportesDao extends JpaRepository<ReporteColaboradores, Long> {
@@ -55,4 +56,31 @@ public interface ReportesDao extends JpaRepository<ReporteColaboradores, Long> {
 
 	@Query(value = "Select * from reporte_seguimiento c where c.codigo_nivel1 like %:codigo or c.codigo_nivel2 like %:codigo and c.anio =:anio" , nativeQuery = true)
 	List<ReporteColaboradores> reporteColaboradoresList(@Param("codigo") String codigo, @Param("anio") int anio);
+	
+	@Query(value = "select\r\n"
+			+ "	e.codigo as codigo,\r\n"
+			+ "	CONCAT(e.nombres, \" \", e.apellido_paterno, \" \", e.apellido_materno) as nombrecompleto,\r\n"
+			+ "	c.descripcion as corredor,\r\n"
+			+ "	a.descripcion as agencia,\r\n"
+			+ "	p.descripcion as puesto, \r\n"
+			+ "	vp.fecha_inicio as fechainicio,\r\n"
+			+ "	vp.fecha_fin as fechafin,\r\n"
+			+ "	vp.anulacion as anulacion,\r\n"
+			+ "	vp.interrupcion as interrupcion\r\n"
+			+ "from\r\n"
+			+ "	vacacion_programacion vp\r\n"
+			+ "inner join empleado e on\r\n"
+			+ "	e.codigo = vp.codigo_empleado\r\n"
+			+ "inner join agencia a on\r\n"
+			+ "	e.id_agencia = a.id\r\n"
+			+ "inner join puesto p on\r\n"
+			+ "	e.id_puesto = p.id\r\n"
+			+ "inner join corredor c on\r\n"
+			+ "	a.id_corredor = c.id\r\n"
+			+ "where\r\n"
+			+ "	(e.codigo_nivel1 = :codigo\r\n"
+			+ "		or e.codigo_nivel2 = :codigo)\r\n"
+			+ "	and (vp.anulacion = true\r\n"
+			+ "		or vp.interrupcion = true)" , nativeQuery = true)
+	List<IReporteExcepcion> reporteExcepciones(@Param("codigo") String codigo, Pageable pageable);
 }
