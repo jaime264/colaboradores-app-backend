@@ -213,30 +213,38 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 			if(!presupuestoConcepto.getGlgAsignado().getEmpleado().getUsuarioBT().equals(usuarioOperacion))
 				throw new AppException("Ud. no puede administrar este concepto");
 			List<PresupuestoAgenciaGasto> distribucionXAgencia = new ArrayList<>();
-			DistribucionPresupuestoFrecuencia frecuencia = DistribucionPresupuestoFrecuencia.buscar(peticion.getCodigoFrecuenciaDistribucion());
-			if(frecuencia == null)
-				throw new ModelNotFoundException("No existe la frecuencia de distribucion " + peticion.getCodigoFrecuenciaDistribucion());
-			DistribucionPresupuestoTipo tipo = DistribucionPresupuestoTipo.buscar(peticion.getTipoDistribucionMonto());
-			if(tipo == null) 
-				throw new ModelNotFoundException("No existe el tipo de distribución " + peticion.getTipoDistribucionMonto());
-			double presupuestoPorPeriodo = presupuestoConcepto.getPresupuestoAsignado() / (12 / frecuencia.valor);
-			if(peticion.isDistribucionExcel()) {
-				distribucionXAgencia = distribucionExcel(peticion, excelDistribucion, presupuestoConcepto);
-				double presupuestoPorDistribuir = distribucionXAgencia.stream().mapToDouble(PresupuestoAgenciaGasto::getPresupuestoAsignado)
-						.sum();
-				
-				if(presupuestoPorPeriodo < presupuestoPorDistribuir)
-					throw new AppException("No puede distribuir más de lo asignado al presupuesto de concepto");
-			
+			if(peticion.isNoDistribuir()) {
+				distribucionXAgencia = noDistribuir(peticion, presupuestoConcepto);
+				presupuestoConcepto.setDistribuido(false);
 			} else {
-				distribucionXAgencia = distribucion(peticion, presupuestoConcepto);
+				distribucionXAgencia = new ArrayList<>();
+				DistribucionPresupuestoFrecuencia frecuencia = DistribucionPresupuestoFrecuencia.buscar(peticion.getCodigoFrecuenciaDistribucion());
+				if(frecuencia == null)
+					throw new ModelNotFoundException("No existe la frecuencia de distribucion " + peticion.getCodigoFrecuenciaDistribucion());
+				DistribucionPresupuestoTipo tipo = DistribucionPresupuestoTipo.buscar(peticion.getTipoDistribucionMonto());
+				if(tipo == null) 
+					throw new ModelNotFoundException("No existe el tipo de distribución " + peticion.getTipoDistribucionMonto());
+				double presupuestoPorPeriodo = presupuestoConcepto.getPresupuestoAsignado() / (12 / frecuencia.valor);
+				
+				if(peticion.isDistribucionExcel()) {
+					distribucionXAgencia = distribucionExcel(peticion, excelDistribucion, presupuestoConcepto);
+					double presupuestoPorDistribuir = distribucionXAgencia.stream().mapToDouble(PresupuestoAgenciaGasto::getPresupuestoAsignado)
+							.sum();
+					
+					if(presupuestoPorPeriodo < presupuestoPorDistribuir)
+						throw new AppException("No puede distribuir más de lo asignado al presupuesto de concepto");
+				
+				} else {
+					distribucionXAgencia = distribucion(peticion, presupuestoConcepto);
+				}
+				presupuestoConcepto.setDistribuido(true);
+				presupuestoConcepto.setTipoDistribucionMonto(tipo);
+				presupuestoConcepto.setFrecuenciaDistribucion(frecuencia);
+				presupuestoConcepto.setDistribucionUniforme(peticion.isDistribucionUniforme());
+				presupuestoConcepto.setDistribucionVariable(peticion.isDistribucionVariable());				
 			}
-			presupuestoConcepto.setTipoDistribucionMonto(tipo);
-			presupuestoConcepto.setFrecuenciaDistribucion(frecuencia);
-			presupuestoConcepto.setDistribucionUniforme(peticion.isDistribucionUniforme());
-			presupuestoConcepto.setDistribucionVariable(peticion.isDistribucionVariable());
 			presupuestoConcepto.setPresupuestosAgencia(distribucionXAgencia);
-			presupuestoConceptoGastoService.actualizarDistribuido(presupuestoConcepto, usuarioOperacion);
+			presupuestoConceptoGastoService.actualizar(presupuestoConcepto, usuarioOperacion);
 			registrarAuditoria(Constantes.COD_OK, Constantes.OK, peticion);
 		} catch (ModelNotFoundException e) {
 			logger.error("[ERROR] configurarDistribucionConcepto", e);
@@ -255,6 +263,11 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), peticion);
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
 		}
+	}
+	
+	private List<PresupuestoAgenciaGasto> noDistribuir(RequestDistribucionConcepto peticion, PresupuestoConceptoGasto concepto) {
+		List<PresupuestoAgenciaGasto> presupuestos = new ArrayList<>();
+		return presupuestos;
 	}
 	
 	private List<PresupuestoAgenciaGasto> distribucionExcel(RequestDistribucionConcepto peticion, MultipartFile excelDistribucion, PresupuestoConceptoGasto concepto) {

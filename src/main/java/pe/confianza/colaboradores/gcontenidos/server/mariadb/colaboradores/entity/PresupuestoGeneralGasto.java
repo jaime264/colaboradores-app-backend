@@ -32,6 +32,8 @@ public class PresupuestoGeneralGasto extends EntidadAuditoria {
 	
 	private boolean activo;
 	
+	private int anio;
+	
 	@OneToMany(mappedBy = "presupuestoGeneral", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<PresupuestoTipoGasto> presupuestosTipoGasto;
 
@@ -89,6 +91,14 @@ public class PresupuestoGeneralGasto extends EntidadAuditoria {
 
 	public void setPresupuestosTipoGasto(List<PresupuestoTipoGasto> presupuestosTipoGasto) {
 		this.presupuestosTipoGasto = presupuestosTipoGasto;
+	}
+
+	public int getAnio() {
+		return anio;
+	}
+
+	public void setAnio(int anio) {
+		this.anio = anio;
 	}
 	
 	

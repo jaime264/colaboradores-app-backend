@@ -16,6 +16,8 @@ public class RequestDistribucionConcepto extends RequestAuditoriaBase {
 	@Min(value = 0, message = "Ingrese valor monto a distribuir válido")
 	private double valorMontoDistribuir;
 	
+	private boolean noDistribuir;
+	
 	private boolean distribucionExcel;
 	
 	private boolean distribucionUniforme;
@@ -125,6 +127,14 @@ public class RequestDistribucionConcepto extends RequestAuditoriaBase {
 
 	public void setCodigoFrecuenciaDistribucion(int codigoFrecuenciaDistribucion) {
 		this.codigoFrecuenciaDistribucion = codigoFrecuenciaDistribucion;
+	}
+
+	public boolean isNoDistribuir() {
+		return noDistribuir;
+	}
+
+	public void setNoDistribuir(boolean noDistribuir) {
+		this.noDistribuir = noDistribuir;
 	}
 
 	
