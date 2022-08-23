@@ -27,6 +27,7 @@ import com.google.gson.Gson;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAuditoriaBase;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestDistribucionConcepto;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestPresupuestoTipoGastoResumen;
+import pe.confianza.colaboradores.gcontenidos.server.bean.ResponsePrespuestoConceptoConfiguracion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponsePresupuestoTipoGastoResumen;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponsePresupuestoConceptoGasto;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponsePresupuestoGeneralGasto;
@@ -383,6 +384,12 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 			logger.error("[ERROR] registrarAuditoria", e);
 		}
 		
+	}
+
+	@Override
+	public ResponsePrespuestoConceptoConfiguracion obtenerConfiguracion() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 
