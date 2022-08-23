@@ -33,7 +33,7 @@ public class PrespuestoGastoController {
 	private GestionarPresupuestoNegocio gestionarPresupuestoNegocio;
 	
 	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
-	@ApiOperation(notes = "Consultar presupuestos generales", value = "url proxy /prespupuestos")
+	@ApiOperation(notes = "Consultar presupuestos generales", value = "url proxy /presupuestos")
 	@PostMapping
 	public ResponseEntity<ResponseStatus> listarPresupuestosAnuales(@Valid @RequestBody  RequestAuditoriaBase peticion) {
 		ResponseStatus responseStatus = new ResponseStatus();
@@ -44,7 +44,7 @@ public class PrespuestoGastoController {
 	}
 	
 	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
-	@ApiOperation(notes = "Consulta de presupuesto por tipo de gasto", value = "url proxy /prespupuestos/tipo-gasto/resumen")
+	@ApiOperation(notes = "Consulta de presupuesto por tipo de gasto", value = "url proxy /presupuestos/tipo-gasto/resumen")
 	@PostMapping("/tipo-gasto/resumen")
 	public ResponseEntity<ResponseStatus> presupuestoAnualPorGlgAsignado(@Valid @RequestBody RequestPresupuestoTipoGastoResumen peticion) {
 		ResponseStatus responseStatus = new ResponseStatus();
