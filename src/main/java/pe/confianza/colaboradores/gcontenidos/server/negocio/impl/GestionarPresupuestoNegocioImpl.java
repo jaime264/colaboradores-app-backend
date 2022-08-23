@@ -218,9 +218,13 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 			List<PresupuestoAgenciaGasto> distribucionXAgencia = new ArrayList<>();
 			if(peticion.isNoDistribuir()) {
 				distribucionXAgencia = noDistribuir(peticion, presupuestoConcepto);
-				distribucion.setConfigurado(true);
-				distribucion.setNoDistribuir(false);
-				distribucion.setArchivoExcel(null);
+				
+				presupuestoConcepto.getDistribucion().setNoDistribuir(true);
+				presupuestoConcepto.getDistribucion().setDistribucionExcel(false);
+				presupuestoConcepto.getDistribucion().setDistricucionAutomatica(false);
+				presupuestoConcepto.getDistribucion().setArchivoExcel(null);
+				presupuestoConcepto.setPresupuestoConsumido(0);
+				presupuestoConcepto.setPresupuestoDistribuido(0);
 			} else {
 				distribucionXAgencia = new ArrayList<>();
 				DistribucionPresupuestoFrecuencia frecuencia = DistribucionPresupuestoFrecuencia.buscar(peticion.getCodigoFrecuenciaDistribucion());
@@ -231,23 +235,28 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 					throw new ModelNotFoundException("No existe el tipo de distribución " + peticion.getTipoDistribucionMonto());
 				double presupuestoPorPeriodo = presupuestoConcepto.getPresupuestoAsignado() / (12 / frecuencia.valor);
 				
+				presupuestoConcepto.getDistribucion().setNoDistribuir(false);
 				if(peticion.isDistribucionExcel()) {
 					distribucionXAgencia = distribucionExcel(peticion, excelDistribucion, presupuestoConcepto);
 					double presupuestoPorDistribuir = distribucionXAgencia.stream().mapToDouble(PresupuestoAgenciaGasto::getPresupuestoAsignado)
 							.sum();
-					
 					if(presupuestoPorPeriodo < presupuestoPorDistribuir)
 						throw new AppException("No puede distribuir más de lo asignado al presupuesto de concepto");
+					presupuestoConcepto.getDistribucion().setArchivoExcel(excelDistribucion.getBytes());
+					presupuestoConcepto.getDistribucion().setDistribucionExcel(true);
+					presupuestoConcepto.getDistribucion().setDistricucionAutomatica(false);
+					
 				
 				} else {
 					distribucionXAgencia = distribucion(peticion, presupuestoConcepto);
 				}
-				presupuestoConcepto.setDistribuido(true);
+				/*presupuestoConcepto.setDistribuido(true);
 				presupuestoConcepto.setTipoDistribucionMonto(tipo);
 				presupuestoConcepto.setFrecuenciaDistribucion(frecuencia);
 				presupuestoConcepto.setDistribucionUniforme(peticion.isDistribucionUniforme());
-				presupuestoConcepto.setDistribucionVariable(peticion.isDistribucionVariable());				
+				presupuestoConcepto.setDistribucionVariable(peticion.isDistribucionVariable());		*/		
 			}
+			presupuestoConcepto.getDistribucion().setConfigurado(true);
 			presupuestoConcepto.setPresupuestosAgencia(distribucionXAgencia);
 			presupuestoConceptoGastoService.actualizar(presupuestoConcepto, usuarioOperacion);
 			registrarAuditoria(Constantes.COD_OK, Constantes.OK, peticion);
