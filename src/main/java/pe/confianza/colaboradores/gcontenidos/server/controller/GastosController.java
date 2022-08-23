@@ -102,8 +102,8 @@ public class GastosController {
 	
 	//SolictudGastoNegocio
 	
-	//@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
-	@ApiOperation(notes = "listar tipo de gasto", value = "url proxy /gastos/tipo-gasto")
+	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
+	@ApiOperation(notes = "listar tipo de gasto", value = "url proxy /tipogastolist")
 	@PostMapping("/tipo-gasto")
 	public ResponseEntity<ResponseStatus> listarTipoGasto(@Valid @RequestBody RequestTipoGasto peticion) {
 		ResponseStatus responseStatus = new ResponseStatus();
@@ -113,8 +113,8 @@ public class GastosController {
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	
-//	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
-	@ApiOperation(notes = "listar concepto por tipo de gasto", value = "url proxy /gastos/conceptos")
+	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
+	@ApiOperation(notes = "listar concepto por tipo de gasto", value = "url proxy /conceptosbytipo")
 	@PostMapping("/conceptos")
 	public ResponseEntity<ResponseStatus> listarConceptoByTipoGasto(@Valid @RequestBody  RequestConcepto peticion) {
 		ResponseStatus responseStatus = new ResponseStatus();
@@ -124,8 +124,8 @@ public class GastosController {
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	
-	//@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
-	@ApiOperation(notes = "Listar centros de costo por agencia", value = "url proxy /gastos/centros-costo")
+	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
+	@ApiOperation(notes = "Listar centros de costo por agencia", value = "url proxy /centrocostobyagencia")
 	@PostMapping("/centros-costo")
 	public ResponseEntity<ResponseStatus> listarCentrosCostoByAgencia(@Valid @RequestBody  RequestCentroCostos peticion) {
 		ResponseStatus responseStatus = new ResponseStatus();
@@ -135,8 +135,8 @@ public class GastosController {
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	
-	//@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
-	@ApiOperation(notes = "Registrar gasto", value = "url proxy /gastos/registrar-gasto")
+	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
+	@ApiOperation(notes = "Registrar gasto", value = "url proxy /registrargasto")
 	@PostMapping("/registrar-gasto")
 	public ResponseEntity<ResponseStatus> registrarGastoEmpleado(@Valid @RequestBody  RequestGastoEmpleado gasto) {
 		ResponseStatus responseStatus = new ResponseStatus();
