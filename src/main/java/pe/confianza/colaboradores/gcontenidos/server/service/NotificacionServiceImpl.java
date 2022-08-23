@@ -144,7 +144,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 			mail.setContenido(new HashMap<>());
 			mail.getContenido().put("asunto", notificacion.getTitulo().replace("APP FAMILIA CONFIANZA", ""));
 			mail.getContenido().put("empleado", "Hola, " + notificacion.getEmpleado().getNombres() + " " + notificacion.getEmpleado().getApellidoPaterno());
-			mail.getContenido().put("mensaje", notificacion.getDescripcion());
+			mail.getContenido().put("parrafos", emailUtil.mensajeToParrafos(notificacion.getDescripcion()));
 			mail.setReceptor(notificacion.getEmpleado().getEmail().trim());
 			mail.setEmisor(emailEmisor);
 			
@@ -167,7 +167,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 			mail.setContenido(new HashMap<>());
 			mail.getContenido().put("asunto", notificacion.getTitulo().replace("APP FAMILIA CONFIANZA", ""));
 			mail.getContenido().put("empleado", "Hola, " + notificacion.getEmpleado().getNombres() + " " + notificacion.getEmpleado().getApellidoPaterno());
-			mail.getContenido().put("mensaje", notificacion.getDescripcion());
+			mail.getContenido().put("parrafos", emailUtil.mensajeToParrafos(notificacion.getDescripcion()));
 			mail.setReceptor(notificacion.getEmpleado().getEmail().trim());
 			mail.setEmisor(emailEmisor);
 			mail.setReceptorCC(receptorCC);
@@ -257,7 +257,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 		mail.setContenido(new HashMap<>());
 		mail.getContenido().put("asunto", titulo.replace("APP FAMILIA CONFIANZA", ""));
 		mail.getContenido().put("empleado", "Hola, " + receptorNombre);
-		mail.getContenido().put("mensaje", descripcion);
+		mail.getContenido().put("parrafos", descripcion);
 		mail.setReceptor(receptorEmail.toString());
 		mail.setEmisor(emailEmisor);
 		logger.error("archivo " + archivo.length);
