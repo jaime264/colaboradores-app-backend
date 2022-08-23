@@ -266,17 +266,23 @@
           padding-left: 3px;
         }
         .sing-main {
-          color: #2894ba;
+          color: rgb(0,159,227);
+          font-weight: bold;
+          font-size: 12px;
         }
         .sing-secondary {
           color: rgb(10,70,129);
           margin-top: -15px;
+          font-size: 12px;
         }
         .sing-secondary-bold {
-          color: rgb(10,70,129);
           margin-top: -15px;
           font-weight: bold;
           text-decoration: underline;
+          font-size: 12px;
+        }
+        .sing-secondary-bold >a {
+          color: rgb(10,70,129);
         }
     </style>
 </head>
@@ -305,7 +311,9 @@
                             <tr>
                                 <td>
                                     <div class="content-message">
-                                        <b th:text="${empleado}" style="color: #2894ba;">Hola, Juan Perez</b>
+                                        <div style="text-align: justify;">
+                                          <b th:text="${empleado}" style="color: #2894ba;">Estimado, Juan Perez</b>
+                                        </div>
                                         <div th:each="parrafo: ${parrafos}">
                                         	 <p style=" text-align: justify; color: #003a90" th:text="${parrafo}" >Mensaje de prueba para correo de notificaciones.</p>
                                         </div>
@@ -329,7 +337,7 @@
                                           </td>
                                           <td>
                                             <div class="sign-data">
-                                              <p class="sing-main">División de Personas y Administración</p>
+                                              <p class="sing-main">Divisi&oacute;n de Personas y Administraci&oacute;n</p>
                                               <p class="sing-secondary">Las Begonias 441 oficina 238C, San Isidro, Lima</p>
                                               <p class="sing-secondary">+51 (01) 208-9000 </p>
                                               <p class="sing-secondary-bold"><a href="https://www.confianza.pe" target="_blank">www.confianza.pe</a></p>
