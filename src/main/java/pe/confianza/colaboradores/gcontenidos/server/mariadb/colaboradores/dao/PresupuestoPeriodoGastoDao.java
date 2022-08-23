@@ -11,6 +11,6 @@ import pe.confianza.colaboradores.gcontenidos.server.mariadb.colaboradores.entit
 @Repository
 public interface PresupuestoPeriodoGastoDao extends JpaRepository<PresupuestoPeriodoGasto, Long> {
 
-	@Query("SELECT p FROM PresupuestoPeriodoGasto p where p.estadoRegistro = 'A' AND p.actual = true AND p.presupuestoAgencia.agencia = ?1 AND p.presupuestoAgencia.presupuestoConcepto.id = ?2 ")
+	@Query("SELECT p FROM PresupuestoPeriodoGasto p where p.estadoRegistro = 'A' AND p.actual = true AND p.presupuestoAgencia.agencia.id = ?1 AND p.presupuestoAgencia.presupuestoConcepto.id = ?2 ")
 	List<PresupuestoPeriodoGasto> buscarPeriodoActual(long idAgencia, long idConceptoDetalle);
 }
