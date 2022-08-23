@@ -139,5 +139,27 @@ public class ReportesController {
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 
 	}
+	
+	@ApiOperation(notes = "Reporte de excepciones", value = "url proxy /reportecolaboradorexcepciones")
+	@RequestMapping("/excepciones")
+	public ResponseEntity<?> reporteExcepciones(@RequestBody RequestListarReportes request) {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(reportesService.listarReporteExcepciones(request));
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+
+	}
+	
+	@ApiOperation(notes = "Reporte de excepciones", value = "url proxy /reportecolaboradorexcepciones")
+	@RequestMapping("/excel-excepciones")
+	public ResponseEntity<?> excelReporteExcepciones(@RequestBody RequestListarReportes request) {
+		ResponseStatus responseStatus = new ResponseStatus();
+		responseStatus.setCodeStatus(Constantes.COD_OK);
+		responseStatus.setMsgStatus(Constantes.OK);
+		responseStatus.setResultObj(reportesService.reporteExcepciones(request));
+		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
+
+	}
 
 }
