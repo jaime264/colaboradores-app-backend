@@ -678,6 +678,26 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 		logger.info("[END] listarProgramacionesPorAnio");
 		return programaciones;
 	}
+	
+	@Override
+	public Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYJefeInmediato(int anio,
+			long codigoAprobador) {
+		logger.info("[BEGIN] listarProgramacionesPorAnioYJefeInmediato {} {}", anio, codigoAprobador);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		LocalDate fechaInicio = LocalDate.parse("01/01/" + anio, formatter);
+		LocalDate fechaFin = LocalDate.parse("31/12/" + anio, formatter);
+		List<VacacionProgramacion> programaciones = vacacionProgramacionDao
+				.findBetweenDatesAndJefeInmediato(fechaInicio, fechaFin, codigoAprobador);
+		programaciones = programaciones == null ? new ArrayList<>() : programaciones;
+		Map<Empleado, List<VacacionProgramacion>> empleadosProg = new HashMap<>();
+		for (VacacionProgramacion prog : programaciones) {
+			if (empleadosProg.get(prog.getPeriodo().getEmpleado()) == null)
+				empleadosProg.put(prog.getPeriodo().getEmpleado(), new ArrayList<>());
+			empleadosProg.get(prog.getPeriodo().getEmpleado()).add(prog);
+		}
+		logger.info("[END] listarProgramacionesPorAnioYJefeInmediato");
+		return empleadosProg;
+	}
 
 	@Override
 	public Map<Empleado, List<VacacionProgramacion>> listarProgramacionesPorAnioYAprobadorNivelI(int anio,
@@ -725,5 +745,7 @@ public class VacacionProgramacionServiceImpl implements VacacionProgramacionServ
 			return vacacionProgramacionDao.listarProgramacionesPorInterrumpirYAnular(pageable);
 		return vacacionProgramacionDao.listarProgramacionesPorInterrumpirYAnular(nombre, pageable);
 	}
+
+	
 
 }
