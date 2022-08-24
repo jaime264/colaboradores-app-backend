@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAuditoriaBase;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestDistribucionConcepto;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestPresupuestoConfiguracionConsulta;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestPresupuestoTipoGastoResumen;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponsePrespuestoConceptoConfiguracion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponsePresupuestoTipoGastoResumen;
@@ -392,6 +393,36 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 	}
 	
 	@Override
+	public ResponsePrespuestoConceptoConfiguracion obtenerConfiguracion(RequestPresupuestoConfiguracionConsulta peticion) {
+		try {
+			seguridadService.validarLogAuditoria(peticion.getLogAuditoria());
+			String usuarioOperacion = peticion.getLogAuditoria().getUsuario();
+			PresupuestoConceptoGasto presupuestoConcepto = presupuestoConceptoGastoService.buscarPorCodigo(peticion.getCodigoPresupuestoConcepto());
+			if(presupuestoConcepto == null)
+				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "app.error.objeto_no_encontrado"));
+			if(!presupuestoConcepto.getGlgAsignado().getEmpleado().getUsuarioBT().equals(usuarioOperacion))
+				throw new AppException("Ud. no puede administrar este concepto");
+			return null;
+		} catch (ModelNotFoundException e) {
+			logger.error("[ERROR] configurarDistribucionConcepto", e);
+			registrarAuditoria(Constantes.COD_EMPTY, Constantes.DATA_EMPTY, peticion);
+			throw new ModelNotFoundException(e.getMessage()); 
+		}  catch (NotAuthorizedException e) {
+			logger.error("[ERROR] configurarDistribucionConcepto", e);
+			registrarAuditoria(Constantes.COD_NO_AUTORIZADO, e.getMessage(), peticion);
+			throw new NotAuthorizedException(e.getMessage());
+		} catch (AppException e) {
+			logger.error("[ERROR] configurarDistribucionConcepto", e);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), peticion);
+			throw new AppException(e.getMessage(), e);
+		} catch (Exception e) {
+			logger.error("[ERROR] configurarDistribucionConcepto", e);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), peticion);
+			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
+		}
+	}
+	
+	@Override
 	public void registrarAuditoria(int status, String mensaje, Object data) {
 		Gson gson = new Gson();
 		try {
@@ -404,11 +435,7 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 		
 	}
 
-	@Override
-	public ResponsePrespuestoConceptoConfiguracion obtenerConfiguracion() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 
 
