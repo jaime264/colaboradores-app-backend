@@ -23,7 +23,7 @@ public interface GestionarPresupuestoNegocio {
 	
 	List<Map<String, Object>> listarFrecuenciaDistribucion(RequestAuditoriaBase peticio);
 	
-	void configurarDistribucionConcepto(RequestDistribucionConcepto peticion, MultipartFile excelDistribucion);
+	void configurarDistribucionConcepto(String jsonData, MultipartFile excelDistribucion);
 	
 	ResponsePrespuestoConceptoConfiguracion obtenerConfiguracion();
 	
