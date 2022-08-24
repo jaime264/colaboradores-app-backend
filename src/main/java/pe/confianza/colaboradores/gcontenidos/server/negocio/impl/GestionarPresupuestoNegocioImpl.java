@@ -296,6 +296,10 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 	
 	private List<PresupuestoAgenciaGasto> distribucionExcel(RequestDistribucionConcepto peticion, MultipartFile excelDistribucion, PresupuestoConceptoGasto concepto) {
 		try {
+			if(excelDistribucion == null)
+				throw new AppException("Debe adjuntar un archivo XLSX");
+			if(!excelDistribucion.getOriginalFilename().toLowerCase().contains("xlsx"))
+				throw new AppException("Solo se permite archivos XLSX");
 			XLSXFeatureCollection xlsxFeatureCollection = new XLSXFeatureCollection(excelDistribucion.getInputStream());
 			xlsxFeatureCollection.read();
 			return xlsxFeatureCollection.getCollection().getRows().stream()
