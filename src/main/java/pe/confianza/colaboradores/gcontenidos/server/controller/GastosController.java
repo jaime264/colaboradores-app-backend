@@ -83,11 +83,12 @@ public class GastosController {
 	//@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
 	@ApiOperation(notes = "Importar excel con los presupuestos de este año", value = "url proxy /importarpresupuestos")
 	@PostMapping(value = "/configurar-presupuesto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces =  MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ResponseStatus> configurarPresupuesto(@Valid @RequestBody RequestPresupuestoGasto peticion, @RequestPart("excelDistribucion") MultipartFile excelDistribucion) {
+	public ResponseEntity<ResponseStatus> configurarPresupuesto(@RequestPart("peticion") String peticion, @RequestPart("excelDistribucion") MultipartFile excelDistribucion) {
 		ResponseStatus responseStatus = new ResponseStatus();
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);
-		solictudGastoNegocio.configurarPresupuestoGastos(peticion, excelDistribucion);
+		RequestPresupuestoGasto pe = new RequestPresupuestoGasto();
+		solictudGastoNegocio.configurarPresupuestoGastos(pe, excelDistribucion);
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 
