@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAuditoriaBase;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestDistribucionConcepto;
+import pe.confianza.colaboradores.gcontenidos.server.bean.RequestPresupuestoConfiguracionConsulta;
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestPresupuestoTipoGastoResumen;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponsePrespuestoConceptoConfiguracion;
 import pe.confianza.colaboradores.gcontenidos.server.bean.ResponsePresupuestoGeneralGasto;
@@ -25,7 +26,7 @@ public interface GestionarPresupuestoNegocio {
 	
 	void configurarDistribucionConcepto(String jsonData, MultipartFile excelDistribucion);
 	
-	ResponsePrespuestoConceptoConfiguracion obtenerConfiguracion();
+	ResponsePrespuestoConceptoConfiguracion obtenerConfiguracion(RequestPresupuestoConfiguracionConsulta peticion);
 	
 	void registrarAuditoria(int status, String mensaje, Object data);
 	
