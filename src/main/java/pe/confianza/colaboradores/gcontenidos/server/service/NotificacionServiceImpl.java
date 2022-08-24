@@ -143,7 +143,8 @@ public class NotificacionServiceImpl implements NotificacionService {
 			mail.setAsunto(notificacion.getTitulo());
 			mail.setContenido(new HashMap<>());
 			mail.getContenido().put("asunto", notificacion.getTitulo().replace("APP FAMILIA CONFIANZA", ""));
-			mail.getContenido().put("empleado", "Estimado, " + notificacion.getEmpleado().getNombres() + " " + notificacion.getEmpleado().getApellidoPaterno());
+			String saludo = notificacion.getEmpleado().getSexo().trim().equals("M") ? "Estimado" : "Estimada";
+			mail.getContenido().put("empleado", saludo + ", " + notificacion.getEmpleado().getNombres() + " " + notificacion.getEmpleado().getApellidoPaterno());
 			mail.getContenido().put("parrafos", emailUtil.mensajeToParrafos(notificacion.getDescripcion()));
 			mail.setReceptor(notificacion.getEmpleado().getEmail().trim());
 			mail.setEmisor(emailEmisor);
@@ -166,7 +167,8 @@ public class NotificacionServiceImpl implements NotificacionService {
 			mail.setAsunto(notificacion.getTitulo());
 			mail.setContenido(new HashMap<>());
 			mail.getContenido().put("asunto", notificacion.getTitulo().replace("APP FAMILIA CONFIANZA", ""));
-			mail.getContenido().put("empleado", "Estimado, " + notificacion.getEmpleado().getNombres() + " " + notificacion.getEmpleado().getApellidoPaterno());
+			String saludo = notificacion.getEmpleado().getSexo().trim().equals("M") ? "Estimado" : "Estimada";
+			mail.getContenido().put("empleado", saludo + ", " + notificacion.getEmpleado().getNombres() + " " + notificacion.getEmpleado().getApellidoPaterno());
 			mail.getContenido().put("parrafos", emailUtil.mensajeToParrafos(notificacion.getDescripcion()));
 			mail.setReceptor(notificacion.getEmpleado().getEmail().trim());
 			mail.setEmisor(emailEmisor);
