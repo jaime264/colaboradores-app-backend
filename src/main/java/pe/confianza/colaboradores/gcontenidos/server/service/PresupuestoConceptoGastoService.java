@@ -6,6 +6,8 @@ public interface PresupuestoConceptoGastoService {
 	
 	PresupuestoConceptoGasto registrarSinDistribucion(PresupuestoConceptoGasto concepto, String usuarioOperacion);
 	
+	PresupuestoConceptoGasto registrarDistribucion(PresupuestoConceptoGasto concepto, String usuarioOperacion);
+	
 	PresupuestoConceptoGasto actualizar(PresupuestoConceptoGasto concepto, String usuarioOperacion);
 	
 	PresupuestoConceptoGasto buscarPorCodigo(long codigo);

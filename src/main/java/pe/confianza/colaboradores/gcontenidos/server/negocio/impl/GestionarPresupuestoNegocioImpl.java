@@ -14,14 +14,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.bson.BsonDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service;import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import pe.confianza.colaboradores.gcontenidos.server.bean.RequestAuditoriaBase;
@@ -67,8 +70,6 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 	
 	@Autowired
 	private PresupuestoConceptoGastoService presupuestoConceptoGastoService;
-	
-	
 	
 	@Autowired
 	private AgenciaService agenciaService;
@@ -204,9 +205,11 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 	}
 	
 	@Override
-	public void configurarDistribucionConcepto(
-			RequestDistribucionConcepto peticion, MultipartFile excelDistribucion) {
+	public void configurarDistribucionConcepto(String jsonData, MultipartFile excelDistribucion) {
 		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			RequestDistribucionConcepto peticion = objectMapper.readValue(jsonData, RequestDistribucionConcepto.class);
+			peticion = validarConfiguracionRequest(peticion);
 			seguridadService.validarLogAuditoria(peticion.getLogAuditoria());
 			String usuarioOperacion = peticion.getLogAuditoria().getUsuario();
 			PresupuestoConceptoGasto presupuestoConcepto = presupuestoConceptoGastoService.buscarPorCodigo(peticion.getCodigoPresupuestoConcepto());
@@ -214,7 +217,6 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 				throw new ModelNotFoundException(Utilitario.obtenerMensaje(messageSource, "app.error.objeto_no_encontrado"));
 			if(!presupuestoConcepto.getGlgAsignado().getEmpleado().getUsuarioBT().equals(usuarioOperacion))
 				throw new AppException("Ud. no puede administrar este concepto");
-			PresupuestoConceptoDistribucionGasto distribucion = presupuestoConcepto.getDistribucion();
 			
 			List<PresupuestoAgenciaGasto> distribucionXAgencia = new ArrayList<>();
 			if(peticion.isNoDistribuir()) {
@@ -231,12 +233,10 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 				DistribucionPresupuestoFrecuencia frecuencia = DistribucionPresupuestoFrecuencia.buscar(peticion.getCodigoFrecuenciaDistribucion());
 				if(frecuencia == null)
 					throw new ModelNotFoundException("No existe la frecuencia de distribucion " + peticion.getCodigoFrecuenciaDistribucion());
-				DistribucionPresupuestoTipo tipo = DistribucionPresupuestoTipo.buscar(peticion.getTipoDistribucionMonto());
-				if(tipo == null) 
-					throw new ModelNotFoundException("No existe el tipo de distribución " + peticion.getTipoDistribucionMonto());
 				double presupuestoPorPeriodo = presupuestoConcepto.getPresupuestoAsignado() / (12 / frecuencia.valor);
 				
 				presupuestoConcepto.getDistribucion().setNoDistribuir(false);
+				presupuestoConcepto.getDistribucion().setFrecuenciaDistribucion(frecuencia);
 				if(peticion.isDistribucionExcel()) {
 					distribucionXAgencia = distribucionExcel(peticion, excelDistribucion, presupuestoConcepto);
 					double presupuestoPorDistribuir = distribucionXAgencia.stream().mapToDouble(PresupuestoAgenciaGasto::getPresupuestoAsignado)
@@ -246,38 +246,47 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 					presupuestoConcepto.getDistribucion().setArchivoExcel(excelDistribucion.getBytes());
 					presupuestoConcepto.getDistribucion().setDistribucionExcel(true);
 					presupuestoConcepto.getDistribucion().setDistricucionAutomatica(false);
-					
+					presupuestoConcepto.getDistribucion().setMontoDistribuir(presupuestoPorDistribuir);
 				
 				} else {
+					DistribucionPresupuestoTipo tipo = DistribucionPresupuestoTipo.buscar(peticion.getTipoDistribucionMonto());
+					if(tipo == null) 
+						throw new ModelNotFoundException("No existe el tipo de distribución " + peticion.getTipoDistribucionMonto());
+					presupuestoConcepto.getDistribucion().setDistribucionExcel(false);
+					presupuestoConcepto.getDistribucion().setDistricucionAutomatica(true);
+					presupuestoConcepto.getDistribucion().setDistribucionVariable(peticion.isDistribucionVariable());
+					presupuestoConcepto.getDistribucion().setDistribucionUniforme(peticion.isDistribucionUniforme());
+					presupuestoConcepto.getDistribucion().setTipoDistribucionMonto(tipo);
+					presupuestoConcepto.getDistribucion().setMontoDistribuir(peticion.getValorMontoDistribuir());
 					distribucionXAgencia = distribucion(peticion, presupuestoConcepto);
 				}
-				/*presupuestoConcepto.setDistribuido(true);
-				presupuestoConcepto.setTipoDistribucionMonto(tipo);
-				presupuestoConcepto.setFrecuenciaDistribucion(frecuencia);
-				presupuestoConcepto.setDistribucionUniforme(peticion.isDistribucionUniforme());
-				presupuestoConcepto.setDistribucionVariable(peticion.isDistribucionVariable());		*/		
+						
 			}
 			presupuestoConcepto.getDistribucion().setConfigurado(true);
 			presupuestoConcepto.setPresupuestosAgencia(distribucionXAgencia);
-			presupuestoConceptoGastoService.actualizar(presupuestoConcepto, usuarioOperacion);
+			presupuestoConceptoGastoService.registrarDistribucion(presupuestoConcepto, usuarioOperacion);
 			registrarAuditoria(Constantes.COD_OK, Constantes.OK, peticion);
 		} catch (ModelNotFoundException e) {
 			logger.error("[ERROR] configurarDistribucionConcepto", e);
-			registrarAuditoria(Constantes.COD_EMPTY, Constantes.DATA_EMPTY, peticion);
+			registrarAuditoria(Constantes.COD_EMPTY, Constantes.DATA_EMPTY, jsonData);
 			throw new ModelNotFoundException(e.getMessage()); 
 		}  catch (NotAuthorizedException e) {
 			logger.error("[ERROR] configurarDistribucionConcepto", e);
-			registrarAuditoria(Constantes.COD_NO_AUTORIZADO, e.getMessage(), peticion);
+			registrarAuditoria(Constantes.COD_NO_AUTORIZADO, e.getMessage(), jsonData);
 			throw new NotAuthorizedException(e.getMessage());
 		} catch (AppException e) {
 			logger.error("[ERROR] configurarDistribucionConcepto", e);
-			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), peticion);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), jsonData);
 			throw new AppException(e.getMessage(), e);
 		} catch (Exception e) {
 			logger.error("[ERROR] configurarDistribucionConcepto", e);
-			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), peticion);
+			registrarAuditoria(Constantes.COD_ERR, e.getMessage(), jsonData);
 			throw new AppException(Utilitario.obtenerMensaje(messageSource, "app.error.generico"), e);
 		}
+	}
+	
+	private RequestDistribucionConcepto validarConfiguracionRequest(@Valid RequestDistribucionConcepto peticion) {
+		return peticion;
 	}
 	
 	private List<PresupuestoAgenciaGasto> noDistribuir(RequestDistribucionConcepto peticion, PresupuestoConceptoGasto concepto) {
@@ -287,6 +296,10 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 	
 	private List<PresupuestoAgenciaGasto> distribucionExcel(RequestDistribucionConcepto peticion, MultipartFile excelDistribucion, PresupuestoConceptoGasto concepto) {
 		try {
+			if(excelDistribucion == null)
+				throw new AppException("Debe adjuntar un archivo XLSX");
+			if(!excelDistribucion.getOriginalFilename().toLowerCase().contains("xlsx"))
+				throw new AppException("Solo se permite archivos XLSX");
 			XLSXFeatureCollection xlsxFeatureCollection = new XLSXFeatureCollection(excelDistribucion.getInputStream());
 			xlsxFeatureCollection.read();
 			return xlsxFeatureCollection.getCollection().getRows().stream()
@@ -302,7 +315,8 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 				presupuestoAgencia.setAgencia(agencia);
 				presupuestoAgencia.setPresupuestoAsignado(presupuesto);
 				presupuestoAgencia.setPresupuestoConcepto(concepto);
-				return presupuestoAgencia;
+				presupuestoAgencia.setPresupuestoConsumido(0);
+				return asignarPeriodos(presupuestoAgencia, concepto.getDistribucion().frecuenciaDistribucion());
 			}).collect(Collectors.toList());
 		} catch (ModelNotFoundException e) {
 			logger.error("[ERROR] distribucionExcel", e);
@@ -337,40 +351,44 @@ public class GestionarPresupuestoNegocioImpl implements GestionarPresupuestoNego
 				}
 			}
 		}
-		DistribucionPresupuestoTipo tipo = DistribucionPresupuestoTipo.buscar(peticion.getTipoDistribucionMonto());
-		if(tipo == null)
-			throw new ModelNotFoundException("No existe el tipo de distribución " + peticion.getTipoDistribucionMonto());
-		Double porcentaje = tipo.codigo == DistribucionPresupuestoTipo.UN_PORCENTAJE_TOTAL.codigo ? peticion.getValorMontoDistribuir() : null ;
-		Double montoDelTotal = peticion.getValorMontoDistribuir();
-		double presupuestoTotalAgencias = DistribucionPresupuestoTipo.calcularMontoDistribuir(peticion.getTipoDistribucionMonto(),
+		DistribucionPresupuestoTipo tipo = concepto.getDistribucion().tipoDistribucionMonto();
+		Double porcentaje = tipo.codigo == DistribucionPresupuestoTipo.UN_PORCENTAJE_TOTAL.codigo ? concepto.getDistribucion().getMontoDistribuir() : null ;
+		Double montoDelTotal = concepto.getDistribucion().getMontoDistribuir();
+		double presupuestoTotalAgencias = DistribucionPresupuestoTipo.calcularMontoDistribuir(tipo.codigo,
 				concepto.getPresupuestoAsignado()
 				, porcentaje, montoDelTotal);
-		double presupuestoPorAgencia = presupuestoTotalAgencias / agencias.size();
-		final double presupuestoPorAgenciaRedondeado = presupuestoPorAgencia = Math.round(presupuestoPorAgencia * 100) / 100;
+		final double presupuestoPorAgencia = presupuestoTotalAgencias / agencias.size();
+		//final double presupuestoPorAgenciaRedondeado = presupuestoPorAgencia = Math.round(presupuestoPorAgencia * 100) / 100;
 		return agencias.stream().map(a -> {
 			ZonedDateTime zdt = LocalDateTime.now().atZone(ZoneId.of(Constantes.TIME_ZONE));
 			PresupuestoAgenciaGasto presupuestoAgencia = new PresupuestoAgenciaGasto();
 			presupuestoAgencia.setCodigo(zdt.toInstant().toEpochMilli());
 			presupuestoAgencia.setAgencia(a);
 			presupuestoAgencia.setPresupuestoConcepto(concepto);
-			presupuestoAgencia.setPresupuestoAsignado(presupuestoPorAgenciaRedondeado);
-			return presupuestoAgencia;
+			presupuestoAgencia.setPresupuestoAsignado(presupuestoPorAgencia);
+			presupuestoAgencia.setPresupuestoConsumido(0);
+			return asignarPeriodos(presupuestoAgencia, concepto.getDistribucion().frecuenciaDistribucion());
 		}).collect(Collectors.toList());
 	}
 	
-	private PresupuestoAgenciaGasto asignarPeriodos(PresupuestoAgenciaGasto conceptoAgencia, DistribucionPresupuestoFrecuencia frecuencia, String usuarioOperacion) {
+	private PresupuestoAgenciaGasto asignarPeriodos(PresupuestoAgenciaGasto conceptoAgencia, DistribucionPresupuestoFrecuencia frecuencia) {
+		conceptoAgencia.setPresupuestoPeriodo(new ArrayList<>());
 		int numeroPeriodos = 12 / frecuencia.valor;
-		DateTimeFormatter fomratter = DateTimeFormatter.ofPattern(Constantes.FORMATO_FECHA);
-		LocalDate fechaInicio = LocalDate.parse("01/01/" + LocalDate.now().getYear(), fomratter);
-		for (int i = 1; i <= numeroPeriodos; i++) {
-			LocalDate fechaFin = fechaInicio.plusMonths(i).minusDays(1);
+		double presupuestoPorPeriodo = conceptoAgencia.getPresupuestoAsignado() / numeroPeriodos;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(Constantes.FORMATO_FECHA);
+		LocalDate fechaInicio = LocalDate.parse("01/01/" + LocalDate.now().getYear(), formatter);
+		for(int i = 0; i <= 12; i = i + frecuencia.valor) {
+			LocalDate fechaFin = fechaInicio.plusMonths(frecuencia.valor).minusDays(1);
 			PresupuestoPeriodoGasto periodo = new PresupuestoPeriodoGasto();
 			periodo.setActual(false);
 			periodo.setFechaInicio(fechaInicio);
 			periodo.setFechaFin(fechaFin);
+			periodo.setPresupuestoAsignado(presupuestoPorPeriodo);
+			periodo.setPresupuestoConsumido(0);
+			conceptoAgencia.getPresupuestoPeriodo().add(periodo);
 			fechaInicio = fechaFin.plusDays(1);
 		}
-		return null;
+		return conceptoAgencia;
 	}
 	
 	@Override

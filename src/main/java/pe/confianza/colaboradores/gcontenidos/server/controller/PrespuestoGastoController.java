@@ -10,9 +10,12 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -81,11 +84,13 @@ public class PrespuestoGastoController {
 	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
 	@ApiOperation(notes = "Configurar distribucion de conceptos de un GLG", value = "url proxy /presupuestos/configurar")
 	@PostMapping(value = "/configurar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces =  MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ResponseStatus> configurarDistribucionConcepto(@Valid @RequestBody RequestDistribucionConcepto peticion, @RequestPart("excelDistribucion") MultipartFile excelDistribucion) {
+	public ResponseEntity<ResponseStatus> configurarDistribucionConcepto(
+			@RequestParam(required = false, value ="excelDistribucion") MultipartFile excelDistribucion,
+			@RequestParam(required = true, value = "jsonData") String jsonData) {
 		ResponseStatus responseStatus = new ResponseStatus();
 		responseStatus.setCodeStatus(Constantes.COD_OK);
 		responseStatus.setMsgStatus(Constantes.OK);
-		gestionarPresupuestoNegocio.configurarDistribucionConcepto(peticion, excelDistribucion);
+		gestionarPresupuestoNegocio.configurarDistribucionConcepto(jsonData, excelDistribucion);
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 }
