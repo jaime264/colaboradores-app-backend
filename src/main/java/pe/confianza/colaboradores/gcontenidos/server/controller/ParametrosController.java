@@ -126,7 +126,7 @@ public class ParametrosController {
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	
-	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
+
 	@ApiOperation(notes = "Actualizar parametro de vacaciones", value = "url proxy /parametros/vacaciones/actualizar")
 	@PutMapping("/parametros/vacaciones/actualizar")
 	public ResponseEntity<ResponseStatus> actualizarParametrosVacaciones(@Valid @RequestBody RequestParametroActualizacion request) {
@@ -148,7 +148,7 @@ public class ParametrosController {
 		return new ResponseEntity<>(responseStatus, HttpStatus.OK);
 	}
 	
-	@Secured({AuthoritiesConstants.USER, AuthoritiesConstants.MOVILIDAD})
+
 	@ApiOperation(notes = "Actualizar vacaciones meta por empleado", value = "url proxy /parametros/vacaciones/meta")
 	@PutMapping("/parametros/vacaciones/meta")
 	public ResponseEntity<ResponseStatus> actualizarMeta(@Valid @RequestBody RequestModificarMetaVacacion modificacion) {
